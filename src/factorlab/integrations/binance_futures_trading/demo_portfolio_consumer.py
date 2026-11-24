@@ -74,10 +74,30 @@ class DemoPortfolioConsumer:
             self.active_mailbox_task = task_payload
             from .tradfi_schedule import utc_instant
             from factorlab.trading.contracts import TERMINAL
-            started = self.session.controller.store.event_payload('portfolio:' + identity((
-                task_payload['allocation_id'],task_payload['task_id']))) is not None
+            from factorlab.trading.storage import decode
+            store = self.session.controller.store
+            done = 'portfolio-result:' + identity(task_payload['task_id'])
+            saved_result = store.event_payload(done)
+            if saved_result is not None:
+                saved = decode(json.loads(saved_result))
+                self.receipt('COMPLETED' if saved['outcome'] == 'NO_EXECUTABLE_DELTA' else 'REJECTED',
+                    dict(outcome=saved['outcome'],journal=done))
+                return
+            saved_target = store.event_payload('portfolio:' + identity((
+                task_payload['allocation_id'],task_payload['task_id'])))
+            started = saved_target is not None
             if utc_instant(task_payload['valid_until']) <= self.session._now():
                 recovered = self.session.gateway.recover(self.session.controller)
+                if recovered.reconciled and started:
+                    portfolio = PortfolioRuntime(self.session.controller,
+                        allocation_id=task_payload['allocation_id'], owned_symbols=SYMBOLS,
+                        recover=lambda:self.session.gateway.recover(self.session.controller))
+                    for order in portfolio.batch_status(task_payload['task_id']):
+                        record = self.session.gateway.state.orders.get(order['client_order_id'])
+                        if record is not None and record.snapshot.status not in TERMINAL:
+                            with self.scope(task_payload['task_id'], order['symbol']):
+                                self.session.cancel(order['client_order_id'])
+                    recovered = self.session.gateway.recover(self.session.controller)
                 if recovered.reconciled and not any(r.snapshot.status not in TERMINAL
                         for k,r in self.session.gateway.state.orders.items() if k.startswith('pf')):
                     self.receipt('REJECTED',dict(reason='EXPIRED',recovered_inflight=started))
@@ -85,7 +105,9 @@ class DemoPortfolioConsumer:
                     self.receipt('RECONCILING',dict(reason='EXPIRED_INFLIGHT'))
                 return
             funds = self.session.adapter.read_facts().usdt()
-            budget = max(D(0),min(BUDGET,funds['walletBalance']+funds['unrealizedProfit']-D(7)))
+            budget = (decode(json.loads(saved_target))['equity'] if started else
+                max(D(0),min(D(task_payload['equity_usdt']),BUDGET,
+                    funds['walletBalance']+funds['unrealizedProfit']-D(7))))
             request = dict(task_id=task_payload['task_id'],budget_usdt=str(budget),
                            weights=task_payload['weights'])
             if outstanding[0]['status'] == 'QUEUED':
@@ -223,8 +245,8 @@ class DemoPortfolioConsumer:
                 raise SafetyBlocked('account execution stopped')
             if self.active_mailbox_task is not None:
                 from .tradfi_schedule import utc_instant
-                if utc_instant(self.active_mailbox_task['valid_until']) <= s._now():
-                    raise SafetyBlocked('task expired at dispatch; GET recovery required')
+                if utc_instant(self.active_mailbox_task['valid_until']) <= s._now() and method != 'DELETE':
+                    raise SafetyBlocked('task expired at dispatch; only known-order cleanup permitted')
             if params.get('symbol') != symbol or symbol not in SYMBOLS:
                 raise SafetyBlocked('portfolio symbol ownership mismatch')
             key = ('pf-leverage-'+symbol if 'leverage' in params else

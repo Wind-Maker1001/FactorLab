@@ -149,7 +149,12 @@ class DemoSession:
             if set(restored.instruments) - {'NVDAUSDT', 'QQQUSDT', 'SPYUSDT'}:
                 raise SafetyBlocked('unexpected shared account instrument')
             instruments = tuple(restored.instruments.values())
-        self.shared_account = controller_store.event_payload('demo:static-shared-account:v1') is not None
+        shared = controller_store.event_payload('demo:static-shared-account:v1')
+        self.shared_account = shared is not None
+        if self.shared_account:
+            from factorlab.trading.storage import decode
+            allocation = decode(json.loads(shared))
+            limits = replace(limits, account_budget=allocation['grid_budget'] + allocation['portfolio_budget'])
         self.gateway = DemoExecutionGateway(self.adapter, observation, instruments,
             {'USDT': balance}, leverage=leverage, max_leverage=leverage)
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
