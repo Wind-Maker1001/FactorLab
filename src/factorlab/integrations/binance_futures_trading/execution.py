@@ -70,8 +70,6 @@ def observe_demo_rules(adapter, symbol='NVDAUSDT', *, source_version, on_symbol=
     client = adapter.client
     if client.environment is not Environment.DEMO:
         raise SafetyBlocked('Demo rules require Demo client')
-    if symbol != 'NVDAUSDT':
-        raise SafetyBlocked('Demo execution contract currently supports NVDAUSDT only')
     symbol_info = read_demo_symbol(client, symbol)
     if on_symbol is not None:
         on_symbol(symbol_info)
@@ -342,8 +340,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
     def submit_order(self, intent):
         if not self.read_account().reconciled:
             raise SafetyBlocked('RECONCILE_REQUIRED: confirmed Demo account projection required')
-        if intent.instrument_id != 'NVDAUSDT':
-            raise SafetyBlocked('Demo execution contract currently supports NVDAUSDT only')
+        if intent.instrument_id != self.rules.symbol:
+            raise SafetyBlocked('order symbol differs from observed Demo rules')
         if type(self.adapter.client.transport) is DemoNetworkTransport:
             self._network_admission(intent)
         elif type(self.adapter.client.transport.authorization) is not DemoExecutionAuthorization:
@@ -447,7 +445,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
             raise SafetyBlocked('order must pass shared controller risk admission')
         if state.kill_switch:
             raise SafetyBlocked('KILL_SWITCH: no new Demo orders')
-        if (intent.order_type.value not in plan.order_types or intent.quantity > plan.max_quantity
+        if (intent.instrument_id != plan.symbol or intent.order_type.value not in plan.order_types or intent.quantity > plan.max_quantity
                 or not intent.client_order_id.startswith(plan.client_id_prefix)):
             raise SafetyBlocked('order outside execution plan')
         observation = getattr(adapter, '_rule_observation', None)

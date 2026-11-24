@@ -57,15 +57,15 @@ def observe_demo_account(credential, *, request_counts=None):
     return _read_account(client), requests
 
 
-def demo_account_configuration(facts):
+def demo_account_configuration(facts, symbol=SYMBOL):
     _positions(facts)
     if facts.hedge_mode is not False or not facts.shared().assets:
         raise SafetyBlocked('complete one-way Demo account required')
-    config = symbol_row(list(facts.symbol_config), SYMBOL)
+    config = symbol_row(list(facts.symbol_config), symbol)
     leverage, margin_type = config.get('leverage'), config.get('marginType')
     if type(leverage) is not int or leverage < 1 or margin_type not in {'CROSSED', 'ISOLATED'}:
         raise SafetyBlocked('Demo leverage or margin configuration unavailable')
-    return dict(symbol=SYMBOL, position_mode='ONE_WAY', leverage=leverage, margin_type=margin_type)
+    return dict(symbol=symbol, position_mode='ONE_WAY', leverage=leverage, margin_type=margin_type)
 
 
 def _order_observables(payload):
@@ -119,6 +119,8 @@ class DemoSession:
         self._recovered_receipt_count = 0
         self.receipt_error = False
         self.write_uncertain = False
+        from factorlab.integrations.binance.market import symbol_name
+        self.symbol = symbol_name(configuration['symbol'])
         self.configuration = configuration
         self._write_guard = write_guard
         self._receipt_sink = receipt_sink
@@ -132,16 +134,16 @@ class DemoSession:
         self.adapter.get_confirmed_writes = get_confirmed_writes
         self.client.sync_time()
         with self.client.recover_get_clock():
-            observation = observe_demo_rules(self.adapter, source_version=DEMO.host, on_symbol=self._check_symbol)
+            observation = observe_demo_rules(self.adapter, self.symbol, source_version=DEMO.host, on_symbol=self._check_symbol)
             facts = self.adapter.read_facts()
         if ((authorization is not None or reconcile_on_open or require_bound_configuration)
-                and demo_account_configuration(facts) != configuration):
+                and demo_account_configuration(facts, self.symbol) != configuration):
             raise SafetyBlocked('persisted Demo account configuration mismatch')
         balance = facts.usdt()['walletBalance']
         if balance is None:
             raise SafetyBlocked('Demo wallet balance unavailable')
         leverage = configuration['leverage']
-        self.gateway = DemoExecutionGateway(self.adapter, observation, (Instrument(SYMBOL, 'USDT'),),
+        self.gateway = DemoExecutionGateway(self.adapter, observation, (Instrument(self.symbol, 'USDT'),),
             {'USDT': balance}, leverage=leverage, max_leverage=leverage)
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
         self.gateway.bind_controller(self.controller)
@@ -156,7 +158,7 @@ class DemoSession:
                 or not timedelta(0) <= self._now() - self.last_reconciled_at <= timedelta(seconds=5)):
             raise SafetyBlocked('fresh GET reconciliation required before renewing Demo capability')
         if (authorization.plan.account_id != self.adapter.account_id
-                or demo_account_configuration(self.adapter.facts) != self.configuration):
+                or demo_account_configuration(self.adapter.facts, self.symbol) != self.configuration):
             raise SafetyBlocked('renewed Demo capability account or configuration mismatch')
         old = self.client.transport
         if old.authorization is not None:
@@ -179,7 +181,7 @@ class DemoSession:
         """Refresh the account-bound observation before planning or admitting new orders."""
         if not self.gateway.rules.is_fresh(self._now()):
             with self.client.recover_get_clock():
-                observation = observe_demo_rules(self.adapter, source_version=DEMO.host,
+                observation = observe_demo_rules(self.adapter, self.symbol, source_version=DEMO.host,
                                                  on_symbol=self._check_symbol)
             self.gateway.rules = observation.rules
 
@@ -242,8 +244,8 @@ class DemoSession:
 
     def _fresh_book(self, payload=None):
         if payload is None:
-            payload = self.client.request('GET', BOOK, {'symbol': SYMBOL}, signed=False)
-        book = _book(payload)
+            payload = self.client.request('GET', BOOK, {'symbol': self.symbol}, signed=False)
+        book = _book(payload, self.symbol)
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo top of book')
         return book
@@ -273,9 +275,9 @@ class DemoSession:
         return self._recover()
 
     def _recover(self, *, initial_facts=None):
-        if self.gateway.state.quotes.get(SYMBOL) is None and self._protocol_ids():
+        if self.gateway.state.quotes.get(self.symbol) is None and self._protocol_ids():
             book = self._fresh_book()
-            self.controller.quote(Quote(SYMBOL, book['askPrice'], book['time_utc']))
+            self.controller.quote(Quote(self.symbol, book['askPrice'], book['time_utc']))
         if initial_facts is None and self.adapter.audit_due():
             self.audit_history(reason='SCHEDULED')
         started = perf_counter()
@@ -308,7 +310,7 @@ class DemoSession:
 
     def _require_absent(self, client_order_id):
         try:
-            self.client.request('GET', '/fapi/v1/order', {'symbol': SYMBOL, 'origClientOrderId': client_order_id})
+            self.client.request('GET', '/fapi/v1/order', {'symbol': self.symbol, 'origClientOrderId': client_order_id})
         except ExchangeError as error:
             if error.code == -2013 and error.category == 'ORDER_NOT_FOUND':
                 return
@@ -317,7 +319,7 @@ class DemoSession:
 
     def _fresh_bound_facts(self):
         facts = self.adapter.read_facts()
-        if demo_account_configuration(facts) != self.configuration:
+        if demo_account_configuration(facts, self.symbol) != self.configuration:
             raise SafetyBlocked('persisted Demo account configuration mismatch')
         return facts
 
@@ -327,7 +329,7 @@ class DemoSession:
             raise SafetyBlocked('active Demo orders prevent adding another order')
         confirmed = {p.instrument_id: (p.quantity, p.entry_price) for p in facts.shared().positions}
         local = {p.instrument_id: (p.quantity, p.entry_price) for p in self.gateway.state.positions.values()}
-        if confirmed != local or any(symbol != SYMBOL for symbol in confirmed):
+        if confirmed != local or any(symbol != self.symbol for symbol in confirmed):
             raise SafetyBlocked('Demo account position changed; use GET recovery')
 
     def prepare_limit_book(self):
@@ -350,15 +352,15 @@ class DemoSession:
         self._prepare_submission(client_order_id, side, reduce_only)
         book = self._fresh_book() if book is None else book
         price = self.limit_price(self.gateway.rules, side, book)
-        intent = OrderIntent(Market.BINANCE_USDM, SYMBOL, side, OrderType.LIMIT, quantity, price,
+        intent = OrderIntent(Market.BINANCE_USDM, self.symbol, side, OrderType.LIMIT, quantity, price,
                              client_order_id, position_side='BOTH', reduce_only=reduce_only)
         return self._submit_prepared(intent, book)
 
     def submit_intent(self, intent, *, book=None):
         """Validate and deliver an exact LIMIT intent without repricing or resizing."""
-        if (intent.market is not Market.BINANCE_USDM or intent.instrument_id != SYMBOL
+        if (intent.market is not Market.BINANCE_USDM or intent.instrument_id != self.symbol
                 or intent.order_type is not OrderType.LIMIT or intent.position_side not in (None, 'BOTH')):
-            raise SafetyBlocked('Demo runtime requires NVDAUSDT one-way LIMIT')
+            raise SafetyBlocked('Demo runtime requires configured symbol one-way LIMIT')
         self._prepare_submission(intent.client_order_id, intent.side, intent.reduce_only)
         return self._submit_prepared(intent, book)
 
@@ -393,7 +395,7 @@ class DemoSession:
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo prepared book')
         self._order_quote_at = book['time_utc']
-        self.controller.quote(Quote(SYMBOL, book['askPrice'], self._order_quote_at))
+        self.controller.quote(Quote(self.symbol, book['askPrice'], self._order_quote_at))
         receipt_index = len(self.receipts)
         try:
             result = self.controller.submit(intent)
@@ -413,7 +415,7 @@ class DemoSession:
         if order.reconcile_required or order.exchange_order_id is None or order.status in TERMINAL:
             raise SafetyBlocked('Demo cancellation requires a known active order')
         facts = self._fresh_bound_facts()
-        if not any(row['symbol'] == SYMBOL and row['clientOrderId'] == client_order_id
+        if not any(row['symbol'] == self.symbol and row['clientOrderId'] == client_order_id
                    and str(row['orderId']) == order.exchange_order_id for row in facts.open_orders):
             raise SafetyBlocked('Demo order no longer observed active; use GET recovery')
         receipt_index = len(self.receipts)
