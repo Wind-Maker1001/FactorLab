@@ -275,6 +275,25 @@ def test_partial_cancel_and_fill_race(tmp_path):
     assert a.query_order("alp-test").status == S.FILLED
 
 
+@pytest.mark.parametrize("terminal", [False, True])
+def test_cancel_returns_unconsumed_execution_price(tmp_path, terminal):
+    a, official = adapter(tmp_path)
+    a.submit_order(intent())
+    row = official.orders["alp-test"]
+    quantity = "0.1" if terminal else "0.04"
+    row.update(filled_qty=quantity, filled_avg_price="99",
+               status="filled" if terminal else "partially_filled")
+    official.activities = [{"id": "cancel-fill", "order_id": row["id"], "qty": quantity,
+                            "price": "99", "side": "buy", "symbol": "AAPL"}]
+    event = a.cancel_order("alp-test")
+    assert event.status == (S.FILLED if terminal else S.CANCELED)
+    assert event.cumulative_filled_quantity == D(quantity)
+    assert event.fill_price == D("99")
+    a.close()
+    a, _ = adapter(tmp_path, official)
+    assert a.query_order("alp-test").fill_price is None
+
+
 def test_cash_not_margin_and_inventory(tmp_path):
     a, official = adapter(tmp_path)
     official.cash = "1"
