@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-11-24T15:03:42.226099+00:00",
+  "complete": false,
+  "execution_verified": false,
+  "orders_submitted": 0,
+  "fees": null,
+  "account_equity_reconciliation": null,
+  "restart_reconciliation": null,
+  "leverage_brackets": null,
+  "issuer_identity_verified": false,
+  "classifications": {
+    "AAPL": "MAINNET_ONLY",
+    "SNDK": "MAINNET_ONLY",
+    "BA": "NOT_LISTED",
+    "C": "NOT_LISTED",
+    "JPM": "MAINNET_ONLY",
+    "GE": "NOT_LISTED",
+    "TQQQ": "MAINNET_ONLY",
+    "QQQ": "DEMO_LISTED_NOT_EXECUTED"
+  },
+  "blockers": [
+    "Existing observe_demo_rules rejects all symbols except NVDAUSDT; DemoSession and strategy runtime are also NVDA-specific",
+    "Azure account ownership coordination not established"
+  ],
+  "market_coverage": {
+    "book": true,
+    "depth": true,
+    "klines": true,
+    "mark": true,
+    "funding": true
+  }
+}
