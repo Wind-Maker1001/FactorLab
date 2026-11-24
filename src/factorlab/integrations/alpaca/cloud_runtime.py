@@ -241,8 +241,13 @@ class Supervisor:
                      mode='OBSERVE', market=self.market.snapshot(),
                      strategy={'state': 'WAITING_F02', 'name': 'v69-original', 'frequency': 'natural-week'},
                      execution={'state': 'WAITING_E03_HANDOVER', 'enabled': False})
+        rest = value.get('market_rest')
+        market_open = value.get('schedule', {}).get('market_open', False)
+        value['market_available'] = bool(rest and not rest['missing_symbols']
+            and (not market_open or rest['fresh_quotes']))
         value['healthy'] = (value['account_recovered'] and value['error'] is None
-                            and value['market']['state'] != 'FAILED')
+                            and value['trade_stream'] == 'CONNECTED'
+                            and value['market_available'] and value['market']['state'] != 'FAILED')
         atomic_json(self.root / 'health.json', value)
         return value
 
@@ -264,11 +269,16 @@ class Supervisor:
             clock, _ = self.client.clock()
             # Requests are already retained in bounded operational summaries below.
             self.client.evidence.clear()
-            missing = sorted(set(self.symbols) - set(quotes.get('quotes', {})))
+            quote_rows = quotes.get('quotes', {})
+            missing = sorted(symbol for symbol in self.symbols if not quote_rows.get(symbol))
+            fresh = not missing and all(0 <= (received - datetime.fromisoformat(
+                quote_rows[symbol]['t'].replace('Z', '+00:00'))).total_seconds() <= 90
+                for symbol in self.symbols)
             self.health.update(account_recovered=snapshot.reconciled,
                                last_recovery_at=at.isoformat(), schedule=window,
                                market_rest={'received_at': received.isoformat(), 'missing_symbols': missing,
-                                            'feed': 'iex', 'clock_open': clock['is_open']})
+                                            'feed': 'iex', 'clock_open': clock['is_open'],
+                                            'fresh_quotes': fresh})
             self.store.event('RECOVERED', {'reconciled': snapshot.reconciled})
             report = {'observed_at': at.isoformat(), 'source': 'ALPACA_PAPER_OBSERVATION',
                       'equity': str(facts.equity), 'cash': str(facts.cash),

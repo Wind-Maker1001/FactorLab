@@ -1,7 +1,5 @@
 from datetime import datetime, timezone
 import json
-from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
@@ -73,6 +71,38 @@ def test_health_staleness_and_stopped(tmp_path):
     payload['trade_stream'] = 'STOPPED'
     atomic_json(tmp_path / 'health.json', payload)
     assert not health(tmp_path, at=at('2026-11-24T15:00:30'))['healthy']
+
+
+def test_incompatible_schema_refused(tmp_path):
+    import sqlite3
+    with sqlite3.connect(tmp_path / 'runtime.sqlite3') as db:
+        db.execute('PRAGMA user_version=2')
+    with pytest.raises(ValueError, match='incompatible'):
+        RuntimeStore(tmp_path)
+
+
+def test_disconnect_restarts_session_without_submitting(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    import factorlab.integrations.alpaca.cloud_runtime as module
+    runtime = Supervisor(tmp_path, AlpacaConfig('key', 'secret'))
+    runtime.market.thread = SimpleNamespace(start=lambda: None, join=lambda **_: None)
+    calls = []
+    runtime.poll = lambda: calls.append('rest')
+    def session(adapter, **kwargs):
+        calls.append('session')
+        if calls.count('session') == 1:
+            raise ConnectionError('connection lost')
+        runtime.stop.set()
+    monkeypatch.setattr(module, 'trade_updates', session)
+    def delay(seconds):
+        calls.append(('backoff', seconds))
+    runtime.stop.wait = delay
+    runtime.run()
+    assert calls == ['rest', 'session', ('backoff', 1), 'rest', 'session']
+    result = json.loads((tmp_path / 'health.json').read_text())
+    assert result['trade_stream'] == 'STOPPED'
+    assert not result['execution']['enabled']
+    assert not result['healthy']
 
 
 def test_failed_recovery_revokes_old_health(tmp_path):
