@@ -8,16 +8,22 @@ python tools/deploy_demo_strategy.py --host 85.211.193.242 --user azureuser --ke
 
 构建固定 Git 归档；上传校验后安装版本目录，短暂重启原服务。失败只恢复旧入口，交易账本保持当前位置。主机 release 下保存 deployment-result.json。
 
-## 独立策略适配
+## 独立策略与 S01 通用协议适配
 
-初始接口 `factorlab.demo.evaluate/v1` 为 `module:function(context, state)`，返回 `{"state": {}, "intents": []}`。context.event 为 probe / closed_bar，带配置及只读行情/账户投影。probe 不得生成意图。策略可在 checkpoint 保存自身历史。当前范围为 NVDAUSDT、1m、单次最多一个 BUY 或 reduce-only SELL，经原 LIMIT GTC 和风险额度检查。
+策略包同时支持两类接口协议（保留 `legacy-grid` 回退路径）：
+
+1. **兼容接口 `factorlab.demo.evaluate/v1`**：`module:function(context, state)`，返回 `{"state": {}, "intents": []}`。`context.event` 为 `probe` / `closed_bar`，带配置及只读行情/账户投影。`probe` 不得生成意图。既有 HOLD 验收包与旧包完全兼容。
+2. **S01 通用决策协议 `FACTORLAB_DECISION_V1`**：`module:ClassName` 实现 `UnifiedStrategy`（`describe() -> StrategySpec`、`decide(event, state) -> Decision`），经 S01 干净隔离工作进程（`LoadedStrategy.from_strategy_package`、`python -I -B`、`sys.addaudithook`、白名单环境、无凭据传入）加载。
+   - 清单必填映射：`strategy_id`、`strategy_version`、`state_version`、`code_commit`、`entrypoint`、`files`（逐文件 SHA256）、`dependencies`（精确 `name==version`）、`configuration`、`evidence`、`migration`（`wait_flat` / `reduce_only`），以及可选 `execution_mode`（`target` / `orders`）、`interval_seconds`（默认 60）与 `package`（目录包相对导入布尔标志）。
+   - `target` 决策经 `DecisionJournal + SignalAdapter + DemoStrategyRuntime` 执行；`orders` 决策经 `DecisionJournal + OrderStrategyRuntime + ControllerExecution` 执行，完整保留 `NEW / PARTIALLY_FILLED / FILLED / CANCELED / UNKNOWN`、`DEFERRED` Outbox、撤单尝试与确认终态分离及 HTTP 200 未确认回执的 GET 恢复。
+   - **安全边界声明**：可信 Python 隔离工作进程用于防止误访问凭据、外部文件、网络与子进程，不等价于针对恶意代码的 OS 安全沙箱。
 
 ```python
 def evaluate(context, state):
     return {"state": state, "intents": []}
 ```
 
-manifest schema v1 必须有 environment=BINANCE_USDM_DEMO、symbol=NVDAUSDT、code_commit、entrypoint、files、dependencies、configuration、state_version、migration 和 evidence。files 是显式 Python 清单，build 替换为逐文件 hash 并生成 package_id。dependencies 只支持已安装的精确 name==version。迁移为 wait_flat，或显式 reduce_only 加 `reduction: {"explicitly_allowed": true, "max_attempts": 2}`，仍受原预算/过滤器约束。
+manifest schema v1 必须有 `environment=BINANCE_USDM_DEMO`、`symbol=NVDAUSDT`、`code_commit`、`entrypoint`、`files`、`dependencies`、`configuration`、`state_version`、`migration` 和 `evidence`。`files` 是显式 Python 清单，`build` 替换为逐文件 hash 并生成 `package_id`。`dependencies` 只支持已安装的精确 `name==version`。迁移为 `wait_flat`，或显式 `reduce_only` 加 `reduction: {"explicitly_allowed": true, "max_attempts": 2}`，仍受原预算/过滤器约束。
 
 ```sh
 python -m factorlab.integrations.binance_futures_trading.azure_strategy_deploy build \

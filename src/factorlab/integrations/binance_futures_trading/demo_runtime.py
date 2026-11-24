@@ -650,7 +650,8 @@ def open_grid_session(root, store, grid_factory=None, *, read_only=False, new_de
                         controller_store, deployment, campaign, continuous_auth if automatic else None)):
                 raise SafetyBlocked('order is outside the active Grid deployment')
             runtime.reserve(campaign, method, params, plan, expected=expected,
-                            facts=session.adapter.facts, dispatch_gate=dispatch_gate)
+                            facts=session.adapter.facts, dispatch_gate=dispatch_gate,
+                            cancel_recovered_at=session.last_reconciled_at)
 
         def record(receipt):
             runtime.record_receipt(campaign, receipt)

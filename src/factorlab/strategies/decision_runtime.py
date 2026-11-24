@@ -255,28 +255,37 @@ class ControllerExecution:
 class OrderStrategyRuntime:
     """Event-driven orders; confirmations, not proposals, change inventory."""
     def __init__(self, journal, *, session=None, expect=None, preview=False,
-                 max_notional=None, max_quantity=None, client_id_prefix=None):
+                 max_notional=None, max_quantity=None, client_id_prefix=None,
+                 runtime_namespace=None):
         if journal.spec.decision_kind != 'orders':
             raise ValueError('order strategy required')
         self.journal, self.controller = journal, journal.controller
         self.gateway = self.controller.broker
         self.strategy = journal.strategy
         self.session = session
+        self.runtime_namespace = runtime_namespace
         self.execution = ControllerExecution(self.controller, deployment_id=journal.deployment_id,
             session=session, expect=expect, preview=preview, max_notional=max_notional, max_quantity=max_quantity)
         self.symbol = journal.symbol
         def initialize():
+            runtime = self._runtime()
             configuration = dict(strategy=journal.strategy.binding,
                 client_id_prefix=client_id_prefix or journal.deployment_id + '-',
                 max_notional=max_notional, max_quantity=max_quantity, preview=preview)
-            saved = self.gateway.state.runtime.get('configuration')
+            saved = runtime.get('configuration')
             if saved is not None and saved != configuration:
                 raise PersistenceConflict('strategy execution configuration changed')
-            self.gateway.state.runtime['configuration'] = configuration
-            self.gateway.state.runtime.setdefault('status', 'STARTING')
-            self.gateway.state.runtime.setdefault('pending', None)
-            self.gateway.state.runtime.setdefault('bars', [])
+            runtime['configuration'] = configuration
+            runtime.setdefault('status', 'STARTING')
+            runtime.setdefault('pending', None)
+            runtime.setdefault('bars', [])
         self.controller._atomic(initialize)
+
+    def _runtime(self):
+        if self.runtime_namespace is None:
+            return self.gateway.state.runtime
+        slots = self.gateway.state.runtime.setdefault('strategy_deployments', {})
+        return slots.setdefault(self.runtime_namespace, {})
 
     def _account(self):
         # The existing projection keeps base quantity separate from collateral.
@@ -287,7 +296,7 @@ class OrderStrategyRuntime:
 
     def _event(self, kind, event_id, **value):
         state = self.gateway.state
-        pending = state.runtime['pending']
+        pending = self._runtime()['pending']
         pending_ids = [offer['intent'].client_order_id for offer in pending['orders']] if pending else []
         submitted = {key for key in state.orders if key.startswith(self.execution.deployment_id + '-')}
         submitted.update(key for key in pending_ids if self.execution.attempted(key))
@@ -306,7 +315,7 @@ class OrderStrategyRuntime:
         if 'closed_bar' not in self.journal.spec.data_types:
             return False
         def operation():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             bars = runtime['bars']
             if bars and bar.closed_at <= bars[-1]['closed_at']:
                 if bar.closed_at == bars[-1]['closed_at'] and asdict(bar) != bars[-1]:
@@ -331,7 +340,7 @@ class OrderStrategyRuntime:
         if quote.instrument_id != self.symbol:
             raise ValueError('deployment quote required')
         state = self.gateway.state
-        if state.runtime['status'] != 'RUNNING' or not state.reconciled or state.kill_switch:
+        if self._runtime()['status'] != 'RUNNING' or not state.reconciled or state.kill_switch:
             return None
         if not timedelta(0) <= self.controller.clock() - quote.observed_at <= timedelta(seconds=5):
             raise ValueError('fresh quote required')
@@ -344,11 +353,50 @@ class OrderStrategyRuntime:
             self.controller._atomic(decide_quote)
         return self._dispatch_pending(quote.observed_at)
 
-    def _dispatch_pending(self, observed_at):
-        if self.gateway.state.runtime['pending'] is None:
+    def dispatch_cancellations(self, observed_at):
+        """Advance durable cancellation obligations without submitting new entries."""
+        pending = self._runtime()['pending']
+        if pending is None or not pending['cancellations']:
             return None
         self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
-        pending = self.gateway.state.runtime['pending']
+        pending = self._runtime()['pending']
+        if pending is None or not pending['cancellations']:
+            return None
+        cancellations = {offer['key']: offer for offer in pending['cancellations']
+                         if observed_at >= offer['eligible_at']}
+        if not cancellations:
+            return None
+        result, _ = self.execution.dispatch(
+            Decision(cancellations=tuple(cancellations)),
+            cancellation_attempts={key: self.execution.prefix + 'cancel:' + identity((key, offer['eligible_at']))
+                                   for key, offer in cancellations.items()},
+        )
+        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
+        return result
+
+    def has_unresolved_work(self):
+        """Report persisted unconfirmed dispatch attempts and pending cancellation obligations."""
+        state = self.gateway.state
+        pending = self._runtime().get('pending')
+        if pending is None:
+            return dict(unresolved_attempts=[], pending_cancellations=[])
+        unresolved_attempts = [
+            offer['intent'].client_order_id for offer in pending['orders']
+            if offer['intent'].client_order_id not in state.orders
+            and self.execution.attempted(offer['intent'].client_order_id)
+        ]
+        pending_cancellations = [
+            offer['key'] for offer in pending['cancellations']
+            if not self.execution.cancellation_confirmed(offer['key'])
+        ]
+        return dict(unresolved_attempts=unresolved_attempts,
+                    pending_cancellations=pending_cancellations)
+
+    def _dispatch_pending(self, observed_at):
+        if self._runtime()['pending'] is None:
+            return None
+        self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
+        pending = self._runtime()['pending']
         if pending is None:
             return None
         state = self.gateway.state
@@ -368,7 +416,7 @@ class OrderStrategyRuntime:
                                    for key, offer in cancellations.items()})
 
         def checkpoint():
-            pending = self.gateway.state.runtime['pending']
+            pending = self._runtime()['pending']
             remaining = []
             for offer in pending['orders']:
                 key = offer['intent'].client_order_id
@@ -381,14 +429,9 @@ class OrderStrategyRuntime:
         self.controller._atomic(checkpoint)
         return result
 
-    def recover(self):
-        if self.session:
-            self.session.recover()
-            result = self.controller.account()
-        elif not hasattr(self.gateway, 'recover'):
-            result = self.controller.reconcile()
-        else:
-            result = self.gateway.recover(self.controller)
+    def sync_reconciled(self):
+        """Sync confirmed order events and cancellation outcomes over an already reconciled account."""
+        result = self.controller.account()
         if result.reconciled:
             self.controller._atomic(lambda: self._prune_pending(self.controller.clock()))
             if 'order_event' in self.journal.spec.data_types:
@@ -402,18 +445,31 @@ class OrderStrategyRuntime:
                                 decision = self._event('order_event', event.event_id, order_event=event)
                                 self._pending(decision, self.controller.clock())
                             self.controller._atomic(confirm)
-            self.controller._atomic(lambda: self.gateway.state.runtime.update(status='RUNNING')
-                if self.gateway.state.runtime['status'] == 'STARTING' else None)
+            self.controller._atomic(lambda: self._runtime().update(status='RUNNING')
+                if self._runtime()['status'] == 'STARTING' else None)
+        return result
+
+    def recover(self):
+        if self.session:
+            self.session.recover()
+            result = self.controller.account()
+        elif not hasattr(self.gateway, 'recover'):
+            result = self.controller.reconcile()
+        else:
+            result = self.gateway.recover(self.controller)
+        if result.reconciled:
+            self.sync_reconciled()
         return result
 
     def _pending(self, decision, after, on_quote=False):
         state = self.gateway.state
-        pending = state.runtime['pending'] or dict(orders=[], cancellations=[])
+        runtime = self._runtime()
+        pending = runtime['pending'] or dict(orders=[], cancellations=[])
         orders = {offer['intent'].client_order_id: offer for offer in pending['orders']}
         cancellations = {offer['key']: offer for offer in pending['cancellations']}
         expiry = after + timedelta(seconds=self.journal.interval_seconds)
         eligible = after if on_quote else after + timedelta(microseconds=1)
-        paused = state.runtime['status'] in {'PAUSED', 'STOPPED'}
+        paused = runtime['status'] in {'PAUSED', 'STOPPED'}
         for intent in decision.orders:
             key = intent.client_order_id
             self.execution._owned(key)
@@ -442,11 +498,11 @@ class OrderStrategyRuntime:
 
     def _save_pending(self, orders, cancellations):
         pending = dict(orders=orders, cancellations=cancellations) if orders or cancellations else None
-        self.gateway.state.runtime['pending'] = pending
+        self._runtime()['pending'] = pending
 
     def _prune_pending(self, at, *, withdraw=False):
         state = self.gateway.state
-        pending = state.runtime['pending']
+        pending = self._runtime()['pending']
         if pending is None:
             return
         remaining = []
@@ -482,7 +538,7 @@ class OrderStrategyRuntime:
     def _stop_pending(self, status):
         def operation():
             self._prune_pending(self.controller.clock(), withdraw=True)
-            self.gateway.state.runtime['status'] = status
+            self._runtime()['status'] = status
         self.controller._atomic(operation)
 
     def pause(self):
@@ -490,7 +546,7 @@ class OrderStrategyRuntime:
 
     def resume(self):
         def operation():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             if runtime['status'] == 'STOPPED':
                 raise ValueError('stopped strategy cannot resume')
             runtime['status'] = 'STARTING'
@@ -502,7 +558,7 @@ class OrderStrategyRuntime:
 
     def disconnect(self):
         def operation():
-            runtime = self.gateway.state.runtime
+            runtime = self._runtime()
             if runtime['status'] == 'RUNNING':
                 runtime['status'] = 'STARTING'
         self.controller._atomic(operation)
