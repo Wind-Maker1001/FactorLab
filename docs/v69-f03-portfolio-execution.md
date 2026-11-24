@@ -64,3 +64,33 @@ Remaining requirements: shared-account allocation/admission; true multi-rule
 Session; Campaign/Supervisor/Deployment/cloud propagation; 1x configuration;
 partial-fill/UNKNOWN end-to-end recovery; authoritative fee/funding/NAV report;
 QQQ round trip and two-contract shared-account online execution.
+
+## Batch recovery correction (2026-11-24)
+
+PortfolioRuntime now resumes persisted, unsent batch members automatically.
+The durable futures_orders row is authoritative: the existing adapter commits
+its UNKNOWN placeholder before HTTP dispatch. A missing row proves no dispatch
+through that adapter (including transport refusals that delete their placeholder).
+A present row is never resubmitted; GET recovery must import it first. Without
+an adapter journal, an attempt marker remains ambiguous and fails closed.
+The callback must use this same adapter and journal, within the single account
+execution owner. It must not dispatch through an unrelated transport or store.
+
+After each submission the runtime refreshes account authority before spending
+cash on another member. batch_status projects UNATTEMPTED, UNKNOWN and existing
+exchange statuses from the original journal rather than maintaining a second
+order-state ledger. Live/partial members remain pending; their proven-unsent
+successors resume after recovery confirms the earlier member terminal.
+
+Crash tests cover before and after the protocol boundary for first, second and
+last members of a three-contract batch. They verify three distinct original
+client IDs and no duplicate dispatch after reopening the controller journal.
+These are injected failures, not official Demo partial-fill/UNKNOWN evidence.
+
+Azure read-only inspection confirmed the original Execute service active and
+running the Grid supervisor. No service was restarted/stopped, no remote file
+was written and no trading/configuration request was sent. F04's local
+tradfi_cloud observer currently reports AWAITING_SHARED_ACCOUNT_EXECUTION_INTERFACE;
+its code is observation-only. There is not yet an implemented owner-side request
+consumer, allocation registry or leverage-configuration boundary. This task
+remains incomplete; online acceptance has not been performed.

@@ -1,4 +1,4 @@
-﻿"""Durable target batches over an existing controller and recovery gateway.
+"""Durable target batches over an existing controller and recovery gateway.
 
 No adapter, order state machine, cash ledger or network authority is created here.
 """
@@ -58,10 +58,9 @@ class PortfolioRuntime:
         index = 0
         while self.controller.store.event_payload(key + ':batch:' + str(index)) is not None:
             batch = decode(json.loads(self.controller.store.event_payload(key + ':batch:' + str(index))))
-            for intent in batch:
-                order = self.gateway.state.orders.get(intent.client_order_id)
-                if order is None or order.snapshot.status not in TERMINAL:
-                    return 'RECONCILE_REQUIRED'
+            result = self._resume_batch(batch, submit)
+            if result != 'TERMINAL':
+                return result
             index += 1
         legs = plan_targets(account=account, equity=target['equity'], weights=target['weights'],
             prices=prices, steps=steps, owned_symbols=self.owned_symbols,
@@ -79,6 +78,62 @@ class PortfolioRuntime:
             inserted = self.controller.store.record_metadata(key + ':batch:' + str(index), intents)
         if not inserted:
             return 'RECONCILE_REQUIRED'
-        for intent in intents:
+        return self._resume_batch(intents, submit)
+
+    def _resume_batch(self, batch, submit):
+        """Resume only proven-unsent members using the existing adapter journal."""
+        submitted = False
+        for intent in batch:
+            key = intent.client_order_id
+            order = self.gateway.state.orders.get(key)
+            if order is not None:
+                if order.snapshot.intent != intent:
+                    raise ValueError('portfolio order identity conflict')
+                if order.snapshot.status not in TERMINAL:
+                    return 'RECONCILE_REQUIRED'
+                continue
+            marker = 'portfolio-attempt:' + key
+            adapter = getattr(self.gateway, 'adapter', None)
+            if adapter is not None:
+                remote = adapter.db.execute('SELECT 1 FROM futures_orders WHERE id=?', (key,)).fetchone()
+                if remote is not None:
+                    return 'RECONCILE_REQUIRED'
+            elif self.controller.store.event_payload(marker) is not None:
+                return 'RECONCILE_REQUIRED'
+            with self.controller.store.transaction():
+                self.controller.store.record_metadata(marker, intent)
             (submit or self.controller.submit)(intent)
-        return 'SUBMITTED'
+            submitted = True
+            account = self.recover_account()
+            if not account.reconciled:
+                return 'RECONCILE_REQUIRED'
+        return 'SUBMITTED' if submitted else 'TERMINAL'
+
+    def batch_status(self, task):
+        """Project dispatch provenance and exchange state without another ledger."""
+        key = self._key(task)
+        rows = []
+        index = 0
+        while True:
+            raw = self.controller.store.event_payload(key + ':batch:' + str(index))
+            if raw is None:
+                return rows
+            for intent in decode(json.loads(raw)):
+                client_id = intent.client_order_id
+                local = self.gateway.state.orders.get(client_id)
+                adapter = getattr(self.gateway, 'adapter', None)
+                if adapter is not None:
+                    exists = adapter.db.execute('SELECT 1 FROM futures_orders WHERE id=?', (client_id,)).fetchone()
+                    if exists:
+                        snapshot = adapter.order(client_id)
+                        status = ('UNKNOWN' if snapshot.reconcile_required else snapshot.status.value)
+                    else:
+                        status = 'UNATTEMPTED'
+                elif local is not None:
+                    status = ('UNKNOWN' if local.snapshot.reconcile_required else local.snapshot.status.value)
+                else:
+                    status = ('UNKNOWN' if self.controller.store.event_payload(
+                        'portfolio-attempt:' + client_id) is not None else 'UNATTEMPTED')
+                rows.append(dict(batch=index, client_order_id=client_id,
+                                 symbol=intent.instrument_id, status=status))
+            index += 1

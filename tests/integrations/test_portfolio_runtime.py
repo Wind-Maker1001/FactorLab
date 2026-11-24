@@ -1,4 +1,4 @@
-﻿from decimal import Decimal as D
+from decimal import Decimal as D
 from types import SimpleNamespace
 from datetime import datetime, timezone
 
@@ -48,3 +48,59 @@ def test_two_symbols_one_wallet(tmp_path):
     assert {i.instrument_id for i in calls} == {'QQQUSDT', 'SPYUSDT'}
     assert sum(i.quantity * i.limit_price for i in calls) == 100
     instance.controller.store.close()
+
+@pytest.mark.parametrize('crash_at', range(3))
+@pytest.mark.parametrize('after_dispatch', [False, True])
+def test_resume_each_member_from_protocol_boundary(tmp_path, crash_at, after_dispatch):
+    import sqlite3
+    from factorlab.trading.contracts import OrderSnapshot, OrderStatus, Position
+    from factorlab.trading.storage import decode, dumps
+    import json
+    path = tmp_path / 'controller.sqlite'
+    protocol = sqlite3.connect(tmp_path / 'protocol.sqlite', isolation_level=None)
+    protocol.execute('CREATE TABLE futures_orders (id TEXT PRIMARY KEY, payload TEXT)')
+    calls = []
+    symbols = ('QQQUSDT', 'SPYUSDT', 'TSLAUSDT')
+    arguments = dict(prices={s:D(10) for s in symbols}, steps={s:D(1) for s in symbols})
+    def open_runtime():
+        value = runtime(path)
+        value.owned_symbols = frozenset(symbols)
+        value.gateway.adapter = SimpleNamespace(db=protocol)
+        def recover():
+            positions = []
+            for key, raw in protocol.execute('SELECT id,payload FROM futures_orders'):
+                intent = decode(json.loads(raw))
+                positions.append(Position(intent.instrument_id, intent.quantity, D(10), D(10), 'USDT'))
+                value.gateway.state.orders[key] = SimpleNamespace(
+                    snapshot=OrderSnapshot(intent, status=OrderStatus.FILLED))
+            return AccountSnapshot(Market.BINANCE_USDM, 'a',
+                (AssetBalance('USDT', D(100)),), tuple(positions), (), datetime.now(timezone.utc), True)
+        value.recover_account = recover
+        return value
+    first = open_runtime()
+    first.begin('week', weights={s:D('.3') for s in symbols}, equity=D(100))
+    attempt = 0
+    def submit(intent):
+        nonlocal attempt
+        current = attempt
+        attempt += 1
+        if current == crash_at and not after_dispatch:
+            raise RuntimeError('crash before adapter journal')
+        protocol.execute('INSERT INTO futures_orders VALUES (?,?)',
+                         (intent.client_order_id, dumps(intent)))
+        calls.append(intent.client_order_id)
+        if current == crash_at:
+            raise RuntimeError('crash after adapter journal')
+    with pytest.raises(RuntimeError):
+        first.advance('week', submit=submit, **arguments)
+    first.controller.store.close()
+    second = open_runtime()
+    def continue_submit(intent):
+        protocol.execute('INSERT INTO futures_orders VALUES (?,?)',
+                         (intent.client_order_id, dumps(intent)))
+        calls.append(intent.client_order_id)
+    result = second.advance('week', submit=continue_submit, **arguments)
+    assert result == ('NO_EXECUTABLE_DELTA' if after_dispatch and crash_at == 2 else 'SUBMITTED')
+    assert len(calls) == len(set(calls)) == 3
+    second.controller.store.close()
+    protocol.close()
