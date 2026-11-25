@@ -1,8 +1,9 @@
 # FactorLab P8-PERF-01：Monte Carlo、多账户及完整交易生命周期性能优化验证报告
 
-> **分支**：`perf/p8-perf01-research-throughput`（基线提交 `5e9f29a`）  
-> **范围**：仅本地离线性能审计、Benchmark、工程优化与金融语义回归，不涉及 Azure 与云端变更。  
-> **机器可读数据**：[`summary.json`](summary.json) 及 [`data/`](data/)（共 13 份基准与 Profiling 原始 JSON）。  
+> **分支**：`perf/p8-perf01-research-throughput`（初始基线 `5e9f29a`；已合并最新 `origin/main` `2529fa6` 含 PR #246 S04；F1–F7 独立审查修复固定源码提交 `78ec8db`）
+> **范围**：仅本地离线性能审计、Benchmark、工程优化、独立审查修复与金融语义回归，不涉及 Azure 与云端变更。
+> **版本与证据说明**：第 1–7 节保留首次审计在 `5e9f29a` dirty 工作区采集的历史原始证据（不改写历史；其中初版实验性的 S01 `persistent_worker` 优化与 `forward/integrity.py` 快捷路径已于第 8 节撤回，**最终版本不再声称 S01 5.78x/15.40x 加速**）。**第 8 节**给出基于干净固定提交 `78ec8db`（`git_dirty=false`）对比 `origin/main` `2529fa6`（`git_dirty=false`）的权威配对复测、F1–F7 逐项闭环证据与 S04 合并集成验收。
+> **机器可读数据**：[`summary.json`](summary.json)、[`data/fixed_head_paired_rebenchmark.json`](data/fixed_head_paired_rebenchmark.json) 及 [`data/`](data/)（共 14 份 JSON）。
 > **复现脚本**：[`tools/research/benchmark_p8_perf01.py`](../../../tools/research/benchmark_p8_perf01.py)
 
 ---
@@ -230,4 +231,56 @@ SQLite `COMMIT` 本身仅占 **0.008s（0.05%）**，**91.3%** 的耗时集中�
    - **磁盘 WAL `synchronous=FULL` 高频小事务**：当 `cleanup_dir=False` 需要落盘保留审计 DB 时，每 bar 写入完整 4–70 KB 快照触发 NTFS fsync 仍占主要耗时（属于持久化安全语义的物理下界；若未来需加速持久化模式，需在审计规范评审通过后采用批量检查点或追加式事件日志）。
    - **S01 `GridAdapter` 长窗口 `O(N²)` 状态增长**：因与 S04 共享状态协议，本次仅给出第 5 节增量检查点接口设计，待 S04 合并后落地。
    - **多候选自动研究（S02）内部并行与结果缓存**：`automatic.py` 仍顺序评估候选，待 S02-F01 稳定后可直接接入本次新增的 `factorlab.compute.parallel.create_process_pool` 与内容寻址缓存。
-   - **超大规模纯矩阵 MC 的 GPU 加速**：当前未预装 CuPy，后续若新增 `>= 50k 路径 × >= 50 资产` 纯向量研究，可在独立可选 extra (`[cuda]`) 下启用并实测 RTX 2070 PCIe 净收益。
+   - **超大规模纯矩阵 MC 的 GPU 加速**：当前未预装 CuPy，前述 GPU 收益结论基于 CPU 热点占比推断（非真实 CUDA 实测）；后续若新增 `>= 50k 路径 × >= 50 资产` 纯向量研究，可在独立可选 extra (`[cuda]`) 下启用并实测 RTX 2070 PCIe 净收益。
+
+---
+
+## 8. PR #251 独立审查缺陷修复（F1–F7）、S04 集成与固定提交复测
+
+针对独立审查在 `d5f919dee6982459817d01372ac8ea0c78ae856d` 上确认的 7 项缺陷（P1 × 1、P2 × 5、P3 × 1）以及最新 `origin/main`（`2529fa61f5f8b862970ea430f797effe1c2f7bc6`，含已合并的 PR #246 S04），本轮在合并最新 `main`（`f4f9748`）后于干净固定源码提交 **`78ec8db032ecbe768ac3486057e37d93eb09208c`** 完成了全部修复、确定性复现转正回归与固定提交性能复测。
+
+### 8.1 F1–F7 逐项根因、修复方案与确定性回归结果
+
+| 编号 / 级别 | 涉及文件 | 根因 | 本轮修复方案 | 独立审查原失败用例最终结果 |
+| :--- | :--- | :--- | :--- | :--- |
+| **F1 (P1)** | `src/factorlab/trading/storage.py` | `FundingEvent.metadata` 为可变 `dict`；原 `_clone_runtime()`、`_clone_paper_state()` 与 `_dumps_paper_state()` 在 `metadata == {}`（空字典）时复用原对象引用，导致 `load()`/`save()`/`runtime`、缓存状态与 `broker.state` 共享可变字典，未提交修改会随无关 `ctrl.quote()` 事务落盘并在回滚时残留 | 新增 `_clone_funding_event()`，无论 `metadata` 是否为空均构造新 `FundingEvent` 并递归隔离字典值；`_dumps_paper_state()` 使用类型化 `_metadata_signature()`（区分 `1` 与 `True`、空与非空）+ 独立快照校验缓存失效；保持精确类型克隆且保留 `_atomic()` 完整回滚原子性 | `test_pr251_independent_storage.py` **24/24 PASS**（含 `empty`/`nonempty` × `load`/`save`/`runtime`、无关 `ctrl.quote()` 落盘、close/reopen、`RuntimeError`/`KeyboardInterrupt`/`SystemExit` 回滚、SQL 写入及 `COMMIT` `SQLITE_DENY` 失败、双 `PaperStore` 可见性、add/delete/replace/bool-vs-int 片段一致性） |
+| **F2 (P2)** | `src/factorlab/strategies/grid_execution.py` | `_deployment_fp_cache` 仅以 `(self._deployment_continuous_capacity, controller.limits)` 为键，未覆盖 `config`、`rules`、`max_exit_quantity`、`fees` 等真实依赖，变更后复用旧 hash 导致错误放行不兼容 checkpoint | 删除 `_deployment_fp_cache`，恢复 `_paper_deployment()` 直接计算 `_fingerprint([self.deployment(), asdict(controller.limits)])`；**完整保留**经独立审查验证的动态订单 `_authority_order_cache` | `test_pr251_independent_grid_mc.py` **11/11 PASS**（`rules`/`config`/`max_exit_quantity` 变更均正确拒绝不兼容 checkpoint；submit/unknown/reconcile/partial fill/full fill/cancel 权威哈希全通过；MC partition 边界全通过） |
+| **F3–F5 (P2)** | `src/factorlab/strategies/loader.py`<br>`src/factorlab/strategies/worker.py` | 常驻 worker 存在三项契约问题：F3 模块全局状态跨调用泄漏且未入 binding；F4 `verify_runtime_each_call=False` 导致重启 worker 跳过 pinned runtime 校验；F5 `stdin.write()/flush()` 不受 timeout 限制 | **明确决策：从 PR #251 撤回 `persistent_worker` 优化**，直接完整采用已合并至 `origin/main` (`2529fa6`) 的 S04 `loader.py` 与 `worker.py`；同步清理 `benchmark_p8_perf01.py` 及测试中的 `persistent_worker` 代码，**正式撤回原 5.78x/15.40x 常驻 worker 性能声明**，并补充 one-shot 全局状态隔离与审计拦截回归 | `test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape` **PASS**；全部 7 个 S04 集成套件（`test_grid_historical_observations`、`test_s04_history_recovery`、`test_s04_package_failures`、`test_s04_switch_cancel_review`、`test_s04_validation_budget*`、`test_unified_cloud_strategy_s04`）**86/86 PASS** |
+| **F6 (P2)** | `src/factorlab/forward/integrity.py` | `_source_entries()` 枚举后读取阶段传 `_parent_checked=True` 跳过祖先目录校验，Windows junction 在枚举与读取间替换祖先目录可绕过检查 | 撤销该局部不安全优化，将 `src/factorlab/forward/integrity.py` 完整恢复至 `origin/main`（每次 `_read_regular_file()` 均执行完整 `assert_no_link_components()`） | `test_forward_integrity_rejects_ancestor_junction_replacement`（基于独立审查 Windows `mklink /J` 复现）**PASS**；`test_forward_evidence.py` 等 **152/152 PASS** |
+| **F7 (P3)** | `src/factorlab/compute/parallel.py`<br>`src/factorlab/compute/__init__.py` | Windows `spawn` 在 `initializer` 运行前已导入 NumPy/SciPy，导致仅设置环境变量无法限制已初始化的线程池（实测 OpenBLAS 24 线程、SciPy OpenBLAS 24 线程、OpenMP 28 线程） | 新增 `apply_single_thread_blas_limits()` 与 `inspect_threadpools()`：在设置环境变量的基础上调用 `threadpoolctl.threadpool_limits(limits=1)` 限制已加载的 BLAS/OpenMP 运行时，并在父进程不修改 `os.environ`；如存在无法受控的池如实报告 `uncontrolled_pools` | 独立审查 `review_pr251_scoped_repro.py` **PASS**（实测 `SPAWN_BLAS` 三个运行时全部为 `num_threads: 1`）；`test_parallel_helpers_and_real_blas_threadpool_limiting` **PASS**（含父进程环境零污染断言） |
+
+### 8.2 与最新 `origin/main`（S04，PR #246）的合并冲突及解决方式
+
+- 同步基线：`origin/main` = `2529fa61f5f8b862970ea430f797effe1c2f7bc6`（含 PR #246 S04、ALP-E01/E02/E03/E04、V69-F01/F03/F04）。
+- 合并提交：`f4f9748`（后接 F1–F7 修复提交 `78ec8db`）。
+- 实际重叠文件仅 3 个：
+  1. `src/factorlab/strategies/grid_execution.py`：S04 仅修改 `project_paper_account` / `_project_paper_account`（新增 `allow_shared=False`），与 `_authority_order_cache` 完全无重叠，Git 自动合并无冲突；随后在 `78ec8db` 删除 `_deployment_fp_cache`。
+  2. `src/factorlab/strategies/loader.py`（唯一文本冲突）：按 F3–F5 撤回决策完整采用 `origin/main`（`git checkout origin/main -- src/factorlab/strategies/loader.py`），100% 保留 S04 策略包身份、pinned dependencies、历史观察与坏包回退逻辑。
+  3. `src/factorlab/strategies/worker.py`：同步完整采用 `origin/main`，100% 保留 S04 worker 隔离与依赖加载契约。
+- `src/factorlab/trading/contracts.py`、`decision_runtime.py`、`protocol.py`、`adapters.py` 均原样继承 `origin/main`，未引入任何冲突或回退。
+
+### 8.3 最终固定提交配对复测结果（`git_dirty=false`）
+
+为消除初版数据来自 dirty 工作区的审计疑虑，在干净固定源码提交 **`78ec8db032ecbe768ac3486057e37d93eb09208c`**（`git_dirty=false`）与最新 **`origin/main` `2529fa61f5f8b862970ea430f797effe1c2f7bc6`**（`git_dirty=false`）之间执行 ABABAB 交替配对复测（宿主 CPU 负载 `11.8% → 11.2%`，完整数据见 [`data/fixed_head_paired_rebenchmark.json`](data/fixed_head_paired_rebenchmark.json)）：
+
+| 复测工作负载 | 配置与范围 | `origin/main` (`2529fa6`) 中位数 [min, max] | 修复后 (`78ec8db`) 中位数 [min, max] | 实测加速比 | 完整语义与逐行哈希验证 |
+| :--- | :--- | ---: | ---: | ---: | :---: |
+| **R09 16 账户** | 8 paths × 2 arms × 168h, `1w`, `:memory:` | **7.064s** [7.039, 7.129] | **1.748s** [1.718, 1.780] | **4.04x** | 16 账户完整结果 SHA-256 `2a80a38e...` 逐比特一致（`orders=249`, `fills=150`, `rots=173`, `pnl=-4.23466998`, 全部零 FIFO 残差） |
+| **R09 256 账户** | 128 paths × 2 arms × 168h, **同为 `8w`**, `:memory:` | **28.326s** [25.637, 30.315] | **9.020s** [8.148, 10.129] | **3.14x** | 256 账户完整结果 SHA-256 `4a7be634...` 逐比特一致（`orders=4370`, `fills=2703`, `rots=2998`, `pnl=-140.00756041`, 全部零 FIFO 残差） |
+| **R10 12 账户** | 4 windows × 3 arms (`A/B5/C5`), `cleanup_dir=True`, `1w` | **19.770s** [18.992, 27.284] | **0.821s** [0.819, 0.841] | **24.08x** | 12 账户完整指标行 SHA-256 `faf1703e...` 逐比特一致（`orders=11`, `fills=5`, `final_pnl=-1.40304398`, 全部零 FIFO 残差） |
+| **R10 磁盘 WAL vs 内存（同提交 `78ec8db`）** | 4 windows × 3 arms, `cleanup_dir=False` vs `True`, `1w` | 磁盘 WAL `FULL`: **23.968s** [23.671, 52.716] | 内存权威: **0.839s** [0.820, 0.852] | **28.57x** | 磁盘与内存完整指标行 SHA-256 同为 `faf1703e...`；独立审查 `review_pr251_scoped_repro.py` 额外逐字段比对 `rows`/`trades`/`result`/`fill_events`/`funding_events`/`state` 全部精确相等 |
+| **R10 资金费敏感性 Sweep（8 档 × 4 臂 = 32 行）** | 3 windows × 8 regimes × 4 arms, `4w` | **80.752s** | **5.667s** | **14.25x** | **全部 32 行逐行精确相等**（`exact_every_row_equal=True`, SHA-256 `a9116bb4...` 一致，非仅核对聚合收益） |
+| **BLAS 真实线程池控制（`threadpool_info()`）** | Windows `spawn` `create_process_pool(2)`（加载 NumPy + SciPy + sklearn） | Worker: OpenBLAS **24** / SciPy OpenBLAS **24** / OpenMP `vcomp` **28** | Worker: OpenBLAS **1** / SciPy OpenBLAS **1** / OpenMP `vcomp` **1** | 100% 受控 | 父进程前后保持 `24/24/28`（零污染）；所有 worker `all_workers_limited_to_1=True` |
+
+> **历史数据与推算声明**：
+> - 第 4.1–4.5 节中的 `baseline_*` / `after_*` / `scale_1024` 保留为 `5e9f29a` dirty 快照历史记录，不改写；其中 4,096 / 10,000 路径耗时为基于 1,024 路径实测的线性推算（未直接执行 4,096/10,000 路径全生命周期）；GPU 结论基于 CPU 热点占比推断而非真实 CUDA 运行。
+> - S01 常驻 worker 已从最终版本撤回，不再作为 PR #251 交付收益。
+
+### 8.4 最终验证汇总
+
+- **语法与格式检查**：`python -m compileall -q src tests/research/test_p8_perf01_optimizations.py tools/research/benchmark_p8_perf01.py` 与 `git diff --check` 零错误。
+- **独立审查复现套件**：`test_pr251_independent_storage.py` + `test_pr251_independent_grid_mc.py` **35/35 PASS**；`review_pr251_scoped_repro.py` **PASS**。
+- **本 PR 正式回归套件**：`tests/research/test_p8_perf01_optimizations.py` **26/26 PASS**。
+- **核心交易、Grid、R09/R10、MC、Compute、S02 与完整性回归**：**440 PASS**（`test_fill_admission.py`、`test_grid_execution.py`、`test_grid_paper.py`、`test_p8_r09_f11_f08_offline.py`、`test_p8_r09_funding.py`、`test_grid_funding_adaptive_r10.py`、`test_grid_r10_review_regressions.py`、`test_monte_carlo.py`、`test_mc_tail_reliability.py`、`test_compute.py`、`test_compute_public_plumbing.py`、`test_custom_strategy.py`、`test_champion_selector.py`、`test_forward_evidence.py`、`test_schema_numeric_integrity.py` 全部通过；注：`tests/trading/test_paper_control.py` 中 2 项失败为 `origin/main` 合并 ALP-E01 `Market.ALPACA_US_EQUITY` 与 `contracts.py:92` 报错文案变更后上游既有断言过时，与本 PR 无关）。
+- **S04 集成与历史恢复回归**：7 个 S04 测试套件 **86/86 PASS**。
+- **精确源码提交**：`78ec8db032ecbe768ac3486057e37d93eb09208c`（随本报告更新提交一并推送至 PR #251，由 GitHub Actions `FactorLab PR validation` 执行完整可信 CI）。

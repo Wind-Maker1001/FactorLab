@@ -1,7 +1,9 @@
 {
   "task": "P8-PERF-01",
   "branch": "perf/p8-perf01-research-throughput",
-  "base_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+  "merged_main_commit": "2529fa61f5f8b862970ea430f797effe1c2f7bc6",
+  "fixed_clean_source_commit": "78ec8db032ecbe768ac3486057e37d93eb09208c",
+  "historical_initial_base_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
   "hardware": {
     "cpu": "Intel Core i7-14700KF (20 physical cores: 8P+12E, 28 logical processors)",
     "ram_gb": 63.82,
@@ -9,21 +11,61 @@
     "python": "3.13.9 (D:/Environments/factorlab-py313/Scripts/python.exe)",
     "os": "Windows 11"
   },
-  "key_speedups": {
-    "r09_16accts_1w_paired_ababab": {
-      "before_median_s": 14.642592,
-      "after_median_s": 1.714438,
-      "speedup": 8.541,
-      "semantics_identical": true
+  "independent_review_f1_to_f7_resolution": {
+    "F1_P1_funding_metadata_isolation": "FIXED — _clone_funding_event always clones metadata (including empty dict), typed _metadata_signature invalidates fragment cache (incl. bool vs int); all 24 storage/rollback/reopen independent review tests PASS.",
+    "F2_P2_grid_deployment_fingerprint_cache": "FIXED — removed _deployment_fp_cache while retaining dynamic _authority_order_cache; all 11 grid/MC independent review tests PASS.",
+    "F3_F4_F5_P2_persistent_worker": "WITHDRAWN — reverted strategies/loader.py and strategies/worker.py to merged S04 origin/main (2529fa6); withdrew 5.78x/15.40x persistent_worker performance claims from final PR.",
+    "F6_P2_forward_integrity_ancestor_check": "FIXED — reverted src/factorlab/forward/integrity.py to origin/main; Windows junction ancestor replacement rejected with ForwardIntegrityError.",
+    "F7_P3_blas_real_threadpool_limiting": "FIXED — apply_single_thread_blas_limits() uses threadpoolctl.threadpool_limits(limits=1) + env vars without mutating parent env; verified NumPy OpenBLAS 24->1, SciPy OpenBLAS 24->1, OpenMP vcomp 28->1."
+  },
+  "fixed_clean_head_verification": {
+    "source_json": "data/fixed_head_paired_rebenchmark.json",
+    "before_commit": "2529fa61f5f8b862970ea430f797effe1c2f7bc6",
+    "before_git_dirty": false,
+    "after_commit": "78ec8db032ecbe768ac3486057e37d93eb09208c",
+    "after_git_dirty": false,
+    "host_cpu_pct": {"start": 11.8, "end": 11.2},
+    "r09_16accts_1w": {
+      "before_median_s": 7.064126,
+      "after_median_s": 1.748292,
+      "speedup": 4.041,
+      "exact_all_rows_sha256_match": true
     },
-    "r09_256accts_8w_bench_b": {
-      "before_median_s": 37.560847,
-      "after_median_s": 10.801422,
-      "speedup": 3.477,
-      "before_accts_per_sec": 6.82,
-      "after_accts_per_sec": 23.7,
-      "semantics_identical": true
+    "r09_256accts_8w": {
+      "before_median_s": 28.326018,
+      "after_median_s": 9.020204,
+      "speedup": 3.14,
+      "exact_all_rows_sha256_match": true
     },
+    "r10_12accts_1w_cleanup_true": {
+      "before_median_s": 19.770023,
+      "after_median_s": 0.82089,
+      "speedup": 24.084,
+      "exact_all_rows_sha256_match": true
+    },
+    "r10_12accts_disk_vs_memory_on_head": {
+      "disk_wal_full_median_s": 23.96763,
+      "memory_authoritative_median_s": 0.838963,
+      "speedup": 28.568,
+      "exact_all_rows_sha256_match": true
+    },
+    "r10_funding_sweep_32_rows_full_equality": {
+      "before_s": 80.7522,
+      "after_s": 5.6674,
+      "speedup": 14.248,
+      "n_rows": 32,
+      "exact_every_row_equal": true,
+      "rows_sha256": "a9116bb43263669d524654660e5b553eb35a9e8ac4219b2baf2a513b85ef7cd9"
+    },
+    "blas_threadpool_control": {
+      "before_worker_threads": {"numpy_openblas": 24, "scipy_openblas": 24, "openmp_vcomp": 28},
+      "after_worker_threads": {"numpy_openblas": 1, "scipy_openblas": 1, "openmp_vcomp": 1},
+      "parent_unchanged": true,
+      "all_workers_limited_to_1": true
+    }
+  },
+  "historical_exploratory_dirty_snapshot_5e9f29a": {
+    "note": "Preserved historical audit measurements captured on dirty pre-fix snapshot based on 5e9f29a. S01 persistent_worker was subsequently withdrawn in 78ec8db; refer to fixed_clean_head_verification for authoritative final numbers.",
     "r09_256accts_12w_optimal_quiet": {
       "before_8w_median_s": 37.560847,
       "after_12w_total_s": 7.7259,
@@ -32,39 +74,10 @@
       "warm_compute_accts_per_sec": 54.28,
       "total_accts_per_sec": 33.14
     },
-    "r10_12accts_1w_cleanup_dir_true": {
-      "before_median_s": 27.692581,
-      "after_median_s": 1.276513,
-      "speedup": 21.694,
-      "semantics_identical": true
-    },
-    "r10_72accts_8w_cleanup_dir_true": {
-      "before_median_s": 80.018374,
-      "after_median_s": 13.820127,
-      "speedup": 5.79,
-      "semantics_identical": true
-    },
     "r10_walkforward_12w_plus_8regime_sweep": {
       "before_median_s": 377.459989,
       "after_median_s": 29.320328,
-      "speedup": 12.874,
-      "semantics_identical": true
-    },
-    "s02_12candidates_paired_ababab": {
-      "before_median_s": 12.685289,
-      "after_median_s": 7.415707,
-      "speedup": 1.711,
-      "semantics_identical": true
-    },
-    "s01_isolated_grid_8bars_persistent_verify_each": {
-      "before_baseline_median_s": 39.867594,
-      "after_median_s": 6.903495,
-      "speedup_vs_baseline": 5.775
-    },
-    "s01_isolated_grid_8bars_persistent_verify_once": {
-      "before_baseline_median_s": 39.867594,
-      "after_median_s": 2.588294,
-      "speedup_vs_baseline": 15.403
+      "speedup": 12.874
     },
     "mc_tail_statistics_10k_499boot_paired": {
       "before_median_s": 0.127673,
@@ -72,15 +85,11 @@
       "speedup": 1.307,
       "max_abs_diff": 0.0
     },
-    "blas_single_thread_pinning_16w": {
-      "unrestricted_median_s": 0.094858,
-      "pinned_1_median_s": 0.078382,
-      "speedup": 1.21
-    }
+    "s01_persistent_worker_status": "WITHDRAWN in 78ec8db (F3-F5); no longer claimed for final PR"
   },
-  "scale_1024_paths": {
+  "scale_1024_paths_historical_dirty_snapshot": {
+    "note": "Captured on pre-fix dirty snapshot based on 5e9f29a; 4096/10000 values are linear projections, not directly executed.",
     "optimal_12w_quiet_host": {
-      "suite": "SCALE-1024",
       "n_paths": 1024,
       "horizon_hours": 168,
       "workers": 12,
@@ -90,77 +99,15 @@
       "total_s": 25.8394,
       "paths_per_sec": 39.63,
       "projected_4096_paths_s": 103.4,
-      "projected_10000_paths_s": 252.3,
-      "semantics": {
-        "accounts": 1024,
-        "all_zero_fifo_residual": true,
-        "sum_net_pnl_usdt": -62.85139499,
-        "sum_fees_usdt": 33.86653354,
-        "sum_slippage_usdt": 22.57768848,
-        "sum_funding_usdt": -2.38213687,
-        "total_orders": 34110,
-        "total_fills": 21248,
-        "total_grid_cycles": 0,
-        "total_rotations": 24102,
-        "mean_max_dd": 0.00883117,
-        "var_95": 0.0121419,
-        "cvar_95": 0.01855361,
-        "loss_prob": 1.0
-      }
-    },
-    "16w_high_background_load": {
-      "suite": "SCALE-1024",
-      "n_paths": 1024,
-      "horizon_hours": 168,
-      "workers": 16,
-      "generation_s": 0.037022,
-      "execution_s": 65.2626,
-      "statistics_s": 0.015338,
-      "total_s": 65.315,
-      "paths_per_sec": 15.68,
-      "projected_4096_paths_s": 261.3,
-      "projected_10000_paths_s": 637.8,
-      "semantics": {
-        "accounts": 1024,
-        "all_zero_fifo_residual": true,
-        "sum_net_pnl_usdt": -62.85139499,
-        "sum_fees_usdt": 33.86653354,
-        "sum_slippage_usdt": 22.57768848,
-        "sum_funding_usdt": -2.38213687,
-        "total_orders": 34110,
-        "total_fills": 21248,
-        "total_grid_cycles": 0,
-        "total_rotations": 24102,
-        "mean_max_dd": 0.00883117,
-        "var_95": 0.0121419,
-        "cvar_95": 0.01855361,
-        "loss_prob": 1.0
-      }
+      "projected_10000_paths_s": 252.3
     }
   },
   "recommended_config_i7_14700kf": {
-    "single_thread_blas_env": {
-      "OMP_NUM_THREADS": "1",
-      "OPENBLAS_NUM_THREADS": "1",
-      "MKL_NUM_THREADS": "1",
-      "NUMEXPR_NUM_THREADS": "1"
-    },
-    "small_workload_lt_32_accounts": {
-      "workers": 1,
-      "reason": "Avoids 2.6-3.0s Windows spawn overhead"
-    },
-    "medium_workload_32_to_128_accounts": {
-      "workers": 8,
-      "reason": "Matches 8 P-cores, 2.64s spawn, 8.48x warm compute speedup"
-    },
-    "large_workload_ge_128_accounts_or_reused_pool": {
-      "workers": 12,
-      "reason": "Peak throughput (54.28 accts/s warm, 39.63 paths/s at 1024 paths, 94.9% compute efficiency); >12 degrades from E-core/cache contention and higher spawn cost"
-    },
-    "file_backed_wal_synchronous_full": {
-      "workers": "4-8",
-      "reason": "NTFS fsync saturation caps parallel efficiency above 8 workers"
-    },
-    "gpu_recommendation": "CPU-only for full-lifecycle Grid research (path generation is <0.03% of total wall time; CuPy/CUDA not installed in standard env)"
+    "single_thread_blas_control": "Use factorlab.compute.parallel.create_process_pool(..., single_thread_blas=True) which pins env vars AND calls threadpoolctl.threadpool_limits(limits=1) inside workers without mutating parent env",
+    "small_workload_lt_32_accounts": {"workers": 1, "reason": "Avoids 2.6-3.0s Windows spawn overhead"},
+    "medium_workload_32_to_128_accounts": {"workers": 8, "reason": "Matches 8 P-cores, 2.64s spawn, 8.48x warm compute speedup"},
+    "large_workload_ge_128_accounts_or_reused_pool": {"workers": 12, "reason": "Peak throughput (54.28 accts/s warm, 39.63 paths/s at 1024 paths, 94.9% compute efficiency); >12 degrades from E-core/cache contention and higher spawn cost"},
+    "file_backed_wal_synchronous_full": {"workers": "4-8", "reason": "NTFS fsync saturation caps parallel efficiency above 8 workers"},
+    "gpu_recommendation": "CPU-only for full-lifecycle Grid research (CPU path generation is <0.03% of total wall time; GPU inference is based on CPU hotspot profiling, not real CUDA execution, since CuPy/CUDA Toolkit is absent in standard env)"
   }
 }

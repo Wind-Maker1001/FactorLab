@@ -1,0 +1,412 @@
+{
+  "before_origin_main": {
+    "commit": "2529fa61f5f8b862970ea430f797effe1c2f7bc6",
+    "git_dirty": false
+  },
+  "after_fixed_head": {
+    "commit": "78ec8db032ecbe768ac3486057e37d93eb09208c",
+    "git_dirty": false
+  },
+  "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+  "cpu_percent_start": 11.8,
+  "workloads": {
+    "blas_threadpool_control": {
+      "before_unpinned": {
+        "elapsed_s": 2.059928300033789,
+        "mode": "unpinned_ProcessPoolExecutor",
+        "parent_before": [
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libscipy_openblas",
+            "num_threads": 24
+          },
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libscipy_openblas",
+            "num_threads": 24
+          },
+          {
+            "user_api": "openmp",
+            "internal_api": "openmp",
+            "prefix": "vcomp",
+            "num_threads": 28
+          }
+        ],
+        "parent_after": [
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libscipy_openblas",
+            "num_threads": 24
+          },
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libscipy_openblas",
+            "num_threads": 24
+          },
+          {
+            "user_api": "openmp",
+            "internal_api": "openmp",
+            "prefix": "vcomp",
+            "num_threads": 28
+          }
+        ],
+        "worker_pools": [
+          [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "prefix": "libscipy_openblas",
+              "num_threads": 24
+            },
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "prefix": "libscipy_openblas",
+              "num_threads": 24
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "prefix": "vcomp",
+              "num_threads": 28
+            }
+          ],
+          [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "prefix": "libscipy_openblas",
+              "num_threads": 24
+            },
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "prefix": "libscipy_openblas",
+              "num_threads": 24
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "prefix": "vcomp",
+              "num_threads": 28
+            }
+          ]
+        ],
+        "all_workers_limited_to_1": false
+      },
+      "after_fixed_head": {
+        "elapsed_s": 2.4151266000117175,
+        "mode": "create_process_pool(single_thread_blas=True)",
+        "parent_before": [
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libscipy_openblas",
+            "num_threads": 24
+          },
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libscipy_openblas",
+            "num_threads": 24
+          },
+          {
+            "user_api": "openmp",
+            "internal_api": "openmp",
+            "prefix": "vcomp",
+            "num_threads": 28
+          }
+        ],
+        "parent_after": [
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libscipy_openblas",
+            "num_threads": 24
+          },
+          {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libscipy_openblas",
+            "num_threads": 24
+          },
+          {
+            "user_api": "openmp",
+            "internal_api": "openmp",
+            "prefix": "vcomp",
+            "num_threads": 28
+          }
+        ],
+        "worker_pools": [
+          [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "prefix": "libscipy_openblas",
+              "num_threads": 1
+            },
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "prefix": "libscipy_openblas",
+              "num_threads": 1
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "prefix": "vcomp",
+              "num_threads": 1
+            }
+          ],
+          [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "prefix": "libscipy_openblas",
+              "num_threads": 1
+            },
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "prefix": "libscipy_openblas",
+              "num_threads": 1
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "prefix": "vcomp",
+              "num_threads": 1
+            }
+          ]
+        ],
+        "all_workers_limited_to_1": true
+      }
+    },
+    "r10_sweep_full_row_equality": {
+      "before_s": 80.7522,
+      "after_s": 5.6674,
+      "speedup": 14.248,
+      "n_rows_before": 32,
+      "n_rows_after": 32,
+      "exact_every_row_equal": true,
+      "rows_sha256_before": "a9116bb43263669d524654660e5b553eb35a9e8ac4219b2baf2a513b85ef7cd9",
+      "rows_sha256_after": "a9116bb43263669d524654660e5b553eb35a9e8ac4219b2baf2a513b85ef7cd9"
+    },
+    "r09_16accts_1w": {
+      "args": [
+        "r09",
+        "8",
+        "1"
+      ],
+      "before_main": {
+        "all_runs_s": [
+          7.038697,
+          7.064126,
+          7.128861
+        ],
+        "cold_s": 7.038697,
+        "warm_median_s": 7.096493,
+        "median_s": 7.064126,
+        "min_s": 7.038697,
+        "max_s": 7.128861
+      },
+      "after_head": {
+        "all_runs_s": [
+          1.717565,
+          1.748292,
+          1.78026
+        ],
+        "cold_s": 1.717565,
+        "warm_median_s": 1.764276,
+        "median_s": 1.748292,
+        "min_s": 1.717565,
+        "max_s": 1.78026
+      },
+      "speedup_median": 4.041,
+      "exact_all_rows_sha256_match": true,
+      "before_rows_sha256": "2a80a38e79193861723f61bf27e027c5063980a01ce569a5cc83fb23303b9429",
+      "after_rows_sha256": "2a80a38e79193861723f61bf27e027c5063980a01ce569a5cc83fb23303b9429",
+      "before_summary": {
+        "sum_net_pnl": -4.23466998,
+        "sum_fees": 0.23976039,
+        "sum_funding": -3.83264255,
+        "total_orders": 249,
+        "total_fills": 150,
+        "total_rotations": 173,
+        "all_zero_fifo": true
+      },
+      "after_summary": {
+        "sum_net_pnl": -4.23466998,
+        "sum_fees": 0.23976039,
+        "sum_funding": -3.83264255,
+        "total_orders": 249,
+        "total_fills": 150,
+        "total_rotations": 173,
+        "all_zero_fifo": true
+      }
+    },
+    "r09_256accts_8w": {
+      "args": [
+        "r09",
+        "128",
+        "8"
+      ],
+      "before_main": {
+        "all_runs_s": [
+          25.637025,
+          28.326018,
+          30.315016
+        ],
+        "cold_s": 25.637025,
+        "warm_median_s": 29.320517,
+        "median_s": 28.326018,
+        "min_s": 25.637025,
+        "max_s": 30.315016
+      },
+      "after_head": {
+        "all_runs_s": [
+          9.020204,
+          8.147892,
+          10.128503
+        ],
+        "cold_s": 9.020204,
+        "warm_median_s": 9.138197,
+        "median_s": 9.020204,
+        "min_s": 8.147892,
+        "max_s": 10.128503
+      },
+      "speedup_median": 3.14,
+      "exact_all_rows_sha256_match": true,
+      "before_rows_sha256": "4a7be634707f6b186d863f4798399fa80b2430b8ad5cc00dc889d87ea342e8bf",
+      "after_rows_sha256": "4a7be634707f6b186d863f4798399fa80b2430b8ad5cc00dc889d87ea342e8bf",
+      "before_summary": {
+        "sum_net_pnl": -140.00756041,
+        "sum_fees": 4.31846619,
+        "sum_funding": -134.78018906,
+        "total_orders": 4370,
+        "total_fills": 2703,
+        "total_rotations": 2998,
+        "all_zero_fifo": true
+      },
+      "after_summary": {
+        "sum_net_pnl": -140.00756041,
+        "sum_fees": 4.31846619,
+        "sum_funding": -134.78018906,
+        "total_orders": 4370,
+        "total_fills": 2703,
+        "total_rotations": 2998,
+        "all_zero_fifo": true
+      }
+    },
+    "r10_12accts_1w_cleanup_true": {
+      "args": [
+        "r10",
+        "4",
+        "true"
+      ],
+      "before_main": {
+        "all_runs_s": [
+          19.770023,
+          18.991888,
+          27.283905
+        ],
+        "cold_s": 19.770023,
+        "warm_median_s": 23.137897,
+        "median_s": 19.770023,
+        "min_s": 18.991888,
+        "max_s": 27.283905
+      },
+      "after_head": {
+        "all_runs_s": [
+          0.82089,
+          0.841378,
+          0.81882
+        ],
+        "cold_s": 0.82089,
+        "warm_median_s": 0.830099,
+        "median_s": 0.82089,
+        "min_s": 0.81882,
+        "max_s": 0.841378
+      },
+      "speedup_median": 24.084,
+      "exact_all_rows_sha256_match": true,
+      "before_rows_sha256": "faf1703e971aec5a26addd69778f8ab6ad46c824de7072bdc0e8c209f6425bbd",
+      "after_rows_sha256": "faf1703e971aec5a26addd69778f8ab6ad46c824de7072bdc0e8c209f6425bbd",
+      "before_summary": {
+        "sum_trade_net_pnl": -1.32061758,
+        "sum_funding_pnl": -0.0824264,
+        "sum_final_net_pnl": -1.40304398,
+        "sum_fees": 0.00805094,
+        "sum_slippage": 0.00536664,
+        "total_fills": 5,
+        "total_orders": 11,
+        "all_zero_fifo": true
+      },
+      "after_summary": {
+        "sum_trade_net_pnl": -1.32061758,
+        "sum_funding_pnl": -0.0824264,
+        "sum_final_net_pnl": -1.40304398,
+        "sum_fees": 0.00805094,
+        "sum_slippage": 0.00536664,
+        "total_fills": 5,
+        "total_orders": 11,
+        "all_zero_fifo": true
+      }
+    },
+    "r10_12accts_disk_vs_memory_on_head": {
+      "disk_wal_full": {
+        "all_runs_s": [
+          52.716255,
+          23.670942,
+          23.96763
+        ],
+        "cold_s": 52.716255,
+        "warm_median_s": 23.819286,
+        "median_s": 23.96763,
+        "min_s": 23.670942,
+        "max_s": 52.716255
+      },
+      "memory_authoritative": {
+        "all_runs_s": [
+          0.8197,
+          0.851947,
+          0.838963
+        ],
+        "cold_s": 0.8197,
+        "warm_median_s": 0.845455,
+        "median_s": 0.838963,
+        "min_s": 0.8197,
+        "max_s": 0.851947
+      },
+      "speedup_median": 28.568,
+      "exact_all_rows_sha256_match": true,
+      "disk_rows_sha256": "faf1703e971aec5a26addd69778f8ab6ad46c824de7072bdc0e8c209f6425bbd",
+      "memory_rows_sha256": "faf1703e971aec5a26addd69778f8ab6ad46c824de7072bdc0e8c209f6425bbd",
+      "summary_disk": {
+        "sum_trade_net_pnl": -1.32061758,
+        "sum_funding_pnl": -0.0824264,
+        "sum_final_net_pnl": -1.40304398,
+        "sum_fees": 0.00805094,
+        "sum_slippage": 0.00536664,
+        "total_fills": 5,
+        "total_orders": 11,
+        "all_zero_fifo": true
+      },
+      "summary_memory": {
+        "sum_trade_net_pnl": -1.32061758,
+        "sum_funding_pnl": -0.0824264,
+        "sum_final_net_pnl": -1.40304398,
+        "sum_fees": 0.00805094,
+        "sum_slippage": 0.00536664,
+        "total_fills": 5,
+        "total_orders": 11,
+        "all_zero_fifo": true
+      }
+    }
+  },
+  "cpu_percent_end": 11.2
+}
