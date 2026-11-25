@@ -43,8 +43,7 @@ class AlpacaDecisionExecution:
         self.assets.qualify(spec, binding, allocation)
         if binding != self.binding:
             raise ValueError('execution adapter belongs to another instance')
-        if self.executor.store.db.execute('SELECT 1 FROM capital_accounts WHERE account=?',
-                                         (binding['account_id'],)).fetchone() is not None:
+        if self.executor.capital_policy.is_configured(binding['account_id']):
             self.executor.capital_policy.qualify(spec, binding, allocation)
 
     def _cancel(self, cancellation):

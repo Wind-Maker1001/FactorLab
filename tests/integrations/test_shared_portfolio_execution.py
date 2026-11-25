@@ -4,6 +4,8 @@ from copy import deepcopy
 from decimal import Decimal as D
 from types import SimpleNamespace
 
+import pytest
+
 from factorlab.integrations.alpaca import OrderNotFound, OutcomeUnknown
 from factorlab.integrations.alpaca.portfolio import AlpacaPortfolioRunner
 from factorlab.trading.capital import CapitalPolicyMode
@@ -35,13 +37,15 @@ class SharedOfficial(Official):
 
     # TODO: Cover charged execution fees when the Alpaca portfolio bridge exposes
     # activity fees in OrderEvent; it currently forwards execution notional only.
-    def fill(self, client_id):
+    def fill(self, client_id, cumulative=None):
         row = self.orders[client_id]
-        quantity, price = D(row['qty']), D(row['limit_price'])
-        assert row['filled_qty'] == '0'
-        row.update(filled_qty=str(quantity), filled_avg_price=str(price), status='filled',
+        cumulative = D(row['qty']) if cumulative is None else cumulative
+        quantity, price = cumulative - D(row['filled_qty']), D(row['limit_price'])
+        assert quantity > 0
+        row.update(filled_qty=str(cumulative), filled_avg_price=str(price),
+                   status='filled' if cumulative == D(row['qty']) else 'partially_filled',
                    filled_at=NOW.isoformat(), updated_at=NOW.isoformat())
-        self.activities.append(dict(id='fill-' + client_id, order_id=row['id'],
+        self.activities.append(dict(id='fill-' + client_id + '-' + str(cumulative), order_id=row['id'],
             qty=str(quantity), price=str(price), side=row['side'], symbol=row['symbol'],
             transaction_time=NOW.isoformat()))
         sign = D(1) if row['side'] == 'buy' else D(-1)
@@ -95,7 +99,7 @@ def advance(runner, identity):
     return runner.run_once(identity,
         quotes={symbol: ExecutionQuote(symbol, D(100), D(100), NOW, NOW,
             'test-session', 'offline-http') for symbol in ('AAPL', 'MSFT')},
-        rules={symbol: InstrumentRules(D(1), D(1), time_in_force='DAY') for symbol in ('AAPL', 'MSFT')})
+        rules={symbol: InstrumentRules(D('.001'), D(1), time_in_force='DAY') for symbol in ('AAPL', 'MSFT')})
 
 
 def fill_plan(runner, store, official, identity):
@@ -105,6 +109,58 @@ def fill_plan(runner, store, official, identity):
         if official.orders[client_id]['status'] != 'filled':
             official.fill(client_id)
     assert advance(runner, identity).phase == 'COMPLETE'
+
+
+def test_http_partial_sell_reservations_cancel_pause_and_restart_leave_b_unchanged(tmp_path):
+    from factorlab.trading.contracts import OrderIntent, OrderType, Side
+    official = SharedOfficial()
+    with ExitStack() as stack:
+        runner, store = open_runner(stack, tmp_path, official)
+        setup_pair(runner, store)
+        for owner in ['A', 'B']:
+            fill_plan(runner, store, official, create(runner, owner, {'AAPL': D('.25')}, owner + '-buy'))
+        other_cash, other_inventory = store.cash(ACCOUNT, 'B'), store.holdings(ACCOUNT, 'B')
+
+        def sell(name, quantity):
+            intent = OrderIntent(Market.ALPACA_US_EQUITY, 'AAPL', Side.SELL, OrderType.LIMIT,
+                quantity, D(100), name, time_in_force='DAY')
+            return runner.executor.create(account_id=ACCOUNT, strategy_id='A', strategy_version='1',
+                trading_session='test-session', rebalance_id=name, weights={}, owned_symbols=['AAPL'],
+                now=NOW, direct_orders=[(intent, D(100))], concurrent_direct_orders=True)
+
+        first = sell('first-exit', D(1))
+        with pytest.raises(ValueError, match='owned inventory'):
+            sell('excess-exit', D('.1'))
+        advance(runner, first)
+        official.fill('first-exit', D('.5'))
+        advance(runner, first)
+        assert store.holdings(ACCOUNT, 'A')['AAPL'] == D('.5')
+        assert store.available_inventory(ACCOUNT, 'A', 'AAPL') == 0
+        runner.executor.cancel(first, 'first-exit')
+        assert advance(runner, first).phase == 'COMPLETE'
+        assert store.available_inventory(ACCOUNT, 'A', 'AAPL') == D('.5')
+        second = sell('second-exit', D('.5'))
+        store.capital_policy.pause(ACCOUNT, 'A')
+        assert advance(runner, second).reasons['capital'] == 'STRATEGY_PAUSED'
+        assert store.holdings(ACCOUNT, 'B') == other_inventory
+        assert store.cash(ACCOUNT, 'B') == other_cash
+        submitted_before_restart = tuple(official.post_ids)
+    with ExitStack() as stack:
+        runner, store = open_runner(stack, tmp_path, official)
+        assert store.capital_policy.snapshot(ACCOUNT, 'A').paused
+        assert advance(runner, second).reasons['capital'] == 'STRATEGY_PAUSED'
+        assert tuple(official.post_ids) == submitted_before_restart
+        store.capital_policy.pause(ACCOUNT, 'A', False)
+        advance(runner, second)
+        official.fill('second-exit')
+        assert advance(runner, second).phase == 'COMPLETE'
+        assert advance(runner, second).phase == 'COMPLETE'
+        assert official.post_ids.count('second-exit') == 1
+        runner.executor.transfer_flat_ownership(account_id=ACCOUNT, from_strategy='A', to_strategy='B', symbols=['AAPL'])
+        assert store.holdings(ACCOUNT, 'B') == other_inventory
+        assert store.cash(ACCOUNT, 'B') == other_cash
+        assert not store.capital_policy.snapshot(ACCOUNT, 'B').paused
+        assert 'excess-exit' not in official.post_ids
 
 
 def test_shared_buys_then_a_sells_only_its_inventory(tmp_path):

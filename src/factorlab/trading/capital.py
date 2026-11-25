@@ -8,6 +8,7 @@ import json
 
 from .storage import decode
 
+from .capital_margin import MarginAttribution
 from .contracts import Market, decimal_value
 
 ZERO = Decimal(0)
@@ -64,6 +65,7 @@ class AccountRiskSnapshot:
     budget: Decimal
     allocated: Decimal
     strategies: tuple[StrategyRiskSnapshot, ...]
+    margin_attribution: MarginAttribution | None = None
 
 
 class CapitalPolicy:
@@ -155,6 +157,10 @@ class CapitalPolicy:
             elif selected != self.mode(account_id):
                 self.store.db.execute('UPDATE capital_accounts SET mode=? WHERE account=?',
                                       (selected.value, account_id))
+            existing = set(self.store.db.execute('SELECT symbol,strategy FROM portfolio_claims WHERE account=?', (account_id,)))
+            existing.update((order['record'].snapshot.intent.instrument_id, owner) for owner, order in self._orders(account_id))
+            for symbol, owner in existing:
+                self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, owner).max_instrument_exposure)
 
     def _orders(self, account_id):
         for owner, payload in self.store.db.execute(
@@ -209,7 +215,7 @@ class CapitalPolicy:
         for owner, order in self._orders(account_id):
             snapshot = order['record'].snapshot
             intent = snapshot.intent
-            if intent.instrument_id != symbol or snapshot.status in TERMINAL:
+            if intent.instrument_id != symbol or (snapshot.status in TERMINAL and not order['uncertain']):
                 continue
             quantity = intent.quantity - snapshot.cumulative_filled_quantity
             if not quantity:
@@ -303,15 +309,18 @@ class CapitalPolicy:
             symbols[symbol] = symbols.get(symbol, ZERO) + abs(position.quantity) * position.mark_price
         account_exposure = sum(symbols.values(), ZERO)
         pending, local_ids, reductions = [], set(), {}
+        holdings = {strategy_id: owned}
         for owner, order in self._orders(account_id):
             snapshot = order['record'].snapshot
             intent = snapshot.intent
             symbol = intent.instrument_id
             local_ids.add(intent.client_order_id)
-            if snapshot.status in TERMINAL:
+            if snapshot.status in TERMINAL and not order['uncertain']:
                 continue
             quantity = intent.quantity - snapshot.cumulative_filled_quantity
-            held = self.store.holdings(account_id, owner).get(symbol, ZERO)
+            if owner not in holdings:
+                holdings[owner] = self.store.holdings(account_id, owner)
+            held = holdings[owner].get(symbol, ZERO)
             direction = 1 if intent.side == Side.BUY else -1
             reducing = held * direction < ZERO
             if reducing:
@@ -341,6 +350,8 @@ class CapitalPolicy:
         for symbol, amount, increasing in pending:
             if shared:
                 self._same_direction(account_id, symbol)
+            if not increasing:
+                continue
             reason = exposure_limit_reason(limits, order_notional=amount,
                 instrument_exposure=exposures[symbol], account_exposure=sum(exposures.values(), ZERO))
             if reason != 'APPROVED':
@@ -457,10 +468,11 @@ class CapitalPolicy:
         self._binding(account_id, to_strategy)
         for symbol in symbols:
             self._validate_release(account_id, from_strategy, symbol)
-            others = {owner for owner, in self.store.db.execute(
-                'SELECT strategy FROM capital_symbols WHERE account=? AND symbol=? '
-                'UNION SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
-                (account_id, symbol, account_id, symbol))} - {from_strategy, to_strategy}
+            others = {owner for owner, quantity in self.store.db.execute(
+                'SELECT strategy,quantity FROM portfolio_claims WHERE account=? AND symbol=?', (account_id, symbol)) if Decimal(quantity)}
+            others.update(owner for owner, in self.store.db.execute(
+                'SELECT strategy FROM capital_symbols WHERE account=? AND symbol=?', (account_id, symbol)))
+            others.difference_update((from_strategy, to_strategy))
             if self.mode(account_id) == CapitalPolicyMode.EXCLUSIVE and others:
                 raise ValueError(f'position ownership conflict: {symbol}')
             if self.mode(account_id) == CapitalPolicyMode.SHARED_SAME_DIRECTION:
@@ -510,12 +522,15 @@ class CapitalPolicy:
             derivatives = account.market == Market.BINANCE_USDM
             funding = None
             margin = None
+            margin_attribution = None
             if derivatives:
                 from .capital_funding import attribute_funding
+                from .capital_margin import attribute_margin
                 margin = executor.adapter.margin_facts()
                 if margin.account_id != account_id:
                     raise ValueError('margin facts must match the account')
                 account = margin.shared(account.open_orders, reconciled=account.reconciled)
+                margin_attribution = attribute_margin(self.store, account_id, margin)
                 funding = attribute_funding(self.store, account_id, executor.adapter.funding_events(),
                     executor.adapter.funding_coverage(), account.observed_at)
             owned_total = self.store.holdings(account_id)
@@ -536,10 +551,13 @@ class CapitalPolicy:
                     (account_id, owner)).fetchone()
                 if latest is None:
                     payment = dict(funding.amounts)[owner] if derivatives and funding.complete else (None if derivatives else ZERO)
-                    nav = None if payment is None else capital.cash + payment
-                    strategies.append(StrategyRiskSnapshot(capital, ZERO, ZERO, ZERO, ZERO,
-                        ZERO, payment, nav, None if nav is None else nav - capital.reserved, (),
-                        not derivatives or funding.complete))
+                    complete = not derivatives or (funding.complete and margin_attribution.complete)
+                    nav = capital.cash + payment if complete else None
+                    occupied = (dict(margin_attribution.amounts)[owner] if margin_attribution.complete
+                                else None) if derivatives else ZERO
+                    strategies.append(StrategyRiskSnapshot(capital, occupied, ZERO, ZERO, ZERO,
+                        ZERO, payment, nav, None if nav is None else nav - occupied - capital.reserved, (),
+                        complete))
                     continue
                 report = executor.report(latest[0], official_equity=official_equity,
                                          readonly=True, account=account)
@@ -548,16 +566,8 @@ class CapitalPolicy:
                 gross_room = max(ZERO, self.limits(account_id, owner).account_budget - occupied - capital.reserved)
                 payment, nav, remaining, complete = ZERO, report.economic_nav, min(capital.cash - capital.reserved, gross_room), True
                 if derivatives:
-                    symbols = self.store.holdings(account_id, owner)
-                    rows = [position for position in margin.position_details()
-                            if symbols.get(position['symbol'], ZERO) != ZERO]
-                    margin_complete = (margin.source_complete
-                                and all(position['initial_margin'] is not None
-                                        and position['quantity'] == symbols[position['symbol']] for position in rows)
-                                and {position['symbol'] for position in rows} ==
-                                    {symbol for symbol, quantity in symbols.items() if quantity})
-                    complete = margin_complete and funding.complete
-                    occupied = sum((position['initial_margin'] for position in rows), ZERO) if margin_complete else None
+                    complete = margin_attribution.complete and funding.complete
+                    occupied = dict(margin_attribution.amounts)[owner] if margin_attribution.complete else None
                     payment = dict(funding.amounts)[owner] if funding.complete else None
                     initial_basis = sum((Decimal(quantity) * Decimal(price) for quantity, price in self.store.db.execute(
                         'SELECT initial_quantity,entry_price FROM portfolio_claims WHERE account=? AND strategy=? '
@@ -575,7 +585,8 @@ class CapitalPolicy:
             allocated = sum((Decimal(amount) for amount, in self.store.db.execute(
                 'SELECT capital FROM portfolio_allocations WHERE account=?', (account_id,))), ZERO)
             return AccountRiskSnapshot(account_id, currency, account.observed_at,
-                reconciled, None if balance is None else balance.available, budget, allocated, tuple(strategies))
+                reconciled, None if balance is None else balance.available, budget, allocated,
+                tuple(strategies), margin_attribution)
 
     def snapshot(self, account_id, strategy_id):
         context = nullcontext() if self.store.db.in_transaction else self.store.transaction()

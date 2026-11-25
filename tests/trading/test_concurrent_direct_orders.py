@@ -37,6 +37,28 @@ def test_explicit_direct_stream_reserves_all_working_plans_atomically(tmp_path):
         store.close()
 
 
+@pytest.mark.parametrize('broker_hold', [False, True])
+def test_direct_admission_preserves_official_collateral_and_deduplicates_orders(tmp_path, broker_hold):
+    from contextlib import closing
+    from factorlab.trading.contracts import OrderSnapshot
+    from factorlab.trading.portfolio_execution import PortfolioExecutor, PortfolioStore
+    from test_portfolio_execution import Broker
+
+    broker = Broker()
+    broker.reserved = D(80)
+    if broker_hold:
+        intent = OrderIntent(Market.BINANCE_EQUITY, 'AAPL', Side.BUY, OrderType.LIMIT,
+            D(2), D(10), 'official-buy', time_in_force='GTC')
+        broker.foreign = (OrderSnapshot(intent),)
+    with closing(PortfolioStore(tmp_path / 'collateral.sqlite3')) as store:
+        executor = PortfolioExecutor(broker, store, clock=lambda: NOW)
+        with pytest.raises(ValueError, match='available account cash'):
+            create(executor, 'unfundable', '3')
+        assert store.db.execute('SELECT count(*) FROM portfolio_orders').fetchone()[0] == 0
+        create(executor, 'fundable', '2')
+        assert store.db.execute('SELECT count(*) FROM portfolio_orders').fetchone()[0] == 1
+
+
 def test_stream_cannot_join_a_serial_active_plan(tmp_path):
     _, store, executor = setup(tmp_path)
     try:

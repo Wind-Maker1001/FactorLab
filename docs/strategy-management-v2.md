@@ -75,6 +75,12 @@ orders do not release exposure before confirmation, and sharing permits neither
 opposing instance inventory nor internal netting. Market-specific admission and
 risk guards remain in force.
 
+For derivatives, `risk_snapshot(...).margin_attribution` identifies proportional
+instance allocations of official position initial margin, including the allocation
+basis, estimated status and any unattributed symbols. These are not official
+instance balances. Incomplete margin or funding evidence leaves dependent NAV and
+remaining-budget fields unknown; account availability remains the official fact.
+
 ## Strategy declaration
 
 `factorlab.strategies.protocol` exports `StrategySpecV2` and `DecisionV2` in
