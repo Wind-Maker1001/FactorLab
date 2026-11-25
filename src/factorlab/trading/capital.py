@@ -471,10 +471,13 @@ class CapitalPolicy:
         self._binding(account_id, to_strategy)
         for symbol in symbols:
             self._validate_release(account_id, from_strategy, symbol)
-            others = {owner for owner, in self.store.db.execute(
-                'SELECT strategy FROM capital_symbols WHERE account=? AND symbol=? '
-                'UNION SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
-                (account_id, symbol, account_id, symbol))} - {from_strategy, to_strategy}
+            others = {owner for owner, quantity in self.store.db.execute(
+                'SELECT strategy,quantity FROM portfolio_claims WHERE account=? AND symbol=?',
+                (account_id, symbol)) if Decimal(quantity)}
+            others.update(owner for owner, in self.store.db.execute(
+                'SELECT strategy FROM capital_symbols WHERE account=? AND symbol=?',
+                (account_id, symbol)))
+            others.difference_update((from_strategy, to_strategy))
             if self.mode(account_id) == CapitalPolicyMode.EXCLUSIVE and others:
                 raise ValueError(f'position ownership conflict: {symbol}')
             if self.mode(account_id) == CapitalPolicyMode.SHARED_SAME_DIRECTION:

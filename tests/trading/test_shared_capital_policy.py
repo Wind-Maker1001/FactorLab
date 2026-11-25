@@ -285,6 +285,37 @@ def test_account_limit_includes_other_symbols_and_cannot_be_split_by_instance(tm
     store.close()
 
 
+@pytest.mark.parametrize('historical_quantity', ['0', '0.000', '1'])
+def test_exclusive_flat_transfer_preserves_released_history(tmp_path, historical_quantity):
+    store = PortfolioStore(tmp_path / 'transfer-history.sqlite3')
+    executor = PortfolioExecutor(Broker(), store, clock=lambda: NOW)
+    policy = executor.capital_policy
+    policy.configure(account_id='paper', currency='USD', budget=D(100), fee_rate=D(0))
+    for owner in ['one', 'two', 'three']:
+        allocate(executor, owner, '20')
+        policy.bind(account_id='paper', strategy_id=owner,
+            instance_id=owner, allocation_id=owner + '-cash')
+    claim(store, 'one')
+    with store.transaction():
+        store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                         ('paper', 'AAPL', 'one', '0.000', '1', '10'))
+        policy.release('paper', 'one', 'AAPL')
+        policy.claim('paper', 'two', 'AAPL')
+        store.db.execute('UPDATE portfolio_claims SET quantity=? WHERE strategy=?',
+                         (historical_quantity, 'one'))
+    with store.transaction():
+        if D(historical_quantity):
+            with pytest.raises(ValueError, match='ownership conflict'):
+                policy.transfer_flat_ownership('paper', 'two', 'three', ['AAPL'])
+        else:
+            policy.transfer_flat_ownership('paper', 'two', 'three', ['AAPL'])
+    assert [owner.instance_id for owner in policy.ownership('paper', 'AAPL')] == [
+        'two' if D(historical_quantity) else 'three']
+    assert store.db.execute('SELECT quantity,initial_quantity,entry_price FROM portfolio_claims '
+                            'WHERE strategy=?', ('one',)).fetchone() == (historical_quantity, '1', '10')
+    store.close()
+
+
 def test_exit_preserves_other_shared_owner_and_allocation_binding(tmp_path):
     _, store, executor = setup(tmp_path)
     policy = executor.capital_policy
