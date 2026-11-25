@@ -8,10 +8,12 @@ import pytest
 from factorlab.experiments.grid_f11_f08_offline import default_demo_rules, _demo_grid_config
 from factorlab.experiments.grid_funding_adaptive import FundingSensitiveGrid, FundingPolicy, VolatilityAdaptiveGrid, VolatilityPolicy
 from factorlab.strategies.adaptive_grid_v2 import AdaptiveGridV2
-from factorlab.strategies.protocol import V2
+from factorlab.strategies.protocol import V2, decision_payload
 from factorlab.trading import Market, OrderStatus
 from factorlab.trading.storage import dumps, decode
 from test_strategy_protocol_v2 import spec
+from test_binance_demo_strategy_session import deployment
+from test_binance_demo_network import wired
 
 NOW = datetime(2026, 11, 1, 1, tzinfo=timezone.utc)
 
@@ -104,11 +106,9 @@ def test_native_adaptive_grid_proposes_confirms_reverses_and_restores(kind):
         assert len(checkpoint['subclass_state']['close_history']) > 24
 
 
-@pytest.mark.parametrize('kind', ['funding', 'volatility'])
-def test_native_adaptive_grid_runs_in_isolated_package(tmp_path, kind):
+def package_strategy(tmp_path, strategy):
     from factorlab.strategies.package import build_package, install_package
     from factorlab.strategies.loader import LoadedStrategy
-    strategy, event = fixture(kind)
     source = tmp_path / 'source'
     source.mkdir()
     (source / 'strategy.py').write_text(
@@ -129,11 +129,108 @@ def test_native_adaptive_grid_runs_in_isolated_package(tmp_path, kind):
     archive = tmp_path / 'strategy.zip'
     build_package(source, manifest, archive)
     release, _ = install_package(archive, tmp_path / 'releases')
-    loaded = LoadedStrategy.from_strategy_package(release, trusted=True)
+    return LoadedStrategy.from_strategy_package(release, trusted=True)
+
+
+@pytest.mark.parametrize('kind', ['funding', 'volatility'])
+def test_native_adaptive_grid_runs_in_isolated_package(tmp_path, kind):
+    strategy, event = fixture(kind)
+    loaded = package_strategy(tmp_path, strategy)
     expected = strategy.decide(event, {}).validate(strategy.spec)
     assert dumps(asdict(loaded.decide(event, {}))) == dumps(asdict(expected))
     assert dumps(asdict(loaded.decide(event, roundtrip(expected.state)))) == dumps(
         asdict(strategy.decide(event, roundtrip(expected.state))))
+
+
+@pytest.mark.parametrize('kind', ['funding', 'volatility'])
+def test_isolated_native_grid_uses_original_demo_orders_and_real_confirmations(tmp_path, deployment, monkeypatch, kind):
+    from contextlib import closing
+    from types import SimpleNamespace
+    from factorlab.integrations.binance.client import Response
+    from factorlab.integrations.binance_futures_trading.demo_cli import open_session
+    from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime
+    from factorlab.integrations.binance_futures_trading.demo_instance_capability import DemoInstanceCapability
+    from factorlab.integrations.binance_futures_trading.demo_instance_execution import DemoInstanceExecutionAdapter
+    from factorlab.integrations.binance_futures_trading.demo_portfolio_adapter import DemoPortfolioAdapter
+    from factorlab.integrations.binance_futures_trading.demo_grid_context import native_orders
+    from test_binance_demo_network import NetworkFixture
+    root, credentials, campaign, exchange = deployment
+    original = NetworkFixture.__call__
+    def market(self, request, timeout):
+        response = original(self, request, timeout)
+        if request.path.endswith(('bookTicker', 'premiumIndex')):
+            payload = json.loads(response.body)
+            for key in ('bidPrice', 'askPrice', 'markPrice'):
+                if key in payload:
+                    payload[key] = '132.89'
+            return Response(response.status, response.headers, json.dumps(payload).encode())
+        return response
+    monkeypatch.setattr(NetworkFixture, '__call__', market)
+    strategy, event = fixture(kind)
+    declaration = asdict(strategy.spec)
+    declaration['account_id'] = credentials.read_config()['account_id']
+    strategy = AdaptiveGridV2(strategy.deployment, declaration)
+    event['binding']['account_id'] = declaration['account_id']
+    event['context']['grid_accounts']['NVDAUSDT']['account_id'] = declaration['account_id']
+    loaded = package_strategy(tmp_path, strategy)
+    state = {}
+    with closing(DemoRuntime(root)) as runtime:
+        runtime.start_continuous(credentials.read_config(), opening_equity=D(1000), stop_epoch=runtime.stop_epoch())
+        with open_session(root, credentials, runtime, dict(GET=0, POST=0, DELETE=0), campaign=campaign) as (session, _):
+            monkeypatch.setattr('factorlab.integrations.binance_futures_trading.network.datetime',
+                SimpleNamespace(now=lambda tz: session._now()))
+            monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_runtime.now', session._now)
+            execution = DemoInstanceExecutionAdapter(session)
+            binding = event['binding']
+            session.controller.store.record_metadata('demo:instance:instance', dict(binding=binding,
+                symbols=['NVDAUSDT'], allocation=dict(budget_usdt=D(7)), shorting=False))
+            capability = DemoInstanceCapability(session, runtime, dispatch_gate=lambda binding: None)
+            adapter = DemoPortfolioAdapter(session, capability=capability)
+            session.gateway.recover(session.controller)
+            def accept(decision, key):
+                execution.execute(dict(binding=binding, package_id='package', event_id=key,
+                    input_identity=key, decision=decision_payload(decision)))
+                event['context']['execution']['native_to_client'] = native_orders(execution.store, binding, 'package')
+            def confirm(report, previous, key, inventory):
+                event['data_type'] = 'order_event'
+                event['event_id'] = key
+                event['event_time'] = session._now()
+                event['context']['grid_accounts']['NVDAUSDT'].update(inventory=inventory,
+                    committed=inventory * D('132.89'), available=D(7)-inventory*D('132.89'))
+                event['symbols']['NVDAUSDT']['observations']['order_event'] = dict(
+                    observed_at=event['event_time'], effective_at=report.event_time,
+                    source='OFFICIAL_DEMO', payload=asdict(report))
+                return loaded.decide(event, roundtrip(previous))
+            proposal = loaded.decide(event, state)
+            accept(proposal, 'original-entry')
+            native = proposal.orders[0]
+            client_id = event['context']['execution']['native_to_client'][native.client_order_id]
+            intent = next(value for value in decode(json.loads(execution.store.db.execute(
+                'SELECT payload FROM demo_instance_outbox ORDER BY rowid').fetchone()[0]))['intents']
+                if value.client_order_id == client_id)
+            acknowledged = confirm(adapter.submit_order(intent), proposal.state, 'submitted-entry', D(0))
+            exchange.trade_update(client_id, str(intent.quantity), str(intent.limit_price))
+            reverse = confirm(adapter.query_order(client_id), acknowledged.state, 'filled-entry', intent.quantity)
+            assert reverse.orders and all(order.reduce_only for order in reverse.orders)
+            accept(reverse, 'original-exit')
+            exit_intent = decode(json.loads(execution.store.db.execute(
+                'SELECT payload FROM demo_instance_outbox ORDER BY rowid DESC').fetchone()[0]))['intents'][0]
+            exit_ack = confirm(adapter.submit_order(exit_intent), reverse.state, 'submitted-exit', intent.quantity)
+            exchange.trade_update(exit_intent.client_order_id, str(exit_intent.quantity), str(exit_intent.limit_price))
+            final = confirm(adapter.query_order(exit_intent.client_order_id), exit_ack.state, 'filled-exit', D(0))
+            assert decode(json.loads(final.state['grid']))['account']['inventory'] == 0
+            assert exchange.quantity == 0
+            assert runtime.consumption(None)['posts'] == 2
+            assert set(exchange.orders) == {client_id, exit_intent.client_order_id}
+        with open_session(root, credentials, runtime, dict(GET=0, POST=0, DELETE=0), campaign=campaign) as (restored, _):
+            restored.gateway.recover(restored.controller)
+            reader = DemoPortfolioAdapter(restored, capability=lambda *args:
+                pytest.fail('completed native grid recovery must not authorize writes'))
+            assert reader.query_order(client_id).status is OrderStatus.FILLED
+            assert reader.query_order(exit_intent.client_order_id).status is OrderStatus.FILLED
+            assert loaded.decide(event, roundtrip(exit_ack.state)) == final
+            assert runtime.consumption(None)['posts'] == 2
+            assert set(exchange.orders) == {client_id, exit_intent.client_order_id}
 
 
 def test_funding_grid_waits_for_complete_signal_window():

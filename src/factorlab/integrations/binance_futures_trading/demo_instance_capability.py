@@ -40,12 +40,15 @@ class DemoInstanceCapability:
             raise SafetyBlocked('running cumulative Demo authorization required')
         budget = configured['allocation']['budget_usdt']
         notional = intent.quantity * intent.limit_price
-        if notional > budget:
+        if not intent.reduce_only and notional > budget:
             raise SafetyBlocked('instance intent exceeds its funded capital')
         seconds = authorization['seconds']
         plan = DemoExecutionPlan(account_id=binding['account_id'], symbol=intent.instrument_id,
             order_types=frozenset({'LIMIT'}), max_quantity=intent.quantity,
-            max_notional=notional, max_orders=authorization['total_orders'], max_open_orders=1,
+            max_notional=Decimal(authorization['total_notional']) if intent.reduce_only else budget,
+            max_orders=authorization['total_orders'],
+            max_open_orders=min(authorization['total_orders'],
+                int(session.symbol_context(intent.instrument_id).rules.filters['MAX_NUM_ORDERS']['limit'])),
             max_seconds=seconds, max_loss=Decimal(authorization['max_loss']), max_margin=budget,
             expires_at=session._now() + timedelta(seconds=seconds),
             client_id_prefix=intent.client_order_id[:20], cleanup='CANCEL_KNOWN_THEN_STOP',
@@ -62,7 +65,8 @@ class DemoInstanceCapability:
                     reserve = self.exit_reservation or DemoInstanceExitBudget(session, runtime).opening
                     reservation = reserve(intent, owner)
             runtime.reserve_instance(binding, method, params, admitted_plan, intent=intent,
-                facts=session.adapter.facts, exit_reservation=reservation, exit_consumption=consumption)
+                facts=session.adapter.facts, exit_reservation=reservation, exit_consumption=consumption,
+                cancel_recovered_at=session.last_reconciled_at if method == 'DELETE' else None)
 
         def receipt_sink(receipt):
             with runtime.db:

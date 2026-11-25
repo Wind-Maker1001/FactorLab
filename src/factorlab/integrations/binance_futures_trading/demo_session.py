@@ -217,11 +217,7 @@ class DemoSession:
         """Refresh the account-bound observation before planning or admitting new orders."""
         if symbol is not None:
             return self.symbol_context(symbol).rules
-        if not self.gateway.rules.is_fresh(self._now()):
-            with self.client.recover_get_clock():
-                observation = observe_demo_rules(self.adapter, self.symbol, source_version=DEMO.host,
-                                                 on_symbol=self._check_symbol)
-            self.gateway.rules = observation.rules
+        self.gateway.rules = self.symbol_context(self.symbol).rules
 
     def _admit_write(self, method, params, plan):
         if self.receipt_error or self.write_uncertain:

@@ -14,6 +14,9 @@ class DemoInstanceExecutionAdapter:
         self.session = session
         self.executor = executor
         self.store = session.controller.store
+        if executor is not None:
+            session.controller.demo_portfolio_store = executor.store
+            session.controller.demo_account_id = session.adapter.account_id
         self.owners = DemoAllocations(session.controller)
         self.store.db.execute('''CREATE TABLE IF NOT EXISTS demo_instance_outbox (
             id TEXT PRIMARY KEY, payload TEXT NOT NULL, completed INTEGER NOT NULL DEFAULT 0)''')
@@ -73,10 +76,20 @@ class DemoInstanceExecutionAdapter:
             client_id = cancellation['client_order_id']
             self.owners.require_cancel(client_id, instance_id=binding['instance_id'],
                                        allocation_id=binding['allocation_id'])
-            event = self.executor.adapter.query_order(client_id)
-            if event.status not in TERMINAL:
-                event = self.executor.adapter.cancel_order(client_id)
-            if event.status not in TERMINAL:
+            row = self.executor.store.db.execute(
+                'SELECT plan FROM portfolio_orders WHERE id=?', (client_id,)).fetchone()
+            if row is None:
+                original = next(key for key, raw in self.store.db.execute(
+                    'SELECT id,payload FROM demo_instance_outbox ORDER BY rowid')
+                    if any(intent.client_order_id == client_id
+                           for intent in decode(json.loads(raw))['intents']))
+                original_plan = self.prepare_plan(original, now=now)
+            else:
+                original_plan = row[0]
+            self.executor.cancel(original_plan, client_id)
+            order = next(order for order in self.executor.store.orders(original_plan)
+                if order['record'].snapshot.intent.client_order_id == client_id)
+            if order['record'].snapshot.status not in TERMINAL or order['uncertain']:
                 return None
         plan_id = self.prepare_plan(decision_id, now=now)
         from dataclasses import replace

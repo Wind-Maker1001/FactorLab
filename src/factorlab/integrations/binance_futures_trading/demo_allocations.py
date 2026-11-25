@@ -87,6 +87,9 @@ class DemoAllocations:
         return intents
 
     def inventory(self, instance_id, symbol):
+        capital = getattr(self.controller, 'demo_portfolio_store', None)
+        if capital is not None and capital.allocation(self.controller.demo_account_id, instance_id) is not None:
+            return capital.holdings(self.controller.demo_account_id, instance_id).get(symbol, D(0))
         quantity = D(0)
         for key, in self.store.db.execute('SELECT client_id FROM demo_order_owners WHERE instance_id=? AND symbol=?',
                                          (instance_id, symbol)):

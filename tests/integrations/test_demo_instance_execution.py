@@ -11,6 +11,53 @@ from factorlab.trading.storage import decode
 import json
 
 
+def test_cancel_accepted_unsubmitted_child_retires_original_public_order(tmp_path):
+    from contextlib import closing
+    from test_binance_demo_execution import intent, NOW
+    from factorlab.trading.portfolio_execution import PortfolioStore, PortfolioExecutor
+    from factorlab.integrations.binance_futures_trading.demo_portfolio_adapter import DemoPortfolioAdapter
+    from factorlab.trading import OrderStatus
+    from factorlab.trading.storage import dumps
+    adapter, gateway, controller, fake = setup()
+    session = SimpleNamespace(adapter=adapter, gateway=gateway, controller=controller,
+        _protocol_ids=lambda: set(), _require_absent=lambda *args, **kwargs: None,
+        symbol_context=lambda symbol: SimpleNamespace(rules=gateway.rules))
+    try:
+        with closing(PortfolioStore(tmp_path / 'capital.sqlite3')) as store:
+            executor = PortfolioExecutor(DemoPortfolioAdapter(session, capability=lambda *args:
+                pytest.fail('unsubmitted cancellation must not authorize writes')), store,
+                quote_currency='USDT', clock=lambda: NOW)
+            executor.capital_policy.configure(account_id=adapter.account_id, currency='USDT',
+                budget=D(27), fee_rate=D(0))
+            executor.allocate(account_id=adapter.account_id, strategy_id='one', allocation_id='seven',
+                capital=D(7), initial_cash=D(7), official_equity=D(1000))
+            executor.capital_policy.bind(account_id=adapter.account_id, strategy_id='one',
+                instance_id='one', allocation_id='seven')
+            execution = DemoInstanceExecutionAdapter(session, executor=executor)
+            binding = dict(market=Market.BINANCE_USDM.value, account_id=adapter.account_id,
+                instance_id='one', allocation_id='seven', strategy_id='grid')
+            controller.store.record_metadata('demo:instance:one', dict(binding=binding,
+                symbols=['NVDAUSDT'], allocation=dict(budget_usdt=D(7))))
+            child = intent('original-unsubmitted', limit='100', quantity='.05')
+            execution.owners.claim(child, instance_id='one', allocation_id='seven')
+            base = dict(binding=binding, package_id='package', input_identity='input')
+            for key, intents, cancellations in [('original', [child], []),
+                    ('cancel', [], [dict(symbol='NVDAUSDT', client_order_id=child.client_order_id)])]:
+                receipt = dict(base, event_id=key, decision=dict(kind='orders'))
+                accepted = dict(receipt=receipt, allocation=dict(budget_usdt=D(7)),
+                    intents=intents, cancellations=cancellations)
+                controller.store.db.execute('INSERT INTO demo_instance_outbox VALUES(?,?,0)', (key, dumps(accepted)))
+            execution.advance('cancel', equity=D(1000), quotes={}, rules={}, now=NOW)
+            original_plan = store.db.execute('SELECT plan FROM portfolio_orders WHERE id=?',
+                (child.client_order_id,)).fetchone()[0]
+            assert store.orders(original_plan)[0]['record'].snapshot.status is OrderStatus.CANCELED
+            assert executor.capital_policy.snapshot(adapter.account_id, 'one').reserved == 0
+            assert not any(method != 'GET' for method, *_ in fake.calls)
+    finally:
+        controller.store.close()
+        adapter.store.close()
+
+
 def test_quantity_delta_receipt_replay_keeps_original_intents():
     adapter, gateway, controller, _ = setup()
     session = SimpleNamespace(adapter=adapter, controller=controller,
@@ -18,7 +65,7 @@ def test_quantity_delta_receipt_replay_keeps_original_intents():
         _fresh_book=lambda **kwargs:dict(askPrice=D(100),bidPrice=D(100)),
         limit_price=lambda *args:D(100))
     admissions = []
-    executor = SimpleNamespace(capital_policy=SimpleNamespace(
+    executor = SimpleNamespace(store=SimpleNamespace(allocation=lambda *args: None), capital_policy=SimpleNamespace(
         qualify=lambda *args: admissions.append(args) or
             dict(allocation_id='funded-one', capital=D(7), initial_cash=D(7))))
     execution = DemoInstanceExecutionAdapter(session, executor=executor)

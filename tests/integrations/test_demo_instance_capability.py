@@ -9,7 +9,7 @@ from factorlab.integrations.binance_futures_trading.demo_instance_capability imp
 from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime, now
 from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
 from factorlab.integrations.binance_futures_trading.rules import order_parameters
-from factorlab.trading import OrderType
+from factorlab.trading import OrderType, Side
 from factorlab.trading.storage import PaperStore
 from test_binance_demo_execution import intent
 from test_binance_demo_strategy_session import deployment
@@ -25,7 +25,9 @@ def test_capability_uses_existing_account_budget_and_records_original_receipt(tm
     facts = SimpleNamespace(usdt=lambda: dict(walletBalance=D(5000), unrealizedProfit=D(0)))
     session = SimpleNamespace(controller=SimpleNamespace(store=store),
         adapter=SimpleNamespace(account_id=account, facts=facts), _now=now,
-        _instance_receipt_sinks={})
+        _instance_receipt_sinks={},
+        symbol_context=lambda symbol: SimpleNamespace(rules=SimpleNamespace(
+            filters={'MAX_NUM_ORDERS': {'limit': 200}})))
     store.record_metadata('demo:instance:one', dict(binding=binding, symbols=['NVDAUSDT'],
         allocation=dict(budget_usdt=D(7))))
     gates, reservations = [], []
@@ -40,6 +42,13 @@ def test_capability_uses_existing_account_budget_and_records_original_receipt(tm
             total_orders=2, total_notional=D(10))
         capability, guard = factory(entry, owner)
         assert capability.plan.symbol == 'NVDAUSDT'
+        assert capability.plan.max_notional == D(7)
+        assert capability.plan.max_open_orders == 2
+        appreciated_exit = replace(entry, client_order_id='di-appreciated-exit',
+            side=Side.SELL,
+            reduce_only=True, limit_price=D(150))
+        exit_capability, _ = factory(appreciated_exit, owner)
+        assert exit_capability.plan.max_notional == D(10)
         guard('POST', order_parameters(entry), capability.plan)
         assert gates == ['one']
         assert reservations == [('di-original', owner)]
@@ -54,6 +63,21 @@ def test_capability_uses_existing_account_budget_and_records_original_receipt(tm
         assert runtime.consumption(None)['posts'] == 1
         with pytest.raises(SafetyBlocked, match='ownership mismatch'):
             factory(entry, ('one', 'foreign', 'NVDAUSDT'))
+        from datetime import timedelta
+        facts.observed_at = now()
+        facts.open_orders = [dict(symbol='NVDAUSDT', clientOrderId=entry.client_order_id, status='NEW')]
+        session.last_reconciled_at = facts.observed_at
+        cancel = dict(symbol='NVDAUSDT', origClientOrderId=entry.client_order_id)
+        guard('DELETE', cancel, capability.plan)
+        session._instance_receipt_sinks[entry.client_order_id](dict(method='DELETE',
+            client_order_id=entry.client_order_id, http_status=None, outcome_unknown=True))
+        with pytest.raises(SafetyBlocked, match='already consumed'):
+            guard('DELETE', cancel, capability.plan)
+        facts.observed_at += timedelta(seconds=1)
+        session.last_reconciled_at = facts.observed_at
+        guard('DELETE', cancel, capability.plan)
+        assert runtime.db.execute('SELECT count(*) FROM dispatch_retry_history').fetchone()[0] == 1
+        assert runtime.consumption(None)['posts'] == 1
     finally:
         store.close()
         runtime.close()
@@ -181,7 +205,9 @@ def test_dispatch_gate_blocks_before_reservation_or_budget_consumption(tmp_path)
     binding = dict(account_id=account, instance_id='one', allocation_id='funded', configuration={})
     entry = replace(intent('di-stopped', quantity='.05'), order_type=OrderType.LIMIT, limit_price=D(100))
     session = SimpleNamespace(controller=SimpleNamespace(store=store),
-        adapter=SimpleNamespace(account_id=account), _now=now, _instance_receipt_sinks={})
+        adapter=SimpleNamespace(account_id=account), _now=now, _instance_receipt_sinks={},
+        symbol_context=lambda symbol: SimpleNamespace(rules=SimpleNamespace(
+            filters={'MAX_NUM_ORDERS': {'limit': 200}})))
     store.record_metadata('demo:instance:one', dict(binding=binding, symbols=['NVDAUSDT'],
         allocation=dict(budget_usdt=D(7))))
     def stopped(admitted_binding):

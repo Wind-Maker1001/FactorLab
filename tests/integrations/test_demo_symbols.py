@@ -81,6 +81,28 @@ def test_dynamic_rules_and_leverage_do_not_switch_shared_gateway(monkeypatch):
         adapter.store.close()
 
 
+def test_legacy_refresh_reuses_registry_observation_identity():
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    from factorlab.integrations.binance_futures_trading.demo_session import DemoSession
+    adapter, gateway, controller, fake = setup(fake=SymbolsFixture())
+    registry = DemoSymbolRegistry(adapter, controller.store)
+    try:
+        context = registry.observe('NVDAUSDT')
+        gateway.register_symbol(context)
+        session = SimpleNamespace(gateway=gateway, symbol='NVDAUSDT',
+            _now=lambda: NOW, symbol_context=Mock(return_value=context))
+        DemoSession.refresh_rules(session)
+        session.symbol_context.assert_called_once_with('NVDAUSDT')
+        assert gateway.rules is context.rules
+        gateway.register_symbol(registry.require('NVDAUSDT'))
+        assert adapter._rule_observations['NVDAUSDT'] is context.observation
+        assert not any(method != 'GET' for method, *_ in fake.calls)
+    finally:
+        controller.store.close()
+        adapter.store.close()
+
+
 def test_unverified_unknown_and_halted_symbols_never_register():
     adapter, gateway, controller, fake = setup(fake=SymbolsFixture())
     registry = DemoSymbolRegistry(adapter, controller.store)

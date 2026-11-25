@@ -363,7 +363,8 @@ class PortfolioExecutor:
         cash = self.store.cash(account.account_id, strategy_id, reserve=False)
         positions = tuple(replace(p, quantity=holdings[p.instrument_id]) for p in account.positions
                           if holdings.get(p.instrument_id, ZERO))
-        assets = tuple(replace(a, total=cash, reserved=ZERO) if a.currency == self.quote_currency else a
+        reserved = cash - self.store.cash(account.account_id, strategy_id)
+        assets = tuple(replace(a, total=cash, reserved=reserved) if a.currency == self.quote_currency else a
                        for a in account.assets)
         return replace(account, positions=positions, assets=assets, open_orders=())
 

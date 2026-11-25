@@ -43,6 +43,7 @@ class NetworkFixture(DemoFixture):
         result = super().__call__(request, timeout)
         if request.path.endswith('exchangeInfo'):
             value = json.loads(result.body)
+            value['symbols'][0]['contractType'] = 'TRADIFI_PERPETUAL'
             value['symbols'][0]['filters'].extend([
                 {'filterType': 'PERCENT_PRICE', 'multiplierDown': '0.97', 'multiplierUp': '1.03'},
                 {'filterType': 'MAX_NUM_ORDERS', 'limit': 200},

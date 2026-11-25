@@ -10,6 +10,28 @@ from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocke
 from factorlab.trading import Side, OrderSnapshot, OrderStatus
 
 
+def test_inventory_uses_public_initial_claims_for_funded_instances(tmp_path):
+    from contextlib import closing
+    from factorlab.trading.portfolio_execution import PortfolioStore
+    adapter, gateway, controller, _ = setup()
+    try:
+        with closing(PortfolioStore(tmp_path / 'portfolio.sqlite3')) as capital:
+            capital.db.execute('INSERT INTO portfolio_allocations VALUES(?,?,?,?,?)',
+                (adapter.account_id, 'migrated', 'seven', '7', '2'))
+            capital.db.execute('INSERT INTO portfolio_claims VALUES(?,?,?,?,?,?)',
+                (adapter.account_id, 'NVDAUSDT', 'migrated', '.05', '.05', '100'))
+            controller.demo_portfolio_store = capital
+            controller.demo_account_id = adapter.account_id
+            owners = DemoAllocations(controller)
+            reduction = replace(intent('migrated-exit', quantity='.05'), side=Side.SELL, reduce_only=True)
+            owners.claim(reduction, instance_id='migrated', allocation_id='seven')
+            assert owners.inventory('migrated', 'NVDAUSDT') == D('.05')
+            owners.admit(reduction, instance_id='migrated', allocation_id='seven')
+    finally:
+        controller.store.close()
+        adapter.store.close()
+
+
 def test_legacy_adoption_uses_immutable_batch_not_order_prefix():
     from factorlab.trading.portfolio_runtime import PortfolioRuntime
     adapter, gateway, controller, _ = setup()

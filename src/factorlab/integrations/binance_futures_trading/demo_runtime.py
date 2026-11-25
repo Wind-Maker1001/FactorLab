@@ -207,7 +207,7 @@ class DemoRuntime:
             raise SafetyBlocked('global Demo trading budget exhausted or reserved for exit')
 
     def reserve_instance(self, binding, method, params, plan, *, intent, facts,
-                         exit_reservation=None, exit_consumption=()):
+                         exit_reservation=None, exit_consumption=(), cancel_recovered_at=None):
         """The existing Execute owner consumes every instance's dispatch before IO."""
         client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
         if (binding['account_id'] != plan.account_id or params['symbol'] != intent.instrument_id
@@ -289,10 +289,34 @@ class DemoRuntime:
             elif not self.db.execute("SELECT 1 FROM dispatches WHERE campaign=? AND method='POST' AND client_id=?",
                                      (campaign, client_id)).fetchone():
                 raise SafetyBlocked('instance cancellation has no owned dispatch')
+            if method == 'DELETE':
+                self._prepare_cancel_retry(client_id, plan, facts, cancel_recovered_at)
             inserted = self.db.execute('INSERT OR IGNORE INTO dispatches VALUES(?,?,?,?,NULL)',
                 (campaign, method, client_id, json.dumps(params))).rowcount
             if not inserted:
                 raise SafetyBlocked('instance dispatch already attempted; GET recovery required')
+
+    def _prepare_cancel_retry(self, client_id, plan, facts, cancel_recovered_at):
+        previous = self.db.execute(
+            "SELECT campaign, parameters, receipt FROM dispatches WHERE method='DELETE' AND client_id=?",
+            (client_id,)).fetchone()
+        if previous is not None:
+            receipt = json.loads(previous[2]) if previous[2] is not None else None
+            attempted_at = self._get('cancel-attempt:' + client_id)
+            if attempted_at is None and receipt is not None:
+                attempted_at = receipt.get('observed_at')
+            active_order = any(row['symbol'] == plan.symbol and row['clientOrderId'] == client_id
+                and row.get('status') in {'NEW', 'PARTIALLY_FILLED'} for row in facts.open_orders)
+            if (plan.quote_policy is not None or cancel_recovered_at is None
+                    or attempted_at is not None and cancel_recovered_at <= datetime.fromisoformat(attempted_at)
+                    or not active_order
+                    or receipt is not None and (not receipt.get('outcome_unknown')
+                                                or receipt.get('http_status') == 400)):
+                raise SafetyBlocked('persistent Demo dispatch already consumed; use recover')
+            self.db.execute('INSERT INTO dispatch_retry_history VALUES (?, ?, ?, ?, ?)',
+                (previous[0], 'DELETE', client_id, previous[1], previous[2]))
+            self.db.execute("DELETE FROM dispatches WHERE method='DELETE' AND client_id=?", (client_id,))
+        self._set('cancel-attempt:' + client_id, facts.observed_at.isoformat())
 
     def start_continuous(self, binding, *, opening_equity, stop_epoch, total_orders=100,
                          total_notional=Decimal('700'), seconds=10800, orders=4,
@@ -742,28 +766,7 @@ class DemoRuntime:
                     "SELECT campaign FROM dispatches WHERE method='POST' AND client_id=?", (client_id,)) if owner in owners]
                 if len(origins) != 1:
                     raise SafetyBlocked('Demo cancellation requires a known owned order')
-                previous = self.db.execute(
-                    "SELECT campaign, parameters, receipt FROM dispatches WHERE method='DELETE' AND client_id=?",
-                    (client_id,)).fetchone()
-                if previous is not None:
-                    receipt = json.loads(previous[2]) if previous[2] is not None else None
-                    attempted_at = self._get('cancel-attempt:' + client_id)
-                    if attempted_at is None and receipt is not None:
-                        attempted_at = receipt.get('observed_at')
-                    active_order = any(row['symbol'] == plan.symbol and row['clientOrderId'] == client_id
-                        and row.get('status') in {'NEW', 'PARTIALLY_FILLED'} for row in facts.open_orders)
-                    if (plan.quote_policy is not None or cancel_recovered_at is None
-                            or attempted_at is not None and cancel_recovered_at <= datetime.fromisoformat(attempted_at)
-                            or not active_order
-                            or receipt is not None and (not receipt.get('outcome_unknown')
-                                                        or receipt.get('http_status') == 400)):
-                        raise SafetyBlocked('persistent Demo dispatch already consumed; use recover')
-                    # Keep the earlier reservation and receipt as audit evidence.
-                    # The canonical identity and POST budget are unchanged.
-                    self.db.execute('INSERT INTO dispatch_retry_history VALUES (?, ?, ?, ?, ?)',
-                        (previous[0], method, client_id, previous[1], previous[2]))
-                    self.db.execute("DELETE FROM dispatches WHERE method='DELETE' AND client_id=?", (client_id,))
-                self._set('cancel-attempt:' + client_id, facts.observed_at.isoformat())
+                self._prepare_cancel_retry(client_id, plan, facts, cancel_recovered_at)
 
             inserted = self.db.execute('INSERT OR IGNORE INTO dispatches VALUES (?, ?, ?, ?, NULL)',
                 (campaign['id'], method, client_id, json.dumps(params))).rowcount

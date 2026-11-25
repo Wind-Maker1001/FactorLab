@@ -562,5 +562,5 @@ class DemoExecutionGateway(FuturesPaperGateway):
         margin_limit = plan.max_margin
         if self._controller.store.event_payload('demo:static-shared-account:v1') is not None:
             margin_limit = max(margin_limit, Decimal(27))
-        if max(funds['initialMargin'], collateral) + reserved + additional_margin > margin_limit:
+        if additional_margin and max(funds['initialMargin'], collateral) + reserved + additional_margin > margin_limit:
             raise SafetyBlocked('plan margin limit')
