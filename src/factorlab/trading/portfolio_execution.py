@@ -528,6 +528,8 @@ class PortfolioExecutor:
                         if price is None:
                             raise ValueError('unpriced foreign order risk')
                         pending += ((snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * price)
+                broker_pending = pending
+                local_pending = ZERO
                 for payload, in self.store.db.execute(
                         'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
                         'WHERE p.account=?', (account_id,)):
@@ -535,11 +537,11 @@ class PortfolioExecutor:
                     snapshot = order['record'].snapshot
                     if (snapshot.intent.side == Side.BUY and (snapshot.status not in TERMINAL or order['uncertain'])
                             and snapshot.intent.client_order_id not in broker_ids):
-                        pending += (snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * order['reservation_price']
+                        local_pending += (snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * order['reservation_price']
                 fee_row = self.store.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
                                                 (account_id,)).fetchone()
                 fee_factor = 1 + (ZERO if fee_row is None else D(fee_row[0]))
-                if max(pending * fee_factor, balance.reserved) > balance.total:
+                if max(broker_pending * fee_factor, balance.reserved) + local_pending * fee_factor > balance.total:
                     raise ValueError('direct orders exceed available account cash')
                 self.capital_policy.validate_orders(account, strategy_id)
         return identity
