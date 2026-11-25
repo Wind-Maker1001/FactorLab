@@ -3,10 +3,29 @@ from contextlib import nullcontext
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
+from enum import StrEnum
+import json
+
+from .storage import decode
 
 from .contracts import Market, decimal_value
 
 ZERO = Decimal(0)
+
+
+class CapitalPolicyMode(StrEnum):
+    EXCLUSIVE = 'EXCLUSIVE'
+    SHARED_SAME_DIRECTION = 'SHARED_SAME_DIRECTION'
+
+
+@dataclass(frozen=True)
+class SymbolOwnership:
+    account_id: str
+    symbol: str
+    strategy_id: str
+    instance_id: str
+    allocation_id: str
+    logical_strategy_id: str
 
 
 @dataclass(frozen=True)
@@ -52,10 +71,11 @@ class CapitalPolicy:
 
     def __init__(self, store):
         self.store = store
-        store.db.executescript('''
+        schema = '''
             CREATE TABLE IF NOT EXISTS capital_accounts (
                 account TEXT PRIMARY KEY, currency TEXT NOT NULL,
-                budget TEXT NOT NULL, fee_rate TEXT NOT NULL);
+                budget TEXT NOT NULL, fee_rate TEXT NOT NULL,
+                mode TEXT NOT NULL DEFAULT 'EXCLUSIVE');
             CREATE TABLE IF NOT EXISTS capital_migrations (
                 id TEXT PRIMARY KEY, payload TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS capital_limits (
@@ -68,6 +88,9 @@ class CapitalPolicy:
                 PRIMARY KEY(account,symbol,strategy));
             CREATE TABLE IF NOT EXISTS capital_symbols (
                 account TEXT NOT NULL, symbol TEXT NOT NULL, strategy TEXT NOT NULL,
+                PRIMARY KEY(account,symbol,strategy));
+            CREATE TABLE IF NOT EXISTS capital_symbol_limits (
+                account TEXT NOT NULL, symbol TEXT NOT NULL, max_exposure TEXT NOT NULL,
                 PRIMARY KEY(account,symbol));
             CREATE TABLE IF NOT EXISTS capital_instances (
                 account TEXT NOT NULL, strategy TEXT NOT NULL, instance TEXT NOT NULL,
@@ -75,9 +98,38 @@ class CapitalPolicy:
                 paused INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY(account,strategy), UNIQUE(account,instance),
                 UNIQUE(account,allocation));
-        ''')
+        '''
+        with store.transaction():
+            for statement in schema.split(';'):
+                if statement.strip():
+                    store.db.execute(statement)
+            if 'mode' not in {row[1] for row in store.db.execute('PRAGMA table_info(capital_accounts)')}:
+                store.db.execute("ALTER TABLE capital_accounts ADD COLUMN mode TEXT NOT NULL DEFAULT 'EXCLUSIVE'")
+            primary = [row[1] for row in sorted(store.db.execute('PRAGMA table_info(capital_symbols)'),
+                                               key=lambda row: row[5]) if row[5]]
+            if primary == ['account', 'symbol']:
+                store.db.execute('ALTER TABLE capital_symbols RENAME TO capital_symbols_exclusive')
+                store.db.execute('CREATE TABLE capital_symbols (account TEXT NOT NULL, symbol TEXT NOT NULL, '
+                                 'strategy TEXT NOT NULL, PRIMARY KEY(account,symbol,strategy))')
+                store.db.execute('INSERT INTO capital_symbols SELECT account,symbol,strategy '
+                                 'FROM capital_symbols_exclusive')
+                store.db.execute('DROP TABLE capital_symbols_exclusive')
+            for account, symbol, owner in store.db.execute('SELECT account,symbol,strategy FROM capital_symbols').fetchall():
+                self._tighten_symbol_limit(account, symbol, self.limits(account, owner).max_instrument_exposure)
 
-    def configure(self, *, account_id, currency, budget, fee_rate):
+    def is_configured(self, account_id):
+        return self.store.db.execute('SELECT 1 FROM capital_accounts WHERE account=?',
+                                     (account_id,)).fetchone() is not None
+
+    def mode(self, account_id):
+        """Return the persisted mode; an unconfigured account raises KeyError."""
+        row = self.store.db.execute('SELECT mode FROM capital_accounts WHERE account=?',
+                                    (account_id,)).fetchone()
+        if row is None:
+            raise KeyError(account_id)
+        return CapitalPolicyMode(row[0])
+
+    def configure(self, *, account_id, currency, budget, fee_rate, mode=None):
         decimal_value(budget, 'account capital budget', positive=True)
         decimal_value(fee_rate, 'fee reservation rate')
         if not account_id or not currency:
@@ -85,21 +137,89 @@ class CapitalPolicy:
         with self.store.transaction():
             previous = self.store.db.execute(
                 'SELECT currency,budget,fee_rate FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
-            if previous is not None:
-                if previous != (currency, str(budget), str(fee_rate)):
-                    raise ValueError('static account capital policy changed')
-                return
-            claims = self.store.db.execute(
-                'SELECT symbol FROM portfolio_claims WHERE account=? GROUP BY symbol '
-                'HAVING count(*)>1', (account_id,)).fetchall()
-            if claims:
-                raise ValueError('exclusive capital policy cannot adopt shared symbols')
+            selected = (self.mode(account_id) if previous is not None else CapitalPolicyMode.EXCLUSIVE
+                        ) if mode is None else CapitalPolicyMode(mode)
+            if previous is not None and (previous[0] != currency or
+                    tuple(map(Decimal, previous[1:])) != (budget, fee_rate)):
+                raise ValueError('static account capital policy changed')
             total = sum((Decimal(row[0]) for row in self.store.db.execute(
                 'SELECT capital FROM portfolio_allocations WHERE account=?', (account_id,))), ZERO)
             if total > budget:
                 raise ValueError('existing allocations exceed account capital budget')
-            self.store.db.execute('INSERT INTO capital_accounts VALUES (?,?,?,?)',
-                                  (account_id, currency, str(budget), str(fee_rate)))
+            if previous is None or selected != self.mode(account_id):
+                self._validate_mode(account_id, selected, changing=previous is not None)
+            if previous is None:
+                self.store.db.execute('INSERT INTO capital_accounts (account,currency,budget,fee_rate,mode) '
+                                      'VALUES (?,?,?,?,?)',
+                                      (account_id, currency, str(budget), str(fee_rate), selected.value))
+            elif selected != self.mode(account_id):
+                self.store.db.execute('UPDATE capital_accounts SET mode=? WHERE account=?',
+                                      (selected.value, account_id))
+
+    def _orders(self, account_id):
+        for owner, payload in self.store.db.execute(
+                'SELECT p.strategy,o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
+                'WHERE p.account=?', (account_id,)):
+            yield owner, decode(json.loads(payload))
+
+    def _validate_mode(self, account_id, mode, *, changing):
+        from .contracts import TERMINAL
+        claims = {(symbol, owner) for symbol, owner, quantity in self.store.db.execute(
+            'SELECT symbol,strategy,quantity FROM portfolio_claims WHERE account=?', (account_id,))
+                  if Decimal(quantity)}
+        claims.update(self.store.db.execute('SELECT symbol,strategy FROM capital_symbols WHERE account=?',
+                                           (account_id,)))
+        orders = tuple(self._orders(account_id))
+        claims.update((order['record'].snapshot.intent.instrument_id, owner) for owner, order in orders
+                      if order['record'].snapshot.status not in TERMINAL or order['uncertain'])
+        owners = {}
+        for symbol, owner in claims:
+            owners.setdefault(symbol, set()).add(owner)
+            if self.store.allocation(account_id, owner) is None:
+                raise ValueError('existing ownership requires a matching capital allocation')
+        if mode == CapitalPolicyMode.EXCLUSIVE:
+            if any(len(group) > 1 for group in owners.values()):
+                raise ValueError('exclusive capital policy cannot adopt shared symbols')
+            if changing and any(order['record'].snapshot.status not in TERMINAL or order['uncertain']
+                                for _, order in orders):
+                raise ValueError('unfinished orders prevent exclusive downgrade')
+        else:
+            for symbol in owners:
+                self._same_direction(account_id, symbol)
+            if changing:
+                for _, owner in claims:
+                    self._binding(account_id, owner)
+
+    def _binding(self, account_id, strategy_id):
+        row = self.store.db.execute(
+            'SELECT instance,allocation,logical_strategy FROM capital_instances WHERE account=? AND strategy=?',
+            (account_id, strategy_id)).fetchone()
+        if row is None:
+            raise ValueError('explicit strategy capital binding required')
+        allocation = self.store.allocation(account_id, strategy_id)
+        if allocation is None or allocation['allocation_id'] != row[1]:
+            raise ValueError('existing matching capital allocation required')
+        return row
+
+    def _same_direction(self, account_id, symbol):
+        from .contracts import Side, TERMINAL
+        holdings = {owner: Decimal(quantity) for owner, quantity in self.store.db.execute(
+            'SELECT strategy,quantity FROM portfolio_claims WHERE account=? AND symbol=?', (account_id, symbol))}
+        signs = {1 if quantity > ZERO else -1 for quantity in holdings.values() if quantity}
+        for owner, order in self._orders(account_id):
+            snapshot = order['record'].snapshot
+            intent = snapshot.intent
+            if intent.instrument_id != symbol or snapshot.status in TERMINAL:
+                continue
+            quantity = intent.quantity - snapshot.cumulative_filled_quantity
+            if not quantity:
+                continue
+            direction = 1 if intent.side == Side.BUY else -1
+            held = holdings.get(owner, ZERO)
+            if held * direction >= ZERO or quantity > abs(held):
+                signs.add(direction)
+        if len(signs) > 1:
+            raise ValueError(f'shared symbol direction conflict: {symbol}')
 
     def bind(self, *, account_id, strategy_id, instance_id, allocation_id, logical_strategy=None):
         context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
@@ -120,8 +240,11 @@ class CapitalPolicy:
                 if previous != value:
                     raise ValueError('stable instance allocation binding changed')
                 return
-            if not all((strategy_id, instance_id, allocation_id)):
+            if not all((strategy_id, instance_id, allocation_id, logical_strategy)):
                 raise ValueError('complete instance identity required')
+            if self.store.db.execute('SELECT 1 FROM capital_instances WHERE account=? '
+                    'AND (instance=? OR allocation=?)', (account_id, instance_id, allocation_id)).fetchone():
+                raise ValueError('instance or allocation identity already bound')
             self.store.db.execute('INSERT INTO capital_instances VALUES (?,?,?,?,?,0)',
                                   (account_id, strategy_id, instance_id, allocation_id, logical_strategy))
 
@@ -152,52 +275,83 @@ class CapitalPolicy:
                 return
             self.store.db.execute('INSERT INTO capital_limits VALUES (?,?,?,?,?)',
                                   (account_id, strategy_id, *map(str, value)))
+            for symbol, in self.store.db.execute('SELECT symbol FROM capital_symbols WHERE account=? AND strategy=?',
+                                                 (account_id, strategy_id)).fetchall():
+                self._tighten_symbol_limit(account_id, symbol, limits.max_instrument_exposure)
 
     def validate_orders(self, account, strategy_id, *, include_id=None):
-        """Use the controller's gross exposure limits inside the outbox transaction."""
+        """Check instance, gross symbol and account projections in the outbox transaction."""
         from .control import exposure_limit_reason
         from .contracts import Side, TERMINAL
-        from .storage import decode
-        import json
+        account_id = account.account_id
         policy = self.store.db.execute('SELECT budget FROM capital_accounts WHERE account=?',
-                                       (account.account_id,)).fetchone()
+                                       (account_id,)).fetchone()
         if policy is None:
             return
-        limits = self.limits(account.account_id, strategy_id)
-        owned = self.store.holdings(account.account_id, strategy_id)
-        exposures = {p.instrument_id: abs(owned.get(p.instrument_id, ZERO)) * p.mark_price
-                     for p in account.positions}
-        account_exposure = sum((abs(p.quantity) * p.mark_price for p in account.positions), ZERO)
-        pending = []
-        local_ids = set()
-        for owner, payload in self.store.db.execute(
-                'SELECT p.strategy,o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
-                'WHERE p.account=?', (account.account_id,)):
-            order = decode(json.loads(payload))
+        limits = self.limits(account_id, strategy_id)
+        owned = self.store.holdings(account_id, strategy_id)
+        marks = {p.instrument_id: p.mark_price for p in account.positions}
+        exposures = {}
+        for symbol, quantity in owned.items():
+            if quantity:
+                if symbol not in marks:
+                    raise ValueError('owned inventory requires an official mark')
+                exposures[symbol] = abs(quantity) * marks[symbol]
+        symbols = {}
+        for position in account.positions:
+            symbol = position.instrument_id
+            symbols[symbol] = symbols.get(symbol, ZERO) + abs(position.quantity) * position.mark_price
+        account_exposure = sum(symbols.values(), ZERO)
+        pending, local_ids, reductions = [], set(), {}
+        for owner, order in self._orders(account_id):
             snapshot = order['record'].snapshot
             intent = snapshot.intent
+            symbol = intent.instrument_id
             local_ids.add(intent.client_order_id)
-            if snapshot.status in TERMINAL or intent.side != Side.BUY:
+            if snapshot.status in TERMINAL:
                 continue
-            amount = (intent.quantity - snapshot.cumulative_filled_quantity) * order['reservation_price']
+            quantity = intent.quantity - snapshot.cumulative_filled_quantity
+            held = self.store.holdings(account_id, owner).get(symbol, ZERO)
+            direction = 1 if intent.side == Side.BUY else -1
+            reducing = held * direction < ZERO
+            if reducing:
+                key = (owner, symbol)
+                reductions[key] = reductions.get(key, ZERO) + quantity
+                if reductions[key] > abs(held):
+                    raise ValueError('orders exceed instance owned inventory')
+            amount = ZERO if reducing else quantity * order['reservation_price']
             account_exposure += amount
+            symbols[symbol] = symbols.get(symbol, ZERO) + amount
             if owner == strategy_id:
-                exposures[intent.instrument_id] = exposures.get(intent.instrument_id, ZERO) + amount
+                exposures[symbol] = exposures.get(symbol, ZERO) + amount
                 if not order['attempted'] or intent.client_order_id == include_id:
-                    pending.append((intent.instrument_id, intent.quantity * order['reservation_price']))
+                    pending.append((symbol, intent.quantity * order['reservation_price'], amount > ZERO))
+        foreign = False
         for order in account.open_orders:
             if order.intent.client_order_id not in local_ids and order.status not in TERMINAL:
+                foreign = True
                 if order.intent.limit_price is None:
                     raise ValueError('unpriced foreign order risk')
-                account_exposure += ((order.intent.quantity - order.cumulative_filled_quantity)
-                                     * order.intent.limit_price)
-        for symbol, amount in pending:
+                amount = ((order.intent.quantity - order.cumulative_filled_quantity)
+                          * order.intent.limit_price)
+                symbol = order.intent.instrument_id
+                symbols[symbol] = symbols.get(symbol, ZERO) + amount
+                account_exposure += amount
+        shared = self.mode(account_id) == CapitalPolicyMode.SHARED_SAME_DIRECTION
+        for symbol, amount, increasing in pending:
+            if shared:
+                self._same_direction(account_id, symbol)
             reason = exposure_limit_reason(limits, order_notional=amount,
                 instrument_exposure=exposures[symbol], account_exposure=sum(exposures.values(), ZERO))
             if reason != 'APPROVED':
                 raise ValueError(reason)
-            if account_exposure > Decimal(policy[0]):
-                raise ValueError('ACCOUNT_BUDGET_LIMIT')
+            if increasing:
+                if shared and foreign:
+                    raise ValueError('unknown external orders prevent risk increase')
+                if symbols[symbol] > self.symbol_limit(account_id, symbol):
+                    raise ValueError('SYMBOL_EXPOSURE_LIMIT')
+                if account_exposure > Decimal(policy[0]):
+                    raise ValueError('ACCOUNT_BUDGET_LIMIT')
 
     def qualify(self, spec, binding, allocation=None):
         """Atomically reserve exclusive symbols for an explicitly funded instance."""
@@ -218,16 +372,105 @@ class CapitalPolicy:
                 self.claim(account_id, owner, symbol)
             return configured
 
+    def ownership(self, account_id, symbol=None):
+        """Return registered owners with their durable allocation and logical identities."""
+        query = ('SELECT s.symbol,s.strategy,i.instance,i.allocation,i.logical_strategy '
+                 'FROM capital_symbols s JOIN capital_instances i ON i.account=s.account '
+                 'AND i.strategy=s.strategy WHERE s.account=?')
+        params = (account_id,)
+        if symbol is not None:
+            query += ' AND s.symbol=?'
+            params += (symbol,)
+        return tuple(SymbolOwnership(account_id, *row) for row in self.store.db.execute(
+            query + ' ORDER BY s.symbol,s.strategy', params))
+
+    def validate_shared_symbol(self, account_id, strategy_id, symbol):
+        """Validate funded identity and same-direction journal eligibility without claiming."""
+        self._binding(account_id, strategy_id)
+        owners = {owner for owner, quantity in self.store.db.execute(
+            'SELECT strategy,quantity FROM portfolio_claims WHERE account=? AND symbol=?',
+            (account_id, symbol)) if Decimal(quantity)}
+        owners.update(owner for owner, in self.store.db.execute(
+            'SELECT strategy FROM capital_symbols WHERE account=? AND symbol=?', (account_id, symbol)))
+        if self.mode(account_id) == CapitalPolicyMode.EXCLUSIVE:
+            if any(owner != strategy_id for owner in owners):
+                raise ValueError(f'position ownership conflict: {symbol}')
+        else:
+            for owner in owners:
+                self._binding(account_id, owner)
+            self._same_direction(account_id, symbol)
+
+    def symbol_limit(self, account_id, symbol):
+        row = self.store.db.execute('SELECT max_exposure FROM capital_symbol_limits '
+                                    'WHERE account=? AND symbol=?', (account_id, symbol)).fetchone()
+        if row is None:
+            raise KeyError((account_id, symbol))
+        return Decimal(row[0])
+
+    def _tighten_symbol_limit(self, account_id, symbol, limit):
+        row = self.store.db.execute('SELECT max_exposure FROM capital_symbol_limits '
+                                    'WHERE account=? AND symbol=?', (account_id, symbol)).fetchone()
+        if row is None:
+            self.store.db.execute('INSERT INTO capital_symbol_limits VALUES (?,?,?)',
+                                  (account_id, symbol, str(limit)))
+        elif limit < Decimal(row[0]):
+            self.store.db.execute('UPDATE capital_symbol_limits SET max_exposure=? WHERE account=? AND symbol=?',
+                                  (str(limit), account_id, symbol))
+
+    def set_symbol_limit(self, account_id, symbol, limit):
+        """Explicitly tighten the persistent aggregate ceiling; never enlarge it."""
+        decimal_value(limit, 'symbol exposure limit')
+        with self.store.transaction():
+            if limit > self.symbol_limit(account_id, symbol):
+                raise ValueError('symbol limit cannot increase the existing risk boundary')
+            self._tighten_symbol_limit(account_id, symbol, limit)
+
     def claim(self, account_id, strategy_id, symbol):
-        """Caller holds the portfolio write transaction."""
-        owners = self.store.db.execute(
-            'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=? '
-            'UNION SELECT strategy FROM capital_symbols WHERE account=? AND symbol=?',
-            (account_id, symbol, account_id, symbol)).fetchall()
-        if any(owner != strategy_id for owner, in owners):
-            raise ValueError(f'position ownership conflict: {symbol}')
+        """Register only this funded instance; caller holds the portfolio write transaction."""
+        if not symbol:
+            raise ValueError('symbol required')
+        self.validate_shared_symbol(account_id, strategy_id, symbol)
+        self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, strategy_id).max_instrument_exposure)
         self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
                               (account_id, symbol, strategy_id))
+
+    def _validate_release(self, account_id, strategy_id, symbol):
+        from .contracts import TERMINAL
+        if self.store.holdings(account_id, strategy_id).get(symbol, ZERO):
+            raise ValueError('ownership release requires flat instance inventory')
+        for owner, order in self._orders(account_id):
+            snapshot = order['record'].snapshot
+            if owner == strategy_id and snapshot.intent.instrument_id == symbol and (
+                    snapshot.status not in TERMINAL or order['uncertain']):
+                raise ValueError('unfinished orders prevent ownership release')
+
+    def release(self, account_id, strategy_id, symbol):
+        """Remove admission only; caller preserves inventory and historical attribution."""
+        self._binding(account_id, strategy_id)
+        self._validate_release(account_id, strategy_id, symbol)
+        self.store.db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
+                              (account_id, symbol, strategy_id))
+
+    def transfer_flat_ownership(self, account_id, from_strategy, to_strategy, symbols):
+        """Transfer policy claims in the caller's inventory/history transaction."""
+        self._binding(account_id, from_strategy)
+        self._binding(account_id, to_strategy)
+        for symbol in symbols:
+            self._validate_release(account_id, from_strategy, symbol)
+            others = {owner for owner, in self.store.db.execute(
+                'SELECT strategy FROM capital_symbols WHERE account=? AND symbol=? '
+                'UNION SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
+                (account_id, symbol, account_id, symbol))} - {from_strategy, to_strategy}
+            if self.mode(account_id) == CapitalPolicyMode.EXCLUSIVE and others:
+                raise ValueError(f'position ownership conflict: {symbol}')
+            if self.mode(account_id) == CapitalPolicyMode.SHARED_SAME_DIRECTION:
+                self._same_direction(account_id, symbol)
+            self.store.db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
+                                  (account_id, symbol, from_strategy))
+            self._tighten_symbol_limit(account_id, symbol,
+                                       self.limits(account_id, to_strategy).max_instrument_exposure)
+            self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
+                                  (account_id, symbol, to_strategy))
 
     def pause(self, account_id, strategy_id, paused=True):
         if type(paused) is not bool:
