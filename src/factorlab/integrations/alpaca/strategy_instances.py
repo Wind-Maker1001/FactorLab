@@ -43,7 +43,8 @@ class StrategyInstances:
         policy = configuration.get('capital_policy')
         if policy is not None:
             self.store.capital_policy.configure(account_id=facts.account_id,
-                currency=policy['currency'], budget=D(policy['budget']), fee_rate=D(policy['fee_rate']))
+                currency=policy['currency'], budget=D(policy['budget']), fee_rate=D(policy['fee_rate']),
+                mode=policy.get('mode'))
         for registration in configuration['instances']:
             binding = registration['binding']
             if binding['account_id'] != facts.account_id:
