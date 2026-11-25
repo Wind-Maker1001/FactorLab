@@ -176,12 +176,14 @@ class DemoRuntime:
                 and not campaign['smoke']]
 
     def consumption(self, authorization):
-        campaigns = {campaign['id'] for campaign in self._continuous_campaigns(authorization)}
+        # The bound account owns this journal, including smoke and portfolio dispatches.
         count, notional = 0, Decimal(0)
-        for campaign, payload in self.db.execute("SELECT campaign, parameters FROM dispatches WHERE method='POST'"):
-            if campaign in campaigns:
-                params = json.loads(payload)
-                count += 1
+        for (payload,) in self.db.execute(
+                "SELECT parameters FROM dispatches WHERE method='POST' UNION ALL "
+                "SELECT parameters FROM dispatch_retry_history WHERE method='POST'"):
+            params = json.loads(payload)
+            count += 1
+            if 'quantity' in params:
                 notional += Decimal(params['quantity']) * Decimal(params['price'])
         return dict(posts=count, submitted_notional=str(notional))
 

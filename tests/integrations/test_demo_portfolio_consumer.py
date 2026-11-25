@@ -11,7 +11,8 @@ from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocke
 from factorlab.trading.control import RiskLimits
 
 
-def test_portfolio_loss_baseline_survives_runtime_restart(tmp_path, monkeypatch):
+@pytest.mark.parametrize('global_exhausted', [False, True])
+def test_portfolio_loss_baseline_survives_runtime_restart(tmp_path, monkeypatch, global_exhausted):
     funds = dict(walletBalance=D(5000), unrealizedProfit=D(0))
     facts = SimpleNamespace(usdt=lambda:funds)
     adapter = SimpleNamespace(account_id='DEMO:FactorLab-Demo:unit', facts=facts,
@@ -28,6 +29,17 @@ def test_portfolio_loss_baseline_survives_runtime_restart(tmp_path, monkeypatch)
     consumer = module.DemoPortfolioConsumer(session,runtime,tmp_path)
     params = dict(symbol='QQQUSDT',side='BUY',reduceOnly='false',quantity='.01',price='600',
                   newClientOrderId='pf-first')
+    if global_exhausted:
+        import json
+        runtime._set('continuous', json.dumps(dict(id='continuous-test', state='RUNNING',
+            total_orders=100000, total_notional='5', opening_equity='5000', max_loss='250')))
+        runtime.db.commit()
+        with consumer.scope('stable-task','QQQUSDT'):
+            with pytest.raises(SafetyBlocked, match='global Demo trading budget'):
+                session._write_guard('POST', params, session.client.transport.authorization.plan)
+        assert runtime.db.execute('SELECT count(*) FROM dispatches').fetchone()[0] == 0
+        runtime.close()
+        return
     with consumer.scope('stable-task','QQQUSDT'):
         session._write_guard('POST',params,session.client.transport.authorization.plan)
     runtime.close()

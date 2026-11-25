@@ -16,6 +16,25 @@ from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocke
 LIMITS = dict(total_orders=100000, total_notional=D('500000'), max_loss=D('250'))
 
 
+def test_account_budget_includes_smoke_portfolio_and_configuration_posts(network_grid):
+    root, store, _, _, _, _ = network_grid
+    with closing(DemoRuntime(root)) as runtime:
+        authorization = runtime.start_continuous(store.config, opening_equity=D('5000'),
+            stop_epoch=runtime.stop_epoch())
+        runtime.db.executemany('INSERT INTO dispatches VALUES (?, ?, ?, ?, ?)', [
+            ('smoke-original', 'POST', 'smoke-order', json.dumps(dict(quantity='.04', price='150')), '{}'),
+            ('portfolio-campaign:original', 'POST', 'portfolio-order',
+             json.dumps(dict(quantity='.01', price='600')), '{}'),
+            ('portfolio-campaign:original', 'POST', 'leverage', json.dumps(dict(symbol='QQQUSDT', leverage=1)), '{}'),
+            ('smoke-original', 'DELETE', 'smoke-order', '{}', '{}')])
+        runtime.db.commit()
+        before = runtime.db.execute('SELECT * FROM dispatches').fetchall()
+        assert runtime.consumption(authorization) == dict(posts=3, submitted_notional='12.00')
+        migrated = runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)
+        assert migrated['consumption'] == dict(posts=3, submitted_notional='12.00')
+        assert runtime.db.execute('SELECT * FROM dispatches').fetchall() == before
+
+
 def exhausted(runtime, binding):
     authorization = runtime.start_continuous(binding, opening_equity=D('5000'), stop_epoch=runtime.stop_epoch())
     historical = dict(id='original', journal_id=authorization['journal_id'], opening_equity='5000', smoke=False)
