@@ -92,6 +92,8 @@ class AccountFacts:
                 'quantity': quantity, 'entry_price': entry_price,
                 'unrealized_pnl': number(row, 'unrealizedProfit'),
                 'initial_margin': number(row, 'initialMargin'), 'maintenance_margin': number(row, 'maintMargin'),
+                'position_initial_margin': number(row, 'positionInitialMargin'),
+                'open_order_initial_margin': number(row, 'openOrderInitialMargin'),
                 'leverage': config.get('leverage'), 'margin_type': config.get('marginType'),
                 'isolated_margin': number(risk, 'isolatedMargin'),
                 'liquidation_price': number(risk, 'liquidationPrice'),

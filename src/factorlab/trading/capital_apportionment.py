@@ -1,5 +1,14 @@
-"""Conserving allocation in the official amount's decimal settlement units."""
+"""Conserving USDT allocation at eight decimals or finer official precision."""
 from decimal import Decimal
+
+
+def exact_sum(values):
+    """Sum ledger decimals without applying the caller's precision or rounding."""
+    parts = [value.as_tuple() for value in values]
+    exponent = min((part.exponent for part in parts), default=0)
+    units = sum((-1 if part.sign else 1) * int(''.join(map(str, part.digits)))
+                * 10 ** (part.exponent - exponent) for part in parts)
+    return Decimal((int(units < 0), tuple(map(int, str(abs(units)))), exponent))
 
 
 def apportion(amount, weights):
