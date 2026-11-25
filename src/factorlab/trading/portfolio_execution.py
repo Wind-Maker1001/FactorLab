@@ -800,6 +800,15 @@ class PortfolioExecutor:
             self._recover(plan)
             self.store.save_plan(plan)
 
+    def reconcile(self, account_id):
+        """Persist original-order observations without planning, submitting or canceling.
+
+        Broker reads may update fills, fees, ownership and terminal reservations
+        in the existing journal. This is execution-free, not storage-read-only.
+        """
+        with self.store.transaction():
+            self._recover_account(account_id)
+
     def _account_uncertain(self, account_id):
         return any(order['uncertain'] for identity, in self.store.db.execute(
             'SELECT id FROM portfolio_plans WHERE account=?', (account_id,)).fetchall()
