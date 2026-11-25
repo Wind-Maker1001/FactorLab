@@ -94,6 +94,55 @@ class DecisionJournal:
             return decision
 
 
+class InstanceDecisionRuntime:
+    """V2 receipts and recovery over an instance view and the existing execution owner.
+
+    Execution adapters persist stable per-intent identities in their controller
+    journal before acknowledging a receipt. Dispatch retries reuse those IDs.
+    """
+    def __init__(self, strategy, store, adapter, *, allocation):
+        from .protocol import StrategySpecV2
+        from .package import manifest_spec
+        if store.legacy or not isinstance(strategy.spec, StrategySpecV2):
+            raise ValueError('V2 runtime requires a registered instance')
+        self.strategy, self.store, self.adapter = strategy, store, adapter
+        self.package_id = strategy.binding['package_id']
+        if strategy.package_manifest != store.manifest(self.package_id) or strategy.spec != manifest_spec(strategy.package_manifest):
+            raise ValueError('runtime/package identity mismatch')
+        strategy.spec.require_binding(store.binding())
+        adapter.qualify(strategy.spec, store.binding(), allocation)
+        store.bind_runtime(self.package_id, strategy.binding)
+
+    def recover(self):
+        if self.store.pending() is not None or self.store.snapshot()['active'] != self.package_id:
+            raise ValueError('instance quiesced or runtime version is not active')
+        for receipt in self.store.outstanding(self.package_id):
+            self.adapter.execute(receipt)
+            self.store.acknowledge(receipt)
+
+    def decide(self, event):
+        from .events import validate_event
+        validate_event(event, self.strategy.spec)
+        if event['binding'] != self.store.binding():
+            raise ValueError('event routed to the wrong instance/allocation')
+        self.recover()
+        input_identity = identity(event)
+        saved = self.store.decision(self.package_id, event['event_id'], input_identity)
+        if saved is not None:
+            return saved
+        checkpoint = self.store.checkpoint()
+        try:
+            decision = self.strategy.decide(event, checkpoint)
+        except Exception as error:
+            self.store.rollback('STRATEGY_FAILED:' + type(error).__name__, expected_active=self.package_id)
+            raise
+        receipt = self.store.commit_decision(self.package_id, event['event_id'], input_identity,
+            decision_payload(decision), event=event, expected_checkpoint=checkpoint)
+        self.adapter.execute(receipt)
+        self.store.acknowledge(receipt)
+        return receipt
+
+
 class SignalAdapter:
     """Plug a protocol target strategy into existing Demo/Realtime runtimes."""
     def __init__(self, journal):

@@ -10,10 +10,14 @@ class DecisionExecutionAdapter(Protocol):
         ...
 
     def execute(self, receipt: dict) -> None:
-        """Resume durable instance/allocation-owned intents through the account owner.
+        """Durably accept all child intents through the existing account owner.
 
-        A repeated receipt must not apply quantity deltas twice. A partially
-        dispatched portfolio resumes remaining intents using stable identities.
+        receipt['decision'] is a versioned payload map. Its identity is the
+        (binding.instance_id, package_id, event_id) tuple. Return only when all
+        children are in the owner's journal/outbox, not when fills complete.
+        Raise on incomplete persistence; recovery redelivers the same receipt.
+        Stable child IDs must prevent repeated quantity deltas after a partial
+        dispatch. Unconfirmed orders remain with the account owner's recovery.
         """
         ...
 
