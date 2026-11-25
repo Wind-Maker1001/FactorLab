@@ -57,6 +57,72 @@ MODEL_BASELINE = "NO_F11_NO_F08_STRANDED_POSITION_BASELINE"
 MODEL_F11_ONLY = "F11_EXIT_ONLY_NO_ROTATION"
 MODEL_F11_F08 = "F11_F08_FULL_LIFECYCLE"
 
+EXIT_PEAK_MONITORING_METHOD = "EVENT_LEVEL_AUTHORITATIVE_LIFECYCLE"
+_TERMINAL_EXIT_STATUS_NAMES = frozenset({s.value for s in TERMINAL})
+_ACTIVE_EXIT_STATUS_NAMES = frozenset(
+    {
+        "SUBMITTED",
+        "NEW",
+        "ACCEPTED",
+        "OPEN",
+        "PARTIALLY_FILLED",
+        "CANCEL_PENDING",
+        "UNKNOWN",
+    }
+)
+
+
+def reconstruct_exit_order_peak_from_events(
+    transitions: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Independently reconstruct peak simultaneous authoritative exit SELL orders from lifecycle events.
+
+    Counts only orders actually submitted to the authoritative broker/exchange that have not
+    yet reached an authoritative terminal status (``FILLED``, ``CANCELED``, ``REJECTED``,
+    ``EXPIRED``). ``CANCEL_PENDING`` and unresolved ``UNKNOWN`` orders remain active.
+    Local unsubmitted proposals must not enter this event stream.
+    """
+    active_ids: set[str] = set()
+    peak = 0
+    submissions = 0
+    overlap_violations: list[dict[str, Any]] = []
+
+    for idx, tr in enumerate(transitions):
+        oid = str(tr["client_order_id"])
+        status = str(tr["status"]).upper()
+        if status in _TERMINAL_EXIT_STATUS_NAMES:
+            active_ids.discard(oid)
+        elif status in _ACTIVE_EXIT_STATUS_NAMES:
+            if status in {"SUBMITTED", "NEW"} and oid not in active_ids:
+                submissions += 1
+            active_ids.add(oid)
+        else:
+            raise ValueError(f"Unrecognized authoritative exit order status: {status}")
+
+        cur_count = len(active_ids)
+        if cur_count > peak:
+            peak = cur_count
+        if cur_count > 1:
+            overlap_violations.append(
+                {
+                    "seq": int(tr.get("seq", idx + 1)),
+                    "event_time": tr.get("event_time"),
+                    "generation": tr.get("generation"),
+                    "trigger_order_id": oid,
+                    "trigger_status": status,
+                    "active_order_ids": sorted(active_ids),
+                    "active_count": cur_count,
+                }
+            )
+
+    return {
+        "peak_simultaneous_exit_orders": peak,
+        "total_exit_submissions": submissions,
+        "active_exit_orders_at_end": sorted(active_ids),
+        "overlap_violations": overlap_violations,
+        "monitoring_method": EXIT_PEAK_MONITORING_METHOD,
+    }
+
 
 @dataclass(frozen=True)
 class DemoGuardrails:
@@ -657,7 +723,41 @@ def run_offline_lifecycle(
         pending_unknown_order_id: str | None = None
         rotated_on_this_bar = False
         max_simultaneous_exit_orders = 0
+        bar_end_max_simultaneous_exit_orders = 0
+        active_exit_order_ids: set[str] = set()
+        exit_lifecycle_transitions: list[dict[str, Any]] = []
+        exit_transition_seq = 0
         cumulative_funding_blocked_hours = 0
+
+        def record_exit_transition(
+            order_id: str,
+            status_name: str,
+            *,
+            source: str,
+            event_time: datetime | None = None,
+        ) -> None:
+            nonlocal exit_transition_seq, max_simultaneous_exit_orders
+            norm_status = str(status_name).upper()
+            exit_transition_seq += 1
+            ts_str = (event_time or now[0]).isoformat()
+            exit_lifecycle_transitions.append(
+                {
+                    "seq": exit_transition_seq,
+                    "event_time": ts_str,
+                    "generation": generation,
+                    "client_order_id": order_id,
+                    "status": norm_status,
+                    "source": source,
+                }
+            )
+            if norm_status in _TERMINAL_EXIT_STATUS_NAMES:
+                active_exit_order_ids.discard(order_id)
+            elif norm_status in _ACTIVE_EXIT_STATUS_NAMES:
+                active_exit_order_ids.add(order_id)
+            else:
+                raise ValueError(f"Unrecognized exit transition status: {norm_status}")
+            if len(active_exit_order_ids) > max_simultaneous_exit_orders:
+                max_simultaneous_exit_orders = len(active_exit_order_ids)
         cumulative_vol_blocked_hours = 0
         cumulative_adaptive_rebuilds = 0
         cumulative_funding_exit_triggers = 0
@@ -734,6 +834,12 @@ def run_offline_lifecycle(
                 }
             )
             if order_meta[event.client_order_id]["purpose"] == "RISK_EXIT":
+                record_exit_transition(
+                    event.client_order_id,
+                    event.status.value,
+                    source="fill",
+                    event_time=event.event_time,
+                )
                 if event.status == OrderStatus.PARTIALLY_FILLED:
                     exit_orders_partial_events += 1
                 elif event.status == OrderStatus.FILLED:
@@ -761,6 +867,9 @@ def run_offline_lifecycle(
                 order_meta.pop(key, None)
                 return False
             order_submitted_bar[key] = bar_idx
+            if purpose == "RISK_EXIT":
+                submitted_status = broker.state.orders[key].snapshot.status.value
+                record_exit_transition(key, submitted_status, source="submit_paper")
             return True
 
         def book_funding_event(amount: Decimal, settlement_time: datetime, mark_price: Decimal, rate: Decimal) -> None:
@@ -866,8 +975,12 @@ def run_offline_lifecycle(
 
             # 0. Reconcile any pending UNKNOWN order from a previous cancel fault
             if pending_unknown_order_id is not None:
+                rec_oid = pending_unknown_order_id
                 grid.reconcile_paper(controller, delivery=grid.delivery + 1)
                 exit_reconcile_recoveries += 1
+                if order_meta.get(rec_oid, {}).get("purpose") == "RISK_EXIT" and rec_oid in broker.state.orders:
+                    rec_status = broker.state.orders[rec_oid].snapshot.status.value
+                    record_exit_transition(rec_oid, rec_status, source="reconcile_paper")
                 pending_unknown_order_id = None
 
             # 1. Accrue on the inventory held between closes before any fills at this close.
@@ -954,6 +1067,10 @@ def run_offline_lifecycle(
                     if key in grid.exit_orders:
                         continue
                     grid.cancel_paper(controller, key, delivery=grid.delivery + 1)
+                    if order_meta.get(key, {}).get("purpose") == "RISK_EXIT":
+                        record_exit_transition(
+                            key, broker.state.orders[key].snapshot.status.value, source="cancel_paper"
+                        )
                     deletes_consumed += 1
                     consumed_delete_ids.add(key)
 
@@ -1037,11 +1154,13 @@ def run_offline_lifecycle(
                             ):
                                 # Pre-cancel price band check already verified in _plan_offline_limit_exit
                                 grid.cancel_exit_paper(controller, sell_key, delivery=grid.delivery + 1)
+                                record_exit_transition(sell_key, "CANCEL_PENDING", source="cancel_exit_paper")
                                 if assumptions.inject_cancel_unknown_once and not cancel_fault_injected:
                                     # Simulate cancel HTTP timeout -> UNKNOWN -> EXIT_RECONCILING (forbids replacement)
                                     cancel_fault_injected = True
                                     exit_cancel_faults += 1
                                     grid.mark_unknown_paper(controller, sell_key, delivery=grid.delivery + 1)
+                                    record_exit_transition(sell_key, OrderStatus.UNKNOWN.value, source="mark_unknown_paper")
                                     pending_unknown_order_id = sell_key
                                 elif assumptions.inject_cancel_fill_race_once and not cancel_fill_race_injected:
                                     # Simulate cancel-fill race: order filled before cancel reached exchange!
@@ -1054,6 +1173,11 @@ def run_offline_lifecycle(
                                         record_fill_trade(ev, sell, book["bid"])
                                 else:
                                     grid.cancel_paper(controller, sell_key, delivery=grid.delivery + 1)
+                                    record_exit_transition(
+                                        sell_key,
+                                        broker.state.orders[sell_key].snapshot.status.value,
+                                        source="cancel_paper",
+                                    )
                                     deletes_consumed += 1
                                     consumed_delete_ids.add(sell_key)
                                     exit_reprices += 1
@@ -1112,14 +1236,14 @@ def run_offline_lifecycle(
                                     controller, [intent.client_order_id], delivery=grid.delivery + 1
                                 )
 
-            # Track runtime single-exit-order invariant across all open orders
+            # Track bar-end open exit count for diagnostic parity alongside event-level peak
             open_exit_count = sum(
                 1
                 for o in controller.account().open_orders
                 if order_meta.get(o.intent.client_order_id, {}).get("purpose") == "RISK_EXIT"
             )
-            if open_exit_count > max_simultaneous_exit_orders:
-                max_simultaneous_exit_orders = open_exit_count
+            if open_exit_count > bar_end_max_simultaneous_exit_orders:
+                bar_end_max_simultaneous_exit_orders = open_exit_count
 
             # 7. Check FLAT_CONFIRMED after breakout/funding-exit & F08 Automatic Rotation
             acct_end = grid.account or project_paper_account(controller, instrument_id)
@@ -1365,6 +1489,13 @@ def run_offline_lifecycle(
             float(rotations_completed / flat_after_breakout_events) if flat_after_breakout_events > 0 else None
         )
 
+        reconstructed_exit_peak = reconstruct_exit_order_peak_from_events(exit_lifecycle_transitions)
+        if reconstructed_exit_peak["peak_simultaneous_exit_orders"] != max_simultaneous_exit_orders:
+            raise AssertionError(
+                "Incremental exit peak disagrees with event-reconstructed peak: "
+                f"{max_simultaneous_exit_orders} vs {reconstructed_exit_peak['peak_simultaneous_exit_orders']}"
+            )
+
         return {
             "strategy_id": strategy_id,
             "model_label": guardrails.model_label,
@@ -1438,6 +1569,9 @@ def run_offline_lifecycle(
             "final_state": grid.state,
             "final_reason": grid.reason,
             "max_simultaneous_exit_orders": max_simultaneous_exit_orders,
+            "bar_end_max_simultaneous_exit_orders": bar_end_max_simultaneous_exit_orders,
+            "exit_peak_monitoring_method": EXIT_PEAK_MONITORING_METHOD,
+            "exit_overlap_violations": reconstructed_exit_peak["overlap_violations"],
             "funding_blocked_hours": cumulative_funding_blocked_hours,
             "vol_blocked_hours": cumulative_vol_blocked_hours,
             "adaptive_rebuilds": cumulative_adaptive_rebuilds,

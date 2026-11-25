@@ -771,6 +771,14 @@ class GridExecution:
             raise ValueError('Grid checkpoint requires authority reconciliation')
         return saved['revision'], payload
 
+    def _subclass_checkpoint(self):
+        """Optional subclass-specific decision state persisted in the checkpoint payload."""
+        return None
+
+    def _restore_subclass_checkpoint(self, state, payload, broker, store):
+        """Optional subclass hook invoked after base GridExecution fields are restored."""
+        return None
+
     def _write_checkpoint(self, state, cursor, deployment):
         working = {}
         for key, order in self.orders.items():
@@ -782,6 +790,9 @@ class GridExecution:
                        timestamp=self.timestamp.isoformat(), true_ranges=list(self.true_ranges),
                        pending_rebuild=self.pending_rebuild, pending_bar=self.pending_bar, working=working,
                        cancellations=sorted(self.cancellations), expirations=sorted(self.expirations))
+        sub_state = self._subclass_checkpoint()
+        if sub_state is not None:
+            payload['subclass_state'] = sub_state
         self._revision = _fingerprint(payload)
         state.runtime[_CHECKPOINT] = dict(revision=self._revision, checkpoint=payload)
 
@@ -823,6 +834,7 @@ class GridExecution:
                 raise ValueError('Grid checkpoint turnover disagrees with Paper journal')
             staged._turnover = turnover
             staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
+            staged._restore_subclass_checkpoint(broker.state, payload, broker, store)
         self.__dict__ = staged.__dict__
         self._bind_admission(controller)
 

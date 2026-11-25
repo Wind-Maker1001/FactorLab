@@ -100,8 +100,8 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
     dm_l2d_a = _lookup_wf(wf_idx, "L2", "DELAYED_EXIT_FILL", "DEMO_HIGH_FUNDING_22.97BPS", "A_FIXED")
     dm_l2d_b = _lookup_wf(wf_idx, "L2", "DELAYED_EXIT_FILL", "DEMO_HIGH_FUNDING_22.97BPS", "B_WF")
 
-    ab_f11_sw_a = _lookup_ablation(ablations, comparison="A_FIXED: L1 - L0 (F11 pure)", funding_regime="SWITCH_48H", execution_profile="IDEAL_LIMIT_FILL")
-    ab_f08_mn_a = _lookup_ablation(ablations, comparison="A_FIXED: L2 - L1 (F08 incremental)", funding_regime="MAINNET_ACTUAL", execution_profile="IDEAL_LIMIT_FILL")
+    ab_f11_sw_a = _lookup_ablation(ablations, comparison="A_FIXED: L1 - L0 (F11 fixed-param mechanism)", funding_regime="SWITCH_48H", execution_profile="IDEAL_LIMIT_FILL") or _lookup_ablation(ablations, comparison="A_FIXED: L1 - L0 (F11 pure)", funding_regime="SWITCH_48H", execution_profile="IDEAL_LIMIT_FILL")
+    ab_f08_mn_a = _lookup_ablation(ablations, comparison="A_FIXED: L2 - L1 (F08 fixed-param incremental)", funding_regime="MAINNET_ACTUAL", execution_profile="IDEAL_LIMIT_FILL") or _lookup_ablation(ablations, comparison="A_FIXED: L2 - L1 (F08 incremental)", funding_regime="MAINNET_ACTUAL", execution_profile="IDEAL_LIMIT_FILL")
     ab_b_l2_sw_id = _lookup_ablation(ablations, comparison="L2: B_WF - A_FIXED", funding_regime="SWITCH_48H", execution_profile="IDEAL_LIMIT_FILL")
     ab_b_l2_sw_dl = _lookup_ablation(ablations, comparison="L2: B_WF - A_FIXED", funding_regime="SWITCH_48H", execution_profile="DELAYED_EXIT_FILL")
     ab_b_l2_dm_dl = _lookup_ablation(ablations, comparison="L2: B_WF - A_FIXED", funding_regime="DEMO_HIGH_FUNDING_22.97BPS", execution_profile="DELAYED_EXIT_FILL")
@@ -162,7 +162,7 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
         f"   - 当开启 F11 限价退出（`L1`，`IDEAL_LIMIT_FILL`）后，仅 F11 本身就将固定网格 A 在 `SWITCH_48H` 中的均值净收益从 `{sw_l0_a['mean_net_return_pct']:+.4f}%` 提升至 `{sw_l1_a['mean_net_return_pct']:+.4f}%`（CVaR95 从 `{sw_l0_a['cvar95_pct']:.2f}%` 降至 `{sw_l1_a['cvar95_pct']:.2f}%`，残仓暂停时长从 `{sw_l0_a['mean_paused_with_inventory_hours']:.1f}h` 降至 `{sw_l1_a['mean_paused_with_inventory_hours']:.1f}h`）。这证明 **R10 中策略 B 在 `L0` 下的大部分减亏收益确实来源于替代缺失的 F11 突破平仓**。\n"
         f"   - 然而，在更贴近现实的**完整 `L2`（F11 + F08）且存在退出摩擦（`DELAYED_EXIT_FILL` / `LIMITED_CAPACITY_PARTIAL` / `UNFILLED_EXIT_TIMEOUT` / `GAP_AND_CANCEL_FAULT`）**下，固定网格 A 因 F08 持续轮换反复入场且缺乏资金费门控，风险再度大幅暴露：在 `SWITCH_48H · L2 · DELAYED` 中，`A = {sw_l2d_a['mean_net_return_pct']:+.4f}%`（CVaR95 `{sw_l2d_a['cvar95_pct']:.2f}%`）而 `B_WF = {sw_l2d_b['mean_net_return_pct']:+.4f}%`（CVaR95 `{sw_l2d_b['cvar95_pct']:.2f}%`）；在 `DEMO_HIGH_FUNDING · L2 · DELAYED` 中，`A = {dm_l2d_a['mean_net_return_pct']:+.4f}%`（CVaR95 `{dm_l2d_a['cvar95_pct']:.2f}%`）而 `B_WF = {dm_l2d_b['mean_net_return_pct']:+.4f}%`（CVaR95 `{dm_l2d_b['cvar95_pct']:.2f}%`）。\n"
         f"2. **资金费敏感机制 B 在 F11 之外仍具有独立但严格条件化的防御研究价值（且实证表明其独立价值几乎全部来自入口/轮换门控，而非独立资金费退出）**：\n"
-        f"   - **关键机制发现（`B2 == B5`）**：在 `L1` 与 `L2` 的全部历史 5 资金费体制 × 5 执行假设中，`B2`（纯因果入口与 F08 轮换门控）与 `B5`（入口门控 + 资金费退出）产生**完全一致的净收益与 CVaR95**（例如 `SWITCH_48H · L2 · DELAYED` 下两者均为 `{sw_l2d_b2['mean_net_return_pct']:+.4f}%` / `{sw_l2d_b5['mean_net_return_pct']:+.4f}%`、`CVaR95 = {sw_l2d_b2['cvar95_pct']:.2f}%`）。根本原因在于：本单层网格（`prices=[lower, upper]`）叠加 2 bps 滑点后，任何触发买单成交的小时收盘价（`close * 1.0002 <= lower`）同时满足 `close < lower`，当根 Bar 即触发 `BREAKOUT` 并进入唯一权威 F11 限价退出流程；因此 `B5` 的额外资金费退出规则被 F11 吸收（仅在单权威日志中追加第二原因），不再产生额外独立平仓动作。\n"
+        f"   - **关键机制发现（已执行的 36 个历史 `L1`/`L2` 单元内 `B2 == B5`）**：在本次历史研究实际执行的 **36 个 `L1`/`L2` 配对单元**（3 核心资金费体制 × `L1`/`L2` × 5 执行假设 = 30 单元，外加 `EX_FUNDING`/`NORMAL_SYNTHETIC_0.125BPS` 下 `L1/IDEAL`、`L2/IDEAL`、`L2/DELAYED` = 6 单元；另 14 个补充体制高摩擦组合未执行）中，`B2`（纯因果入口与 F08 轮换门控）与 `B5`（入口门控 + 资金费退出）在收益、CVaR95、手续费与资金费上均完全等价（例如 `SWITCH_48H · L2 · DELAYED` 下两者均为 `{sw_l2d_b2['mean_net_return_pct']:+.4f}%` / `{sw_l2d_b5['mean_net_return_pct']:+.4f}%`、`CVaR95 = {sw_l2d_b2['cvar95_pct']:.2f}%`）。根本原因在于：本单层网格（`prices=[lower, upper]`）叠加 2 bps 滑点后，任何触发买单成交的小时收盘价（`close * 1.0002 <= lower`）同时满足 `close < lower`，当根 Bar 即触发 `BREAKOUT` 并进入唯一权威 F11 限价退出流程；因此 `B5` 的额外资金费退出规则被 F11 吸收（仅在单权威日志中追加第二原因）。**该结论严格限定于本轮单层网格 + 2 bps 滑点 + 36 个已执行历史单元，不能泛化为资金费退出机制普遍无价值**——确定性测试已证明在零滑点、网格内部持仓条件下 `B5` 资金费退出能够先于 `BREAKOUT` 独立触发。\n"
         f"   - **真正不可替代的独立价值（因果入口与 F08 轮换门控）**：在持续高资金费（如 Demo 周末实测 `22.97 bps/h`）或 `SWITCH_48H` 48h 切换之后，F11 只能在**建仓并突破之后**被动退出，且 F08 轮换会驱使固定网格 A 不断重新开仓、持续支付手续费/滑点并在退出延迟或碎仓阻断（`EXIT_MIN_NOTIONAL`）时承受高额资金费失血；而策略 B 的因果入口门控与轮换延迟门控直接阻止在高资费体制下开新仓，该防护 **F11 无法替代**。反之，若已于高资费前建仓且遭遇 `UNFILLED_EXIT_TIMEOUT` 或 `LIMITED_CAPACITY_PARTIAL` 流动性枯竭，策略 B 同样无法逃离{sw_l2u_note}。\n"
         f"   - **主网常态边界**：在真实主网资金费（`MAINNET_ACTUAL`）的完整 `L2` 生命周期下，`A_FIXED = {m_l2_a['mean_net_return_pct']:+.4f}%`、`B_WF = {m_l2_b['mean_net_return_pct']:+.4f}%`、`C_WF = {m_l2_c['mean_net_return_pct']:+.4f}%`（`IDEAL`，B/C 相对 A 均无 Holm-Bonferroni 显著性）；`DELAYED` 下分别为 `{m_l2d_a['mean_net_return_pct']:+.4f}%` / `{m_l2d_b['mean_net_return_pct']:+.4f}%` / `{m_l2d_c['mean_net_return_pct']:+.4f}%`（{c_mn_dl_note}）。**全部网格策略在全部生命周期与执行假设下均跑输现金基准 `CASH (0.0000%)`**。"
     )
@@ -179,7 +179,7 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
     c_mn_id_delta = f"{ab_c_l2_mn_id['delta_mean_return_pp']:+.2f} pp (Holm p={ab_c_l2_mn_id['holm_wilcoxon_p']:.4f})" if ab_c_l2_mn_id else "—"
 
     lines.append(f"1. **完整 F11 退出是否已经解决 R10 中主要的长期残仓风险？** **在理想限价成交条件下基本解决了突破后的长期残仓，但在退出摩擦情景下仍未根除。** 在 `IDEAL_LIMIT_FILL` 下，F11（`L1 - L0`）使固定网格 A 在 `SWITCH_48H` 的 18 个历史 OOS 窗净收益改善 `{f11_sw_delta}`，残仓暂停时长由 `{sw_l0_a['mean_paused_with_inventory_hours']:.1f}h` 骤降至 `{sw_l1_a['mean_paused_with_inventory_hours']:.1f}h`；但在 `DELAYED_EXIT_FILL`、`LIMITED_CAPACITY_PARTIAL` 与 `UNFILLED_EXIT_TIMEOUT` 下，退出延迟、碎仓 `EXIT_MIN_NOTIONAL` 阻断和流动性枯竭会重新产生残仓与资金费侵蚀。")
-    lines.append(f"2. **资金费敏感策略 B 在 F11 之外还有多少增量价值？** **按执行假设和资金费体制显著分化，且增量几乎完全来自入口与 F08 轮换门控**：在 `MAINNET_ACTUAL · L2 · IDEAL` 下，`B_WF - A_FIXED` 为 `{b_mn_id_delta}`（无显著增量）；在 `SWITCH_48H · L2 · IDEAL` 下为 `{b_sw_id_delta}`（增量大幅收窄，因为 F11 已处理大部分突破残仓）；但在 `SWITCH_48H · L2 · DELAYED` 下回升至 `{b_sw_dl_delta}`，在 `DEMO_HIGH_FUNDING · L2 · DELAYED` 下达到 `{b_dm_dl_delta}`。由于在单层网格 + 2 bps 滑点下 `B2` 与 `B5` 在全部 `L1`/`L2` 历史场景完全一致，策略 B 在 F11 之外的增量价值本质上来自**高资金费期间通过入口/轮换门控避免 F08 反复重新接仓**（注：仅在多档宽网格或零滑点区间内持仓尚未触发 `BREAKOUT` 时，策略 B 的独立资金费退出才可能先于 F11 触发）。")
+    lines.append(f"2. **资金费敏感策略 B 在 F11 之外还有多少增量价值？** **按执行假设和资金费体制显著分化，且在本轮 36 个历史 `L1`/`L2` 配对单元中增量全部来自入口与 F08 轮换门控**：在 `MAINNET_ACTUAL · L2 · IDEAL` 下，`B_WF - A_FIXED` 为 `{b_mn_id_delta}`（无显著增量）；在 `SWITCH_48H · L2 · IDEAL` 下为 `{b_sw_id_delta}`（增量大幅收窄，因为 F11 已处理大部分突破残仓）；但在 `SWITCH_48H · L2 · DELAYED` 下回升至 `{b_sw_dl_delta}`，在 `DEMO_HIGH_FUNDING · L2 · DELAYED` 下达到 `{b_dm_dl_delta}`。由于在本轮单层网格 + 2 bps 滑点下 `B2` 与 `B5` 在已执行的 36 个历史 `L1`/`L2` 单元中完全等价，策略 B 在 F11 之外的增量价值在本轮设定下来自**高资金费期间通过入口/轮换门控避免 F08 反复重新接仓**（同时保留确定性反例证据：在零滑点或区间内部持仓尚未触发 `BREAKOUT` 时，`B5` 的资金费退出仍可先于 F11 独立触发）。")
     lines.append(f"3. **F08 自动轮换提高收益还是增加损耗？** **总体增加交易损耗并放大延迟退出时的尾部风险。** 在 `MAINNET_ACTUAL` 下，固定网格 A 的 `L2 - L1` 差值为 `{f08_mn_delta}`（净收益由 `L1` 的 `{m_l1_a['mean_net_return_pct']:+.4f}%` 恶化至 `L2` 的 `{m_l2_a['mean_net_return_pct']:+.4f}%`，在 `DELAYED` 下进一步恶化至 `{m_l2d_a['mean_net_return_pct']:+.4f}%`）。F08 在突破平仓后重新部署网格，持续消耗手续费、滑点与 POST 预算，在单边/高波动行情下导致“反复止损-轮换-再止损”的锯齿损耗。")
     c_mn_dl_str = f"`{ab_c_l2_mn_dl['delta_mean_return_pp']:+.2f} pp`（Holm `p={ab_c_l2_mn_dl['holm_wilcoxon_p']:.4f}`）" if ab_c_l2_mn_dl else "—"
     lines.append(f"4. **波动率自适应策略 C 是否在完整执行模型下改善风险收益？** **未能带来相对现金的正期望改善，但可在 `L2` 下通过宽幅网格减少 F08 轮换频率与延迟退出损耗。** 在 `MAINNET_ACTUAL · L2 · IDEAL` 下，`C_WF - A_FIXED` 为 `{c_mn_id_delta}`（`C_WF = {m_l2_c['mean_net_return_pct']:+.4f}%` vs `A = {m_l2_a['mean_net_return_pct']:+.4f}%`）；在 `MAINNET_ACTUAL · L2 · DELAYED` 下，`C_WF - A_FIXED` 为 {c_mn_dl_str}（`C_WF = {m_l2d_c['mean_net_return_pct']:+.4f}%` vs `A = {m_l2d_a['mean_net_return_pct']:+.4f}%`），减亏源于较宽网格减少了频繁突破与延迟退出暴露而非产生正 Alpha；在 `SWITCH_48H · L2 · DELAYED` 下 `C_WF = {sw_l2d_c['mean_net_return_pct']:+.4f}%`（CVaR95 `{sw_l2d_c['cvar95_pct']:.2f}%`），仍缺乏对高资金费的防御能力。")
@@ -192,7 +192,7 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
     lines.append("")
     lines.append("| 特别判断项 | 基于实验数据的明确判断 |")
     lines.append("| --- | --- |")
-    lines.append(f"| B 是否仅仅重复实现 F11 的保护效果？ | **退出端被 F11 高度吸收，但入口/轮换门控端具有不可替代的独立价值**。在 `L0 -> L1 (IDEAL)` 中，F11 吸收了 R10 中策略 B 对突破残仓的大部分减亏效果，且在本单层网格 + 2 bps 滑点模型下 `B2 == B5`（F11 吸收了 B5 的退出触发）；但在 `L2` 完整轮换 + 退出摩擦（`DELAYED`/`PARTIAL`/`NO_FILL`）及高资金费下，B 的因果**入口/轮换阻断**防止了 F08 持续重开新仓，这是 F11 无法替代的。 |")
+    lines.append(f"| B 是否仅仅重复实现 F11 的保护效果？ | **退出端在 36 个历史单层网格单元中被 F11 吸收，但入口/轮换门控端具有不可替代的独立价值**。在 `L0 -> L1 (IDEAL)` 中，F11 吸收了 R10 中策略 B 对突破残仓的大部分减亏效果，且在本单层网格 + 2 bps 滑点模型已执行的 36 个历史 `L1`/`L2` 单元中 `B2 == B5`（零滑点区间内持仓的确定性反例仍显示 `B5` 可先于 `BREAKOUT` 触发）；但在 `L2` 完整轮换 + 退出摩擦（`DELAYED`/`PARTIAL`/`NO_FILL`）及高资金费下，B 的因果**入口/轮换阻断**防止了 F08 持续重开新仓，这是 F11 无法替代的。 |")
     lines.append("| 高资金费压力下降低风险是否只是因为空仓？ | **在持续高资费（`DEMO_HIGH_FUNDING`）下确实完全源于空仓门控**（`fills=0`、`holding=0h`、净收益 `0.00%`）；在 `SWITCH_48H` 下前 48h 正常参与交易，48h 切换后由“F11 清理已有突破仓位 + 策略 B 禁止后续 F08 轮换新开仓”共同起效。这是风控减亏而非盈利 Alpha。 |")
     lines.append(f"| F08 是否造成手续费侵蚀？ | **是，明确观察到手续费与滑点侵蚀**。`MAINNET_ACTUAL` 18 窗中，A 从 `L1` 到 `L2`（`IDEAL`）净收益由 `{m_l1_a['mean_net_return_pct']:+.4f}%` 降至 `{m_l2_a['mean_net_return_pct']:+.4f}%`，手续费由 `{m_l1_a['total_fees_usdt']:.4f}` 增至 `{m_l2_a['total_fees_usdt']:.4f} USDT`，滑点由 `{m_l1_a['total_slippage_usdt']:.4f}` 增至 `{m_l2_a['total_slippage_usdt']:.4f} USDT`。 |")
     lines.append(f"| C 是否减少风险但同步损害收益？ | **视生命周期而定**：在 `L0` 下 C 通过宽幅减少成交但仍亏损；在 `L2` 下宽幅显著减少 F08 频繁突破与手续费（`L2 · IDEAL` 主网 `C_WF={m_l2_c['mean_net_return_pct']:+.4f}%` 优于 `A={m_l2_a['mean_net_return_pct']:+.4f}%`），但在 `DELAYED` 与高资金费下仍显著亏损且未跑赢 `CASH` 或 `B`。 |")
@@ -206,12 +206,22 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
     lines.append("- **单权威退出订单不变式**：扩展 `GridExecution.closed_for_limit_exit` 覆盖突破与资金费退出原因；在 `L1`/`L2`（`use_f11_limit_exit=True`）下，策略 B 不再独立下发市价卖单，而是与 `BREAKOUT` 统一汇入唯一权威 F11 reduce-only `SELL LIMIT` 订单生命周期，且当任一原因已进入退出流程时，后续触发的另一原因仅记入诊断日志而不撤单、不重复下单。")
     lines.append("- **同时间戳结算顺序**：全量资金费通过 `PaperBroker.apply_funding` 入账，严格先按前一闭合时点持仓结算资金费，再执行当前闭合时点撮合成交（`fill_time < settlement_time`），与策略 B 因果信号共享同一事件源。")
     lines.append("- **F08 轮换与预算连续性**：跨代共享 `_CampaignPaperBroker` 累计 POST 次数、3h 窗口配额与名义额；当策略 B（高资金费）或策略 C（极端波动）入口门控处于阻断状态时，F08 延迟轮换直至门控解除，避免空仓无效轮换刷代。")
-    lines.append(
-        f"- **全量运行账本核验**：累计执行 `{ledger['total_unique_runs']}` 次独立完整生命周期模拟"
-        f"（历史窗 `{ledger['historical_unique_runs']}` + 确定性压力 `{ledger['deterministic_runs']}` + Monte Carlo `{ledger['monte_carlo_unique_runs']}`），"
-        f"全部 FIFO 对账残差严格为 `0`（`all_zero_fifo_residual = {ledger['all_zero_fifo_residual']}`），"
-        f"任意时点在途退出卖单数最大值 `max_simultaneous_exit_orders <= 1`（`single_authoritative_exit_order_verified = {ledger['single_authoritative_exit_order_verified']}`）。"
-    )
+    ev_scope = ledger.get("event_level_exit_peak_verification")
+    if ev_scope:
+        peak_line = (
+            f"- **全量账本与事件级退出峰值双轨核验**：\n"
+            f"  - **FIFO 零残差账本验收**：累计覆盖原全量 `{ledger['total_unique_runs']}` 次独立模拟（历史窗 `{ledger['historical_unique_runs']}` + 确定性压力 `{ledger['deterministic_runs']}` + Monte Carlo `{ledger['monte_carlo_unique_runs']}`）"
+            f"及本轮审查补算/新监测验证 `{ev_scope['event_level_verified_runs']}` 次运行，全部 FIFO 对账残差严格为 `0`（`all_zero_fifo_residual = {ledger['all_zero_fifo_residual']}`）。\n"
+            f"  - **单权威退出订单事件级峰值验收（P2-3 修订）**：采用 `EVENT_LEVEL_AUTHORITATIVE_LIFECYCLE` 权威状态变迁追踪与独立事件重建双轨核验（覆盖同 Bar 提交并成交、`PARTIALLY_FILLED`、`CANCEL_PENDING`、`UNKNOWN` 未解决仍计活跃、撤单成交竞态及跨 F08 generation 连续性，并在单元测试中注入双单重叠轨迹验证检出峰值 `2`）。实际事件级验证覆盖 `{ev_scope['event_level_verified_runs']}` 次完整生命周期运行（全部 `{ev_scope['deterministic_runs']}` 次确定性压力 + `{ev_scope['historical_runs']}` 次历史 OOS 机制补算窗 + `{ev_scope['mc_runs']}` 条代表性 MC 路径），事件级峰值 `max_simultaneous_exit_orders = {ev_scope['event_level_max_simultaneous_exit_orders']} <= 1`、重叠违规 `0` 次；原未复跑的剩余历史与 MC 批次明确保留为旧 Bar 尾采样记录，**不冒充全时点事件级认证**。"
+        )
+    else:
+        peak_line = (
+            f"- **全量运行账本核验**：累计执行 `{ledger['total_unique_runs']}` 次独立完整生命周期模拟"
+            f"（历史窗 `{ledger['historical_unique_runs']}` + 确定性压力 `{ledger['deterministic_runs']}` + Monte Carlo `{ledger['monte_carlo_unique_runs']}`），"
+            f"全部 FIFO 对账残差严格为 `0`（`all_zero_fifo_residual = {ledger['all_zero_fifo_residual']}`），"
+            f"事件级在途退出卖单峰值 `max_simultaneous_exit_orders <= 1`（`single_authoritative_exit_order_verified = {ledger['single_authoritative_exit_order_verified']}`）。"
+        )
+    lines.append(peak_line)
     lines.append("")
 
     # Section 3: Data Audit & Independence Boundary
@@ -318,22 +328,60 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
         )
     lines.append("")
 
-    # Section 6: Paired Ablations & Statistical Significance with Multiple-Comparison Boundaries
+    # Section 6: Paired Ablations & Statistical Significance (strictly separated fixed-param vs reoptimized)
     lines.append("## 6. 配对消融与多重比较统计检验（18 个历史 OOS 窗，`10,000` 次配对 Bootstrap）")
     lines.append("")
-    lines.append("分别测量 F11 纯贡献（`L1 - L0`）、F08 增量贡献（`L2 - L1`）、完整生命周期（`L2 - L0`）及策略 B/C 相对固定网格 A 与现金 `CASH` 的配对差异。每个 `(资金费体制, 执行假设)` 检验族均报告原始 Wilcoxon p、Holm-Bonferroni 校正 p 及 Bonferroni 显著性边界（`0.05 / m`）。注意 `n=18` 窗口的有效 95% 尾部样本仅 `0.9` 个，小样本功效有限。")
+    lines.append(
+        "严格区分三类独立比较，并在各 `(资金费体制, 执行假设, 比较族)` 内采用**未舍入原始 Wilcoxon p 值**执行 Holm-Bonferroni 校正（仅在最终展示时舍入，完整列见 `paired_ablations.csv`）。"
+        "注意 `n=18` 窗口的有效 95% 尾部样本仅 `0.9` 个，小样本尾部功效有限，且相对减亏绝不等于正 Alpha。"
+    )
     lines.append("")
-    lines.append("| 资金费体制 | 执行假设 | 配对消融项 | 均值差 (pp) | Bootstrap 95% CI (pp) | 胜/平/负 (%) | ΔCVaR95 (pp) | 回撤缩减 (pp) | 原始 Wilcoxon p | Holm 校正 p | Holm 显著 |")
+
+    lines.append("### 6.1 固定参数机制消融（`FIXED_PARAM_MECHANISM_ABLATION`：F11 纯条件机制 `L1-L0` 与 F08 纯增量机制 `L2-L1`）")
+    lines.append("")
+    lines.append("同一折、同一窗口、同一资金费体制与执行假设下，保持候选参数与同折训练期 `sigma_ref` 完全冻结不变（`A_FIXED`、`B2`、`B5`、`C5` 为预声明固定候选；`B_FROZEN_L0`、`C_FROZEN_L0` 为各折仅由 `L0` 训练窗选出并跨 `L0/L1/L2` 冻结的候选参数）：")
+    lines.append("")
+    lines.append("| 资金费体制 | 执行假设 | 固定参数消融项 | 参数绑定 | 均值差 (pp) | Bootstrap 95% CI (pp) | 胜/平/负 (%) | ΔCVaR95 (pp) | 回撤缩减 (pp) | 原始 Wilcoxon p | 未舍入 Holm p | Holm 显著 |")
+    lines.append("| --- | --- | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |")
+    for r in ablations:
+        if r.get("comparison_type") != "FIXED_PARAM_MECHANISM_ABLATION":
+            continue
+        if r["comparison"].endswith("(F11+F08 fixed-param)"):
+            continue
+        short_p = "IDEAL" if r["execution_profile"] == "IDEAL_LIMIT_FILL" else "DELAYED"
+        w_raw = r.get("wilcoxon_p_raw", r["wilcoxon_p_value"])
+        lines.append(
+            f"| `{r['funding_regime']}` | `{short_p}` | `{r['comparison']}` | `{r.get('parameter_binding', 'FIXED')}` | "
+            f"{r['delta_mean_return_pp']:+.4f} | `[{r['boot_95ci_low_pp']:+.4f}, {r['boot_95ci_high_pp']:+.4f}]` | "
+            f"{r['win_tie_loss_pct']} | {r['delta_cvar95_pp']:+.2f} | {r['dd_reduction_pp']:+.2f} | "
+            f"{w_raw:.6f} | {r['holm_wilcoxon_p']:.6f} | `{r['sig_after_holm_05']}` |"
+        )
+    lines.append("")
+
+    lines.append("### 6.2 重新优化后的完整流程比较（`LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON`）")
+    lines.append("")
+    lines.append("下表保留各生命周期独立重新训练选参的 `B_WF` / `C_WF` 跨生命周期比较。此类差值同时包含**生命周期机制变化 + 最优候选参数变化 + 参数与执行机制交互**，属探索性完整流程对比，**不得解释为单一组件的纯因果效应**：")
+    lines.append("")
+    lines.append("| 资金费体制 | 执行假设 | 重优化流程比较项 | 均值差 (pp) | Bootstrap 95% CI (pp) | 胜/平/负 (%) | ΔCVaR95 (pp) | 回撤缩减 (pp) | 原始 Wilcoxon p | 未舍入 Holm p | Holm 显著 |")
     lines.append("| --- | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |")
-    key_comp_filters = {
-        "A_FIXED: L1 - L0 (F11 pure)",
-        "B_WF: L1 - L0 (F11 pure)",
-        "C_WF: L1 - L0 (F11 pure)",
-        "A_FIXED: L2 - L1 (F08 incremental)",
-        "B_WF: L2 - L1 (F08 incremental)",
-        "C_WF: L2 - L1 (F08 incremental)",
-        "A_FIXED: L2 - L1 (F08 incremental, DELAYED)",
-        "B_WF: L2 - L1 (F08 incremental, DELAYED)",
+    for r in ablations:
+        if r.get("comparison_type") != "LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON":
+            continue
+        short_p = "IDEAL" if r["execution_profile"] == "IDEAL_LIMIT_FILL" else "DELAYED"
+        w_raw = r.get("wilcoxon_p_raw", r["wilcoxon_p_value"])
+        lines.append(
+            f"| `{r['funding_regime']}` | `{short_p}` | `{r['comparison']}` | {r['delta_mean_return_pp']:+.4f} | "
+            f"`[{r['boot_95ci_low_pp']:+.4f}, {r['boot_95ci_high_pp']:+.4f}]` | {r['win_tie_loss_pct']} | "
+            f"{r['delta_cvar95_pp']:+.2f} | {r['dd_reduction_pp']:+.2f} | "
+            f"{w_raw:.6f} | {r['holm_wilcoxon_p']:.6f} | `{r['sig_after_holm_05']}` |"
+        )
+    lines.append("")
+
+    lines.append("### 6.3 同生命周期策略横向比较（`WITHIN_LIFECYCLE_STRATEGY_COMPARISON`，未舍入 p 值 Holm 校正）")
+    lines.append("")
+    lines.append("| 资金费体制 | 执行假设 | 同层策略比较项 | 均值差 (pp) | Bootstrap 95% CI (pp) | 胜/平/负 (%) | ΔCVaR95 (pp) | 回撤缩减 (pp) | 原始 Wilcoxon p | 未舍入 Holm p | Holm 显著 |")
+    lines.append("| --- | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |")
+    key_within_filters = {
         "L0: B_WF - A_FIXED",
         "L1: B_WF - A_FIXED",
         "L2: B_WF - A_FIXED",
@@ -346,16 +394,31 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
         "L2: C_WF - CASH",
     }
     for r in ablations:
-        if r["comparison"] not in key_comp_filters:
+        if r.get("comparison_type") not in {None, "WITHIN_LIFECYCLE_STRATEGY_COMPARISON"}:
+            continue
+        if r["comparison"] not in key_within_filters:
             continue
         short_p = "IDEAL" if r["execution_profile"] == "IDEAL_LIMIT_FILL" else "DELAYED"
+        w_raw = r.get("wilcoxon_p_raw", r["wilcoxon_p_value"])
         lines.append(
             f"| `{r['funding_regime']}` | `{short_p}` | `{r['comparison']}` | {r['delta_mean_return_pp']:+.4f} | "
             f"`[{r['boot_95ci_low_pp']:+.4f}, {r['boot_95ci_high_pp']:+.4f}]` | {r['win_tie_loss_pct']} | "
             f"{r['delta_cvar95_pp']:+.2f} | {r['dd_reduction_pp']:+.2f} | "
-            f"{r['wilcoxon_p_value']:.4f} | {r['holm_wilcoxon_p']:.4f} | `{r['sig_after_holm_05']}` |"
+            f"{w_raw:.6f} | {r['holm_wilcoxon_p']:.6f} | `{r['sig_after_holm_05']}` |"
         )
     lines.append("")
+    if ab_c_l2_mn_dl:
+        c_raw_p = ab_c_l2_mn_dl.get("wilcoxon_p_raw", ab_c_l2_mn_dl["wilcoxon_p_value"])
+        c_holm_p = ab_c_l2_mn_dl["holm_wilcoxon_p"]
+        lines.append(
+            f"> **统计精度注记（Section 10）**：`MAINNET_ACTUAL / L2 / DELAYED` 中 `C_WF - A_FIXED`（`n=18` 窗）的均值差为 "
+            f"`{ab_c_l2_mn_dl.get('delta_mean_return_raw_pp', ab_c_l2_mn_dl['delta_mean_return_pp']):+.6f} pp`，"
+            f"配对 Bootstrap 95% CI 为 `[{ab_c_l2_mn_dl['boot_95ci_low_pp']:+.4f}, {ab_c_l2_mn_dl['boot_95ci_high_pp']:+.4f}] pp`，"
+            f"未舍入 Wilcoxon 原始 `p = {c_raw_p:.10f}`；经由同层策略比较族（`m={ab_c_l2_mn_dl.get('family_comparisons_m')}`）"
+            f"未舍入 Holm-Bonferroni 校正后 `p = {c_holm_p:.6f}`（初版曾用先舍入 4 位的 `0.0034` 在合并族中算得 `0.0442`）。"
+            f"无论如何，`C_WF` 本身均值净收益仍为 `{m_l2d_c['mean_net_return_pct']:+.4f}%`（跑输 `CASH 0.0000%`），此为**相对减亏而非正 Alpha**，且 18 窗有效 95% 尾部样本仅 `0.9` 个，不能认证尾部稳定。"
+        )
+        lines.append("")
 
     # Section 7: Execution Realism Matrix (5 Profiles across L1 & L2)
     lines.append("## 7. 退出执行现实性矩阵（5 组条件执行假设 × 历史 18 个 OOS 窗）")
@@ -472,18 +535,30 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
 
     lines.append(f"### 10.1 关键尾部模型扩容汇总（`n = {mc['expand_paths']} / {mc.get('tail_expand_paths', mc['expand_paths'])}` 路径，`seed = {mc['primary_seed']}`，`SWITCH_48H`）")
     lines.append("")
-    lines.append("| 随机模型 | 路径数 `n` | 生命周期 / 执行假设 | 策略 | 均值收益 | 亏损概率 | VaR95 | CVaR95 (95% CI) | P95 MaxDD | 持仓(h) | 退出延迟(h) | 残仓率 | 资费均值(U) | 轮换数 | 相对同层 A ΔCVaR95 | 尾部状态 |")
-    lines.append("| --- | ---: | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |")
+    lines.append("注：当扩容单元路径数 `n=1024` 而 `L0` 对照仅运行 `512` 条路径时，严禁非配对比较或输出伪零 `0.0`，下表及 JSON/CSV 均以 `null` / 空值及 `COMPARISON_UNAVAILABLE (PAIRED_BASELINE_INSUFFICIENT)` 明确标记：")
+    lines.append("")
+    lines.append("| 随机模型 | 路径数 `n` | 生命周期 / 执行假设 | 策略 | 均值收益 | 亏损概率 | VaR95 | CVaR95 (95% CI) | P95 MaxDD | 持仓(h) | 退出延迟(h) | 残仓率 | 资费均值(U) | 轮换数 | 相对同层 A ΔCVaR95 | 相对 L0 ΔCVaR95 (状态) | 尾部状态 |")
+    lines.append("| --- | ---: | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |")
     for r in mc["expanded_key_scenarios"]:
         short_p = "IDEAL" if r["execution_profile"] == "IDEAL_LIMIT_FILL" else "DELAYED"
-        da = "基准" if r["strategy_id"] == "A_FIXED" else f"{r['delta_cvar95_vs_A_same_lc_pp']:+.2f} pp"
+        da_val = r.get("delta_cvar95_vs_A_same_lc_pp")
+        da = "基准" if r["strategy_id"] == "A_FIXED" else ("—" if da_val is None else f"{da_val:+.2f} pp")
+        l0_val = r.get("delta_cvar95_vs_L0_pp")
+        l0_st = r.get("comparison_status", "SELF_BASELINE" if r["lifecycle_id"] == "L0" else "COMPUTED")
+        l0_rsn = r.get("comparison_unavailable_reason")
+        if l0_st == "SELF_BASELINE":
+            dl0 = "0.00 pp (`SELF_BASELINE`)"
+        elif l0_val is None or l0_st == "COMPARISON_UNAVAILABLE":
+            dl0 = f"— (`{l0_st}: {l0_rsn}`)"
+        else:
+            dl0 = f"{l0_val:+.2f} pp (`{l0_st}`)"
         lines.append(
             f"| `{r['scenario']}` | {r['n_paths']} | `{r['lifecycle_id']}/{short_p}` | `{r['strategy_id']}` | "
             f"{r['mean_net_return_pct']:+.2f}% | {r['loss_prob_pct']:.1f}% | {r['var95_pct']:.2f}% | "
             f"{r['cvar95_pct']:.2f}% (`[{r['cvar95_boot_low_pct']:.2f}%, {r['cvar95_boot_high_pct']:.2f}%]`) | "
             f"{r['max_dd_p95_pct']:.2f}% | {r['mean_holding_hours']:.1f} | {r['mean_exit_delay_hours']:.1f} | "
             f"{r['stranded_tail_rate_pct']:.1f}% | {r['mean_funding_usdt']:+.4f} | {r['mean_rotations']:.2f} | "
-            f"**{da}** | `{r['tail_95_status']}` |"
+            f"**{da}** | {dl0} | `{r['tail_95_status']}` |"
         )
     lines.append("")
 
@@ -579,6 +654,69 @@ def render_p8_r11_report(study: dict[str, Any]) -> str:
     )
     lines.append("```")
     lines.append("")
+
+    rev = study.get("independent_review_remediation")
+    if rev:
+        lines.append("## 13. PR #252 独立审查缺陷修复与研究证据修订（`MERGE_BLOCKED` 定向闭环）")
+        lines.append("")
+        lines.append(f"- **主线同步与 S04 集成**：已从最新 `origin/main`（`{rev['synced_main_commit']}`，包含已合并 PR #246 `P8-S04`）无冲突合入，完整保留 S04 的共享账户（`allow_shared`）、历史观察、坏包回退及持久订单维护逻辑；未引入未合并 PR #251/#253 代码。")
+        lines.append("- **保留的已独立验证成果**：保留独立审查已验证的 40 组交易路径复算、25 组资金费复算、180 项配对统计复算、47,104 项 MC 任务身份重建及 36 个 B2/B5 历史配对验证；未无谓重跑已验证的全量 MC 批次。")
+        lines.append("")
+        lines.append("### 13.1 三项 P2、一项 P3 及一项 R10 既存缺陷逐项闭环")
+        lines.append("")
+        lines.append("| 编号 | 问题摘要 | 修复方式与证据修订 |")
+        lines.append("| --- | --- | --- |")
+        lines.append(
+            f"| **P2-1** | 8 组 `n=1024` MC 扩容单元因 `L0` 仅 `512` 路径缺失配对对照，被错误输出 `delta_*_vs_L0_pp = 0.0` | "
+            f"在 `compute_paired_mc_comparison` 与 `_aggregate_mc_group` 引入显式缺失语义（JSON `null` / CSV 空值，`comparison_status=COMPARISON_UNAVAILABLE`，`comparison_unavailable_reason=PAIRED_BASELINE_INSUFFICIENT`，并记录 `candidate_n_paths`/`baseline_n_paths`/`matched_n_paths` 与 `mc_path_id` 路径身份校验）。已同步修订全部 `{rev['mc_pseudo_zero_cells_fixed']}` 个受影响单元及 `mc_expanded_key_scenarios.csv`、`mc_convergence.csv`、`summary.json`、`s02_handoff.json` 与本报告。 |"
+        )
+        lines.append(
+            "| **P2-2** | `B_WF`/`C_WF` 在各生命周期独立重选参数，混入 `F11 pure` / `F08 incremental` 机制消融 | "
+            "将 `paired_ablations.csv` 严格拆分为（A）`FIXED_PARAM_MECHANISM_ABLATION`（`A_FIXED`、`B2`、`B5`、`C5` 及仅由 `L0` 训练窗冻结选出的 `B_FROZEN_L0`/`C_FROZEN_L0`，同折同候选同 `sigma_ref`）与（B）`LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON`（原 `B_WF`/`C_WF` 重优化流程），并在各比较族内改用**未舍入原始 p 值**计算 Holm-Bonferroni 校正。 |"
+        )
+        lines.append(
+            f"| **P2-3** | 单权威退出峰值仅在 Bar 尾采样，遗漏同 Bar 提交即成交（复现：`actual peak=1` 但 `reported=0`） | "
+            f"在 `grid_f11_f08_offline.py` 实现 `EVENT_LEVEL_AUTHORITATIVE_LIFECYCLE` 权威事件变迁追踪与独立重建函数 `reconstruct_exit_order_peak_from_events`，覆盖同 Bar 成交、`PARTIALLY_FILLED`、`CANCEL_PENDING`、`UNKNOWN` 未解决保持活跃、撤单成交竞态及跨 F08 generation 连续性；负向单测注入双单重叠准确检出峰值 `2` 并阻止验收。实际事件级实跑验证 `{rev['event_level_exit_peak_runs']}` 次（全部 `{rev['det_recomputed_runs']}` 次确定性压力 + `{rev['hist_recomputed_runs']}` 次历史 OOS 机制补算窗 + `{rev['mc_recomputed_runs']}` 条 MC 代表路径），均满足峰值 `<= 1` 且零重叠违规，并诚实收窄旧 Bar 尾批次声明。 |"
+        )
+        lines.append(
+            f"| **P3-1** | `B2 == B5` 历史等价性实际覆盖 36 个单元而非完整 50 单元 | "
+            f"程序化核验实际已执行的 `{rev['b2_b5_covered_cells']}` 个历史 `L1`/`L2` 配对单元（3 核心体制 × 10 单元 + 2 补充体制 × 3 单元；明确列出未执行的 `{rev['b2_b5_uncovered_cells']}` 个组合），确认收益、CVaR95、手续费与资金费完全等价；保留零滑点网格内部持仓下 `B5` 先于 `BREAKOUT` 触发的确定性反例，不泛化至所有网格配置。 |"
+        )
+        lines.append(
+            "| **R10 既存缺陷** | `FundingSensitiveGrid.entry_time_utc` 未写入 checkpoint，重启恢复后资金费退出被跳过 | "
+            "采用零破坏公共协议的可选钩子（`GridExecution._subclass_checkpoint` / `_restore_subclass_checkpoint`，原生 `GridExecution` checkpoint 字节级不变）持久化 `entry_time_utc`、`entry_price_dec`、`buy_blocked`、`exit_reasons` 等全部显式决策状态；对缺失字段的旧 checkpoint 严格依据权威 `PaperStore.order_events()` 回溯恢复，无法可靠追溯时绝不伪造为当前时间或 0（保留 `entry_time_utc=None` 并置 `entry_time_unrecoverable=True`）。 |"
+        )
+        lines.append("")
+        lines.append("### 13.2 八个 MC 缺失 L0 对照单元修订核验清单（P2-1）")
+        lines.append("")
+        lines.append("| 随机模型 | 生命周期 / 执行假设 | 策略 | `candidate_n_paths` | `baseline_n_paths` | `matched_n_paths` | `delta_return_vs_L0_pp` | `delta_cvar95_vs_L0_pp` | `comparison_status` | `comparison_unavailable_reason` |")
+        lines.append("| --- | --- | --- | ---: | ---: | ---: | --- | --- | --- | --- |")
+        for cell in rev.get("mc_pseudo_zero_cells", []):
+            lines.append(
+                f"| `{cell['scenario']}` | `{cell['lifecycle_id']}/{cell['execution_profile']}` | `{cell['strategy_id']}` | "
+                f"{cell['candidate_n_paths']} | {cell['baseline_n_paths']} | {cell['matched_n_paths']} | "
+                f"`null` | `null` | `{cell['comparison_status']}` | `{cell['comparison_unavailable_reason']}` |"
+            )
+        lines.append("")
+        lines.append("### 13.3 原独立审查复现脚本验证结果与补算范围")
+        lines.append("")
+        lines.append(
+            "- **独立审查复现核验**：`review_execution_repro.py`（40 组）、`review_funding_repro.py`（25 组）、`review_partial_exit_repro.py` 均继续通过；"
+            "`review_exit_telemetry_repro.py` 原缺陷场景（两 Bar `IDEAL` 同 Bar 买入/突破/提交并成交）现已修复为 `actual post-submit peak = 1` 且 `reported max_simultaneous_exit_orders = 1`（`bar_end_max_simultaneous_exit_orders = 0`）。"
+        )
+        lines.append(
+            f"- **本轮最小补算范围**：总计补算 `{rev['event_level_exit_peak_runs']}` 次事件级监测运行（耗时 `{rev['recompute_elapsed_seconds']:.1f}s`），"
+            f"覆盖全部 `{rev['det_recomputed_runs']}` 次确定性压力、`{rev['hist_recomputed_runs']}` 次历史 OOS 机制消融与固定参数补算窗、以及 `{rev['mc_recomputed_runs']}` 条 MC 代表验证路径；"
+            "并同步校验 `summary.json[\"s02_handoff\"] == docs/validation/p8-r11/s02_handoff.json` 严格一致。"
+        )
+        lines.append("")
+        lines.append("```powershell")
+        lines.append(
+            'python tools/research/recompute_p8_r11_review_fixes.py --r04b-snapshot "D:\\Code\\p7-r04b-official-payloads\\certified\\runs\\bde00b2f948842e2b8c2a00465a9f8c6" '
+            '--cache-dir "D:\\Code\\p8-r10-data-cache" --output-dir "docs/validation/p8-r11" --workers 20'
+        )
+        lines.append("```")
+        lines.append("")
     return "\n".join(lines)
 
 

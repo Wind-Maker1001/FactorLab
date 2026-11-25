@@ -52,6 +52,7 @@ from factorlab.experiments.p8_r11_unified_lifecycle import (
     UNIFIED_EXECUTION_MODEL_VERSION,
     build_s02_handoff_contract,
     holm_bonferroni_adjust,
+    paired_statistical_test_unrounded,
     run_unified_lifecycle,
     summarize_unified_windows,
 )
@@ -168,7 +169,13 @@ def _mc_task_worker(payload: tuple[Any, ...]) -> tuple[tuple[Any, ...], dict[str
         account_id=f"r11-mc-{tag}",
         family_prefix="fl-r11",
     )
-    return cache_key, _compact_run_record(res)
+    row = _compact_run_record(res)
+    seed_val, scen, path_idx = cache_key[0], cache_key[1], cache_key[2]
+    row["mc_seed"] = int(seed_val)
+    row["mc_scenario"] = str(scen)
+    row["mc_path_index"] = int(path_idx)
+    row["mc_path_id"] = f"{seed_val}:{scen}:{path_idx}"
+    return cache_key, row
 
 
 def _run_pool(worker_fn, tasks: list[tuple[Any, ...]], max_workers: int) -> list[Any]:
@@ -484,7 +491,45 @@ def run_r11_historical_study(
             eff_tag = sigma_tag if cp.extreme_vol_mult is not None else "init"
         return results_cache[(win_id, arm_id, lc_id, prof_name, f_regime, eff_tag)]
 
-    # 2. Assemble Walk-Forward OOS rows, folds, stability, and full 27-window summaries
+    # 2. Assemble Walk-Forward OOS rows, folds, stability, and full 27-window summaries.
+    #    First freeze the per-fold L0-selected candidates (using ONLY L0 training windows)
+    #    so fixed-parameter mechanism ablations (L1-L0, L2-L1, L2-L0) bind identical
+    #    candidate parameters & fold sigma_ref across all lifecycles.
+    l0_frozen_selections: dict[str, dict[int, tuple[str, str]]] = {}
+    for reg in CORE_FUNDING_REGIMES:
+        per_fold: dict[int, tuple[str, str]] = {}
+        for f_num, tr_end, _, _ in fold_specs:
+            tr_wins = windows[:tr_end]
+            s_tag = "init" if f_num == 1 else f"f{f_num}"
+            b_tr_l0 = {bid: [lookup(w["window_id"], bid, "L0", "IDEAL_LIMIT_FILL", reg) for w in tr_wins] for bid in b_ids}
+            c_tr_l0 = {cid: [lookup(w["window_id"], cid, "L0", "IDEAL_LIMIT_FILL", reg, s_tag) for w in tr_wins] for cid in c_ids}
+            per_fold[f_num] = (_select_best_candidate(b_tr_l0, b_ids), _select_best_candidate(c_tr_l0, c_ids))
+        l0_frozen_selections[reg] = per_fold
+
+    role_selection_meta: dict[str, tuple[str, str]] = {
+        "CASH": ("ZERO_EXPOSURE_REFERENCE", "Zero-exposure reference arm"),
+        "A_FIXED": ("FIXED_PREDECLARED", "Fixed +/-1% single-level grid (predeclared)"),
+        "B2": ("FIXED_PREDECLARED", "Predeclared fixed candidate B2 (entry/rotation gate only)"),
+        "B5": ("FIXED_PREDECLARED", "Predeclared fixed candidate B5 (entry gate + funding exit)"),
+        "C5": ("FIXED_PREDECLARED", "Predeclared fixed candidate C5 (per-fold training-frozen sigma_ref)"),
+        "B_FROZEN_L0": (
+            "FROZEN_L0_WF_CANDIDATE",
+            "Per-fold candidate selected on L0 training windows only and held fixed across L0/L1/L2",
+        ),
+        "C_FROZEN_L0": (
+            "FROZEN_L0_WF_CANDIDATE",
+            "Per-fold candidate & sigma_ref selected on L0 training windows only and held fixed across L0/L1/L2",
+        ),
+        "B_WF": (
+            "LIFECYCLE_REOPTIMIZED_WF",
+            "Re-selected on training windows within this lifecycle/profile (includes parameter re-optimization)",
+        ),
+        "C_WF": (
+            "LIFECYCLE_REOPTIMIZED_WF",
+            "Re-selected on training windows within this lifecycle/profile (includes parameter re-optimization)",
+        ),
+    }
+
     wf_results: dict[str, dict[str, Any]] = {}
     wf_folds_all: list[dict[str, Any]] = []
     wf_oos_rows_all: list[dict[str, Any]] = []
@@ -497,6 +542,8 @@ def run_r11_historical_study(
         oos_a: list[dict[str, Any]] = []
         oos_b: list[dict[str, Any]] = []
         oos_c: list[dict[str, Any]] = []
+        oos_b_frozen: list[dict[str, Any]] = []
+        oos_c_frozen: list[dict[str, Any]] = []
         oos_cash: list[dict[str, Any]] = []
         oos_b2: list[dict[str, Any]] = []
         oos_b5: list[dict[str, Any]] = []
@@ -511,10 +558,13 @@ def run_r11_historical_study(
             c_train = {cid: [lookup(w["window_id"], cid, lc_id, prof_name, f_regime, s_tag) for w in tr_wins] for cid in c_ids}
             sel_b = _select_best_candidate(b_train, b_ids)
             sel_c = _select_best_candidate(c_train, c_ids)
+            frozen_b_id, frozen_c_id = l0_frozen_selections[f_regime][f_num]
 
             fold_a = [lookup(w["window_id"], "A_FIXED", lc_id, prof_name, f_regime) for w in te_wins]
             fold_b = [lookup(w["window_id"], sel_b, lc_id, prof_name, f_regime) for w in te_wins]
             fold_c = [lookup(w["window_id"], sel_c, lc_id, prof_name, f_regime, s_tag) for w in te_wins]
+            fold_b_fr = [lookup(w["window_id"], frozen_b_id, lc_id, prof_name, f_regime) for w in te_wins]
+            fold_c_fr = [lookup(w["window_id"], frozen_c_id, lc_id, prof_name, f_regime, s_tag) for w in te_wins]
             fold_b2 = [lookup(w["window_id"], "B2", lc_id, prof_name, f_regime) for w in te_wins]
             fold_b5 = [lookup(w["window_id"], "B5", lc_id, prof_name, f_regime) for w in te_wins]
             fold_c5 = [lookup(w["window_id"], "C5", lc_id, prof_name, f_regime, s_tag) for w in te_wins]
@@ -531,10 +581,12 @@ def run_r11_historical_study(
                 for w in te_wins
             ]
 
-            for r_a, r_b, r_c, r_ca in zip(fold_a, fold_b, fold_c, fold_cash):
+            for r_a, r_b, r_c, r_bf, r_cf, r_ca in zip(fold_a, fold_b, fold_c, fold_b_fr, fold_c_fr, fold_cash):
                 oos_a.append(dict(r_a, fold=f_num, wf_role="A_FIXED", selected_id="A_FIXED"))
                 oos_b.append(dict(r_b, fold=f_num, wf_role="B_WF", selected_id=sel_b))
                 oos_c.append(dict(r_c, fold=f_num, wf_role="C_WF", selected_id=sel_c))
+                oos_b_frozen.append(dict(r_bf, fold=f_num, wf_role="B_FROZEN_L0", selected_id=frozen_b_id))
+                oos_c_frozen.append(dict(r_cf, fold=f_num, wf_role="C_FROZEN_L0", selected_id=frozen_c_id))
                 oos_cash.append(dict(r_ca, fold=f_num, wf_role="CASH", selected_id="CASH", window_id=r_a["window_id"]))
             oos_b2.extend(fold_b2)
             oos_b5.extend(fold_b5)
@@ -543,6 +595,8 @@ def run_r11_historical_study(
             sa = summarize_unified_windows(fold_a)
             sb = summarize_unified_windows(fold_b)
             sc = summarize_unified_windows(fold_c)
+            sbf = summarize_unified_windows(fold_b_fr)
+            scf = summarize_unified_windows(fold_c_fr)
             f_rec = {
                 "lifecycle_id": lc_id,
                 "execution_profile": prof_name,
@@ -553,16 +607,20 @@ def run_r11_historical_study(
                 "frozen_sigma_ref_1h_pct": round(f_sigma * 100.0, 4),
                 "selected_b": sel_b,
                 "selected_c": sel_c,
+                "frozen_l0_selected_b": frozen_b_id,
+                "frozen_l0_selected_c": frozen_c_id,
                 "oos_a_return_pct": sa["mean_net_return_pct"],
                 "oos_b_return_pct": sb["mean_net_return_pct"],
                 "oos_c_return_pct": sc["mean_net_return_pct"],
+                "oos_b_frozen_l0_return_pct": sbf["mean_net_return_pct"],
+                "oos_c_frozen_l0_return_pct": scf["mean_net_return_pct"],
                 "b_minus_a_pp": round(sb["mean_net_return_pct"] - sa["mean_net_return_pct"], 4),
                 "c_minus_a_pp": round(sc["mean_net_return_pct"] - sa["mean_net_return_pct"], 4),
             }
             folds_summary.append(f_rec)
             wf_folds_all.append(f_rec)
 
-        wf_oos_rows_all.extend(oos_a + oos_b + oos_c + oos_cash)
+        wf_oos_rows_all.extend(oos_a + oos_b + oos_c + oos_b_frozen + oos_c_frozen + oos_cash)
 
         # IS (W01..W09) vs OOS (W10..W27) parameter stability across all 12 B/C candidates
         is_wins = windows[:initial_train_windows]
@@ -612,12 +670,15 @@ def run_r11_historical_study(
             "CASH": summarize_unified_windows(oos_cash),
             "A_FIXED": summarize_unified_windows(oos_a),
             "B_WF": summarize_unified_windows(oos_b),
+            "B_FROZEN_L0": summarize_unified_windows(oos_b_frozen),
             "B2": summarize_unified_windows(oos_b2),
             "B5": summarize_unified_windows(oos_b5),
             "C_WF": summarize_unified_windows(oos_c),
+            "C_FROZEN_L0": summarize_unified_windows(oos_c_frozen),
             "C5": summarize_unified_windows(oos_c5),
         }
         for role_name, s_dict in oos_summaries.items():
+            sel_mode, bind_note = role_selection_meta[role_name]
             wf_summary_rows.append(
                 {
                     "lifecycle_id": lc_id,
@@ -625,6 +686,8 @@ def run_r11_historical_study(
                     "execution_profile": prof_name,
                     "funding_regime": f_regime,
                     "strategy_role": role_name,
+                    "selection_mode": sel_mode,
+                    "parameter_binding_note": bind_note,
                     **s_dict,
                 }
             )
@@ -638,9 +701,11 @@ def run_r11_historical_study(
                 "CASH": oos_cash,
                 "A_FIXED": oos_a,
                 "B_WF": oos_b,
+                "B_FROZEN_L0": oos_b_frozen,
                 "B2": oos_b2,
                 "B5": oos_b5,
                 "C_WF": oos_c,
+                "C_FROZEN_L0": oos_c_frozen,
                 "C5": oos_c5,
             },
             "oos_summary": oos_summaries,
@@ -716,135 +781,9 @@ def run_r11_historical_study(
                         }
                     )
 
-    # 4. Paired Ablations & Statistical Tests (with Holm-Bonferroni family-wise adjustment!)
-    ablation_rows: list[dict[str, Any]] = []
-
-    def add_ablation(
-        *,
-        ablation_group: str,
-        label: str,
-        funding_regime: str,
-        execution_profile: str,
-        cand_rows: list[dict[str, Any]],
-        ctrl_rows: list[dict[str, Any]],
-        seed_offset: int,
-    ) -> None:
-        c_ret = np.asarray([float(r["net_return_pct"]) for r in cand_rows], dtype=float)
-        b_ret = np.asarray([float(r["net_return_pct"]) for r in ctrl_rows], dtype=float)
-        c_dd = np.asarray([float(r["max_drawdown_pct"]) for r in cand_rows], dtype=float)
-        b_dd = np.asarray([float(r["max_drawdown_pct"]) for r in ctrl_rows], dtype=float)
-        c_sum = summarize_unified_windows(cand_rows)
-        b_sum = summarize_unified_windows(ctrl_rows)
-        st_ret = paired_statistical_test(c_ret, b_ret, n_bootstrap=10_000, seed=202611 + seed_offset)
-        st_dd = paired_statistical_test(-c_dd, -b_dd, n_bootstrap=10_000, seed=302611 + seed_offset)
-        ablation_rows.append(
-            {
-                "ablation_group": ablation_group,
-                "comparison": label,
-                "funding_regime": funding_regime,
-                "execution_profile": execution_profile,
-                "n_windows": len(cand_rows),
-                "effective_tail_samples_95": round(0.05 * len(cand_rows), 2),
-                "cand_mean_return_pct": c_sum["mean_net_return_pct"],
-                "ctrl_mean_return_pct": b_sum["mean_net_return_pct"],
-                "delta_mean_return_pp": st_ret["mean_diff_pct"],
-                "delta_median_return_pp": st_ret["median_diff_pct"],
-                "boot_95ci_low_pp": st_ret["bootstrap_95ci_low_pct"],
-                "boot_95ci_high_pp": st_ret["bootstrap_95ci_high_pct"],
-                "boot_p_value": st_ret["bootstrap_p_value"],
-                "wilcoxon_p_value": st_ret["wilcoxon_p_value"],
-                "paired_t_stat": st_ret["paired_t_stat"],
-                "paired_t_p_value": st_ret["paired_t_p_value"],
-                "win_tie_loss_pct": f"{st_ret['win_rate_pct']}/{st_ret['tie_rate_pct']}/{st_ret['loss_rate_pct']}",
-                "cand_cvar95_pct": c_sum["cvar95_pct"],
-                "ctrl_cvar95_pct": b_sum["cvar95_pct"],
-                "delta_cvar95_pp": round(c_sum["cvar95_pct"] - b_sum["cvar95_pct"], 4),
-                "dd_reduction_pp": st_dd["mean_diff_pct"],
-                "dd_reduction_wilcoxon_p": st_dd["wilcoxon_p_value"],
-                "cand_mean_paused_inv_h": c_sum["mean_paused_with_inventory_hours"],
-                "ctrl_mean_paused_inv_h": b_sum["mean_paused_with_inventory_hours"],
-                "cand_total_fees_usdt": c_sum["total_fees_usdt"],
-                "ctrl_total_fees_usdt": b_sum["total_fees_usdt"],
-                "cand_total_funding_usdt": c_sum["total_funding_pnl_usdt"],
-                "ctrl_total_funding_usdt": b_sum["total_funding_pnl_usdt"],
-                "raw_sig_05": st_ret["statistically_significant_05"],
-            }
-        )
-
-    seq_seed = 0
-    for f_regime in CORE_FUNDING_REGIMES:
-        l0_id = wf_results[f"L0__IDEAL_LIMIT_FILL__{f_regime}"]["oos_rows"]
-        l1_id = wf_results[f"L1__IDEAL_LIMIT_FILL__{f_regime}"]["oos_rows"]
-        l2_id = wf_results[f"L2__IDEAL_LIMIT_FILL__{f_regime}"]["oos_rows"]
-        l1_dl = wf_results[f"L1__DELAYED_EXIT_FILL__{f_regime}"]["oos_rows"]
-        l2_dl = wf_results[f"L2__DELAYED_EXIT_FILL__{f_regime}"]["oos_rows"]
-
-        # (a) Lifecycle ablations: F11 (L1 - L0), F08 (L2 - L1), Full (L2 - L0)
-        for role in ("A_FIXED", "B_WF", "B5", "C_WF", "C5"):
-            for grp, lbl, ca, ct, prof in (
-                ("F11_EFFECT", f"{role}: L1 - L0 (F11 pure)", l1_id[role], l0_id[role], "IDEAL_LIMIT_FILL"),
-                ("F08_EFFECT", f"{role}: L2 - L1 (F08 incremental)", l2_id[role], l1_id[role], "IDEAL_LIMIT_FILL"),
-                ("FULL_LIFECYCLE", f"{role}: L2 - L0 (F11+F08)", l2_id[role], l0_id[role], "IDEAL_LIMIT_FILL"),
-                ("F08_EFFECT_DELAYED", f"{role}: L2 - L1 (F08 incremental, DELAYED)", l2_dl[role], l1_dl[role], "DELAYED_EXIT_FILL"),
-            ):
-                seq_seed += 1
-                add_ablation(
-                    ablation_group=grp,
-                    label=lbl,
-                    funding_regime=f_regime,
-                    execution_profile=prof,
-                    cand_rows=ca,
-                    ctrl_rows=ct,
-                    seed_offset=seq_seed,
-                )
-
-        # (b) Strategy ablations within each lifecycle: B_WF/B2/B5/C_WF/C5 vs A_FIXED and vs CASH
-        for lc_name, prof_name, oos_map in (
-            ("L0", "IDEAL_LIMIT_FILL", l0_id),
-            ("L1", "IDEAL_LIMIT_FILL", l1_id),
-            ("L2", "IDEAL_LIMIT_FILL", l2_id),
-            ("L1", "DELAYED_EXIT_FILL", l1_dl),
-            ("L2", "DELAYED_EXIT_FILL", l2_dl),
-        ):
-            for cand_role in ("B_WF", "B2", "B5", "C_WF", "C5"):
-                seq_seed += 1
-                add_ablation(
-                    ablation_group=f"STRATEGY_VS_A_{lc_name}",
-                    label=f"{lc_name}: {cand_role} - A_FIXED",
-                    funding_regime=f_regime,
-                    execution_profile=prof_name,
-                    cand_rows=oos_map[cand_role],
-                    ctrl_rows=oos_map["A_FIXED"],
-                    seed_offset=seq_seed,
-                )
-            for cand_role in ("A_FIXED", "B_WF", "C_WF"):
-                seq_seed += 1
-                add_ablation(
-                    ablation_group=f"STRATEGY_VS_CASH_{lc_name}",
-                    label=f"{lc_name}: {cand_role} - CASH",
-                    funding_regime=f_regime,
-                    execution_profile=prof_name,
-                    cand_rows=oos_map[cand_role],
-                    ctrl_rows=oos_map["CASH"],
-                    seed_offset=seq_seed,
-                )
-
-    # Apply Holm-Bonferroni & Bonferroni adjustments per (funding_regime, execution_profile) family
-    family_groups: dict[tuple[str, str], list[int]] = {}
-    for idx, row in enumerate(ablation_rows):
-        family_groups.setdefault((row["funding_regime"], row["execution_profile"]), []).append(idx)
-    for idxs in family_groups.values():
-        m = len(idxs)
-        adj_w = holm_bonferroni_adjust([ablation_rows[i]["wilcoxon_p_value"] for i in idxs])
-        adj_b = holm_bonferroni_adjust([ablation_rows[i]["boot_p_value"] for i in idxs])
-        for pos, i in enumerate(idxs):
-            ablation_rows[i]["family_comparisons_m"] = m
-            ablation_rows[i]["bonferroni_alpha_05"] = round(0.05 / m, 6)
-            ablation_rows[i]["holm_wilcoxon_p"] = adj_w[pos]
-            ablation_rows[i]["holm_boot_p"] = adj_b[pos]
-            ablation_rows[i]["sig_after_holm_05"] = bool(
-                ablation_rows[i]["boot_95ci_low_pp"] > 0.0 and adj_w[pos] < 0.05
-            )
+    # 4. Paired Ablations & Statistical Tests (strictly separating fixed-parameter mechanism
+    #    ablations from lifecycle-reoptimized pipeline comparisons, with unrounded Holm-Bonferroni)
+    ablation_rows = build_separated_paired_ablations(wf_results)
 
     # 5. L0 vs R10 Frozen Baseline Reconciliation (read-only lookup of docs/validation/p8-r10/summary.json)
     r10_reconcile = _reconcile_l0_against_frozen_r10(repo_root, wf_results)
@@ -883,6 +822,226 @@ def run_r11_historical_study(
             for k, v in wf_results.items()
         },
     }
+
+
+def build_separated_paired_ablations(
+    wf_results: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Build paired historical ablations strictly separating:
+
+    1. ``FIXED_PARAM_MECHANISM_ABLATION``: identical candidate parameters & fold sigma_ref
+       held constant across L0/L1/L2 (``A_FIXED``, ``B_FROZEN_L0``, ``C_FROZEN_L0``, ``B2``,
+       ``B5``, ``C5``), measuring pure F11 conditional mechanism (L1-L0) and F08 incremental
+       mechanism (L2-L1).
+    2. ``LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON``: lifecycle-specific Walk-Forward
+       re-optimized pipelines (``B_WF``, ``C_WF``), explicitly documenting that differences
+       include lifecycle change + candidate re-selection + interaction.
+    3. ``WITHIN_LIFECYCLE_STRATEGY_COMPARISON``: strategy vs ``A_FIXED`` and vs ``CASH``
+       within the same lifecycle and execution profile.
+
+    Holm-Bonferroni adjustments are computed strictly from **unrounded** raw p-values within
+    each explicit ``(funding_regime, execution_profile, comparison_family)`` family before
+    final display rounding.
+    """
+    ablation_rows: list[dict[str, Any]] = []
+
+    def add_ablation(
+        *,
+        comparison_type: str,
+        ablation_group: str,
+        comparison_family: str,
+        parameter_binding: str,
+        inference_scope: str,
+        label: str,
+        funding_regime: str,
+        execution_profile: str,
+        cand_rows: list[dict[str, Any]],
+        ctrl_rows: list[dict[str, Any]],
+        seed_offset: int,
+    ) -> None:
+        c_ret = np.asarray([float(r["net_return_pct"]) for r in cand_rows], dtype=float)
+        b_ret = np.asarray([float(r["net_return_pct"]) for r in ctrl_rows], dtype=float)
+        c_dd = np.asarray([float(r["max_drawdown_pct"]) for r in cand_rows], dtype=float)
+        b_dd = np.asarray([float(r["max_drawdown_pct"]) for r in ctrl_rows], dtype=float)
+        c_sum = summarize_unified_windows(cand_rows)
+        b_sum = summarize_unified_windows(ctrl_rows)
+        st_ret = paired_statistical_test_unrounded(c_ret, b_ret, n_bootstrap=10_000, seed=202611 + seed_offset)
+        st_dd = paired_statistical_test_unrounded(-c_dd, -b_dd, n_bootstrap=10_000, seed=302611 + seed_offset)
+        ablation_rows.append(
+            {
+                "comparison_type": comparison_type,
+                "ablation_group": ablation_group,
+                "comparison_family": comparison_family,
+                "parameter_binding": parameter_binding,
+                "inference_scope": inference_scope,
+                "comparison": label,
+                "funding_regime": funding_regime,
+                "execution_profile": execution_profile,
+                "n_windows": len(cand_rows),
+                "effective_tail_samples_95": round(0.05 * len(cand_rows), 2),
+                "cand_mean_return_pct": c_sum["mean_net_return_pct"],
+                "ctrl_mean_return_pct": b_sum["mean_net_return_pct"],
+                "delta_mean_return_raw_pp": st_ret["mean_diff_raw_pct"],
+                "delta_mean_return_pp": st_ret["mean_diff_pct"],
+                "delta_median_return_pp": st_ret["median_diff_pct"],
+                "boot_95ci_low_pp": st_ret["bootstrap_95ci_low_pct"],
+                "boot_95ci_high_pp": st_ret["bootstrap_95ci_high_pct"],
+                "boot_p_raw": st_ret["bootstrap_p_raw"],
+                "boot_p_value": st_ret["bootstrap_p_value"],
+                "wilcoxon_p_raw": st_ret["wilcoxon_p_raw"],
+                "wilcoxon_p_value": st_ret["wilcoxon_p_value"],
+                "paired_t_stat": st_ret["paired_t_stat"],
+                "paired_t_p_value": st_ret["paired_t_p_value"],
+                "win_tie_loss_pct": f"{st_ret['win_rate_pct']}/{st_ret['tie_rate_pct']}/{st_ret['loss_rate_pct']}",
+                "cand_cvar95_pct": c_sum["cvar95_pct"],
+                "ctrl_cvar95_pct": b_sum["cvar95_pct"],
+                "delta_cvar95_pp": round(c_sum["cvar95_pct"] - b_sum["cvar95_pct"], 4),
+                "dd_reduction_pp": st_dd["mean_diff_pct"],
+                "dd_reduction_wilcoxon_p": st_dd["wilcoxon_p_value"],
+                "cand_mean_paused_inv_h": c_sum["mean_paused_with_inventory_hours"],
+                "ctrl_mean_paused_inv_h": b_sum["mean_paused_with_inventory_hours"],
+                "cand_total_fees_usdt": c_sum["total_fees_usdt"],
+                "ctrl_total_fees_usdt": b_sum["total_fees_usdt"],
+                "cand_total_funding_usdt": c_sum["total_funding_pnl_usdt"],
+                "ctrl_total_funding_usdt": b_sum["total_funding_pnl_usdt"],
+                "raw_sig_05": st_ret["statistically_significant_05"],
+            }
+        )
+
+    seq_seed = 0
+    for f_regime in CORE_FUNDING_REGIMES:
+        l0_id = wf_results[f"L0__IDEAL_LIMIT_FILL__{f_regime}"]["oos_rows"]
+        l1_id = wf_results[f"L1__IDEAL_LIMIT_FILL__{f_regime}"]["oos_rows"]
+        l2_id = wf_results[f"L2__IDEAL_LIMIT_FILL__{f_regime}"]["oos_rows"]
+        l1_dl = wf_results[f"L1__DELAYED_EXIT_FILL__{f_regime}"]["oos_rows"]
+        l2_dl = wf_results[f"L2__DELAYED_EXIT_FILL__{f_regime}"]["oos_rows"]
+
+        # (A) Fixed-parameter mechanism ablations (identical candidate & fold sigma_ref across lifecycles)
+        fixed_roles = [
+            ("A_FIXED", "PREDECLARED_FIXED_PARAM", "PREDECLARED_CONFIRMATION_FAMILY"),
+            ("B2", "PREDECLARED_FIXED_PARAM", "EXPLORATORY_POST_REVIEW_MECHANISM_FAMILY"),
+            ("B5", "PREDECLARED_FIXED_PARAM", "PREDECLARED_CONFIRMATION_FAMILY"),
+            ("C5", "PREDECLARED_FIXED_PARAM_FOLD_SIGMA", "PREDECLARED_CONFIRMATION_FAMILY"),
+        ]
+        if "B_FROZEN_L0" in l0_id and "B_FROZEN_L0" in l1_id and "B_FROZEN_L0" in l2_id:
+            fixed_roles.append(
+                ("B_FROZEN_L0", "FROZEN_L0_TRAINING_CANDIDATE", "EXPLORATORY_POST_REVIEW_MECHANISM_FAMILY")
+            )
+        if "C_FROZEN_L0" in l0_id and "C_FROZEN_L0" in l1_id and "C_FROZEN_L0" in l2_id:
+            fixed_roles.append(
+                ("C_FROZEN_L0", "FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA", "EXPLORATORY_POST_REVIEW_MECHANISM_FAMILY")
+            )
+
+        for role, binding, scope in fixed_roles:
+            for grp, lbl, ca, ct, prof in (
+                ("F11_FIXED_PARAM_MECHANISM", f"{role}: L1 - L0 (F11 fixed-param mechanism)", l1_id[role], l0_id[role], "IDEAL_LIMIT_FILL"),
+                ("F08_FIXED_PARAM_MECHANISM", f"{role}: L2 - L1 (F08 fixed-param incremental)", l2_id[role], l1_id[role], "IDEAL_LIMIT_FILL"),
+                ("FULL_FIXED_PARAM_MECHANISM", f"{role}: L2 - L0 (F11+F08 fixed-param)", l2_id[role], l0_id[role], "IDEAL_LIMIT_FILL"),
+                ("F08_FIXED_PARAM_MECHANISM_DELAYED", f"{role}: L2 - L1 (F08 fixed-param incremental, DELAYED)", l2_dl[role], l1_dl[role], "DELAYED_EXIT_FILL"),
+            ):
+                seq_seed += 1
+                add_ablation(
+                    comparison_type="FIXED_PARAM_MECHANISM_ABLATION",
+                    ablation_group=grp,
+                    comparison_family="FIXED_PARAM_MECHANISM",
+                    parameter_binding=binding,
+                    inference_scope=scope,
+                    label=lbl,
+                    funding_regime=f_regime,
+                    execution_profile=prof,
+                    cand_rows=ca,
+                    ctrl_rows=ct,
+                    seed_offset=seq_seed,
+                )
+
+        # (B) Lifecycle-reoptimized full-pipeline comparisons (includes lifecycle + candidate re-selection + interaction)
+        for role in ("B_WF", "C_WF"):
+            for grp, lbl, ca, ct, prof in (
+                ("LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON", f"{role}: L1 - L0 (reoptimized pipeline)", l1_id[role], l0_id[role], "IDEAL_LIMIT_FILL"),
+                ("LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON", f"{role}: L2 - L1 (reoptimized pipeline)", l2_id[role], l1_id[role], "IDEAL_LIMIT_FILL"),
+                ("LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON", f"{role}: L2 - L0 (reoptimized pipeline)", l2_id[role], l0_id[role], "IDEAL_LIMIT_FILL"),
+                ("LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON", f"{role}: L2 - L1 (reoptimized pipeline, DELAYED)", l2_dl[role], l1_dl[role], "DELAYED_EXIT_FILL"),
+            ):
+                seq_seed += 1
+                add_ablation(
+                    comparison_type="LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON",
+                    ablation_group=grp,
+                    comparison_family="REOPTIMIZED_PIPELINE",
+                    parameter_binding="REOPTIMIZED_PER_LIFECYCLE",
+                    inference_scope="EXPLORATORY_REOPTIMIZED_PIPELINE_FAMILY",
+                    label=lbl,
+                    funding_regime=f_regime,
+                    execution_profile=prof,
+                    cand_rows=ca,
+                    ctrl_rows=ct,
+                    seed_offset=seq_seed,
+                )
+
+        # (C) Within-lifecycle strategy comparisons: B_WF/B2/B5/C_WF/C5 vs A_FIXED and vs CASH
+        for lc_name, prof_name, oos_map in (
+            ("L0", "IDEAL_LIMIT_FILL", l0_id),
+            ("L1", "IDEAL_LIMIT_FILL", l1_id),
+            ("L2", "IDEAL_LIMIT_FILL", l2_id),
+            ("L1", "DELAYED_EXIT_FILL", l1_dl),
+            ("L2", "DELAYED_EXIT_FILL", l2_dl),
+        ):
+            for cand_role in ("B_WF", "B2", "B5", "C_WF", "C5"):
+                seq_seed += 1
+                add_ablation(
+                    comparison_type="WITHIN_LIFECYCLE_STRATEGY_COMPARISON",
+                    ablation_group=f"STRATEGY_VS_A_{lc_name}",
+                    comparison_family="WITHIN_LIFECYCLE_STRATEGY",
+                    parameter_binding="SAME_LIFECYCLE_PAIRING",
+                    inference_scope="PREDECLARED_CONFIRMATION_FAMILY",
+                    label=f"{lc_name}: {cand_role} - A_FIXED",
+                    funding_regime=f_regime,
+                    execution_profile=prof_name,
+                    cand_rows=oos_map[cand_role],
+                    ctrl_rows=oos_map["A_FIXED"],
+                    seed_offset=seq_seed,
+                )
+            for cand_role in ("A_FIXED", "B_WF", "C_WF"):
+                seq_seed += 1
+                add_ablation(
+                    comparison_type="WITHIN_LIFECYCLE_STRATEGY_COMPARISON",
+                    ablation_group=f"STRATEGY_VS_CASH_{lc_name}",
+                    comparison_family="WITHIN_LIFECYCLE_STRATEGY",
+                    parameter_binding="SAME_LIFECYCLE_PAIRING",
+                    inference_scope="PREDECLARED_CONFIRMATION_FAMILY",
+                    label=f"{lc_name}: {cand_role} - CASH",
+                    funding_regime=f_regime,
+                    execution_profile=prof_name,
+                    cand_rows=oos_map[cand_role],
+                    ctrl_rows=oos_map["CASH"],
+                    seed_offset=seq_seed,
+                )
+
+    # Apply Holm-Bonferroni & Bonferroni adjustments strictly from UNROUNDED raw p-values
+    # within each distinct (funding_regime, execution_profile, comparison_family) family.
+    family_groups: dict[tuple[str, str, str], list[int]] = {}
+    for idx, row in enumerate(ablation_rows):
+        family_groups.setdefault(
+            (row["funding_regime"], row["execution_profile"], row["comparison_family"]), []
+        ).append(idx)
+    for idxs in family_groups.values():
+        m = len(idxs)
+        adj_w_raw = holm_bonferroni_adjust(
+            [ablation_rows[i]["wilcoxon_p_raw"] for i in idxs], round_digits=None
+        )
+        adj_b_raw = holm_bonferroni_adjust(
+            [ablation_rows[i]["boot_p_raw"] for i in idxs], round_digits=None
+        )
+        for pos, i in enumerate(idxs):
+            ablation_rows[i]["family_comparisons_m"] = m
+            ablation_rows[i]["bonferroni_alpha_05"] = round(0.05 / m, 6)
+            ablation_rows[i]["holm_wilcoxon_p_raw"] = adj_w_raw[pos]
+            ablation_rows[i]["holm_wilcoxon_p"] = round(adj_w_raw[pos], 6)
+            ablation_rows[i]["holm_boot_p_raw"] = adj_b_raw[pos]
+            ablation_rows[i]["holm_boot_p"] = round(adj_b_raw[pos], 6)
+            ablation_rows[i]["sig_after_holm_05"] = bool(
+                ablation_rows[i]["boot_95ci_low_pp"] > 0.0 and adj_w_raw[pos] < 0.05
+            )
+    return ablation_rows
 
 
 def _reconcile_l0_against_frozen_r10(
@@ -1044,6 +1203,98 @@ def _generate_mc_paths(
     return out, receipt, start_iso
 
 
+def compute_paired_mc_comparison(
+    cand_metrics: list[dict[str, Any]],
+    base_metrics: list[dict[str, Any]] | None,
+    *,
+    cand_rel: dict[str, Any],
+    seed: int,
+    is_self: bool = False,
+    baseline_available_n: int | None = None,
+    include_beats_rate: bool = False,
+    task_failed: bool = False,
+) -> dict[str, Any]:
+    """Compute paired MC return & CVaR95 differences with explicit missingness semantics.
+
+    Distinguishes:
+    1. ``SELF_BASELINE``: legitimate self-comparison (exact numeric 0.0).
+    2. ``COMPUTED``: verified same-length, same-path-identity paired comparison (may be exact 0.0).
+    3. ``COMPARISON_UNAVAILABLE`` with reason ``PAIRED_BASELINE_INSUFFICIENT`` /
+       ``NO_BASELINE_EXECUTED`` / ``PATH_IDENTITY_MISMATCH`` / ``TASK_EXECUTION_FAILED``:
+       returns ``None`` (JSON null / CSV empty), never numeric 0.0.
+    """
+    n_cand = len(cand_metrics)
+    rets_pct = np.asarray([float(m["net_return_pct"]) for m in cand_metrics], dtype=float)
+
+    def _unavailable(reason: str, base_n: int) -> dict[str, Any]:
+        out: dict[str, Any] = {
+            "candidate_n_paths": n_cand,
+            "baseline_n_paths": base_n,
+            "matched_n_paths": 0,
+            "comparison_status": "COMPARISON_UNAVAILABLE",
+            "comparison_unavailable_reason": reason,
+            "delta_return_pp": None,
+            "delta_cvar95_pp": None,
+        }
+        if include_beats_rate:
+            out["paired_beats_rate_pct"] = None
+        return out
+
+    if task_failed:
+        return _unavailable("TASK_EXECUTION_FAILED", int(baseline_available_n or 0))
+
+    if is_self:
+        out_self: dict[str, Any] = {
+            "candidate_n_paths": n_cand,
+            "baseline_n_paths": n_cand,
+            "matched_n_paths": n_cand,
+            "comparison_status": "SELF_BASELINE",
+            "comparison_unavailable_reason": None,
+            "delta_return_pp": 0.0,
+            "delta_cvar95_pp": 0.0,
+        }
+        if include_beats_rate:
+            out_self["paired_beats_rate_pct"] = 0.0
+        return out_self
+
+    if base_metrics is None:
+        avail = int(baseline_available_n or 0)
+        if avail > 0 and avail < n_cand:
+            return _unavailable("PAIRED_BASELINE_INSUFFICIENT", avail)
+        return _unavailable("NO_BASELINE_EXECUTED", avail)
+
+    n_base = len(base_metrics)
+    if n_base != n_cand:
+        return _unavailable("PAIRED_BASELINE_INSUFFICIENT", n_base)
+
+    # Verify strict path identity alignment whenever path identity metadata is present
+    cand_ids = [m.get("mc_path_id") for m in cand_metrics]
+    base_ids = [m.get("mc_path_id") for m in base_metrics]
+    if any(x is not None for x in cand_ids) or any(x is not None for x in base_ids):
+        if cand_ids != base_ids:
+            return _unavailable("PATH_IDENTITY_MISMATCH", n_base)
+
+    b_ret = np.asarray([float(m["net_return_pct"]) for m in base_metrics], dtype=float)
+    b_loss = np.asarray([float(m["loss_fraction"]) for m in base_metrics], dtype=float)
+    b_dd = np.asarray([float(m["max_drawdown"]) for m in base_metrics], dtype=float)
+    b_rel = summarize_paths(b_loss, b_dd, threshold=0.05, confidences=(0.95,), resamples=299, bootstrap_seed=seed)
+    diff = rets_pct - b_ret
+    out_ok: dict[str, Any] = {
+        "candidate_n_paths": n_cand,
+        "baseline_n_paths": n_base,
+        "matched_n_paths": n_cand,
+        "comparison_status": "COMPUTED",
+        "comparison_unavailable_reason": None,
+        "delta_return_pp": round(float(np.mean(diff)), 4),
+        "delta_cvar95_pp": round(
+            (cand_rel["tails"]["0.95"]["cvar"] - b_rel["tails"]["0.95"]["cvar"]) * 100.0, 4
+        ),
+    }
+    if include_beats_rate:
+        out_ok["paired_beats_rate_pct"] = round(float(np.mean(diff > 1e-6) * 100.0), 2)
+    return out_ok
+
+
 def _aggregate_mc_group(
     path_metrics: list[dict[str, Any]],
     *,
@@ -1056,6 +1307,8 @@ def _aggregate_mc_group(
     seed: int,
     paired_a_same_lc: list[dict[str, Any]] | None = None,
     paired_l0_same_strat: list[dict[str, Any]] | None = None,
+    paired_a_baseline_n: int | None = None,
+    paired_l0_baseline_n: int | None = None,
 ) -> dict[str, Any]:
     n = len(path_metrics)
     losses = np.asarray([float(m["loss_fraction"]) for m in path_metrics], dtype=float)
@@ -1122,36 +1375,44 @@ def _aggregate_mc_group(
         ),
         "all_zero_fifo_residual": bool(all(m["reconciled_zero_residual"] for m in path_metrics)),
         "max_simultaneous_exit_orders": max(int(m.get("max_simultaneous_exit_orders", 0)) for m in path_metrics),
+        "exit_peak_monitoring_method": (
+            path_metrics[0].get("exit_peak_monitoring_method", "EVENT_LEVEL_AUTHORITATIVE_LIFECYCLE")
+            if path_metrics
+            else None
+        ),
     }
 
-    if paired_a_same_lc is not None:
-        a_ret = np.asarray([float(m["net_return_pct"]) for m in paired_a_same_lc], dtype=float)
-        a_loss = np.asarray([float(m["loss_fraction"]) for m in paired_a_same_lc], dtype=float)
-        a_dd = np.asarray([float(m["max_drawdown"]) for m in paired_a_same_lc], dtype=float)
-        a_rel = summarize_paths(a_loss, a_dd, threshold=0.05, confidences=(0.95,), resamples=299, bootstrap_seed=seed)
-        diff = rets_pct - a_ret
-        row["delta_return_vs_A_same_lc_pp"] = round(float(np.mean(diff)), 4)
-        row["delta_cvar95_vs_A_same_lc_pp"] = round(
-            (rel["tails"]["0.95"]["cvar"] - a_rel["tails"]["0.95"]["cvar"]) * 100.0, 4
-        )
-        row["paired_beats_A_rate_pct"] = round(float(np.mean(diff > 1e-6) * 100.0), 2)
-    else:
-        row["delta_return_vs_A_same_lc_pp"] = 0.0
-        row["delta_cvar95_vs_A_same_lc_pp"] = 0.0
-        row["paired_beats_A_rate_pct"] = 0.0
+    cmp_a = compute_paired_mc_comparison(
+        path_metrics,
+        paired_a_same_lc,
+        cand_rel=rel,
+        seed=seed,
+        is_self=(strategy_id == "A_FIXED"),
+        baseline_available_n=paired_a_baseline_n,
+        include_beats_rate=True,
+    )
+    row["delta_return_vs_A_same_lc_pp"] = cmp_a["delta_return_pp"]
+    row["delta_cvar95_vs_A_same_lc_pp"] = cmp_a["delta_cvar95_pp"]
+    row["paired_beats_A_rate_pct"] = cmp_a["paired_beats_rate_pct"]
+    row["vs_A_comparison_status"] = cmp_a["comparison_status"]
+    row["vs_A_comparison_unavailable_reason"] = cmp_a["comparison_unavailable_reason"]
 
-    if paired_l0_same_strat is not None:
-        l0_ret = np.asarray([float(m["net_return_pct"]) for m in paired_l0_same_strat], dtype=float)
-        l0_loss = np.asarray([float(m["loss_fraction"]) for m in paired_l0_same_strat], dtype=float)
-        l0_dd = np.asarray([float(m["max_drawdown"]) for m in paired_l0_same_strat], dtype=float)
-        l0_rel = summarize_paths(l0_loss, l0_dd, threshold=0.05, confidences=(0.95,), resamples=299, bootstrap_seed=seed)
-        row["delta_return_vs_L0_pp"] = round(float(np.mean(rets_pct - l0_ret)), 4)
-        row["delta_cvar95_vs_L0_pp"] = round(
-            (rel["tails"]["0.95"]["cvar"] - l0_rel["tails"]["0.95"]["cvar"]) * 100.0, 4
-        )
-    else:
-        row["delta_return_vs_L0_pp"] = 0.0
-        row["delta_cvar95_vs_L0_pp"] = 0.0
+    cmp_l0 = compute_paired_mc_comparison(
+        path_metrics,
+        paired_l0_same_strat,
+        cand_rel=rel,
+        seed=seed,
+        is_self=(lifecycle_id == "L0"),
+        baseline_available_n=paired_l0_baseline_n,
+        include_beats_rate=False,
+    )
+    row["delta_return_vs_L0_pp"] = cmp_l0["delta_return_pp"]
+    row["delta_cvar95_vs_L0_pp"] = cmp_l0["delta_cvar95_pp"]
+    row["candidate_n_paths"] = cmp_l0["candidate_n_paths"]
+    row["baseline_n_paths"] = cmp_l0["baseline_n_paths"]
+    row["matched_n_paths"] = cmp_l0["matched_n_paths"]
+    row["comparison_status"] = cmp_l0["comparison_status"]
+    row["comparison_unavailable_reason"] = cmp_l0["comparison_unavailable_reason"]
 
     return row
 
@@ -1447,11 +1708,12 @@ def run_r11_monte_carlo(
                 n_max_here = max_tail if has_tail else max_exp
                 ser_full = get_series(primary_seed, scen, n_max_here, arm_id, lc_id, prof_name, "SWITCH_48H")
                 a_full = get_series(primary_seed, scen, n_max_here, "A_FIXED", lc_id, prof_name, "SWITCH_48H")
-                l0_full = (
-                    get_series(primary_seed, scen, min(n_max_here, max_exp), arm_id, "L0", "IDEAL_LIMIT_FILL", "SWITCH_48H")
-                    if (lc_id != "L0" and n_max_here <= max_exp)
+                l0_avail = (
+                    get_series(primary_seed, scen, max_exp, arm_id, "L0", "IDEAL_LIMIT_FILL", "SWITCH_48H")
+                    if lc_id != "L0"
                     else None
                 )
+                l0_full = l0_avail if (l0_avail is not None and n_max_here <= len(l0_avail)) else None
                 expanded_summary_rows.append(
                     _aggregate_mc_group(
                         ser_full,
@@ -1464,10 +1726,12 @@ def run_r11_monte_carlo(
                         seed=primary_seed,
                         paired_a_same_lc=None if arm_id == "A_FIXED" else a_full,
                         paired_l0_same_strat=l0_full,
+                        paired_l0_baseline_n=len(l0_avail) if l0_avail is not None else n_max_here,
                     )
                 )
                 conv_grid = sorted({k for k in (64, 128, 256, 512, 1024, n_max_here) if k <= n_max_here})
                 for m_n in conv_grid:
+                    sub_l0 = None if (l0_avail is None or m_n > len(l0_avail)) else l0_avail[:m_n]
                     sub_agg = _aggregate_mc_group(
                         ser_full[:m_n],
                         scenario=scen,
@@ -1478,7 +1742,8 @@ def run_r11_monte_carlo(
                         funding_regime="SWITCH_48H",
                         seed=primary_seed,
                         paired_a_same_lc=None if arm_id == "A_FIXED" else a_full[:m_n],
-                        paired_l0_same_strat=None if (l0_full is None or m_n > len(l0_full)) else l0_full[:m_n],
+                        paired_l0_same_strat=sub_l0,
+                        paired_l0_baseline_n=len(l0_avail) if l0_avail is not None else m_n,
                     )
                     convergence_rows.append(
                         {
@@ -1495,6 +1760,8 @@ def run_r11_monte_carlo(
                             "cvar95_pct": sub_agg["cvar95_pct"],
                             "cvar95_ci_width_pp": sub_agg["cvar95_ci_width_pp"],
                             "delta_cvar95_vs_A_same_lc_pp": sub_agg["delta_cvar95_vs_A_same_lc_pp"],
+                            "delta_cvar95_vs_L0_pp": sub_agg["delta_cvar95_vs_L0_pp"],
+                            "l0_comparison_status": sub_agg["comparison_status"],
                         }
                     )
 
@@ -1582,21 +1849,53 @@ def derive_r11_conclusions(
     historical: dict[str, Any],
     deterministic: list[dict[str, Any]],
     monte_carlo: dict[str, Any],
+    *,
+    exit_peak_verification: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Compute formal P8-R11 conclusion tags strictly from observed ledger & statistical evidence."""
+    """Compute formal P8-R11 conclusion tags strictly from observed ledger & statistical evidence.
+
+    Separates:
+    - FIFO ledger reconciliation verification across all simulated runs.
+    - Event-level authoritative exit-order peak verification (explicitly refusing to claim
+      event-level full-lifecycle verification for legacy bar-end-sampled runs).
+    """
     all_zero_fifo = bool(
         historical["all_zero_fifo_residual"]
         and all(bool(r["reconciled_zero_residual"]) for r in deterministic)
         and monte_carlo["all_zero_fifo_residual"]
     )
-    single_exit_invariant = bool(
-        historical["max_simultaneous_exit_orders"] <= 1
-        and max((int(r.get("max_simultaneous_exit_orders", 0)) for r in deterministic), default=0) <= 1
-        and monte_carlo["max_simultaneous_exit_orders"] <= 1
-    )
+    det_event_peak = max((int(r.get("max_simultaneous_exit_orders", 0)) for r in deterministic), default=0)
+    det_overlap_count = sum(len(r.get("exit_overlap_violations", [])) for r in deterministic)
+
+    if exit_peak_verification is not None:
+        ev_verified_runs = int(exit_peak_verification.get("event_level_verified_runs", 0))
+        ev_max_peak = int(exit_peak_verification.get("event_level_max_simultaneous_exit_orders", 0))
+        ev_overlap_count = int(exit_peak_verification.get("event_level_overlap_violations", 0))
+        single_exit_invariant = bool(ev_verified_runs > 0 and ev_max_peak <= 1 and ev_overlap_count == 0)
+        peak_scope_desc = str(
+            exit_peak_verification.get(
+                "scope_summary",
+                f"事件级权威生命周期峰值监测已覆盖 {ev_verified_runs} 次复跑/验证（确定性压力、历史机制补算与 MC 代表批次）",
+            )
+        )
+    else:
+        ev_max_peak = max(
+            int(historical.get("max_simultaneous_exit_orders", 0)),
+            det_event_peak,
+            int(monte_carlo.get("max_simultaneous_exit_orders", 0)),
+        )
+        ev_overlap_count = det_overlap_count
+        ev_verified_runs = (
+            int(historical.get("total_unique_window_runs", 0))
+            + len(deterministic)
+            + int(monte_carlo.get("total_unique_mc_runs", 0))
+        )
+        single_exit_invariant = bool(ev_verified_runs > 0 and ev_max_peak <= 1 and ev_overlap_count == 0)
+        peak_scope_desc = f"全部 {ev_verified_runs} 次模拟均在事件级权威生命周期峰值监测下运行"
+
     engineering_accepted = all_zero_fifo and single_exit_invariant
 
-    # Check if any strategy beats CASH or A_FIXED positively on MAINNET_ACTUAL L2 OOS with Holm significance
+    # Check if any strategy beats CASH positively on MAINNET_ACTUAL L2 OOS
     mainnet_l2_ideal = historical["wf_results_index"]["L2__IDEAL_LIMIT_FILL__MAINNET_ACTUAL"]["oos_summary"]
     mainnet_l2_delayed = historical["wf_results_index"]["L2__DELAYED_EXIT_FILL__MAINNET_ACTUAL"]["oos_summary"]
     any_pos_mainnet_l2 = any(
@@ -1622,6 +1921,9 @@ def derive_r11_conclusions(
         "invariants": {
             "all_zero_fifo_residual": all_zero_fifo,
             "single_authoritative_exit_order_verified": single_exit_invariant,
+            "event_level_exit_peak_verified_runs": ev_verified_runs,
+            "event_level_max_simultaneous_exit_orders": ev_max_peak,
+            "event_level_overlap_violations": ev_overlap_count,
             "any_positive_mainnet_l2_ideal_oos_mean": any_pos_mainnet_l2,
             "mainnet_l2_ideal_a_return_pct": mainnet_l2_ideal["A_FIXED"]["mean_net_return_pct"],
             "mainnet_l2_ideal_b_wf_return_pct": mainnet_l2_ideal["B_WF"]["mean_net_return_pct"],
@@ -1632,21 +1934,21 @@ def derive_r11_conclusions(
         },
         "notes": {
             "ENGINEERING_ACCEPTED": (
-                "统一执行模型（GridExecution + PaperBroker + TradingController + PaperStore + "
-                "F11/F08 + FundingPolicy/VolatilityPolicy + grid_fifo）全部历史窗、确定性压力与 "
-                "Monte Carlo 路径均通过零残差 FIFO 对账，且满足单权威退出订单不变式（无重复卖单）。"
+                f"账本零残差验收覆盖全部模拟（FIFO 残差严格为 0）；单权威退出订单事件级峰值监测（含同 Bar 提交即成交、"
+                f"CANCEL_PENDING、UNKNOWN 与跨代连续性）{peak_scope_desc}，验证峰值 <= 1 且零重叠违规"
+                "（旧 Bar 尾采样批次不冒充全时点事件级认证）。"
             ),
             "CONDITIONAL_RISK_ESTIMATED": (
-                "已在 5 组显式条件执行假设、5 档资金费体制及 6 类随机路径模型（含逐级扩容与跨种子稳定性核验）下"
-                "完成 A/B/C/CASH × L0/L1/L2 的配对收益与尾部风险估计；小时 OHLC 非真实 L2 盘口。"
+                "已在 5 组显式条件执行假设、5 档资金费体制及 6 类随机路径模型下完成 A/B/C/CASH × L0/L1/L2 的配对收益与尾部风险估计；"
+                "缺失 L0 配对路径的 8 组 1024 路径扩容单元以 null 与 COMPARISON_UNAVAILABLE 显式标记（无伪零），小时 OHLC 非真实 L2 盘口。"
             ),
             "RESEARCH_INCONCLUSIVE": (
-                "在真实主网资金费及完整 F11/F08 生命周期下，A/B/C 均未证明相对现金基准或固定网格存在稳健的"
-                "真实成本后正样本外超额收益；资金费敏感机制的价值严格限定于高资金费或退出摩擦/延迟体制下的防御性风险控制。"
+                "在真实主网资金费及完整 F11/F08 生命周期下，A/B/C 均未证明相对现金基准存在稳健的真实成本后正样本外超额收益；"
+                "固定参数机制消融与重新优化完整流程比较已严格分离，资金费敏感机制的价值严格限定于高资金费与退出摩擦体制下的防御风控。"
             ),
             "OOS_ADVANTAGE_SUPPORTED": (
                 "未授予（NOT_MET / BLOCKED）：本研究复用了 R10 的 193 天 27 窗（18 个历史 OOS 窗），属于可比历史复验"
-                "而非全新未见独立样本，且主网真实费率下各网格策略均值净收益仍未稳定跑赢现金基准。"
+                "而非全新未见独立样本，且主网真实费率下各网格策略均值净收益仍跑输现金基准。"
             ),
         },
     }
@@ -1741,6 +2043,7 @@ def run_p8_r11_study(
         historical_oos_summary=historical["wf_results_index"],
         mc_key_summary=monte_carlo["expanded_key_scenarios"],
         data_audit=data_audit,
+        paired_ablations=historical["paired_ablations"],
     )
 
     study: dict[str, Any] = {

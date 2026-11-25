@@ -29,6 +29,7 @@ import numpy as np
 from factorlab.experiments.grid_f11_f08_offline import (
     DEFAULT_DEMO_WALLET,
     DEFAULT_STRATEGY_CAP,
+    EXIT_PEAK_MONITORING_METHOD,
     MODEL_BASELINE,
     MODEL_F11_F08,
     MODEL_F11_ONLY,
@@ -269,6 +270,9 @@ def cash_reference_result(
         "final_state": "CASH",
         "final_reason": None,
         "max_simultaneous_exit_orders": 0,
+        "bar_end_max_simultaneous_exit_orders": 0,
+        "exit_peak_monitoring_method": EXIT_PEAK_MONITORING_METHOD,
+        "exit_overlap_violations": [],
         "funding_blocked_hours": 0,
         "vol_blocked_hours": 0,
         "adaptive_rebuilds": 0,
@@ -397,10 +401,11 @@ def run_unified_lifecycle(
             f"Non-zero FIFO residual {res['reconciliation_residual_usdt']} for "
             f"{strategy_id}/{lifecycle_id}/{execution_profile_name}/{funding_regime}"
         )
-    if res["max_simultaneous_exit_orders"] > 1:
+    if res["max_simultaneous_exit_orders"] > 1 or res.get("exit_overlap_violations"):
         raise AssertionError(
             f"Duplicate simultaneous exit orders ({res['max_simultaneous_exit_orders']}) for "
-            f"{strategy_id}/{lifecycle_id}/{execution_profile_name}/{funding_regime}"
+            f"{strategy_id}/{lifecycle_id}/{execution_profile_name}/{funding_regime}: "
+            f"{res.get('exit_overlap_violations')}"
         )
 
     bh = _equal_bh_for_regime(bars, strategy_cap_usdt, funding_regime, historical_funding_events)
@@ -413,19 +418,88 @@ def run_unified_lifecycle(
     return res
 
 
-def holm_bonferroni_adjust(p_values: list[float]) -> list[float]:
-    """Compute Holm-Bonferroni step-down adjusted p-values preserving input order."""
+def holm_bonferroni_adjust(
+    p_values: list[float],
+    *,
+    round_digits: int | None = 6,
+) -> list[float]:
+    """Compute Holm-Bonferroni step-down adjusted p-values from unrounded p-values, preserving order."""
     m = len(p_values)
     if m == 0:
         return []
-    indexed = sorted(enumerate(p_values), key=lambda pair: pair[1])
+    indexed = sorted(enumerate(p_values), key=lambda pair: float(pair[1]))
     adjusted = [1.0] * m
     running_max = 0.0
     for rank, (orig_idx, p) in enumerate(indexed):
         val = min(1.0, max(running_max, float(p) * (m - rank)))
         running_max = val
-        adjusted[orig_idx] = round(val, 6)
+        adjusted[orig_idx] = round(val, round_digits) if round_digits is not None else val
     return adjusted
+
+
+def paired_statistical_test_unrounded(
+    candidate_vals: np.ndarray,
+    control_vals: np.ndarray,
+    *,
+    n_bootstrap: int = 10_000,
+    seed: int = 202610,
+) -> dict[str, Any]:
+    """Paired bootstrap CI, Wilcoxon signed-rank, and paired t-test retaining unrounded p-values
+    for downstream Holm-Bonferroni family-wise correction before display rounding."""
+    from scipy import stats as scipy_stats
+
+    diff = np.asarray(candidate_vals, dtype=float) - np.asarray(control_vals, dtype=float)
+    n = len(diff)
+    if n == 0:
+        return {"n_windows": 0}
+    mean_diff = float(np.mean(diff))
+    median_diff = float(np.median(diff))
+    std_diff = float(np.std(diff, ddof=1)) if n > 1 else 0.0
+    win_rate = float(np.mean(diff > 0))
+    tie_rate = float(np.mean(np.isclose(diff, 0.0, atol=1e-12)))
+    loss_rate = float(np.mean(diff < 0))
+
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, n, size=(n_bootstrap, n))
+    boot_means = diff[idx].mean(axis=1)
+    ci_low, ci_high = float(np.quantile(boot_means, 0.025)), float(np.quantile(boot_means, 0.975))
+    p_boot = float(2.0 * min(np.mean(boot_means <= 0.0), np.mean(boot_means >= 0.0)))
+    p_boot = min(1.0, max(1.0 / n_bootstrap, p_boot))
+
+    nonzero = diff[~np.isclose(diff, 0.0, atol=1e-12)]
+    if len(nonzero) >= 3:
+        w_res = scipy_stats.wilcoxon(nonzero, alternative="two-sided", zero_method="wilcox")
+        wilcoxon_p = float(w_res.pvalue)
+    else:
+        wilcoxon_p = 1.0
+
+    if n >= 2 and std_diff > 1e-12:
+        t_res = scipy_stats.ttest_rel(candidate_vals, control_vals)
+        t_stat, t_p = float(t_res.statistic), float(t_res.pvalue)
+    else:
+        t_stat, t_p = 0.0, 1.0
+
+    return {
+        "n_windows": n,
+        "mean_diff_raw_pct": mean_diff,
+        "mean_diff_pct": round(mean_diff, 4),
+        "median_diff_pct": round(median_diff, 4),
+        "std_diff_pct": round(std_diff, 4),
+        "win_rate_pct": round(win_rate * 100.0, 2),
+        "tie_rate_pct": round(tie_rate * 100.0, 2),
+        "loss_rate_pct": round(loss_rate * 100.0, 2),
+        "bootstrap_95ci_low_pct": round(ci_low, 4),
+        "bootstrap_95ci_high_pct": round(ci_high, 4),
+        "bootstrap_p_raw": p_boot,
+        "bootstrap_p_value": round(p_boot, 4),
+        "wilcoxon_p_raw": wilcoxon_p,
+        "wilcoxon_p_value": round(wilcoxon_p, 4),
+        "paired_t_stat": round(t_stat, 4),
+        "paired_t_p_raw": t_p,
+        "paired_t_p_value": round(t_p, 4),
+        "ci_strictly_positive": bool(ci_low > 0.0),
+        "statistically_significant_05": bool(ci_low > 0.0 and wilcoxon_p < 0.05),
+    }
 
 
 def summarize_unified_windows(rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -523,6 +597,10 @@ def build_s02_handoff_contract(
     historical_oos_summary: dict[str, Any],
     mc_key_summary: list[dict[str, Any]],
     data_audit: dict[str, Any],
+    paired_ablations: list[dict[str, Any]] | None = None,
+    engineering_verification_scope: dict[str, Any] | None = None,
+    b2_b5_equivalence_boundary: dict[str, Any] | None = None,
+    mc_tail_convergence_notice: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build machine-readable S02-F01 consumer contract without duplicating ChampionSelector."""
     cfg_paths = {
@@ -538,8 +616,70 @@ def build_s02_handoff_contract(
         }
         for k, p in cfg_paths.items()
     }
+    default_eng_scope = {
+        "fifo_zero_residual_scope": "FULL_STUDY_AND_TARGETED_RECOMPUTES",
+        "exit_peak_monitoring_method": EXIT_PEAK_MONITORING_METHOD,
+        "event_level_exit_peak_verified_scope": "TARGETED_UNIT_STRESS_HISTORICAL_AND_MC_VERIFICATION_BATCHES",
+        "legacy_bar_end_only_notice": (
+            "Original 60,240 historical+MC runs used bar-end sampling for max_simultaneous_exit_orders; "
+            "event-level full-lifecycle peak verification covers all post-fix unit/regression tests, "
+            "the full 338-run deterministic stress suite, historical mechanism-ablation recomputes, "
+            "and representative MC verification runs."
+        ),
+    }
+    default_b2_b5 = {
+        "historical_l1_l2_paired_cells_executed": 36,
+        "historical_l1_l2_full_matrix_cells": 50,
+        "uncovered_cells_count": 14,
+        "covered_regimes_and_profiles": {
+            "MAINNET_ACTUAL": list(ALL_EXECUTION_PROFILES),
+            "SWITCH_48H": list(ALL_EXECUTION_PROFILES),
+            "DEMO_HIGH_FUNDING_22.97BPS": list(ALL_EXECUTION_PROFILES),
+            "EX_FUNDING": ["L1:IDEAL_LIMIT_FILL", "L2:IDEAL_LIMIT_FILL", "L2:DELAYED_EXIT_FILL"],
+            "NORMAL_SYNTHETIC_0.125BPS": ["L1:IDEAL_LIMIT_FILL", "L2:IDEAL_LIMIT_FILL", "L2:DELAYED_EXIT_FILL"],
+        },
+        "uncovered_combinations": (
+            "EX_FUNDING and NORMAL_SYNTHETIC_0.125BPS under L1 (DELAYED_EXIT_FILL, "
+            "LIMITED_CAPACITY_PARTIAL, UNFILLED_EXIT_TIMEOUT, GAP_AND_CANCEL_FAULT) and "
+            "L2 (LIMITED_CAPACITY_PARTIAL, UNFILLED_EXIT_TIMEOUT, GAP_AND_CANCEL_FAULT)."
+        ),
+        "deterministic_counterexample_preserved": (
+            "Under zero slippage with in-band open inventory before breakout, B5 funding exit "
+            "triggers ahead of BREAKOUT through the single authoritative F11 limit exit; "
+            "equivalence is scoped strictly to the 36 executed single-level 2-bps-slippage historical cells."
+        ),
+    }
+    default_mc_tail = {
+        "effective_historical_oos_tail_samples_95": 0.9,
+        "historical_tail_certified": False,
+        "mc_missing_comparison_semantics": {
+            "missing_numeric_value": None,
+            "status_when_insufficient": "COMPARISON_UNAVAILABLE",
+            "reason_when_insufficient": "PAIRED_BASELINE_INSUFFICIENT",
+            "downstream_rule": "Consumers MUST NOT coerce null comparison deltas to 0.0 (no fillna(0)).",
+        },
+        "unconverged_heavy_tail_notice": (
+            "moving_block_bootstrap_24h SWITCH_48H L2/DELAYED B5 CVaR95 remains wide across seeds "
+            "(n=256 cross-seed 8.98% vs 16.56%, n=512 CI width 8.79 pp) and is not certified as converged."
+        ),
+    }
+    ablation_summary = {
+        "fixed_param_mechanism_ablations": [
+            r for r in (paired_ablations or []) if r.get("comparison_type") == "FIXED_PARAM_MECHANISM_ABLATION"
+        ],
+        "reoptimized_pipeline_comparisons": [
+            r
+            for r in (paired_ablations or [])
+            if r.get("comparison_type") == "LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON"
+        ],
+        "within_lifecycle_strategy_comparisons": [
+            r
+            for r in (paired_ablations or [])
+            if r.get("comparison_type") == "WITHIN_LIFECYCLE_STRATEGY_COMPARISON"
+        ],
+    }
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "producer": "P8-R11",
         "consumer": "P8-S02-F01",
         "execution_model_version": UNIFIED_EXECUTION_MODEL_VERSION,
@@ -551,6 +691,29 @@ def build_s02_handoff_contract(
             "study_cli": "tools/research/run_p8_r11_study.py",
         },
         "candidate_configs": config_manifest,
+        "engineering_verification_scope": engineering_verification_scope or default_eng_scope,
+        "funding_entry_time_recovery": {
+            "origin": "PREEXISTING_R10_DEFECT",
+            "status": "FIXED_IN_PR252_CHECKPOINT_WITH_LEGACY_EVENT_FALLBACK",
+            "checkpoint_persisted_fields": [
+                "entry_time_utc",
+                "entry_price_dec",
+                "entry_time_unrecoverable",
+                "buy_blocked",
+                "last_funding_bps_h",
+                "exit_reasons",
+                "funding_exit_triggers",
+                "blocked_hours",
+                "total_observed_hours",
+            ],
+            "legacy_checkpoint_policy": (
+                "Reconstructs open-lot entry_time_utc strictly from authoritative PaperStore fill events; "
+                "when authoritative events cannot reliably explain open inventory, leaves entry_time_utc=None "
+                "and sets entry_time_unrecoverable=True without fabricating current time or zero age."
+            ),
+        },
+        "b2_b5_equivalence_boundary": b2_b5_equivalence_boundary or default_b2_b5,
+        "mc_tail_convergence_and_missingness": mc_tail_convergence_notice or default_mc_tail,
         "data_independence_and_qualification": {
             "historical_dataset_coverage": data_audit.get("coverage", {}),
             "windows_reused_from_r10": True,
@@ -567,5 +730,6 @@ def build_s02_handoff_contract(
         },
         "conclusions": conclusions,
         "historical_oos_cost_and_risk": historical_oos_summary,
+        "historical_paired_ablations_separated": ablation_summary,
         "monte_carlo_key_risk_summary": mc_key_summary,
     }

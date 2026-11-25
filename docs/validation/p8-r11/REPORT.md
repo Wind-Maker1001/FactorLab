@@ -8,10 +8,10 @@
 
 | 结论标签 | 状态 | 判定依据与严格边界 |
 | --- | --- | --- |
-| `ENGINEERING_ACCEPTED` | **PASS / CONFIRMED** | 统一执行模型（GridExecution + PaperBroker + TradingController + PaperStore + F11/F08 + FundingPolicy/VolatilityPolicy + grid_fifo）全部历史窗、确定性压力与 Monte Carlo 路径均通过零残差 FIFO 对账，且满足单权威退出订单不变式（无重复卖单）。 |
-| `CONDITIONAL_RISK_ESTIMATED` | **PASS / CONFIRMED** | 已在 5 组显式条件执行假设、5 档资金费体制及 6 类随机路径模型（含逐级扩容与跨种子稳定性核验）下完成 A/B/C/CASH × L0/L1/L2 的配对收益与尾部风险估计；小时 OHLC 非真实 L2 盘口。 |
-| `RESEARCH_INCONCLUSIVE` | **CONFIRMED (`INCONCLUSIVE`)** | 在真实主网资金费及完整 F11/F08 生命周期下，A/B/C 均未证明相对现金基准或固定网格存在稳健的真实成本后正样本外超额收益；资金费敏感机制的价值严格限定于高资金费或退出摩擦/延迟体制下的防御性风险控制。 |
-| `OOS_ADVANTAGE_SUPPORTED` | **NOT_MET / BLOCKED** | 未授予（NOT_MET / BLOCKED）：本研究复用了 R10 的 193 天 27 窗（18 个历史 OOS 窗），属于可比历史复验而非全新未见独立样本，且主网真实费率下各网格策略均值净收益仍未稳定跑赢现金基准。 |
+| `ENGINEERING_ACCEPTED` | **PASS / CONFIRMED** | 账本零残差验收覆盖全部模拟（FIFO 残差严格为 0）；单权威退出订单事件级峰值监测（含同 Bar 提交即成交、CANCEL_PENDING、UNKNOWN 与跨代连续性）事件级权威生命周期峰值监测已验证 3773 次完整运行（全部 338 次确定性压力 + 1707 次历史 OOS 机制补算窗 + 1728 条 MC 代表路径）及全部单元/负向重叠注入测试，验证峰值 <= 1 且零重叠违规（旧 Bar 尾采样批次不冒充全时点事件级认证）。 |
+| `CONDITIONAL_RISK_ESTIMATED` | **PASS / CONFIRMED** | 已在 5 组显式条件执行假设、5 档资金费体制及 6 类随机路径模型下完成 A/B/C/CASH × L0/L1/L2 的配对收益与尾部风险估计；缺失 L0 配对路径的 8 组 1024 路径扩容单元以 null 与 COMPARISON_UNAVAILABLE 显式标记（无伪零），小时 OHLC 非真实 L2 盘口。 |
+| `RESEARCH_INCONCLUSIVE` | **CONFIRMED (`INCONCLUSIVE`)** | 在真实主网资金费及完整 F11/F08 生命周期下，A/B/C 均未证明相对现金基准存在稳健的真实成本后正样本外超额收益；固定参数机制消融与重新优化完整流程比较已严格分离，资金费敏感机制的价值严格限定于高资金费与退出摩擦体制下的防御风控。 |
+| `OOS_ADVANTAGE_SUPPORTED` | **NOT_MET / BLOCKED** | 未授予（NOT_MET / BLOCKED）：本研究复用了 R10 的 193 天 27 窗（18 个历史 OOS 窗），属于可比历史复验而非全新未见独立样本，且主网真实费率下各网格策略均值净收益仍跑输现金基准。 |
 
 ### 1.2 最终核心问题直接回答：完整 F11/F08 生命周期是否改变了 R10 的结论？资金费敏感机制是否仍具独立价值？
 
@@ -20,16 +20,16 @@
    - 当开启 F11 限价退出（`L1`，`IDEAL_LIMIT_FILL`）后，仅 F11 本身就将固定网格 A 在 `SWITCH_48H` 中的均值净收益从 `-8.2101%` 提升至 `-0.0275%`（CVaR95 从 `32.57%` 降至 `0.09%`，残仓暂停时长从 `51.1h` 降至 `0.0h`）。这证明 **R10 中策略 B 在 `L0` 下的大部分减亏收益确实来源于替代缺失的 F11 突破平仓**。
    - 然而，在更贴近现实的**完整 `L2`（F11 + F08）且存在退出摩擦（`DELAYED_EXIT_FILL` / `LIMITED_CAPACITY_PARTIAL` / `UNFILLED_EXIT_TIMEOUT` / `GAP_AND_CANCEL_FAULT`）**下，固定网格 A 因 F08 持续轮换反复入场且缺乏资金费门控，风险再度大幅暴露：在 `SWITCH_48H · L2 · DELAYED` 中，`A = -7.7329%`（CVaR95 `20.75%`）而 `B_WF = -0.4175%`（CVaR95 `2.10%`）；在 `DEMO_HIGH_FUNDING · L2 · DELAYED` 中，`A = -7.6670%`（CVaR95 `18.62%`）而 `B_WF = +0.0000%`（CVaR95 `0.00%`）。
 2. **资金费敏感机制 B 在 F11 之外仍具有独立但严格条件化的防御研究价值（且实证表明其独立价值几乎全部来自入口/轮换门控，而非独立资金费退出）**：
-   - **关键机制发现（`B2 == B5`）**：在 `L1` 与 `L2` 的全部历史 5 资金费体制 × 5 执行假设中，`B2`（纯因果入口与 F08 轮换门控）与 `B5`（入口门控 + 资金费退出）产生**完全一致的净收益与 CVaR95**（例如 `SWITCH_48H · L2 · DELAYED` 下两者均为 `-0.4175%` / `-0.4175%`、`CVaR95 = 2.10%`）。根本原因在于：本单层网格（`prices=[lower, upper]`）叠加 2 bps 滑点后，任何触发买单成交的小时收盘价（`close * 1.0002 <= lower`）同时满足 `close < lower`，当根 Bar 即触发 `BREAKOUT` 并进入唯一权威 F11 限价退出流程；因此 `B5` 的额外资金费退出规则被 F11 吸收（仅在单权威日志中追加第二原因），不再产生额外独立平仓动作。
+   - **关键机制发现（已执行的 36 个历史 `L1`/`L2` 单元内 `B2 == B5`）**：在本次历史研究实际执行的 **36 个 `L1`/`L2` 配对单元**（3 核心资金费体制 × `L1`/`L2` × 5 执行假设 = 30 单元，外加 `EX_FUNDING`/`NORMAL_SYNTHETIC_0.125BPS` 下 `L1/IDEAL`、`L2/IDEAL`、`L2/DELAYED` = 6 单元；另 14 个补充体制高摩擦组合未执行）中，`B2`（纯因果入口与 F08 轮换门控）与 `B5`（入口门控 + 资金费退出）在收益、CVaR95、手续费与资金费上均完全等价（例如 `SWITCH_48H · L2 · DELAYED` 下两者均为 `-0.4175%` / `-0.4175%`、`CVaR95 = 2.10%`）。根本原因在于：本单层网格（`prices=[lower, upper]`）叠加 2 bps 滑点后，任何触发买单成交的小时收盘价（`close * 1.0002 <= lower`）同时满足 `close < lower`，当根 Bar 即触发 `BREAKOUT` 并进入唯一权威 F11 限价退出流程；因此 `B5` 的额外资金费退出规则被 F11 吸收（仅在单权威日志中追加第二原因）。**该结论严格限定于本轮单层网格 + 2 bps 滑点 + 36 个已执行历史单元，不能泛化为资金费退出机制普遍无价值**——确定性测试已证明在零滑点、网格内部持仓条件下 `B5` 资金费退出能够先于 `BREAKOUT` 独立触发。
    - **真正不可替代的独立价值（因果入口与 F08 轮换门控）**：在持续高资金费（如 Demo 周末实测 `22.97 bps/h`）或 `SWITCH_48H` 48h 切换之后，F11 只能在**建仓并突破之后**被动退出，且 F08 轮换会驱使固定网格 A 不断重新开仓、持续支付手续费/滑点并在退出延迟或碎仓阻断（`EXIT_MIN_NOTIONAL`）时承受高额资金费失血；而策略 B 的因果入口门控与轮换延迟门控直接阻止在高资费体制下开新仓，该防护 **F11 无法替代**。反之，若已于高资费前建仓且遭遇 `UNFILLED_EXIT_TIMEOUT` 或 `LIMITED_CAPACITY_PARTIAL` 流动性枯竭，策略 B 同样无法逃离（历史 `SWITCH_48H · L2 · UNFILLED` 中 `B2/B5 = -21.02%` vs `A = -23.37%`）。
-   - **主网常态边界**：在真实主网资金费（`MAINNET_ACTUAL`）的完整 `L2` 生命周期下，`A_FIXED = -0.4724%`、`B_WF = -0.3786%`、`C_WF = -0.3133%`（`IDEAL`，B/C 相对 A 均无 Holm-Bonferroni 显著性）；`DELAYED` 下分别为 `-3.0239%` / `-1.9034%` / `-1.8350%`（在 `MAINNET_ACTUAL · L2 · DELAYED` 下 `C_WF - A_FIXED = +1.19 pp`（Holm `p=0.0442`，减亏主要源于宽幅降低了 F08 轮换与延迟退出损耗），但 `C_WF` 本身仍亏损 `-1.8350%`）。**全部网格策略在全部生命周期与执行假设下均跑输现金基准 `CASH (0.0000%)`**。
+   - **主网常态边界**：在真实主网资金费（`MAINNET_ACTUAL`）的完整 `L2` 生命周期下，`A_FIXED = -0.4724%`、`B_WF = -0.3786%`、`C_WF = -0.3133%`（`IDEAL`，B/C 相对 A 均无 Holm-Bonferroni 显著性）；`DELAYED` 下分别为 `-3.0239%` / `-1.9034%` / `-1.8350%`（在 `MAINNET_ACTUAL · L2 · DELAYED` 下 `C_WF - A_FIXED = +1.19 pp`（Holm `p=0.0437`，减亏主要源于宽幅降低了 F08 轮换与延迟退出损耗），但 `C_WF` 本身仍亏损 `-1.8350%`）。**全部网格策略在全部生命周期与执行假设下均跑输现金基准 `CASH (0.0000%)`**。
 
 ### 1.3 七大核心研究问题逐一回答
 
 1. **完整 F11 退出是否已经解决 R10 中主要的长期残仓风险？** **在理想限价成交条件下基本解决了突破后的长期残仓，但在退出摩擦情景下仍未根除。** 在 `IDEAL_LIMIT_FILL` 下，F11（`L1 - L0`）使固定网格 A 在 `SWITCH_48H` 的 18 个历史 OOS 窗净收益改善 `+8.18 pp (CVaR95 -32.49 pp)`，残仓暂停时长由 `51.1h` 骤降至 `0.0h`；但在 `DELAYED_EXIT_FILL`、`LIMITED_CAPACITY_PARTIAL` 与 `UNFILLED_EXIT_TIMEOUT` 下，退出延迟、碎仓 `EXIT_MIN_NOTIONAL` 阻断和流动性枯竭会重新产生残仓与资金费侵蚀。
-2. **资金费敏感策略 B 在 F11 之外还有多少增量价值？** **按执行假设和资金费体制显著分化，且增量几乎完全来自入口与 F08 轮换门控**：在 `MAINNET_ACTUAL · L2 · IDEAL` 下，`B_WF - A_FIXED` 为 `+0.09 pp (Holm p=0.3038)`（无显著增量）；在 `SWITCH_48H · L2 · IDEAL` 下为 `+0.36 pp (CVaR95 -0.69 pp, Holm p=0.0000)`（增量大幅收窄，因为 F11 已处理大部分突破残仓）；但在 `SWITCH_48H · L2 · DELAYED` 下回升至 `+7.32 pp (CVaR95 -18.65 pp, Holm p=0.0000)`，在 `DEMO_HIGH_FUNDING · L2 · DELAYED` 下达到 `+7.67 pp (CVaR95 -18.62 pp, Holm p=0.0000)`。由于在单层网格 + 2 bps 滑点下 `B2` 与 `B5` 在全部 `L1`/`L2` 历史场景完全一致，策略 B 在 F11 之外的增量价值本质上来自**高资金费期间通过入口/轮换门控避免 F08 反复重新接仓**（注：仅在多档宽网格或零滑点区间内持仓尚未触发 `BREAKOUT` 时，策略 B 的独立资金费退出才可能先于 F11 触发）。
+2. **资金费敏感策略 B 在 F11 之外还有多少增量价值？** **按执行假设和资金费体制显著分化，且在本轮 36 个历史 `L1`/`L2` 配对单元中增量全部来自入口与 F08 轮换门控**：在 `MAINNET_ACTUAL · L2 · IDEAL` 下，`B_WF - A_FIXED` 为 `+0.09 pp (Holm p=0.2051)`（无显著增量）；在 `SWITCH_48H · L2 · IDEAL` 下为 `+0.36 pp (CVaR95 -0.69 pp, Holm p=0.0002)`（增量大幅收窄，因为 F11 已处理大部分突破残仓）；但在 `SWITCH_48H · L2 · DELAYED` 下回升至 `+7.32 pp (CVaR95 -18.65 pp, Holm p=0.0001)`，在 `DEMO_HIGH_FUNDING · L2 · DELAYED` 下达到 `+7.67 pp (CVaR95 -18.62 pp, Holm p=0.0001)`。由于在本轮单层网格 + 2 bps 滑点下 `B2` 与 `B5` 在已执行的 36 个历史 `L1`/`L2` 单元中完全等价，策略 B 在 F11 之外的增量价值在本轮设定下来自**高资金费期间通过入口/轮换门控避免 F08 反复重新接仓**（同时保留确定性反例证据：在零滑点或区间内部持仓尚未触发 `BREAKOUT` 时，`B5` 的资金费退出仍可先于 F11 独立触发）。
 3. **F08 自动轮换提高收益还是增加损耗？** **总体增加交易损耗并放大延迟退出时的尾部风险。** 在 `MAINNET_ACTUAL` 下，固定网格 A 的 `L2 - L1` 差值为 `-0.45 pp (费用 0.0297 → 0.5102 USDT)`（净收益由 `L1` 的 `-0.0275%` 恶化至 `L2` 的 `-0.4724%`，在 `DELAYED` 下进一步恶化至 `-3.0239%`）。F08 在突破平仓后重新部署网格，持续消耗手续费、滑点与 POST 预算，在单边/高波动行情下导致“反复止损-轮换-再止损”的锯齿损耗。
-4. **波动率自适应策略 C 是否在完整执行模型下改善风险收益？** **未能带来相对现金的正期望改善，但可在 `L2` 下通过宽幅网格减少 F08 轮换频率与延迟退出损耗。** 在 `MAINNET_ACTUAL · L2 · IDEAL` 下，`C_WF - A_FIXED` 为 `+0.16 pp (Holm p=1.0000)`（`C_WF = -0.3133%` vs `A = -0.4724%`）；在 `MAINNET_ACTUAL · L2 · DELAYED` 下，`C_WF - A_FIXED` 为 `+1.19 pp`（Holm `p=0.0442`）（`C_WF = -1.8350%` vs `A = -3.0239%`），减亏源于较宽网格减少了频繁突破与延迟退出暴露而非产生正 Alpha；在 `SWITCH_48H · L2 · DELAYED` 下 `C_WF = -5.6617%`（CVaR95 `17.73%`），仍缺乏对高资金费的防御能力。
+4. **波动率自适应策略 C 是否在完整执行模型下改善风险收益？** **未能带来相对现金的正期望改善，但可在 `L2` 下通过宽幅网格减少 F08 轮换频率与延迟退出损耗。** 在 `MAINNET_ACTUAL · L2 · IDEAL` 下，`C_WF - A_FIXED` 为 `+0.16 pp (Holm p=1.0000)`（`C_WF = -0.3133%` vs `A = -0.4724%`）；在 `MAINNET_ACTUAL · L2 · DELAYED` 下，`C_WF - A_FIXED` 为 `+1.19 pp`（Holm `p=0.0437`）（`C_WF = -1.8350%` vs `A = -3.0239%`），减亏源于较宽网格减少了频繁突破与延迟退出暴露而非产生正 Alpha；在 `SWITCH_48H · L2 · DELAYED` 下 `C_WF = -5.6617%`（CVaR95 `17.73%`），仍缺乏对高资金费的防御能力。
 5. **当退出延迟、部分成交或无法成交时，三种策略的风险差异是什么？** 见第 6 节与第 9 节完整矩阵。在 `DELAYED_EXIT_FILL` / `LIMITED_CAPACITY_PARTIAL` / `UNFILLED_EXIT_TIMEOUT` 下：固定网格 A 与自适应网格 C 在高资金费下承受严重的残余库存资金费侵蚀与熔断（`LOSS_BUDGET_EXHAUSTED`）；策略 B 在持续高资金费下因**空仓门控**保持零风险，在 `SWITCH_48H` 下若于 48h 前已建仓且遭遇 `UNFILLED_EXIT_TIMEOUT`，同样受限于单权威限价退出无法成交，但因 48h 后禁止 F08 新开仓而显著限制二次暴露。
 6. **相对现金基准及固定网格，是否存在真实成本后的样本外改善？** **不存在相对现金基准的稳健正样本外收益。** 在真实主网资金费 `MAINNET_ACTUAL` 下，无论是 `L0`、`L1` 还是 `L2`，A/B/C 三个策略的 18 窗均值净收益均低于 `CASH (0.0000%)`；且这 18 个窗口已被 R10 使用，属于历史复验而非全新未见 OOS，不能授予 `OOS_ADVANTAGE_SUPPORTED`。
 7. **哪些策略值得进入后续官方 Demo 对照研究？** 见第 11 节：不建议向任何策略授予金融准入或 Champion 晋级；若在官方 Demo（周末实证高资费环境）开展纯风控对照观测，**仅建议保留 `A_FIXED` 作为基线对照，并验证叠加在统一 F11/F08 生命周期上的策略 B 因果资金费入口/轮换门控护栏（优先对比 `B2` 纯入口门控 vs `B5` 入口+退出门控），同时审慎评估是否限制 F08 轮换频率或引入轮换冷却**；不建议将策略 C 单独晋级。
@@ -38,7 +38,7 @@
 
 | 特别判断项 | 基于实验数据的明确判断 |
 | --- | --- |
-| B 是否仅仅重复实现 F11 的保护效果？ | **退出端被 F11 高度吸收，但入口/轮换门控端具有不可替代的独立价值**。在 `L0 -> L1 (IDEAL)` 中，F11 吸收了 R10 中策略 B 对突破残仓的大部分减亏效果，且在本单层网格 + 2 bps 滑点模型下 `B2 == B5`（F11 吸收了 B5 的退出触发）；但在 `L2` 完整轮换 + 退出摩擦（`DELAYED`/`PARTIAL`/`NO_FILL`）及高资金费下，B 的因果**入口/轮换阻断**防止了 F08 持续重开新仓，这是 F11 无法替代的。 |
+| B 是否仅仅重复实现 F11 的保护效果？ | **退出端在 36 个历史单层网格单元中被 F11 吸收，但入口/轮换门控端具有不可替代的独立价值**。在 `L0 -> L1 (IDEAL)` 中，F11 吸收了 R10 中策略 B 对突破残仓的大部分减亏效果，且在本单层网格 + 2 bps 滑点模型已执行的 36 个历史 `L1`/`L2` 单元中 `B2 == B5`（零滑点区间内持仓的确定性反例仍显示 `B5` 可先于 `BREAKOUT` 触发）；但在 `L2` 完整轮换 + 退出摩擦（`DELAYED`/`PARTIAL`/`NO_FILL`）及高资金费下，B 的因果**入口/轮换阻断**防止了 F08 持续重开新仓，这是 F11 无法替代的。 |
 | 高资金费压力下降低风险是否只是因为空仓？ | **在持续高资费（`DEMO_HIGH_FUNDING`）下确实完全源于空仓门控**（`fills=0`、`holding=0h`、净收益 `0.00%`）；在 `SWITCH_48H` 下前 48h 正常参与交易，48h 切换后由“F11 清理已有突破仓位 + 策略 B 禁止后续 F08 轮换新开仓”共同起效。这是风控减亏而非盈利 Alpha。 |
 | F08 是否造成手续费侵蚀？ | **是，明确观察到手续费与滑点侵蚀**。`MAINNET_ACTUAL` 18 窗中，A 从 `L1` 到 `L2`（`IDEAL`）净收益由 `-0.0275%` 降至 `-0.4724%`，手续费由 `0.0297` 增至 `0.5102 USDT`，滑点由 `0.0198` 增至 `0.3401 USDT`。 |
 | C 是否减少风险但同步损害收益？ | **视生命周期而定**：在 `L0` 下 C 通过宽幅减少成交但仍亏损；在 `L2` 下宽幅显著减少 F08 频繁突破与手续费（`L2 · IDEAL` 主网 `C_WF=-0.3133%` 优于 `A=-0.4724%`），但在 `DELAYED` 与高资金费下仍显著亏损且未跑赢 `CASH` 或 `B`。 |
@@ -50,7 +50,9 @@
 - **单权威退出订单不变式**：扩展 `GridExecution.closed_for_limit_exit` 覆盖突破与资金费退出原因；在 `L1`/`L2`（`use_f11_limit_exit=True`）下，策略 B 不再独立下发市价卖单，而是与 `BREAKOUT` 统一汇入唯一权威 F11 reduce-only `SELL LIMIT` 订单生命周期，且当任一原因已进入退出流程时，后续触发的另一原因仅记入诊断日志而不撤单、不重复下单。
 - **同时间戳结算顺序**：全量资金费通过 `PaperBroker.apply_funding` 入账，严格先按前一闭合时点持仓结算资金费，再执行当前闭合时点撮合成交（`fill_time < settlement_time`），与策略 B 因果信号共享同一事件源。
 - **F08 轮换与预算连续性**：跨代共享 `_CampaignPaperBroker` 累计 POST 次数、3h 窗口配额与名义额；当策略 B（高资金费）或策略 C（极端波动）入口门控处于阻断状态时，F08 延迟轮换直至门控解除，避免空仓无效轮换刷代。
-- **全量运行账本核验**：累计执行 `60240` 次独立完整生命周期模拟（历史窗 `12798` + 确定性压力 `338` + Monte Carlo `47104`），全部 FIFO 对账残差严格为 `0`（`all_zero_fifo_residual = True`），任意时点在途退出卖单数最大值 `max_simultaneous_exit_orders <= 1`（`single_authoritative_exit_order_verified = True`）。
+- **全量账本与事件级退出峰值双轨核验**：
+  - **FIFO 零残差账本验收**：累计覆盖原全量 `60240` 次独立模拟（历史窗 `12798` + 确定性压力 `338` + Monte Carlo `47104`）及本轮审查补算/新监测验证 `3773` 次运行，全部 FIFO 对账残差严格为 `0`（`all_zero_fifo_residual = True`）。
+  - **单权威退出订单事件级峰值验收（P2-3 修订）**：采用 `EVENT_LEVEL_AUTHORITATIVE_LIFECYCLE` 权威状态变迁追踪与独立事件重建双轨核验（覆盖同 Bar 提交并成交、`PARTIALLY_FILLED`、`CANCEL_PENDING`、`UNKNOWN` 未解决仍计活跃、撤单成交竞态及跨 F08 generation 连续性，并在单元测试中注入双单重叠轨迹验证检出峰值 `2`）。实际事件级验证覆盖 `3773` 次完整生命周期运行（全部 `338` 次确定性压力 + `1707` 次历史 OOS 机制补算窗 + `1728` 条代表性 MC 路径），事件级峰值 `max_simultaneous_exit_orders = 1 <= 1`、重叠违规 `0` 次；原未复跑的剩余历史与 MC 批次明确保留为旧 Bar 尾采样记录，**不冒充全时点事件级认证**。
 
 ## 3. 数据审计与历史复验独立性边界
 
@@ -224,91 +226,163 @@
 
 ## 6. 配对消融与多重比较统计检验（18 个历史 OOS 窗，`10,000` 次配对 Bootstrap）
 
-分别测量 F11 纯贡献（`L1 - L0`）、F08 增量贡献（`L2 - L1`）、完整生命周期（`L2 - L0`）及策略 B/C 相对固定网格 A 与现金 `CASH` 的配对差异。每个 `(资金费体制, 执行假设)` 检验族均报告原始 Wilcoxon p、Holm-Bonferroni 校正 p 及 Bonferroni 显著性边界（`0.05 / m`）。注意 `n=18` 窗口的有效 95% 尾部样本仅 `0.9` 个，小样本功效有限。
+严格区分三类独立比较，并在各 `(资金费体制, 执行假设, 比较族)` 内采用**未舍入原始 Wilcoxon p 值**执行 Holm-Bonferroni 校正（仅在最终展示时舍入，完整列见 `paired_ablations.csv`）。注意 `n=18` 窗口的有效 95% 尾部样本仅 `0.9` 个，小样本尾部功效有限，且相对减亏绝不等于正 Alpha。
 
-| 资金费体制 | 执行假设 | 配对消融项 | 均值差 (pp) | Bootstrap 95% CI (pp) | 胜/平/负 (%) | ΔCVaR95 (pp) | 回撤缩减 (pp) | 原始 Wilcoxon p | Holm 校正 p | Holm 显著 |
+### 6.1 固定参数机制消融（`FIXED_PARAM_MECHANISM_ABLATION`：F11 纯条件机制 `L1-L0` 与 F08 纯增量机制 `L2-L1`）
+
+同一折、同一窗口、同一资金费体制与执行假设下，保持候选参数与同折训练期 `sigma_ref` 完全冻结不变（`A_FIXED`、`B2`、`B5`、`C5` 为预声明固定候选；`B_FROZEN_L0`、`C_FROZEN_L0` 为各折仅由 `L0` 训练窗选出并跨 `L0/L1/L2` 冻结的候选参数）：
+
+| 资金费体制 | 执行假设 | 固定参数消融项 | 参数绑定 | 均值差 (pp) | Bootstrap 95% CI (pp) | 胜/平/负 (%) | ΔCVaR95 (pp) | 回撤缩减 (pp) | 原始 Wilcoxon p | 未舍入 Holm p | Holm 显著 |
+| --- | --- | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |
+| `MAINNET_ACTUAL` | `IDEAL` | `A_FIXED: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +0.6663 | `[-0.6521, +2.3556]` | 22.22/66.67/11.11 | -10.15 | +1.99 | 0.562500 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `A_FIXED: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | -0.4450 | `[-0.5703, -0.3311]` | 0.0/0.0/100.0 | +0.92 | -0.45 | 0.000008 | 0.000137 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `A_FIXED: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | -2.8475 | `[-4.2667, -1.6176]` | 0.0/0.0/100.0 | +8.62 | -3.44 | 0.000008 | 0.000046 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B2: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +0.6663 | `[-0.6582, +2.2953]` | 22.22/66.67/11.11 | -10.15 | +1.99 | 0.562500 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B2: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | -0.4238 | `[-0.5297, -0.3273]` | 0.0/0.0/100.0 | +0.87 | -0.42 | 0.000008 | 0.000137 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `B2: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | -2.6928 | `[-4.0689, -1.5485]` | 0.0/0.0/100.0 | +8.62 | -3.31 | 0.000008 | 0.000046 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B5: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +0.1694 | `[-0.2374, +0.5789]` | 22.22/66.67/11.11 | -1.81 | +0.83 | 0.687500 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B5: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | -0.4238 | `[-0.5274, -0.3286]` | 0.0/0.0/100.0 | +0.87 | -0.42 | 0.000008 | 0.000137 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `B5: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | -2.6928 | `[-4.0473, -1.5338]` | 0.0/0.0/100.0 | +8.62 | -3.31 | 0.000008 | 0.000046 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `C5: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | +0.2986 | `[-0.7107, +1.5837]` | 16.67/72.22/11.11 | -9.36 | +1.51 | 1.000000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `C5: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | -0.3621 | `[-0.4432, -0.2869]` | 0.0/0.0/100.0 | +0.72 | -0.36 | 0.000008 | 0.000137 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `C5: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | -1.6816 | `[-2.5273, -0.9481]` | 0.0/0.0/100.0 | +5.02 | -2.16 | 0.000008 | 0.000046 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B_FROZEN_L0: L1 - L0 (F11 fixed-param mechanism)` | `FROZEN_L0_TRAINING_CANDIDATE` | +0.1825 | `[-0.2243, +0.5899]` | 22.22/66.67/11.11 | -1.81 | +0.83 | 0.562500 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B_FROZEN_L0: L2 - L1 (F08 fixed-param incremental)` | `FROZEN_L0_TRAINING_CANDIDATE` | -0.3511 | `[-0.4374, -0.2682]` | 0.0/0.0/100.0 | +0.70 | -0.35 | 0.000008 | 0.000137 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `B_FROZEN_L0: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `FROZEN_L0_TRAINING_CANDIDATE` | -1.7001 | `[-2.2703, -1.1539]` | 0.0/0.0/100.0 | +2.56 | -2.00 | 0.000008 | 0.000046 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `C_FROZEN_L0: L1 - L0 (F11 fixed-param mechanism)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | +0.2423 | `[-0.9299, +1.6192]` | 22.22/61.11/16.67 | -9.36 | +1.77 | 1.000000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `C_FROZEN_L0: L2 - L1 (F08 fixed-param incremental)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | -0.2745 | `[-0.3595, -0.2046]` | 0.0/0.0/100.0 | +0.72 | -0.27 | 0.000008 | 0.000137 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `C_FROZEN_L0: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | -1.5476 | `[-2.4312, -0.8089]` | 5.56/5.56/88.89 | +5.02 | -1.95 | 0.000046 | 0.000046 | `False` |
+| `SWITCH_48H` | `IDEAL` | `A_FIXED: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +8.1827 | `[+2.8093, +14.0554]` | 33.33/66.67/0.0 | -32.49 | +8.36 | 0.031250 | 0.375000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `A_FIXED: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | -0.4450 | `[-0.5663, -0.3324]` | 0.0/0.0/100.0 | +0.92 | -0.45 | 0.000008 | 0.000137 | `False` |
+| `SWITCH_48H` | `DELAYED` | `A_FIXED: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | -7.5549 | `[-10.1240, -5.2080]` | 0.0/0.0/100.0 | +19.18 | -7.63 | 0.000008 | 0.000046 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B2: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +8.1827 | `[+2.9723, +13.9672]` | 33.33/66.67/0.0 | -32.49 | +8.36 | 0.031250 | 0.375000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B2: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | -0.0808 | `[-0.1128, -0.0521]` | 0.0/27.78/72.22 | +0.24 | -0.08 | 0.000244 | 0.003662 | `False` |
+| `SWITCH_48H` | `DELAYED` | `B2: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | -0.2395 | `[-0.4471, -0.0806]` | 5.56/33.33/61.11 | +0.54 | -0.33 | 0.000977 | 0.002930 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B5: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +0.4050 | `[+0.0597, +0.8626]` | 27.78/66.67/5.56 | -3.45 | +0.60 | 0.093750 | 0.750000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B5: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | -0.0808 | `[-0.1130, -0.0521]` | 0.0/27.78/72.22 | +0.24 | -0.08 | 0.000244 | 0.003662 | `False` |
+| `SWITCH_48H` | `DELAYED` | `B5: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | -0.2395 | `[-0.4478, -0.0799]` | 5.56/33.33/61.11 | +0.54 | -0.33 | 0.000977 | 0.002930 | `False` |
+| `SWITCH_48H` | `IDEAL` | `C5: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | +6.2688 | `[+1.8460, +11.6203]` | 27.78/72.22/0.0 | -31.69 | +6.43 | 0.062500 | 0.625000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `C5: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | -0.3621 | `[-0.4435, -0.2852]` | 0.0/0.0/100.0 | +0.72 | -0.36 | 0.000008 | 0.000137 | `False` |
+| `SWITCH_48H` | `DELAYED` | `C5: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | -5.0452 | `[-6.9513, -3.3719]` | 0.0/0.0/100.0 | +8.16 | -5.16 | 0.000008 | 0.000046 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B_FROZEN_L0: L1 - L0 (F11 fixed-param mechanism)` | `FROZEN_L0_TRAINING_CANDIDATE` | +0.4050 | `[+0.0490, +0.8648]` | 27.78/66.67/5.56 | -3.45 | +0.60 | 0.093750 | 0.750000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B_FROZEN_L0: L2 - L1 (F08 fixed-param incremental)` | `FROZEN_L0_TRAINING_CANDIDATE` | -0.0808 | `[-0.1126, -0.0518]` | 0.0/27.78/72.22 | +0.24 | -0.08 | 0.000244 | 0.003662 | `False` |
+| `SWITCH_48H` | `DELAYED` | `B_FROZEN_L0: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `FROZEN_L0_TRAINING_CANDIDATE` | -0.2395 | `[-0.4507, -0.0820]` | 5.56/33.33/61.11 | +0.54 | -0.33 | 0.000977 | 0.002930 | `False` |
+| `SWITCH_48H` | `IDEAL` | `C_FROZEN_L0: L1 - L0 (F11 fixed-param mechanism)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | +6.2688 | `[+1.8460, +11.3953]` | 27.78/72.22/0.0 | -31.69 | +6.43 | 0.062500 | 0.625000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `C_FROZEN_L0: L2 - L1 (F08 fixed-param incremental)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | -0.3621 | `[-0.4441, -0.2851]` | 0.0/0.0/100.0 | +0.72 | -0.36 | 0.000008 | 0.000137 | `False` |
+| `SWITCH_48H` | `DELAYED` | `C_FROZEN_L0: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | -5.0452 | `[-6.9669, -3.3466]` | 0.0/0.0/100.0 | +8.16 | -5.16 | 0.000008 | 0.000046 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `A_FIXED: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +10.2303 | `[+3.5742, +17.1119]` | 33.33/66.67/0.0 | -38.46 | +10.33 | 0.031250 | 0.468750 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `A_FIXED: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | -0.4450 | `[-0.5663, -0.3307]` | 0.0/0.0/100.0 | +0.92 | -0.45 | 0.000008 | 0.000137 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `A_FIXED: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | -7.1917 | `[-9.1148, -5.3471]` | 0.0/0.0/100.0 | +15.85 | -7.32 | 0.000008 | 0.000046 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B2: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B2: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `B2: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B5: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B5: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `B5: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C5: L1 - L0 (F11 fixed-param mechanism)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | +7.7093 | `[+2.0822, +14.1100]` | 27.78/72.22/0.0 | -37.48 | +7.78 | 0.062500 | 0.875000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C5: L2 - L1 (F08 fixed-param incremental)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | -0.3621 | `[-0.4431, -0.2852]` | 0.0/0.0/100.0 | +0.72 | -0.36 | 0.000008 | 0.000137 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `C5: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `PREDECLARED_FIXED_PARAM_FOLD_SIGMA` | -5.0315 | `[-6.6104, -3.5344]` | 0.0/0.0/100.0 | +6.52 | -5.07 | 0.000008 | 0.000046 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B_FROZEN_L0: L1 - L0 (F11 fixed-param mechanism)` | `FROZEN_L0_TRAINING_CANDIDATE` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B_FROZEN_L0: L2 - L1 (F08 fixed-param incremental)` | `FROZEN_L0_TRAINING_CANDIDATE` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `B_FROZEN_L0: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `FROZEN_L0_TRAINING_CANDIDATE` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C_FROZEN_L0: L1 - L0 (F11 fixed-param mechanism)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | +7.7093 | `[+2.0822, +14.0067]` | 27.78/72.22/0.0 | -37.48 | +7.78 | 0.062500 | 0.875000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C_FROZEN_L0: L2 - L1 (F08 fixed-param incremental)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | -0.3621 | `[-0.4448, -0.2860]` | 0.0/0.0/100.0 | +0.72 | -0.36 | 0.000008 | 0.000137 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `C_FROZEN_L0: L2 - L1 (F08 fixed-param incremental, DELAYED)` | `FROZEN_L0_TRAINING_CANDIDATE_AND_SIGMA` | -5.0315 | `[-6.6325, -3.5627]` | 0.0/0.0/100.0 | +6.52 | -5.07 | 0.000008 | 0.000046 | `False` |
+
+### 6.2 重新优化后的完整流程比较（`LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON`）
+
+下表保留各生命周期独立重新训练选参的 `B_WF` / `C_WF` 跨生命周期比较。此类差值同时包含**生命周期机制变化 + 最优候选参数变化 + 参数与执行机制交互**，属探索性完整流程对比，**不得解释为单一组件的纯因果效应**：
+
+| 资金费体制 | 执行假设 | 重优化流程比较项 | 均值差 (pp) | Bootstrap 95% CI (pp) | 胜/平/负 (%) | ΔCVaR95 (pp) | 回撤缩减 (pp) | 原始 Wilcoxon p | 未舍入 Holm p | Holm 显著 |
 | --- | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |
-| `MAINNET_ACTUAL` | `IDEAL` | `A_FIXED: L1 - L0 (F11 pure)` | +0.6663 | `[-0.6521, +2.3556]` | 22.22/66.67/11.11 | -10.15 | +1.99 | 0.5625 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `A_FIXED: L2 - L1 (F08 incremental)` | -0.4450 | `[-0.5703, -0.3311]` | 0.0/0.0/100.0 | +0.92 | -0.45 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `A_FIXED: L2 - L1 (F08 incremental, DELAYED)` | -2.8475 | `[-4.2667, -1.6176]` | 0.0/0.0/100.0 | +8.62 | -3.44 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `B_WF: L1 - L0 (F11 pure)` | +0.1825 | `[-0.2215, +0.5778]` | 22.22/66.67/11.11 | -1.81 | +0.83 | 0.5625 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `B_WF: L2 - L1 (F08 incremental)` | -0.3511 | `[-0.4422, -0.2678]` | 0.0/0.0/100.0 | +0.70 | -0.35 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `B_WF: L2 - L1 (F08 incremental, DELAYED)` | -1.7270 | `[-2.3106, -1.1656]` | 0.0/0.0/100.0 | +2.56 | -2.02 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `C_WF: L1 - L0 (F11 pure)` | +0.2522 | `[-0.9176, +1.6314]` | 22.22/61.11/16.67 | -9.36 | +1.78 | 1.0000 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `C_WF: L2 - L1 (F08 incremental)` | -0.2902 | `[-0.3694, -0.2243]` | 0.0/0.0/100.0 | +0.72 | -0.29 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L0: B_WF - A_FIXED` | +0.4837 | `[-1.0035, +2.0915]` | 22.22/66.67/11.11 | -8.34 | +1.15 | 0.5625 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L1: B_WF - A_FIXED` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L1: C_WF - A_FIXED` | +0.0044 | `[-0.0142, +0.0239]` | 27.78/61.11/11.11 | -0.00 | +0.00 | 0.4688 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L2: B_WF - A_FIXED` | +0.0938 | `[+0.0253, +0.1728]` | 50.0/38.89/11.11 | -0.23 | +0.09 | 0.0098 | 0.3038 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L2: B2 - A_FIXED` | +0.0212 | `[-0.0090, +0.0628]` | 16.67/77.78/5.56 | -0.05 | +0.02 | 0.6250 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L2: B5 - A_FIXED` | +0.0212 | `[-0.0076, +0.0616]` | 16.67/77.78/5.56 | -0.05 | +0.02 | 0.6250 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L2: C_WF - A_FIXED` | +0.1592 | `[+0.0508, +0.2811]` | 61.11/5.56/33.33 | -0.21 | +0.16 | 0.0569 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L2: A_FIXED - CASH` | -0.4724 | `[-0.5994, -0.3532]` | 0.0/0.0/100.0 | +1.01 | -0.47 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L2: B_WF - CASH` | -0.3786 | `[-0.4719, -0.2883]` | 0.0/0.0/100.0 | +0.79 | -0.38 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `IDEAL` | `L2: C_WF - CASH` | -0.3133 | `[-0.3923, -0.2470]` | 0.0/0.0/100.0 | +0.81 | -0.31 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L1: B_WF - A_FIXED` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L1: C_WF - A_FIXED` | -0.1865 | `[-0.4906, +0.0188]` | 5.56/72.22/22.22 | +0.77 | -0.18 | 0.1875 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L2: B_WF - A_FIXED` | +1.1205 | `[+0.2014, +2.2418]` | 38.89/50.0/11.11 | -6.06 | +1.41 | 0.0547 | 0.4923 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L2: B2 - A_FIXED` | +0.1547 | `[-0.0078, +0.3845]` | 11.11/83.33/5.56 | +0.00 | +0.13 | 0.5000 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L2: B5 - A_FIXED` | +0.1547 | `[-0.0078, +0.4083]` | 11.11/83.33/5.56 | +0.00 | +0.13 | 0.5000 | 1.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L2: C_WF - A_FIXED` | +1.1888 | `[+0.4592, +2.0469]` | 83.33/0.0/16.67 | -4.30 | +1.29 | 0.0034 | 0.0442 | `True` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L2: A_FIXED - CASH` | -3.0239 | `[-4.4621, -1.7894]` | 0.0/0.0/100.0 | +10.18 | -3.74 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L2: B_WF - CASH` | -1.9034 | `[-2.4925, -1.3300]` | 0.0/0.0/100.0 | +4.12 | -2.33 | 0.0000 | 0.0000 | `False` |
-| `MAINNET_ACTUAL` | `DELAYED` | `L2: C_WF - CASH` | -1.8350 | `[-2.6461, -1.1340]` | 0.0/11.11/88.89 | +5.88 | -2.45 | 0.0000 | 0.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `A_FIXED: L1 - L0 (F11 pure)` | +8.1827 | `[+2.8812, +13.7988]` | 33.33/66.67/0.0 | -32.49 | +8.36 | 0.0312 | 0.8736 | `False` |
-| `SWITCH_48H` | `IDEAL` | `A_FIXED: L2 - L1 (F08 incremental)` | -0.4450 | `[-0.5679, -0.3332]` | 0.0/0.0/100.0 | +0.92 | -0.45 | 0.0000 | 0.0000 | `False` |
-| `SWITCH_48H` | `DELAYED` | `A_FIXED: L2 - L1 (F08 incremental, DELAYED)` | -7.5549 | `[-10.1563, -5.1591]` | 0.0/0.0/100.0 | +19.18 | -7.63 | 0.0000 | 0.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `B_WF: L1 - L0 (F11 pure)` | +0.4050 | `[+0.0575, +0.8772]` | 27.78/66.67/5.56 | -3.45 | +0.60 | 0.0938 | 1.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `B_WF: L2 - L1 (F08 incremental)` | -0.0808 | `[-0.1120, -0.0521]` | 0.0/27.78/72.22 | +0.24 | -0.08 | 0.0002 | 0.0060 | `False` |
-| `SWITCH_48H` | `DELAYED` | `B_WF: L2 - L1 (F08 incremental, DELAYED)` | -0.2395 | `[-0.4481, -0.0811]` | 5.56/33.33/61.11 | +0.54 | -0.33 | 0.0010 | 0.0120 | `False` |
-| `SWITCH_48H` | `IDEAL` | `C_WF: L1 - L0 (F11 pure)` | +6.2688 | `[+1.9991, +11.6125]` | 27.78/72.22/0.0 | -31.69 | +6.43 | 0.0625 | 1.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `C_WF: L2 - L1 (F08 incremental)` | -0.2902 | `[-0.3695, -0.2255]` | 0.0/0.0/100.0 | +0.72 | -0.29 | 0.0000 | 0.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `L0: B_WF - A_FIXED` | +7.7777 | `[+2.6470, +13.1980]` | 33.33/66.67/0.0 | -29.04 | +7.77 | 0.0312 | 0.8736 | `False` |
-| `SWITCH_48H` | `IDEAL` | `L1: B_WF - A_FIXED` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `L1: C_WF - A_FIXED` | +0.0044 | `[-0.0142, +0.0234]` | 27.78/61.11/11.11 | -0.00 | +0.00 | 0.4688 | 1.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `L2: B_WF - A_FIXED` | +0.3641 | `[+0.2618, +0.4712]` | 100.0/0.0/0.0 | -0.69 | +0.36 | 0.0000 | 0.0000 | `True` |
-| `SWITCH_48H` | `IDEAL` | `L2: B2 - A_FIXED` | +0.3641 | `[+0.2640, +0.4682]` | 100.0/0.0/0.0 | -0.69 | +0.36 | 0.0000 | 0.0000 | `True` |
-| `SWITCH_48H` | `IDEAL` | `L2: B5 - A_FIXED` | +0.3641 | `[+0.2625, +0.4713]` | 100.0/0.0/0.0 | -0.69 | +0.36 | 0.0000 | 0.0000 | `True` |
-| `SWITCH_48H` | `IDEAL` | `L2: C_WF - A_FIXED` | +0.1592 | `[+0.0502, +0.2799]` | 61.11/5.56/33.33 | -0.21 | +0.16 | 0.0569 | 1.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `L2: A_FIXED - CASH` | -0.4724 | `[-0.5997, -0.3518]` | 0.0/0.0/100.0 | +1.01 | -0.47 | 0.0000 | 0.0000 | `False` |
-| `SWITCH_48H` | `IDEAL` | `L2: B_WF - CASH` | -0.1083 | `[-0.1484, -0.0729]` | 0.0/16.67/83.33 | +0.32 | -0.11 | 0.0001 | 0.0031 | `False` |
-| `SWITCH_48H` | `IDEAL` | `L2: C_WF - CASH` | -0.3133 | `[-0.3946, -0.2478]` | 0.0/0.0/100.0 | +0.81 | -0.31 | 0.0000 | 0.0000 | `False` |
-| `SWITCH_48H` | `DELAYED` | `L1: B_WF - A_FIXED` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `SWITCH_48H` | `DELAYED` | `L1: C_WF - A_FIXED` | -0.4353 | `[-1.2436, +0.0146]` | 5.56/72.22/22.22 | +5.26 | -0.41 | 0.1875 | 0.9375 | `False` |
-| `SWITCH_48H` | `DELAYED` | `L2: B_WF - A_FIXED` | +7.3153 | `[+4.9800, +9.7550]` | 100.0/0.0/0.0 | -18.65 | +7.30 | 0.0000 | 0.0000 | `True` |
-| `SWITCH_48H` | `DELAYED` | `L2: B2 - A_FIXED` | +7.3153 | `[+5.0423, +9.8243]` | 100.0/0.0/0.0 | -18.65 | +7.30 | 0.0000 | 0.0000 | `True` |
-| `SWITCH_48H` | `DELAYED` | `L2: B5 - A_FIXED` | +7.3153 | `[+5.0181, +9.7579]` | 100.0/0.0/0.0 | -18.65 | +7.30 | 0.0000 | 0.0000 | `True` |
-| `SWITCH_48H` | `DELAYED` | `L2: C_WF - A_FIXED` | +2.0712 | `[+0.1976, +4.4646]` | 61.11/5.56/33.33 | -3.02 | +2.08 | 0.0714 | 0.4655 | `False` |
-| `SWITCH_48H` | `DELAYED` | `L2: A_FIXED - CASH` | -7.7329 | `[-10.3251, -5.3747]` | 0.0/0.0/100.0 | +20.75 | -7.94 | 0.0000 | 0.0000 | `False` |
-| `SWITCH_48H` | `DELAYED` | `L2: B_WF - CASH` | -0.4175 | `[-0.7049, -0.1829]` | 5.56/16.67/77.78 | +2.10 | -0.64 | 0.0001 | 0.0013 | `False` |
-| `SWITCH_48H` | `DELAYED` | `L2: C_WF - CASH` | -5.6617 | `[-7.6804, -3.9582]` | 0.0/0.0/100.0 | +17.73 | -5.86 | 0.0000 | 0.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `A_FIXED: L1 - L0 (F11 pure)` | +10.2303 | `[+3.5742, +17.3009]` | 33.33/66.67/0.0 | -38.46 | +10.33 | 0.0312 | 0.9672 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `A_FIXED: L2 - L1 (F08 incremental)` | -0.4450 | `[-0.5663, -0.3319]` | 0.0/0.0/100.0 | +0.92 | -0.45 | 0.0000 | 0.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `A_FIXED: L2 - L1 (F08 incremental, DELAYED)` | -7.1917 | `[-9.2192, -5.3770]` | 0.0/0.0/100.0 | +15.85 | -7.32 | 0.0000 | 0.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B_WF: L1 - L0 (F11 pure)` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B_WF: L2 - L1 (F08 incremental)` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `B_WF: L2 - L1 (F08 incremental, DELAYED)` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C_WF: L1 - L0 (F11 pure)` | +7.7093 | `[+2.0822, +14.1245]` | 27.78/72.22/0.0 | -37.48 | +7.78 | 0.0625 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C_WF: L2 - L1 (F08 incremental)` | -0.2902 | `[-0.3706, -0.2252]` | 0.0/0.0/100.0 | +0.72 | -0.29 | 0.0000 | 0.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L0: B_WF - A_FIXED` | +10.2578 | `[+3.5608, +17.3499]` | 33.33/66.67/0.0 | -38.55 | +10.36 | 0.0312 | 0.9672 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L1: B_WF - A_FIXED` | +0.0275 | `[+0.0096, +0.0463]` | 33.33/66.67/0.0 | -0.09 | +0.03 | 0.0312 | 0.9672 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L1: C_WF - A_FIXED` | +0.0044 | `[-0.0143, +0.0236]` | 27.78/61.11/11.11 | -0.00 | +0.00 | 0.4688 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: B_WF - A_FIXED` | +0.4724 | `[+0.3523, +0.6042]` | 100.0/0.0/0.0 | -1.01 | +0.47 | 0.0000 | 0.0000 | `True` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: B2 - A_FIXED` | +0.4724 | `[+0.3541, +0.6014]` | 100.0/0.0/0.0 | -1.01 | +0.47 | 0.0000 | 0.0000 | `True` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: B5 - A_FIXED` | +0.4724 | `[+0.3519, +0.6028]` | 100.0/0.0/0.0 | -1.01 | +0.47 | 0.0000 | 0.0000 | `True` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: C_WF - A_FIXED` | +0.1592 | `[+0.0540, +0.2816]` | 61.11/5.56/33.33 | -0.21 | +0.16 | 0.0569 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: A_FIXED - CASH` | -0.4724 | `[-0.6010, -0.3551]` | 0.0/0.0/100.0 | +1.01 | -0.47 | 0.0000 | 0.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: B_WF - CASH` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: C_WF - CASH` | -0.3133 | `[-0.3938, -0.2488]` | 0.0/0.0/100.0 | +0.81 | -0.31 | 0.0000 | 0.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L1: B_WF - A_FIXED` | +0.4753 | `[+0.1272, +0.8793]` | 33.33/66.67/0.0 | -2.76 | +0.50 | 0.0312 | 0.3432 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L1: C_WF - A_FIXED` | -0.4054 | `[-1.2619, +0.1215]` | 11.11/72.22/16.67 | +4.06 | -0.44 | 0.6250 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: B_WF - A_FIXED` | +7.6670 | `[+5.7583, +9.6728]` | 100.0/0.0/0.0 | -18.62 | +7.82 | 0.0000 | 0.0000 | `True` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: B2 - A_FIXED` | +7.6670 | `[+5.7914, +9.6874]` | 100.0/0.0/0.0 | -18.62 | +7.82 | 0.0000 | 0.0000 | `True` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: B5 - A_FIXED` | +7.6670 | `[+5.7614, +9.6829]` | 100.0/0.0/0.0 | -18.62 | +7.82 | 0.0000 | 0.0000 | `True` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: C_WF - A_FIXED` | +1.7816 | `[+0.4818, +3.1527]` | 72.22/0.0/27.78 | -4.51 | +1.86 | 0.0208 | 0.2496 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: A_FIXED - CASH` | -7.6670 | `[-9.6700, -5.7705]` | 0.0/0.0/100.0 | +18.62 | -7.82 | 0.0000 | 0.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: B_WF - CASH` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.0000 | 1.0000 | `False` |
-| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: C_WF - CASH` | -5.8854 | `[-7.5382, -4.2451]` | 0.0/0.0/100.0 | +14.10 | -5.97 | 0.0000 | 0.0000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B_WF: L1 - L0 (reoptimized pipeline)` | +0.1825 | `[-0.2106, +0.5825]` | 22.22/66.67/11.11 | -1.81 | +0.83 | 0.562500 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B_WF: L2 - L1 (reoptimized pipeline)` | -0.3511 | `[-0.4383, -0.2688]` | 0.0/0.0/100.0 | +0.70 | -0.35 | 0.000008 | 0.000046 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `B_WF: L2 - L0 (reoptimized pipeline)` | -0.1686 | `[-0.5540, +0.2160]` | 16.67/0.0/83.33 | -1.12 | +0.48 | 0.108383 | 0.433533 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `B_WF: L2 - L1 (reoptimized pipeline, DELAYED)` | -1.7270 | `[-2.3160, -1.1652]` | 0.0/0.0/100.0 | +2.56 | -2.02 | 0.000008 | 0.000015 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `C_WF: L1 - L0 (reoptimized pipeline)` | +0.2522 | `[-0.9187, +1.6143]` | 22.22/61.11/16.67 | -9.36 | +1.78 | 1.000000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `C_WF: L2 - L1 (reoptimized pipeline)` | -0.2902 | `[-0.3720, -0.2251]` | 0.0/0.0/100.0 | +0.72 | -0.29 | 0.000008 | 0.000046 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `C_WF: L2 - L0 (reoptimized pipeline)` | -0.0380 | `[-1.1929, +1.3566]` | 22.22/0.0/77.78 | -8.64 | +1.49 | 0.228752 | 0.686256 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `C_WF: L2 - L1 (reoptimized pipeline, DELAYED)` | -1.4722 | `[-2.3143, -0.7557]` | 5.56/11.11/83.33 | +3.56 | -1.96 | 0.000153 | 0.000153 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B_WF: L1 - L0 (reoptimized pipeline)` | +0.4050 | `[+0.0575, +0.8754]` | 27.78/66.67/5.56 | -3.45 | +0.60 | 0.093750 | 0.281250 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B_WF: L2 - L1 (reoptimized pipeline)` | -0.0808 | `[-0.1120, -0.0523]` | 0.0/27.78/72.22 | +0.24 | -0.08 | 0.000244 | 0.001221 | `False` |
+| `SWITCH_48H` | `IDEAL` | `B_WF: L2 - L0 (reoptimized pipeline)` | +0.3241 | `[-0.0130, +0.7789]` | 27.78/16.67/55.56 | -3.21 | +0.52 | 0.803955 | 1.000000 | `False` |
+| `SWITCH_48H` | `DELAYED` | `B_WF: L2 - L1 (reoptimized pipeline, DELAYED)` | -0.2395 | `[-0.4553, -0.0793]` | 5.56/33.33/61.11 | +0.54 | -0.33 | 0.000977 | 0.000977 | `False` |
+| `SWITCH_48H` | `IDEAL` | `C_WF: L1 - L0 (reoptimized pipeline)` | +6.2688 | `[+1.9991, +11.4616]` | 27.78/72.22/0.0 | -31.69 | +6.43 | 0.062500 | 0.250000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `C_WF: L2 - L1 (reoptimized pipeline)` | -0.2902 | `[-0.3694, -0.2241]` | 0.0/0.0/100.0 | +0.72 | -0.29 | 0.000008 | 0.000046 | `False` |
+| `SWITCH_48H` | `IDEAL` | `C_WF: L2 - L0 (reoptimized pipeline)` | +5.9786 | `[+1.5784, +11.1332]` | 27.78/0.0/72.22 | -30.97 | +6.14 | 0.831726 | 1.000000 | `False` |
+| `SWITCH_48H` | `DELAYED` | `C_WF: L2 - L1 (reoptimized pipeline, DELAYED)` | -5.0483 | `[-7.2061, -3.2749]` | 0.0/0.0/100.0 | +10.91 | -5.14 | 0.000008 | 0.000015 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B_WF: L1 - L0 (reoptimized pipeline)` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B_WF: L2 - L1 (reoptimized pipeline)` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `B_WF: L2 - L0 (reoptimized pipeline)` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `B_WF: L2 - L1 (reoptimized pipeline, DELAYED)` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C_WF: L1 - L0 (reoptimized pipeline)` | +7.7093 | `[+2.0822, +13.8154]` | 27.78/72.22/0.0 | -37.48 | +7.78 | 0.062500 | 0.312500 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C_WF: L2 - L1 (reoptimized pipeline)` | -0.2902 | `[-0.3709, -0.2247]` | 0.0/0.0/100.0 | +0.72 | -0.29 | 0.000008 | 0.000046 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `C_WF: L2 - L0 (reoptimized pipeline)` | +7.4192 | `[+2.0321, +13.7941]` | 27.78/0.0/72.22 | -36.76 | +7.49 | 0.831726 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `C_WF: L2 - L1 (reoptimized pipeline, DELAYED)` | -5.0047 | `[-6.8587, -3.3334]` | 0.0/0.0/100.0 | +7.28 | -5.02 | 0.000008 | 0.000015 | `False` |
+
+### 6.3 同生命周期策略横向比较（`WITHIN_LIFECYCLE_STRATEGY_COMPARISON`，未舍入 p 值 Holm 校正）
+
+| 资金费体制 | 执行假设 | 同层策略比较项 | 均值差 (pp) | Bootstrap 95% CI (pp) | 胜/平/负 (%) | ΔCVaR95 (pp) | 回撤缩减 (pp) | 原始 Wilcoxon p | 未舍入 Holm p | Holm 显著 |
+| --- | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |
+| `MAINNET_ACTUAL` | `IDEAL` | `L0: B_WF - A_FIXED` | +0.4837 | `[-0.9917, +2.0851]` | 22.22/66.67/11.11 | -8.34 | +1.15 | 0.562500 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L1: B_WF - A_FIXED` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L1: C_WF - A_FIXED` | +0.0044 | `[-0.0142, +0.0232]` | 27.78/61.11/11.11 | -0.00 | +0.00 | 0.468750 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L2: B_WF - A_FIXED` | +0.0938 | `[+0.0250, +0.1727]` | 50.0/38.89/11.11 | -0.23 | +0.09 | 0.009766 | 0.205078 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L2: B2 - A_FIXED` | +0.0212 | `[-0.0076, +0.0629]` | 16.67/77.78/5.56 | -0.05 | +0.02 | 0.625000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L2: B5 - A_FIXED` | +0.0212 | `[-0.0076, +0.0629]` | 16.67/77.78/5.56 | -0.05 | +0.02 | 0.625000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L2: C_WF - A_FIXED` | +0.1592 | `[+0.0502, +0.2831]` | 61.11/5.56/33.33 | -0.21 | +0.16 | 0.056885 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L2: A_FIXED - CASH` | -0.4724 | `[-0.6049, -0.3547]` | 0.0/0.0/100.0 | +1.01 | -0.47 | 0.000008 | 0.000183 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L2: B_WF - CASH` | -0.3786 | `[-0.4702, -0.2914]` | 0.0/0.0/100.0 | +0.79 | -0.38 | 0.000008 | 0.000183 | `False` |
+| `MAINNET_ACTUAL` | `IDEAL` | `L2: C_WF - CASH` | -0.3133 | `[-0.3919, -0.2478]` | 0.0/0.0/100.0 | +0.81 | -0.31 | 0.000008 | 0.000183 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L1: B_WF - A_FIXED` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L1: C_WF - A_FIXED` | -0.1865 | `[-0.4816, +0.0217]` | 5.56/72.22/22.22 | +0.77 | -0.18 | 0.187500 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L2: B_WF - A_FIXED` | +1.1205 | `[+0.2083, +2.2279]` | 38.89/50.0/11.11 | -6.06 | +1.41 | 0.054688 | 0.492188 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L2: B2 - A_FIXED` | +0.1547 | `[-0.0078, +0.3845]` | 11.11/83.33/5.56 | +0.00 | +0.13 | 0.500000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L2: B5 - A_FIXED` | +0.1547 | `[-0.0078, +0.3966]` | 11.11/83.33/5.56 | +0.00 | +0.13 | 0.500000 | 1.000000 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L2: C_WF - A_FIXED` | +1.1888 | `[+0.4732, +2.0352]` | 83.33/0.0/16.67 | -4.30 | +1.29 | 0.003365 | 0.043739 | `True` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L2: A_FIXED - CASH` | -3.0239 | `[-4.4308, -1.8103]` | 0.0/0.0/100.0 | +10.18 | -3.74 | 0.000008 | 0.000122 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L2: B_WF - CASH` | -1.9034 | `[-2.4851, -1.3339]` | 0.0/0.0/100.0 | +4.12 | -2.33 | 0.000008 | 0.000122 | `False` |
+| `MAINNET_ACTUAL` | `DELAYED` | `L2: C_WF - CASH` | -1.8350 | `[-2.6697, -1.1262]` | 0.0/11.11/88.89 | +5.88 | -2.45 | 0.000031 | 0.000427 | `False` |
+| `SWITCH_48H` | `IDEAL` | `L0: B_WF - A_FIXED` | +7.7777 | `[+2.8313, +13.2014]` | 33.33/66.67/0.0 | -29.04 | +7.77 | 0.031250 | 0.562500 | `False` |
+| `SWITCH_48H` | `IDEAL` | `L1: B_WF - A_FIXED` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `L1: C_WF - A_FIXED` | +0.0044 | `[-0.0143, +0.0236]` | 27.78/61.11/11.11 | -0.00 | +0.00 | 0.468750 | 1.000000 | `False` |
+| `SWITCH_48H` | `IDEAL` | `L2: B_WF - A_FIXED` | +0.3641 | `[+0.2641, +0.4716]` | 100.0/0.0/0.0 | -0.69 | +0.36 | 0.000008 | 0.000183 | `True` |
+| `SWITCH_48H` | `IDEAL` | `L2: B2 - A_FIXED` | +0.3641 | `[+0.2643, +0.4701]` | 100.0/0.0/0.0 | -0.69 | +0.36 | 0.000008 | 0.000183 | `True` |
+| `SWITCH_48H` | `IDEAL` | `L2: B5 - A_FIXED` | +0.3641 | `[+0.2666, +0.4728]` | 100.0/0.0/0.0 | -0.69 | +0.36 | 0.000008 | 0.000183 | `True` |
+| `SWITCH_48H` | `IDEAL` | `L2: C_WF - A_FIXED` | +0.1592 | `[+0.0539, +0.2811]` | 61.11/5.56/33.33 | -0.21 | +0.16 | 0.056885 | 0.739502 | `False` |
+| `SWITCH_48H` | `IDEAL` | `L2: A_FIXED - CASH` | -0.4724 | `[-0.5990, -0.3521]` | 0.0/0.0/100.0 | +1.01 | -0.47 | 0.000008 | 0.000183 | `False` |
+| `SWITCH_48H` | `IDEAL` | `L2: B_WF - CASH` | -0.1083 | `[-0.1480, -0.0737]` | 0.0/16.67/83.33 | +0.32 | -0.11 | 0.000061 | 0.001160 | `False` |
+| `SWITCH_48H` | `IDEAL` | `L2: C_WF - CASH` | -0.3133 | `[-0.3931, -0.2490]` | 0.0/0.0/100.0 | +0.81 | -0.31 | 0.000008 | 0.000183 | `False` |
+| `SWITCH_48H` | `DELAYED` | `L1: B_WF - A_FIXED` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `SWITCH_48H` | `DELAYED` | `L1: C_WF - A_FIXED` | -0.4353 | `[-1.2480, +0.0196]` | 5.56/72.22/22.22 | +5.26 | -0.41 | 0.187500 | 0.937500 | `False` |
+| `SWITCH_48H` | `DELAYED` | `L2: B_WF - A_FIXED` | +7.3153 | `[+5.0426, +9.8354]` | 100.0/0.0/0.0 | -18.65 | +7.30 | 0.000008 | 0.000122 | `True` |
+| `SWITCH_48H` | `DELAYED` | `L2: B2 - A_FIXED` | +7.3153 | `[+5.0271, +9.8225]` | 100.0/0.0/0.0 | -18.65 | +7.30 | 0.000008 | 0.000122 | `True` |
+| `SWITCH_48H` | `DELAYED` | `L2: B5 - A_FIXED` | +7.3153 | `[+5.0428, +9.8319]` | 100.0/0.0/0.0 | -18.65 | +7.30 | 0.000008 | 0.000122 | `True` |
+| `SWITCH_48H` | `DELAYED` | `L2: C_WF - A_FIXED` | +2.0712 | `[+0.1994, +4.4825]` | 61.11/5.56/33.33 | -3.02 | +2.08 | 0.071411 | 0.465752 | `False` |
+| `SWITCH_48H` | `DELAYED` | `L2: A_FIXED - CASH` | -7.7329 | `[-10.3435, -5.2958]` | 0.0/0.0/100.0 | +20.75 | -7.94 | 0.000008 | 0.000122 | `False` |
+| `SWITCH_48H` | `DELAYED` | `L2: B_WF - CASH` | -0.4175 | `[-0.6996, -0.1851]` | 5.56/16.67/77.78 | +2.10 | -0.64 | 0.000122 | 0.001343 | `False` |
+| `SWITCH_48H` | `DELAYED` | `L2: C_WF - CASH` | -5.6617 | `[-7.7057, -3.9774]` | 0.0/0.0/100.0 | +17.73 | -5.86 | 0.000008 | 0.000122 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L0: B_WF - A_FIXED` | +10.2578 | `[+3.6686, +17.4249]` | 33.33/66.67/0.0 | -38.55 | +10.36 | 0.031250 | 0.593750 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L1: B_WF - A_FIXED` | +0.0275 | `[+0.0095, +0.0464]` | 33.33/66.67/0.0 | -0.09 | +0.03 | 0.031250 | 0.593750 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L1: C_WF - A_FIXED` | +0.0044 | `[-0.0142, +0.0238]` | 27.78/61.11/11.11 | -0.00 | +0.00 | 0.468750 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: B_WF - A_FIXED` | +0.4724 | `[+0.3503, +0.6005]` | 100.0/0.0/0.0 | -1.01 | +0.47 | 0.000008 | 0.000183 | `True` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: B2 - A_FIXED` | +0.4724 | `[+0.3526, +0.6015]` | 100.0/0.0/0.0 | -1.01 | +0.47 | 0.000008 | 0.000183 | `True` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: B5 - A_FIXED` | +0.4724 | `[+0.3538, +0.6021]` | 100.0/0.0/0.0 | -1.01 | +0.47 | 0.000008 | 0.000183 | `True` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: C_WF - A_FIXED` | +0.1592 | `[+0.0517, +0.2778]` | 61.11/5.56/33.33 | -0.21 | +0.16 | 0.056885 | 0.625732 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: A_FIXED - CASH` | -0.4724 | `[-0.6045, -0.3524]` | 0.0/0.0/100.0 | +1.01 | -0.47 | 0.000008 | 0.000183 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: B_WF - CASH` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `IDEAL` | `L2: C_WF - CASH` | -0.3133 | `[-0.3916, -0.2477]` | 0.0/0.0/100.0 | +0.81 | -0.31 | 0.000008 | 0.000183 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L1: B_WF - A_FIXED` | +0.4753 | `[+0.1247, +0.8871]` | 33.33/66.67/0.0 | -2.76 | +0.50 | 0.031250 | 0.281250 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L1: C_WF - A_FIXED` | -0.4054 | `[-1.2582, +0.1313]` | 11.11/72.22/16.67 | +4.06 | -0.44 | 0.625000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: B_WF - A_FIXED` | +7.6670 | `[+5.7747, +9.6523]` | 100.0/0.0/0.0 | -18.62 | +7.82 | 0.000008 | 0.000122 | `True` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: B2 - A_FIXED` | +7.6670 | `[+5.7875, +9.6863]` | 100.0/0.0/0.0 | -18.62 | +7.82 | 0.000008 | 0.000122 | `True` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: B5 - A_FIXED` | +7.6670 | `[+5.7710, +9.6878]` | 100.0/0.0/0.0 | -18.62 | +7.82 | 0.000008 | 0.000122 | `True` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: C_WF - A_FIXED` | +1.7816 | `[+0.4697, +3.1188]` | 72.22/0.0/27.78 | -4.51 | +1.86 | 0.020813 | 0.208130 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: A_FIXED - CASH` | -7.6670 | `[-9.6375, -5.8122]` | 0.0/0.0/100.0 | +18.62 | -7.82 | 0.000008 | 0.000122 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: B_WF - CASH` | +0.0000 | `[+0.0000, +0.0000]` | 0.0/100.0/0.0 | +0.00 | +0.00 | 1.000000 | 1.000000 | `False` |
+| `DEMO_HIGH_FUNDING_22.97BPS` | `DELAYED` | `L2: C_WF - CASH` | -5.8854 | `[-7.5606, -4.2935]` | 0.0/0.0/100.0 | +14.10 | -5.97 | 0.000008 | 0.000122 | `False` |
+
+> **统计精度注记（Section 10）**：`MAINNET_ACTUAL / L2 / DELAYED` 中 `C_WF - A_FIXED`（`n=18` 窗）的均值差为 `+1.188819 pp`，配对 Bootstrap 95% CI 为 `[+0.4732, +2.0352] pp`，未舍入 Wilcoxon 原始 `p = 0.0033645630`；经由同层策略比较族（`m=16`）未舍入 Holm-Bonferroni 校正后 `p = 0.043739`（初版曾用先舍入 4 位的 `0.0034` 在合并族中算得 `0.0442`）。无论如何，`C_WF` 本身均值净收益仍为 `-1.8350%`（跑输 `CASH 0.0000%`），此为**相对减亏而非正 Alpha**，且 18 窗有效 95% 尾部样本仅 `0.9` 个，不能认证尾部稳定。
 
 ## 7. 退出执行现实性矩阵（5 组条件执行假设 × 历史 18 个 OOS 窗）
 
@@ -582,44 +656,46 @@
 
 ### 10.1 关键尾部模型扩容汇总（`n = 512 / 1024` 路径，`seed = 1100`，`SWITCH_48H`）
 
-| 随机模型 | 路径数 `n` | 生命周期 / 执行假设 | 策略 | 均值收益 | 亏损概率 | VaR95 | CVaR95 (95% CI) | P95 MaxDD | 持仓(h) | 退出延迟(h) | 残仓率 | 资费均值(U) | 轮换数 | 相对同层 A ΔCVaR95 | 尾部状态 |
-| --- | ---: | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `gbm_base_vol_1.0x` | 512 | `L0/IDEAL` | `A_FIXED` | -9.20% | 43.8% | 24.80% | 26.55% (`[25.60%, 27.41%]`) | 25.57% | 69.8 | 69.8 | 43.8% | -0.6384 | 0.00 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 512 | `L0/IDEAL` | `B5` | -0.52% | 25.6% | 3.11% | 10.00% (`[6.39%, 14.10%]`) | 3.77% | 19.5 | 17.6 | 0.0% | -0.0314 | 0.00 | **-16.55 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 512 | `L0/IDEAL` | `C5` | -9.90% | 47.5% | 24.85% | 26.52% (`[25.62%, 27.35%]`) | 25.44% | 73.1 | 73.1 | 47.5% | -0.6892 | 0.00 | **-0.03 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 512 | `L1/IDEAL` | `A_FIXED` | -0.04% | 43.8% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 512 | `L1/IDEAL` | `B5` | -0.04% | 43.8% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **+0.00 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 512 | `L1/IDEAL` | `C5` | -0.04% | 47.5% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **-0.00 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 1024 | `L2/IDEAL` | `A_FIXED` | -0.68% | 100.0% | 0.98% | 1.30% (`[1.08%, 1.53%]`) | 0.99% | 0.1 | 0.0 | 0.1% | -0.0014 | 17.91 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 1024 | `L2/IDEAL` | `B5` | -0.21% | 93.8% | 0.40% | 0.55% (`[0.42%, 0.79%]`) | 0.40% | 0.1 | 0.0 | 0.0% | -0.0005 | 5.40 | **-0.75 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 512 | `L2/IDEAL` | `C5` | -0.39% | 99.6% | 0.63% | 0.66% (`[0.63%, 0.67%]`) | 0.63% | 0.0 | 0.0 | 0.0% | -0.0001 | 10.35 | **-0.39 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 1024 | `L2/DELAYED` | `A_FIXED` | -9.09% | 100.0% | 21.28% | 24.72% (`[23.63%, 25.74%]`) | 21.59% | 45.9 | 5.4 | 32.3% | -0.4254 | 13.37 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 1024 | `L2/DELAYED` | `B5` | -1.92% | 90.6% | 5.01% | 17.72% (`[13.71%, 21.40%]`) | 5.44% | 15.8 | 4.6 | 2.7% | -0.0638 | 4.05 | **-7.00 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `gbm_base_vol_1.0x` | 512 | `L2/DELAYED` | `C5` | -6.16% | 99.8% | 19.18% | 23.40% (`[21.18%, 25.25%]`) | 19.43% | 31.9 | 6.3 | 23.6% | -0.2943 | 8.66 | **-1.35 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L0/IDEAL` | `A_FIXED` | -8.73% | 41.6% | 24.64% | 26.43% (`[25.49%, 27.37%]`) | 25.13% | 63.8 | 63.8 | 41.6% | -0.6042 | 0.00 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L0/IDEAL` | `B5` | -0.33% | 23.6% | 2.47% | 7.33% (`[4.18%, 11.54%]`) | 3.38% | 15.8 | 14.5 | 0.0% | -0.0250 | 0.00 | **-19.10 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L0/IDEAL` | `C5` | -8.83% | 42.2% | 24.46% | 26.01% (`[25.29%, 26.68%]`) | 25.18% | 62.7 | 62.7 | 42.2% | -0.6084 | 0.00 | **-0.42 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L1/IDEAL` | `A_FIXED` | -0.03% | 41.6% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L1/IDEAL` | `B5` | -0.03% | 40.2% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **-0.00 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L1/IDEAL` | `C5` | -0.03% | 42.2% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **+0.00 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L2/IDEAL` | `A_FIXED` | -0.43% | 99.4% | 0.72% | 0.80% (`[0.76%, 0.84%]`) | 0.73% | 0.0 | 0.0 | 0.0% | -0.0004 | 13.08 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L2/IDEAL` | `B5` | -0.12% | 80.7% | 0.32% | 0.32% (`[0.30%, 0.33%]`) | 0.32% | 0.0 | 0.0 | 0.0% | +0.0000 | 3.74 | **-0.48 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L2/IDEAL` | `C5` | -0.31% | 99.2% | 0.50% | 0.61% (`[0.55%, 0.71%]`) | 0.50% | 0.0 | 0.0 | 0.0% | -0.0004 | 9.13 | **-0.19 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L2/DELAYED` | `A_FIXED` | -5.81% | 99.2% | 15.94% | 21.47% (`[19.23%, 23.03%]`) | 16.51% | 29.6 | 4.5 | 20.9% | -0.2743 | 10.30 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L2/DELAYED` | `B5` | -1.08% | 78.1% | 2.90% | 11.39% (`[7.33%, 16.12%]`) | 3.25% | 9.8 | 3.7 | 1.4% | -0.0366 | 2.92 | **-10.09 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `moving_block_bootstrap_24h` | 512 | `L2/DELAYED` | `C5` | -4.67% | 99.0% | 15.16% | 20.46% (`[17.90%, 22.26%]`) | 15.48% | 24.1 | 5.0 | 16.2% | -0.2257 | 7.49 | **-1.01 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 512 | `L0/IDEAL` | `A_FIXED` | -13.97% | 56.0% | 30.33% | 32.54% (`[31.28%, 33.50%]`) | 30.99% | 89.9 | 89.9 | 56.0% | -0.7838 | 0.00 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 512 | `L0/IDEAL` | `B5` | -2.57% | 41.4% | 26.73% | 30.46% (`[27.95%, 31.68%]`) | 27.15% | 32.1 | 20.7 | 0.0% | -0.1107 | 0.00 | **-2.07 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 512 | `L0/IDEAL` | `C5` | -14.18% | 57.6% | 30.15% | 32.05% (`[30.94%, 32.90%]`) | 30.78% | 89.2 | 89.2 | 57.6% | -0.8033 | 0.00 | **-0.49 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 512 | `L1/IDEAL` | `A_FIXED` | -0.05% | 56.0% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 512 | `L1/IDEAL` | `B5` | -0.05% | 56.0% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **+0.00 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 512 | `L1/IDEAL` | `C5` | -0.05% | 57.6% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **+0.00 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 1024 | `L2/IDEAL` | `A_FIXED` | -0.60% | 99.9% | 0.96% | 2.03% (`[1.12%, 3.27%]`) | 0.96% | 0.3 | 0.0 | 0.4% | -0.0028 | 14.02 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 1024 | `L2/IDEAL` | `B5` | -0.22% | 97.1% | 0.40% | 0.44% (`[0.42%, 0.45%]`) | 0.40% | 0.0 | 0.0 | 0.0% | -0.0000 | 5.48 | **-1.59 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 512 | `L2/IDEAL` | `C5` | -0.36% | 99.8% | 0.56% | 1.45% (`[0.65%, 2.90%]`) | 0.57% | 0.2 | 0.0 | 0.2% | -0.0027 | 7.19 | **-1.55 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 1024 | `L2/DELAYED` | `A_FIXED` | -10.54% | 100.0% | 27.70% | 29.57% (`[28.79%, 30.26%]`) | 28.00% | 52.6 | 9.9 | 35.1% | -0.4601 | 10.23 | **基准** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 1024 | `L2/DELAYED` | `B5` | -3.53% | 93.7% | 25.87% | 28.88% (`[27.69%, 29.76%]`) | 26.21% | 24.0 | 8.4 | 7.3% | -0.1283 | 3.91 | **-0.69 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
-| `jump_stress_downside` | 512 | `L2/DELAYED` | `C5` | -6.79% | 99.6% | 25.34% | 27.70% (`[26.23%, 28.91%]`) | 25.53% | 34.6 | 9.5 | 23.1% | -0.2976 | 5.88 | **-1.57 pp** | `PRECISION_REPORTED_NOT_CERTIFIED` |
+注：当扩容单元路径数 `n=1024` 而 `L0` 对照仅运行 `512` 条路径时，严禁非配对比较或输出伪零 `0.0`，下表及 JSON/CSV 均以 `null` / 空值及 `COMPARISON_UNAVAILABLE (PAIRED_BASELINE_INSUFFICIENT)` 明确标记：
+
+| 随机模型 | 路径数 `n` | 生命周期 / 执行假设 | 策略 | 均值收益 | 亏损概率 | VaR95 | CVaR95 (95% CI) | P95 MaxDD | 持仓(h) | 退出延迟(h) | 残仓率 | 资费均值(U) | 轮换数 | 相对同层 A ΔCVaR95 | 相对 L0 ΔCVaR95 (状态) | 尾部状态 |
+| --- | ---: | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| `gbm_base_vol_1.0x` | 512 | `L0/IDEAL` | `A_FIXED` | -9.20% | 43.8% | 24.80% | 26.55% (`[25.60%, 27.41%]`) | 25.57% | 69.8 | 69.8 | 43.8% | -0.6384 | 0.00 | **基准** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 512 | `L0/IDEAL` | `B5` | -0.52% | 25.6% | 3.11% | 10.00% (`[6.39%, 14.10%]`) | 3.77% | 19.5 | 17.6 | 0.0% | -0.0314 | 0.00 | **-16.55 pp** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 512 | `L0/IDEAL` | `C5` | -9.90% | 47.5% | 24.85% | 26.52% (`[25.62%, 27.35%]`) | 25.44% | 73.1 | 73.1 | 47.5% | -0.6892 | 0.00 | **-0.03 pp** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 512 | `L1/IDEAL` | `A_FIXED` | -0.04% | 43.8% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **基准** | -26.47 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 512 | `L1/IDEAL` | `B5` | -0.04% | 43.8% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **+0.00 pp** | -9.92 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 512 | `L1/IDEAL` | `C5` | -0.04% | 47.5% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **-0.00 pp** | -26.44 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 1024 | `L2/IDEAL` | `A_FIXED` | -0.68% | 100.0% | 0.98% | 1.30% (`[1.08%, 1.53%]`) | 0.99% | 0.1 | 0.0 | 0.1% | -0.0014 | 17.91 | **基准** | — (`COMPARISON_UNAVAILABLE: PAIRED_BASELINE_INSUFFICIENT`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 1024 | `L2/IDEAL` | `B5` | -0.21% | 93.8% | 0.40% | 0.55% (`[0.42%, 0.79%]`) | 0.40% | 0.1 | 0.0 | 0.0% | -0.0005 | 5.40 | **-0.75 pp** | — (`COMPARISON_UNAVAILABLE: PAIRED_BASELINE_INSUFFICIENT`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 512 | `L2/IDEAL` | `C5` | -0.39% | 99.6% | 0.63% | 0.66% (`[0.63%, 0.67%]`) | 0.63% | 0.0 | 0.0 | 0.0% | -0.0001 | 10.35 | **-0.39 pp** | -25.86 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 1024 | `L2/DELAYED` | `A_FIXED` | -9.09% | 100.0% | 21.28% | 24.72% (`[23.63%, 25.74%]`) | 21.59% | 45.9 | 5.4 | 32.3% | -0.4254 | 13.37 | **基准** | — (`COMPARISON_UNAVAILABLE: PAIRED_BASELINE_INSUFFICIENT`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 1024 | `L2/DELAYED` | `B5` | -1.92% | 90.6% | 5.01% | 17.72% (`[13.71%, 21.40%]`) | 5.44% | 15.8 | 4.6 | 2.7% | -0.0638 | 4.05 | **-7.00 pp** | — (`COMPARISON_UNAVAILABLE: PAIRED_BASELINE_INSUFFICIENT`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `gbm_base_vol_1.0x` | 512 | `L2/DELAYED` | `C5` | -6.16% | 99.8% | 19.18% | 23.40% (`[21.18%, 25.25%]`) | 19.43% | 31.9 | 6.3 | 23.6% | -0.2943 | 8.66 | **-1.35 pp** | -3.12 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L0/IDEAL` | `A_FIXED` | -8.73% | 41.6% | 24.64% | 26.43% (`[25.49%, 27.37%]`) | 25.13% | 63.8 | 63.8 | 41.6% | -0.6042 | 0.00 | **基准** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L0/IDEAL` | `B5` | -0.33% | 23.6% | 2.47% | 7.33% (`[4.18%, 11.54%]`) | 3.38% | 15.8 | 14.5 | 0.0% | -0.0250 | 0.00 | **-19.10 pp** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L0/IDEAL` | `C5` | -8.83% | 42.2% | 24.46% | 26.01% (`[25.29%, 26.68%]`) | 25.18% | 62.7 | 62.7 | 42.2% | -0.6084 | 0.00 | **-0.42 pp** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L1/IDEAL` | `A_FIXED` | -0.03% | 41.6% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **基准** | -26.35 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L1/IDEAL` | `B5` | -0.03% | 40.2% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **-0.00 pp** | -7.25 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L1/IDEAL` | `C5` | -0.03% | 42.2% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **+0.00 pp** | -25.93 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L2/IDEAL` | `A_FIXED` | -0.43% | 99.4% | 0.72% | 0.80% (`[0.76%, 0.84%]`) | 0.73% | 0.0 | 0.0 | 0.0% | -0.0004 | 13.08 | **基准** | -25.63 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L2/IDEAL` | `B5` | -0.12% | 80.7% | 0.32% | 0.32% (`[0.30%, 0.33%]`) | 0.32% | 0.0 | 0.0 | 0.0% | +0.0000 | 3.74 | **-0.48 pp** | -7.01 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L2/IDEAL` | `C5` | -0.31% | 99.2% | 0.50% | 0.61% (`[0.55%, 0.71%]`) | 0.50% | 0.0 | 0.0 | 0.0% | -0.0004 | 9.13 | **-0.19 pp** | -25.40 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L2/DELAYED` | `A_FIXED` | -5.81% | 99.2% | 15.94% | 21.47% (`[19.23%, 23.03%]`) | 16.51% | 29.6 | 4.5 | 20.9% | -0.2743 | 10.30 | **基准** | -4.96 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L2/DELAYED` | `B5` | -1.08% | 78.1% | 2.90% | 11.39% (`[7.33%, 16.12%]`) | 3.25% | 9.8 | 3.7 | 1.4% | -0.0366 | 2.92 | **-10.09 pp** | +4.06 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `moving_block_bootstrap_24h` | 512 | `L2/DELAYED` | `C5` | -4.67% | 99.0% | 15.16% | 20.46% (`[17.90%, 22.26%]`) | 15.48% | 24.1 | 5.0 | 16.2% | -0.2257 | 7.49 | **-1.01 pp** | -5.54 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 512 | `L0/IDEAL` | `A_FIXED` | -13.97% | 56.0% | 30.33% | 32.54% (`[31.28%, 33.50%]`) | 30.99% | 89.9 | 89.9 | 56.0% | -0.7838 | 0.00 | **基准** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 512 | `L0/IDEAL` | `B5` | -2.57% | 41.4% | 26.73% | 30.46% (`[27.95%, 31.68%]`) | 27.15% | 32.1 | 20.7 | 0.0% | -0.1107 | 0.00 | **-2.07 pp** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 512 | `L0/IDEAL` | `C5` | -14.18% | 57.6% | 30.15% | 32.05% (`[30.94%, 32.90%]`) | 30.78% | 89.2 | 89.2 | 57.6% | -0.8033 | 0.00 | **-0.49 pp** | 0.00 pp (`SELF_BASELINE`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 512 | `L1/IDEAL` | `A_FIXED` | -0.05% | 56.0% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **基准** | -32.46 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 512 | `L1/IDEAL` | `B5` | -0.05% | 56.0% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **+0.00 pp** | -30.38 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 512 | `L1/IDEAL` | `C5` | -0.05% | 57.6% | 0.08% | 0.08% (`[0.08%, 0.08%]`) | 0.08% | 0.0 | 0.0 | 0.0% | +0.0000 | 0.00 | **+0.00 pp** | -31.96 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 1024 | `L2/IDEAL` | `A_FIXED` | -0.60% | 99.9% | 0.96% | 2.03% (`[1.12%, 3.27%]`) | 0.96% | 0.3 | 0.0 | 0.4% | -0.0028 | 14.02 | **基准** | — (`COMPARISON_UNAVAILABLE: PAIRED_BASELINE_INSUFFICIENT`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 1024 | `L2/IDEAL` | `B5` | -0.22% | 97.1% | 0.40% | 0.44% (`[0.42%, 0.45%]`) | 0.40% | 0.0 | 0.0 | 0.0% | -0.0000 | 5.48 | **-1.59 pp** | — (`COMPARISON_UNAVAILABLE: PAIRED_BASELINE_INSUFFICIENT`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 512 | `L2/IDEAL` | `C5` | -0.36% | 99.8% | 0.56% | 1.45% (`[0.65%, 2.90%]`) | 0.57% | 0.2 | 0.0 | 0.2% | -0.0027 | 7.19 | **-1.55 pp** | -30.59 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 1024 | `L2/DELAYED` | `A_FIXED` | -10.54% | 100.0% | 27.70% | 29.57% (`[28.79%, 30.26%]`) | 28.00% | 52.6 | 9.9 | 35.1% | -0.4601 | 10.23 | **基准** | — (`COMPARISON_UNAVAILABLE: PAIRED_BASELINE_INSUFFICIENT`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 1024 | `L2/DELAYED` | `B5` | -3.53% | 93.7% | 25.87% | 28.88% (`[27.69%, 29.76%]`) | 26.21% | 24.0 | 8.4 | 7.3% | -0.1283 | 3.91 | **-0.69 pp** | — (`COMPARISON_UNAVAILABLE: PAIRED_BASELINE_INSUFFICIENT`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
+| `jump_stress_downside` | 512 | `L2/DELAYED` | `C5` | -6.79% | 99.6% | 25.34% | 27.70% (`[26.23%, 28.91%]`) | 25.53% | 34.6 | 9.5 | 23.1% | -0.2976 | 5.88 | **-1.57 pp** | -4.35 pp (`COMPUTED`) | `PRECISION_REPORTED_NOT_CERTIFIED` |
 
 ### 10.2 执行摩擦敏感性（MC `n = 64`，`L2` 完整生命周期 × 5 组执行假设）
 
@@ -823,4 +899,41 @@
 
 ```powershell
 python tools/research/run_p8_r11_study.py --r04b-snapshot "D:\Code\p7-r04b-official-payloads\certified\runs\bde00b2f948842e2b8c2a00465a9f8c6" --cache-dir "D:\Code\p8-r10-data-cache" --output-dir "docs/validation/p8-r11" --screen-paths 64 --expand-paths 512 --tail-expand-paths 1024 --cross-seed-paths 256 --workers 20
+```
+
+## 13. PR #252 独立审查缺陷修复与研究证据修订（`MERGE_BLOCKED` 定向闭环）
+
+- **主线同步与 S04 集成**：已从最新 `origin/main`（`2529fa6`，包含已合并 PR #246 `P8-S04`）无冲突合入，完整保留 S04 的共享账户（`allow_shared`）、历史观察、坏包回退及持久订单维护逻辑；未引入未合并 PR #251/#253 代码。
+- **保留的已独立验证成果**：保留独立审查已验证的 40 组交易路径复算、25 组资金费复算、180 项配对统计复算、47,104 项 MC 任务身份重建及 36 个 B2/B5 历史配对验证；未无谓重跑已验证的全量 MC 批次。
+
+### 13.1 三项 P2、一项 P3 及一项 R10 既存缺陷逐项闭环
+
+| 编号 | 问题摘要 | 修复方式与证据修订 |
+| --- | --- | --- |
+| **P2-1** | 8 组 `n=1024` MC 扩容单元因 `L0` 仅 `512` 路径缺失配对对照，被错误输出 `delta_*_vs_L0_pp = 0.0` | 在 `compute_paired_mc_comparison` 与 `_aggregate_mc_group` 引入显式缺失语义（JSON `null` / CSV 空值，`comparison_status=COMPARISON_UNAVAILABLE`，`comparison_unavailable_reason=PAIRED_BASELINE_INSUFFICIENT`，并记录 `candidate_n_paths`/`baseline_n_paths`/`matched_n_paths` 与 `mc_path_id` 路径身份校验）。已同步修订全部 `8` 个受影响单元及 `mc_expanded_key_scenarios.csv`、`mc_convergence.csv`、`summary.json`、`s02_handoff.json` 与本报告。 |
+| **P2-2** | `B_WF`/`C_WF` 在各生命周期独立重选参数，混入 `F11 pure` / `F08 incremental` 机制消融 | 将 `paired_ablations.csv` 严格拆分为（A）`FIXED_PARAM_MECHANISM_ABLATION`（`A_FIXED`、`B2`、`B5`、`C5` 及仅由 `L0` 训练窗冻结选出的 `B_FROZEN_L0`/`C_FROZEN_L0`，同折同候选同 `sigma_ref`）与（B）`LIFECYCLE_REOPTIMIZED_PIPELINE_COMPARISON`（原 `B_WF`/`C_WF` 重优化流程），并在各比较族内改用**未舍入原始 p 值**计算 Holm-Bonferroni 校正。 |
+| **P2-3** | 单权威退出峰值仅在 Bar 尾采样，遗漏同 Bar 提交即成交（复现：`actual peak=1` 但 `reported=0`） | 在 `grid_f11_f08_offline.py` 实现 `EVENT_LEVEL_AUTHORITATIVE_LIFECYCLE` 权威事件变迁追踪与独立重建函数 `reconstruct_exit_order_peak_from_events`，覆盖同 Bar 成交、`PARTIALLY_FILLED`、`CANCEL_PENDING`、`UNKNOWN` 未解决保持活跃、撤单成交竞态及跨 F08 generation 连续性；负向单测注入双单重叠准确检出峰值 `2` 并阻止验收。实际事件级实跑验证 `3773` 次（全部 `338` 次确定性压力 + `1707` 次历史 OOS 机制补算窗 + `1728` 条 MC 代表路径），均满足峰值 `<= 1` 且零重叠违规，并诚实收窄旧 Bar 尾批次声明。 |
+| **P3-1** | `B2 == B5` 历史等价性实际覆盖 36 个单元而非完整 50 单元 | 程序化核验实际已执行的 `36` 个历史 `L1`/`L2` 配对单元（3 核心体制 × 10 单元 + 2 补充体制 × 3 单元；明确列出未执行的 `14` 个组合），确认收益、CVaR95、手续费与资金费完全等价；保留零滑点网格内部持仓下 `B5` 先于 `BREAKOUT` 触发的确定性反例，不泛化至所有网格配置。 |
+| **R10 既存缺陷** | `FundingSensitiveGrid.entry_time_utc` 未写入 checkpoint，重启恢复后资金费退出被跳过 | 采用零破坏公共协议的可选钩子（`GridExecution._subclass_checkpoint` / `_restore_subclass_checkpoint`，原生 `GridExecution` checkpoint 字节级不变）持久化 `entry_time_utc`、`entry_price_dec`、`buy_blocked`、`exit_reasons` 等全部显式决策状态；对缺失字段的旧 checkpoint 严格依据权威 `PaperStore.order_events()` 回溯恢复，无法可靠追溯时绝不伪造为当前时间或 0（保留 `entry_time_utc=None` 并置 `entry_time_unrecoverable=True`）。 |
+
+### 13.2 八个 MC 缺失 L0 对照单元修订核验清单（P2-1）
+
+| 随机模型 | 生命周期 / 执行假设 | 策略 | `candidate_n_paths` | `baseline_n_paths` | `matched_n_paths` | `delta_return_vs_L0_pp` | `delta_cvar95_vs_L0_pp` | `comparison_status` | `comparison_unavailable_reason` |
+| --- | --- | --- | ---: | ---: | ---: | --- | --- | --- | --- |
+| `gbm_base_vol_1.0x` | `L2/IDEAL_LIMIT_FILL` | `A_FIXED` | 1024 | 512 | 0 | `null` | `null` | `COMPARISON_UNAVAILABLE` | `PAIRED_BASELINE_INSUFFICIENT` |
+| `gbm_base_vol_1.0x` | `L2/IDEAL_LIMIT_FILL` | `B5` | 1024 | 512 | 0 | `null` | `null` | `COMPARISON_UNAVAILABLE` | `PAIRED_BASELINE_INSUFFICIENT` |
+| `gbm_base_vol_1.0x` | `L2/DELAYED_EXIT_FILL` | `A_FIXED` | 1024 | 512 | 0 | `null` | `null` | `COMPARISON_UNAVAILABLE` | `PAIRED_BASELINE_INSUFFICIENT` |
+| `gbm_base_vol_1.0x` | `L2/DELAYED_EXIT_FILL` | `B5` | 1024 | 512 | 0 | `null` | `null` | `COMPARISON_UNAVAILABLE` | `PAIRED_BASELINE_INSUFFICIENT` |
+| `jump_stress_downside` | `L2/IDEAL_LIMIT_FILL` | `A_FIXED` | 1024 | 512 | 0 | `null` | `null` | `COMPARISON_UNAVAILABLE` | `PAIRED_BASELINE_INSUFFICIENT` |
+| `jump_stress_downside` | `L2/IDEAL_LIMIT_FILL` | `B5` | 1024 | 512 | 0 | `null` | `null` | `COMPARISON_UNAVAILABLE` | `PAIRED_BASELINE_INSUFFICIENT` |
+| `jump_stress_downside` | `L2/DELAYED_EXIT_FILL` | `A_FIXED` | 1024 | 512 | 0 | `null` | `null` | `COMPARISON_UNAVAILABLE` | `PAIRED_BASELINE_INSUFFICIENT` |
+| `jump_stress_downside` | `L2/DELAYED_EXIT_FILL` | `B5` | 1024 | 512 | 0 | `null` | `null` | `COMPARISON_UNAVAILABLE` | `PAIRED_BASELINE_INSUFFICIENT` |
+
+### 13.3 原独立审查复现脚本验证结果与补算范围
+
+- **独立审查复现核验**：`review_execution_repro.py`（40 组）、`review_funding_repro.py`（25 组）、`review_partial_exit_repro.py` 均继续通过；`review_exit_telemetry_repro.py` 原缺陷场景（两 Bar `IDEAL` 同 Bar 买入/突破/提交并成交）现已修复为 `actual post-submit peak = 1` 且 `reported max_simultaneous_exit_orders = 1`（`bar_end_max_simultaneous_exit_orders = 0`）。
+- **本轮最小补算范围**：总计补算 `3773` 次事件级监测运行（耗时 `151.8s`），覆盖全部 `338` 次确定性压力、`1707` 次历史 OOS 机制消融与固定参数补算窗、以及 `1728` 条 MC 代表验证路径；并同步校验 `summary.json["s02_handoff"] == docs/validation/p8-r11/s02_handoff.json` 严格一致。
+
+```powershell
+python tools/research/recompute_p8_r11_review_fixes.py --r04b-snapshot "D:\Code\p7-r04b-official-payloads\certified\runs\bde00b2f948842e2b8c2a00465a9f8c6" --cache-dir "D:\Code\p8-r10-data-cache" --output-dir "docs/validation/p8-r11" --workers 20
 ```
