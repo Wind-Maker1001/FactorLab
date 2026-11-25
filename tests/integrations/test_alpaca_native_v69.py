@@ -12,18 +12,29 @@ from test_alpaca_instance_runtime import Account
 from test_alpaca_portfolio import NOW
 
 
-def test_native_instance_borrows_the_shared_runner_and_explicit_funding(tmp_path):
+@pytest.mark.parametrize('managed', [False, True])
+def test_native_instance_borrows_the_shared_runner_and_explicit_funding(tmp_path, managed):
     from factorlab.integrations.alpaca.strategy_instances import StrategyInstances
     binding = dict(market='ALPACA_US_EQUITY', account_id='paper', strategy_id='V69_CAUSAL',
                    instance_id='V69_CAUSAL', allocation_id='v69-original')
-    host = StrategyInstances(tmp_path, Account(), dict(releases=str(tmp_path / 'releases'),
+    configuration = dict(releases=str(tmp_path / 'releases'),
         trusted_python=True, instances=[dict(binding=binding, native_v69=True,
-            funding={'capital': '50', 'initial_cash': '50'})]), clock=lambda: NOW, revision='a' * 40)
+            funding={'capital': '50', 'initial_cash': '50'})])
+    if managed:
+        configuration['capital_policy'] = dict(currency='USD', budget='50', fee_rate='0')
+    host = StrategyInstances(tmp_path, Account(), configuration, clock=lambda: NOW, revision='a' * 40)
     native = host.native['V69_CAUSAL']
     assert native.runner is host.runner
     assert native.store is host.store
     assert host.store.cash('paper', 'V69_CAUSAL') == 50
     assert set(host.symbols) == set(ASSETS)
+    if managed:
+        policy = host.store.capital_policy
+        assert {symbol for symbol, in host.store.db.execute('SELECT symbol FROM capital_symbols')} == set(ASSETS)
+        policy.pause('paper', 'V69_CAUSAL')
+        with pytest.raises(ValueError, match='paused'):
+            create_alpaca_plan(host.runner.executor, now=NOW, **dict(inputs(),
+                decision=dict(weights=dict.fromkeys(ASSETS, 0), orders=[], state={})))
     host.close()
 
 
