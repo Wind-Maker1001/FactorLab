@@ -316,6 +316,53 @@ def test_market_qualification_callback_does_not_grant_foreign_authority(tmp_path
         binance_load(release, qualify=lambda _: None)
 
 
+def test_native_adoption_preserves_checkpoint_and_does_not_rewind(tmp_path):
+    manifest, release = package(tmp_path)
+    evidence = dict(journal_id='native-ledger', source_code_sha256='b' * 64,
+                    latest_plan_id='original-plan', signal_snapshot='frozen.json')
+    calls = []
+    def verify(m, bound, checkpoint, watermark, proof):
+        assert bound == binding('one')
+        assert checkpoint == {'decisions': 4}
+        assert watermark == 'native:4'
+        assert proof == evidence
+        calls.append(m['package_id'])
+    with closing(DeploymentStore(tmp_path / 'deploy.db')) as store:
+        store.register_instance(binding('one'))
+        with closing(store.for_instance('one')) as view:
+            state = view.adopt_existing(manifest, {'decisions': 4}, 'native:4', evidence, verify=verify)
+            assert state['active'] == manifest['package_id']
+            assert state['switch'] is None
+            assert calls == [manifest['package_id']]
+            strategy = LoadedStrategy.from_strategy_package(release, trusted=True)
+            runtime = InstanceDecisionRuntime(strategy, view, Execution(), allocation={'currency': 'USD'})
+            runtime.decide(event('one'))
+            assert view.checkpoint() == {'decisions': 5}
+            assert view.adopt_existing(manifest, {'decisions': 4}, 'native:4', evidence,
+                                       verify=verify)['checkpoint'] == {'decisions': 5}
+            assert len(calls) == 1
+            with pytest.raises(ValueError, match='identity conflict'):
+                view.adopt_existing(manifest, {}, 'native:4', evidence, verify=verify)
+
+
+def test_native_adoption_verification_failure_is_atomic(tmp_path):
+    manifest, _ = package(tmp_path)
+    evidence = dict(journal_id='native', source_code_sha256='c' * 64)
+    def reject(*_):
+        raise ValueError('host rejected code/journal evidence')
+    with closing(DeploymentStore(tmp_path / 'deploy.db')) as store:
+        store.register_instance(binding('one'))
+        with closing(store.for_instance('one')) as view:
+            with pytest.raises(ValueError, match='host rejected'):
+                view.adopt_existing(manifest, {}, 'native:1', evidence, verify=reject)
+            assert view.snapshot()['active'] is None
+            assert view.pending() is None
+            assert view.db.execute('SELECT count(*) FROM instance_adoptions').fetchone()[0] == 0
+            view.request(manifest, candidate(manifest, 'one'))
+            with pytest.raises(ValueError, match='pristine'):
+                view.adopt_existing(manifest, {}, 'native:1', evidence, verify=lambda *_: None)
+
+
 def test_causal_funding_forecast_and_settlement_are_distinct():
     declaration = spec(data=dict(data_types=['closed_bar', 'funding_forecast', 'funding_settlement'],
                                  history_limit=2, historical_observations=False))
