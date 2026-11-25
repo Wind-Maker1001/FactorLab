@@ -60,6 +60,8 @@ class DeploymentStore:
             PRIMARY KEY(instance_id,version,watermark));
           CREATE TABLE IF NOT EXISTS instance_dispatches(instance_id TEXT NOT NULL, version TEXT NOT NULL,
             watermark TEXT NOT NULL, PRIMARY KEY(instance_id,version,watermark));
+          CREATE TABLE IF NOT EXISTS instance_adoptions(instance_id TEXT PRIMARY KEY,
+            identity TEXT NOT NULL, evidence TEXT NOT NULL);
           CREATE TABLE IF NOT EXISTS instance_runtime_bindings(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,
             binding TEXT NOT NULL, PRIMARY KEY(instance_id,package_id));
           CREATE TABLE IF NOT EXISTS instance_checkpoints(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,
@@ -132,6 +134,52 @@ class DeploymentStore:
             self.db.execute('INSERT INTO strategy_registry VALUES(?,?,?)',
                             (binding['instance_id'], payload, fallback_package_id))
             self.db.execute('INSERT INTO instance_deployment(instance_id) VALUES(?)', (binding['instance_id'],))
+
+    def adopt_existing(self, manifest, checkpoint, watermark, evidence, *, verify):
+        """Adopt an unchanged native deployment after host journal verification.
+
+        This is not promotion: it preserves the existing execution ledger and
+        bypasses no subsequent switch policy. Exact redelivery never rewinds
+        a checkpoint advanced after the original adoption.
+        """
+        from .package import manifest_spec
+        import re
+        if self.legacy or manifest['interface'] != V2:
+            raise ValueError('adoption requires a registered V2 instance')
+        validate_manifest(manifest, qualify=self.qualify)
+        binding = self.binding()
+        manifest_spec(manifest).require_binding(binding)
+        if not isinstance(checkpoint, dict) or not isinstance(evidence, dict):
+            raise ValueError('checkpoint/evidence must be JSON objects')
+        checkpoint, evidence = json_value(checkpoint), json_value(evidence)
+        if (not isinstance(watermark, str) or not watermark
+                or not isinstance(evidence.get('journal_id'), str) or not evidence['journal_id']
+                or not isinstance(evidence.get('source_code_sha256'), str)
+                or not re.fullmatch('[0-9a-f]{64}', evidence['source_code_sha256'])):
+            raise ValueError('native journal, code identity and watermark required')
+        if not callable(verify):
+            raise ValueError('host adoption verifier required')
+        identity = digest(dict(manifest=manifest, binding=binding, checkpoint=checkpoint,
+                               watermark=watermark, evidence=evidence))
+        with self.atomic():
+            prior = self.db.execute('SELECT identity FROM instance_adoptions WHERE instance_id=?',
+                                    (self.instance_id,)).fetchone()
+            if prior:
+                if prior[0] != identity:
+                    raise ValueError('adoption identity conflict')
+                return self.snapshot()
+            state = self.snapshot()
+            if (any(state[k] is not None for k in ('active', 'stable', 'previous', 'watermark'))
+                    or state['checkpoint'] or state['switch'] is not None):
+                raise ValueError('only a pristine instance can adopt an existing deployment')
+            verify(manifest, binding, checkpoint, watermark, evidence)
+            self.db.execute('INSERT OR IGNORE INTO packages VALUES(?,?)',
+                            (manifest['package_id'], encoded(manifest).decode()))
+            self.db.execute('INSERT INTO instance_adoptions VALUES(?,?,?)',
+                            (self.instance_id, identity, encoded(evidence).decode()))
+            self._update('deployment', dict(active=manifest['package_id'], stable=manifest['package_id'],
+                checkpoint=encoded(checkpoint).decode(), watermark=watermark))
+            return self.snapshot()
 
     def for_instance(self, instance_id):
         if self.path == ':memory:':
