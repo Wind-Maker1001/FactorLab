@@ -163,6 +163,24 @@ class PortfolioStore(PaperStore):
             result[symbol] = result.get(symbol, ZERO) + D(quantity)
         return result
 
+    def account_orders(self, account_id):
+        """Return journaled orders with their immutable instance owner."""
+        return [(strategy, decode(json.loads(payload))) for strategy, payload in self.db.execute(
+            'SELECT p.strategy,o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
+            'WHERE p.account=? ORDER BY o.rowid', (account_id,))]
+
+    def available_inventory(self, account_id, strategy_id, symbol, *, exclude_id=None):
+        """Confirmed instance inventory less all unfinished exit reservations."""
+        reserved = ZERO
+        for owner, order in self.account_orders(account_id):
+            snapshot = order['record'].snapshot
+            intent = snapshot.intent
+            if (owner == strategy_id and intent.instrument_id == symbol and intent.side == Side.SELL
+                    and intent.client_order_id != exclude_id
+                    and (snapshot.status not in TERMINAL or order['uncertain'])):
+                reserved += intent.quantity - snapshot.cumulative_filled_quantity
+        return self.holdings(account_id, strategy_id).get(symbol, ZERO) - reserved
+
     def allocation(self, account_id, strategy_id):
         row = self.db.execute('SELECT allocation,capital,initial_cash FROM portfolio_allocations '
                               'WHERE account=? AND strategy=?', (account_id, strategy_id)).fetchone()
@@ -188,7 +206,7 @@ class PortfolioStore(PaperStore):
             intent = snapshot.intent
             amount = order.get('filled_notional', ZERO)
             cash += (amount if intent.side == Side.SELL else -amount) - snapshot.cumulative_fee
-            if (reserve and intent.side == Side.BUY and snapshot.status not in TERMINAL
+            if (reserve and intent.side == Side.BUY and (snapshot.status not in TERMINAL or order['uncertain'])
                     and intent.client_order_id != exclude_id):
                 cash -= ((intent.quantity - snapshot.cumulative_filled_quantity)
                          * order.get('reservation_price', intent.limit_price) * (1 + fee_rate))
@@ -236,6 +254,11 @@ class PortfolioExecutor:
         self.adapter, self.store = adapter, store
         self.quote_currency, self.max_quote_age, self.clock = quote_currency, max_quote_age, clock
         self.capital_policy = store.capital_policy
+
+    def _shared_policy(self, account_id):
+        from .capital import CapitalPolicyMode
+        return (self.capital_policy.is_configured(account_id)
+                and self.capital_policy.mode(account_id) == CapitalPolicyMode.SHARED_SAME_DIRECTION)
 
     def _capital_admission(self, account_id, strategy_id, *, allow_paused=False):
         policy = self.store.db.execute(
@@ -422,8 +445,8 @@ class PortfolioExecutor:
                 return identity
             self._capital_admission(account_id, strategy_id)
             self._recover_account(account_id)
-            exclusive = self.store.db.execute(
-                'SELECT 1 FROM capital_accounts WHERE account=?', (account_id,)).fetchone() is not None
+            configured = self.capital_policy.is_configured(account_id)
+            exclusive = configured and not self._shared_policy(account_id)
             active = self.store.db.execute(
                 'SELECT id,payload FROM portfolio_plans WHERE account=? AND strategy=?',
                 (account_id, strategy_id)).fetchall()
@@ -433,7 +456,7 @@ class PortfolioExecutor:
                     not plan['request'].get('concurrent_direct_orders', False) for plan in unfinished)):
                 raise ValueError('previous rebalance must complete before new targets')
             for symbol in sorted(owned_symbols):
-                if exclusive:
+                if configured:
                     self.capital_policy.claim(account_id, strategy_id, symbol)
                 claims = self.store.db.execute(
                     'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
@@ -444,6 +467,8 @@ class PortfolioExecutor:
                     raise ValueError(f'position ownership conflict: {symbol}')
                 if not any(owner == strategy_id for owner, in claims):
                     quantity, basis = initial.get(symbol, (ZERO, ZERO))
+                    if self._shared_policy(account_id) and quantity != ZERO:
+                        raise ValueError('shared inventory adoption requires an explicit migration receipt')
                     self.store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
                         (account_id, symbol, strategy_id, str(quantity), str(quantity), str(basis)))
             targets = {}
@@ -465,8 +490,8 @@ class PortfolioExecutor:
                 for intent, _ in direct_orders:
                     if intent.side == Side.SELL:
                         sells[intent.instrument_id] = sells.get(intent.instrument_id, ZERO) + intent.quantity
-                holdings = self.store.holdings(account_id, strategy_id)
-                if any(quantity > holdings.get(symbol, ZERO) for symbol, quantity in sells.items()):
+                if any(quantity > self.store.available_inventory(account_id, strategy_id, symbol)
+                       for symbol, quantity in sells.items()):
                     raise ValueError('direct orders exceed owned inventory')
                 for intent, price in direct_orders:
                     if intent.market != self.adapter.read_account().market:
@@ -480,27 +505,37 @@ class PortfolioExecutor:
                 if allocation is not None and self.store.cash(account_id, strategy_id) < ZERO:
                     raise ValueError('direct orders exceed allocated cash')
                 account = self.adapter.read_account()
-                if account.account_id != account_id or not account.reconciled or self._account_uncertain(account_id):
+                if (account.account_id != account_id or not account.reconciled
+                        or self._account_uncertain(account_id, owned_symbols)):
                     raise ValueError('direct reservation requires a matching reconciled account')
                 if (allocation is not None and any(intent.side == Side.BUY for intent, _ in direct_orders)
                         and (self.store.cash(account_id, strategy_id)
                              + self._funding_adjustment(account, strategy_id)) < ZERO):
                     raise ValueError('direct orders exceed capital after funding')
                 balance = next(a for a in account.assets if a.currency == self.quote_currency)
-                broker_ids = {o.intent.client_order_id for o in account.open_orders}
+                broker_ids = set()
                 pending = ZERO
+                for snapshot in account.open_orders:
+                    if snapshot.status in TERMINAL:
+                        continue
+                    broker_ids.add(snapshot.intent.client_order_id)
+                    if snapshot.intent.side == Side.BUY:
+                        if snapshot.intent.limit_price is None:
+                            raise ValueError('unpriced foreign order risk')
+                        pending += ((snapshot.intent.quantity - snapshot.cumulative_filled_quantity)
+                                    * snapshot.intent.limit_price)
                 for payload, in self.store.db.execute(
                         'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
                         'WHERE p.account=?', (account_id,)):
                     order = decode(json.loads(payload))
                     snapshot = order['record'].snapshot
-                    if (snapshot.intent.side == Side.BUY and snapshot.status not in TERMINAL
+                    if (snapshot.intent.side == Side.BUY and (snapshot.status not in TERMINAL or order['uncertain'])
                             and snapshot.intent.client_order_id not in broker_ids):
                         pending += (snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * order['reservation_price']
                 fee_row = self.store.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
                                                 (account_id,)).fetchone()
                 fee_factor = 1 + (ZERO if fee_row is None else D(fee_row[0]))
-                if pending * fee_factor > balance.available:
+                if max(pending * fee_factor, balance.reserved) > balance.total:
                     raise ValueError('direct orders exceed available account cash')
                 self.capital_policy.validate_orders(account, strategy_id)
         return identity
@@ -511,23 +546,49 @@ class PortfolioExecutor:
         with self.store.transaction():
             self._recover_account(account_id)
             account = self.adapter.read_account()
-            if not account.reconciled or self._account_uncertain(account_id):
+            shared = self._shared_policy(account_id)
+            if (account.account_id != account_id or not account.reconciled
+                    or not shared and self._account_uncertain(account_id)):
                 raise ValueError('ownership transfer requires a reconciled account')
             plans = self.store.db.execute(
                 'SELECT payload FROM portfolio_plans WHERE account=? AND strategy=?',
                 (account_id, from_strategy)).fetchall()
             if any(decode(json.loads(payload))['phase'] != 'COMPLETE' for payload, in plans):
                 raise ValueError('ownership transfer requires completed predecessor tasks')
+            registered = {order['record'].snapshot.intent.client_order_id: (owner, order)
+                          for owner, order in self.store.account_orders(account_id)}
             for symbol in symbols:
                 claim = self.store.db.execute(
-                    'SELECT strategy,quantity FROM portfolio_claims WHERE account=? AND symbol=? AND strategy IN (?,?)',
-                    (account_id, symbol, from_strategy, to_strategy)).fetchone()
-                if claim is None or claim[0] not in {from_strategy, to_strategy} or D(claim[1]) != ZERO:
+                    'SELECT quantity FROM portfolio_claims WHERE account=? AND symbol=? AND strategy=?',
+                    (account_id, symbol, from_strategy)).fetchone()
+                if claim is None:
+                    claim = self.store.db.execute(
+                        'SELECT quantity FROM portfolio_claims WHERE account=? AND symbol=? AND strategy=?',
+                        (account_id, symbol, to_strategy)).fetchone()
+                    if claim is None:
+                        raise ValueError('ownership transfer requires an explicitly owned flat sleeve')
+                    continue
+                if D(claim[0]) != ZERO:
                     raise ValueError('ownership transfer requires an explicitly owned flat sleeve')
-                if any(p.instrument_id == symbol and p.quantity != ZERO for p in account.positions):
+                actual = next((p.quantity for p in account.positions if p.instrument_id == symbol), ZERO)
+                if shared:
+                    if actual != self.store.holdings(account_id).get(symbol, ZERO):
+                        raise ValueError('ownership transfer requires reconciled aggregate inventory')
+                elif actual != ZERO:
                     raise ValueError('ownership transfer requires flat official inventory')
-                if any(o.intent.instrument_id == symbol and o.status not in TERMINAL for o in account.open_orders):
-                    raise ValueError('ownership transfer cannot include open broker orders')
+                for snapshot in account.open_orders:
+                    if snapshot.intent.instrument_id != symbol or snapshot.status in TERMINAL:
+                        continue
+                    saved = registered.get(snapshot.intent.client_order_id)
+                    if (not shared or saved is None or saved[0] == from_strategy
+                            or saved[1]['record'].snapshot.intent != snapshot.intent):
+                        raise ValueError('ownership transfer cannot include open broker orders')
+                if any(owner == from_strategy and order['record'].snapshot.intent.instrument_id == symbol
+                       and (order['uncertain'] or order['record'].snapshot.status not in TERMINAL)
+                       for owner, order in registered.values()):
+                    raise ValueError('ownership transfer requires settled predecessor orders')
+            if self.capital_policy.is_configured(account_id):
+                self.capital_policy.transfer_flat_ownership(account_id, from_strategy, to_strategy, symbols)
             for symbol in symbols:
                 predecessor = self.store.db.execute(
                     'SELECT initial_quantity,entry_price FROM portfolio_claims '
@@ -546,14 +607,11 @@ class PortfolioExecutor:
                     'WHERE account=? AND symbol=? AND strategy=?',
                     (account_id, symbol, to_strategy)).fetchone()
                 initial_quantity, entry_price = original if original is not None else ('0', '0')
-                self.store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                self.store.db.execute('INSERT OR IGNORE INTO portfolio_claims VALUES (?,?,?,?,?,?)',
                     (account_id, symbol, to_strategy, '0', initial_quantity, entry_price))
                 self.store.db.execute(
                     'DELETE FROM portfolio_claim_history WHERE account=? AND symbol=? AND strategy=?',
                     (account_id, symbol, to_strategy))
-                self.store.db.execute(
-                    'UPDATE capital_symbols SET strategy=? WHERE account=? AND symbol=? AND strategy=?',
-                    (to_strategy, account_id, symbol, from_strategy))
             identity = 'flat-ownership:' + sha256(dumps(
                 [account_id, from_strategy, to_strategy, sorted(symbols)]).encode()).hexdigest()
             self.store.record_metadata(identity, dict(symbols=sorted(symbols),
@@ -652,10 +710,10 @@ class PortfolioExecutor:
             if not connected:
                 break
             remaining = unrelated
-        exclusive = self.store.db.execute(
-            'SELECT 1 FROM capital_accounts WHERE account=?', (account_id,)).fetchone() is not None
+        configured = self.capital_policy.is_configured(account_id)
+        exclusive = configured and not self._shared_policy(account_id)
         for symbol in children:
-            if exclusive:
+            if configured:
                 self.capital_policy.claim(account_id, strategy_id, symbol)
             claims = self.store.db.execute(
                 'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
@@ -831,10 +889,32 @@ class PortfolioExecutor:
         with self.store.transaction():
             self._recover_account(account_id)
 
-    def _account_uncertain(self, account_id):
-        return any(order['uncertain'] for identity, in self.store.db.execute(
-            'SELECT id FROM portfolio_plans WHERE account=?', (account_id,)).fetchall()
-            for order in self.store.orders(identity))
+    def _account_uncertain(self, account_id, symbols=None):
+        if symbols is not None and not self._shared_policy(account_id):
+            symbols = None
+        return any(order['uncertain'] and (symbols is None
+                   or order['record'].snapshot.intent.instrument_id in symbols)
+                   for _, order in self.store.account_orders(account_id))
+
+    def _order_conflict(self, account, symbol, *, exclude_ids=()):
+        registered = {order['record'].snapshot.intent.client_order_id: order
+                      for _, order in self.store.account_orders(account.account_id)}
+        waiting = False
+        for snapshot in account.open_orders:
+            intent = snapshot.intent
+            if snapshot.status in TERMINAL or intent.instrument_id != symbol:
+                continue
+            saved = registered.get(intent.client_order_id)
+            if saved is None or saved['record'].snapshot.intent != intent:
+                return 'FOREIGN_ORDER_CONFLICT'
+            if intent.client_order_id not in exclude_ids:
+                waiting = True
+        for client_id, order in registered.items():
+            snapshot = order['record'].snapshot
+            if (client_id not in exclude_ids and snapshot.intent.instrument_id == symbol
+                    and (order['uncertain'] or order['attempted'] and snapshot.status not in TERMINAL)):
+                waiting = True
+        return 'SYMBOL_ORDER_PENDING' if waiting else ''
 
     def _available_cash(self, account, quotes, request, now, not_before, *, exclude_id=None):
         balances = [a for a in account.assets if a.currency == self.quote_currency]
@@ -859,11 +939,11 @@ class PortfolioExecutor:
         for (payload,) in self.store.db.execute(
                 'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON o.plan=p.id WHERE p.account=?',
                 (request['account'],)):
-            snapshot = decode(json.loads(payload))['record'].snapshot
+            saved = decode(json.loads(payload))
+            snapshot = saved['record'].snapshot
             intent = snapshot.intent
-            if (snapshot.status not in TERMINAL and intent.side == Side.BUY
+            if ((snapshot.status not in TERMINAL or saved['uncertain']) and intent.side == Side.BUY
                     and intent.client_order_id not in broker_ids and intent.client_order_id != exclude_id):
-                saved = decode(json.loads(payload))
                 committed += ((intent.quantity - snapshot.cumulative_filled_quantity)
                               * saved.get('reservation_price', intent.limit_price))
         fee_row = self.store.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
@@ -935,13 +1015,17 @@ class PortfolioExecutor:
                 plan['targets'][symbol] = owned[symbol] + remaining
                 if plan['targets'][symbol] < ZERO:
                     raise ValueError('strategy order exceeds recovered owned inventory')
-        if any(o['record'].snapshot.status not in TERMINAL or o['uncertain'] for o in orders):
+        own_ids = {row['record'].snapshot.intent.client_order_id for row in orders}
+        pending_symbols = {row['record'].snapshot.intent.instrument_id for row in orders
+                           if row['record'].snapshot.status not in TERMINAL or row['uncertain']}
+        if pending_symbols and not self._shared_policy(request['account']):
             return []
-        foreign_orders = [o for o in account.open_orders if o.status not in TERMINAL
-                          and o.intent.client_order_id not in {
-                              row['record'].snapshot.intent.client_order_id for row in orders}]
         eligible, prices, steps = set(), {}, {}
         for symbol in request['owned']:
+            if symbol in pending_symbols:
+                plan['reasons'][symbol] = 'UNRESOLVED_ORDER_OUTCOME' if self._account_uncertain(
+                    request['account'], {symbol}) else 'SYMBOL_ORDER_PENDING'
+                continue
             position = positions.get(symbol)
             if position is not None and position.quote_currency != self.quote_currency:
                 raise ValueError('position quote currency mismatch')
@@ -949,8 +1033,9 @@ class PortfolioExecutor:
             if actual != total_owned[symbol]:
                 plan['reasons'][symbol] = 'POSITION_OWNERSHIP_MISMATCH'
                 continue
-            if any(o.intent.instrument_id == symbol for o in foreign_orders):
-                plan['reasons'][symbol] = 'FOREIGN_ORDER_CONFLICT'
+            reason = self._order_conflict(account, symbol, exclude_ids=own_ids)
+            if reason:
+                plan['reasons'][symbol] = reason
                 continue
             explicit = request.get('quantity_deltas') is not None
             if explicit and owned[symbol] == plan['targets'][symbol]:
@@ -1029,6 +1114,11 @@ class PortfolioExecutor:
                 price = (price / tick).to_integral_value(rounding=rounding) * tick
             step = rules[symbol].quantity_step
             quantity = (abs(delta) // step) * step
+            if side == Side.SELL:
+                available = self.store.available_inventory(request['account'], request['strategy'], symbol)
+                quantity = min(quantity, (available // step) * step)
+                if quantity < abs(delta):
+                    plan['reasons'][symbol] = 'INSUFFICIENT_INSTANCE_INVENTORY'
             if side == Side.BUY:
                 quantity = min(quantity, (cash / price // rules[symbol].quantity_step)
                                * rules[symbol].quantity_step)
@@ -1106,7 +1196,8 @@ class PortfolioExecutor:
                     dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
                                                 for o in self.store.orders(identity)))
             account = self.adapter.read_account()
-            if self._account_uncertain(plan['request']['account']):
+            if (not self._shared_policy(plan['request']['account'])
+                    and self._account_uncertain(plan['request']['account'])):
                 plan['phase'] = 'WAITING'
                 plan['reasons']['account'] = 'UNRESOLVED_ORDER_OUTCOME'
             elif 'direct_orders' in plan['request']:
@@ -1127,13 +1218,17 @@ class PortfolioExecutor:
             with self.store.transaction():
                 plan = self.store.plan(identity)
                 self._capital_admission(plan['request']['account'], plan['request']['strategy'])
-                if plan.get('stop_reason') or plan.get('corporate_action_blocks') or self._account_uncertain(plan['request']['account']):
+                if plan.get('stop_reason') or plan.get('corporate_action_blocks'):
                     break
                 order = next(o for o in self.store.orders(identity)
                              if o['record'].snapshot.intent.client_order_id == client_id)
                 if order['attempted'] or order['uncertain']:
                     continue
                 intent = order['record'].snapshot.intent
+                if self._account_uncertain(plan['request']['account'], {intent.instrument_id}):
+                    plan['reasons'][intent.instrument_id] = 'UNRESOLVED_ORDER_OUTCOME'
+                    self.store.save_plan(plan)
+                    continue
                 try:
                     event = self.adapter.query_order(client_id)
                 except OrderAbsent:
@@ -1155,12 +1250,12 @@ class PortfolioExecutor:
                         plan['reasons'][intent.instrument_id] = 'ACCOUNT_RECONCILIATION_REQUIRED'
                         self.store.save_plan(plan)
                         continue
-                    if intent.side == Side.SELL and intent.quantity > owned:
+                    if intent.side == Side.SELL and intent.quantity > self.store.available_inventory(
+                            request['account'], request['strategy'], intent.instrument_id, exclude_id=client_id):
                         raise ValueError('sell exceeds owned inventory')
-                    if any(o.status not in TERMINAL and o.intent.instrument_id == intent.instrument_id
-                           and o.intent.client_order_id != client_id
-                           for o in account.open_orders):
-                        plan['reasons'][intent.instrument_id] = 'FOREIGN_ORDER_CONFLICT'
+                    conflict = self._order_conflict(account, intent.instrument_id, exclude_ids={client_id})
+                    if conflict:
+                        plan['reasons'][intent.instrument_id] = conflict
                         self.store.save_plan(plan)
                         continue
                     if intent.side == Side.BUY:
@@ -1186,8 +1281,10 @@ class PortfolioExecutor:
                     plan = self.store.plan(identity)
                     order = next(o for o in self.store.orders(identity)
                                  if o['record'].snapshot.intent.client_order_id == client_id)
-                    if plan.get('stop_reason') or self._account_uncertain(plan['request']['account']):
+                    if plan.get('stop_reason'):
                         break
+                    if self._account_uncertain(plan['request']['account'], {intent.instrument_id}):
+                        continue
                     if order['record'].snapshot.status in TERMINAL or order['uncertain']:
                         continue
                     try:
@@ -1227,9 +1324,11 @@ class PortfolioExecutor:
                         if (not account.reconciled or account.account_id != request['account']
                                 or actual != self.store.holdings(request['account']).get(intent.instrument_id, ZERO)):
                             reason = 'ACCOUNT_RECONCILIATION_REQUIRED'
-                        elif any(o.status not in TERMINAL and o.intent.instrument_id == intent.instrument_id
-                                 for o in account.open_orders):
-                            reason = 'FOREIGN_ORDER_CONFLICT'
+                        elif conflict := self._order_conflict(account, intent.instrument_id, exclude_ids={client_id}):
+                            reason = conflict
+                        elif intent.side == Side.SELL and intent.quantity > self.store.available_inventory(
+                                request['account'], request['strategy'], intent.instrument_id, exclude_id=client_id):
+                            reason = 'INSUFFICIENT_INSTANCE_INVENTORY'
                         elif intent.side == Side.BUY and not reason:
                             cash, reason = self._available_cash(account, quotes, request, submission_now,
                                                                 not_before, exclude_id=client_id)
