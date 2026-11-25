@@ -83,6 +83,38 @@ def test_retained_spinoff_child_does_not_enter_original_signal_or_orders(tmp_pat
     worker.close()
 
 
+def test_original_preparation_uses_allocated_inventory_and_cash_not_other_sleeves(tmp_path, monkeypatch):
+    from dataclasses import replace
+    import factorlab.integrations.alpaca.cloud_execution as module
+    service, _ = inputs()
+    adapter = Adapter()
+    account = replace(adapter.read_account(), positions=(
+        Position('AAPL', D(5), D(100), D(100), 'USD'),
+        Position('CHILD', D(4), D(100), D(100), 'USD')))
+    adapter.read_account = lambda: account
+    class Original:
+        def decide(self, event, checkpoint):
+            assert event['holdings']['AAPL'] == 2.
+            assert event['cash'] == 39800.
+            return dict(weights=dict.fromkeys(ASSETS, 0.), orders=[], state={})
+    monkeypatch.setattr(module, 'V69Strategy', Original)
+    worker = WeeklyExecution(tmp_path, adapter, clock=lambda: NOW)
+    worker.store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+        ('paper', 'AAPL', 'V69_CAUSAL', '2', '2', '100'))
+    worker.runner.executor.allocate(account_id='paper', strategy_id='V69_CAUSAL',
+        allocation_id='v69-original', capital=D(40000), initial_cash=D(39800), official_equity=D(100900))
+    for symbol, quantity in [('AAPL', '3'), ('CHILD', '4')]:
+        worker.store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+            ('paper', symbol, 'other', quantity, quantity, '100'))
+    worker.runner.executor.allocate(account_id='paper', strategy_id='other', allocation_id='other',
+        capital=D(60000), initial_cash=D(59300), official_equity=D(100900))
+    window = weekly_window(service.calendar, NOW)
+    identity = worker.prepare(service, window, NOW, adapter.read_account_details())
+    assert worker.prepare(service, window, NOW, adapter.read_account_details()) == identity
+    assert worker.store.plan(identity)['request']['initial'] == {'AAPL': [D(2), D(100)]}
+    worker.close()
+
+
 def test_original_flat_week_commits_once_and_survives_new_process_state(tmp_path, monkeypatch):
     import factorlab.integrations.alpaca.cloud_execution as module
     service, _ = inputs()

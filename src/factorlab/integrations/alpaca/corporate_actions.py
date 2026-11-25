@@ -20,8 +20,7 @@ class CorporateReceiptJournal:
                 identity = receipt['id']
                 if not identity or not receipt['activity_type']:
                     raise ValueError('official corporate receipt identity required')
-                self.store.record_metadata(self.key(identity),
-                    dict(account=self.account_id, receipt=receipt))
+                self.store.record_metadata(self.key(identity), dict(account=self.account_id, receipt=receipt))
 
     def key(self, identity):
         return 'alpaca-corporate-receipt:' + self.account_id + ':' + identity
@@ -30,26 +29,20 @@ class CorporateReceiptJournal:
         payload = self.store.event_payload(self.key(identity))
         return None if payload is None else decode(json.loads(payload))['receipt']
 
-    def reconcile(self, executor, *, strategy_id, announcements, receipts):
-        """Post settled, unambiguous split facts; retain unresolved rights as evidence.
-
-        Date-only announcements establish a boundary only if all affected order
-        confirmations precede that local date. A crossing order needs individual
-        execution chronology and is not approximated by its update timestamp.
-        """
-        self.ingest(receipts)
-        claims = {symbol: D(quantity) for symbol, quantity in self.store.db.execute(
-            'SELECT symbol,quantity FROM portfolio_claims WHERE account=? AND strategy=?',
-            (self.account_id, strategy_id))}
+    def _pending(self, strategy_id, announcements, receipts, entitlement):
+        claims = self.store.holdings(self.account_id, strategy_id)
         pending, blocked = {}, {}
+        orders = [decode(json.loads(payload)) for payload, in self.store.db.execute(
+            'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
+            'WHERE p.account=?', (self.account_id,))]
         for receipt in receipts:
             symbol = receipt.get('symbol')
             if symbol not in claims:
                 continue
             identity = 'alpaca-nta:' + receipt['id']
             if self.store.db.execute(
-                    'SELECT 1 FROM portfolio_corporate_actions WHERE account=? AND event=?',
-                    (self.account_id, identity)).fetchone():
+                    'SELECT 1 FROM portfolio_corporate_actions WHERE account=? AND strategy=? AND event=?',
+                    (self.account_id, strategy_id, identity)).fetchone():
                 continue
             kind = receipt['activity_type']
             if kind not in {'SSP', 'DIV', 'DIVNRA', 'DIVFEE'}:
@@ -62,8 +55,7 @@ class CorporateReceiptJournal:
             effective_date = date.fromisoformat(receipt['date'][:10])
             evidence = {'receipt': receipt}
             if kind == 'SSP':
-                matches = [row for row in announcements
-                           if row['ca_type'].lower() == 'split'
+                matches = [row for row in announcements if row['ca_type'].lower() == 'split'
                            and row['initiating_symbol'] == symbol
                            and row['ex_date'] == effective_date.isoformat()]
                 if len(matches) != 1:
@@ -79,30 +71,26 @@ class CorporateReceiptJournal:
                     continue
                 ratio = new / old
                 evidence['announcement'] = announcement
-            elif kind in {'DIV', 'DIVNRA'} and D(str(receipt['qty'])) != claims[symbol]:
+            elif kind in {'DIV', 'DIVNRA'} and D(str(receipt['qty'])) != entitlement[symbol]:
                 blocked[symbol] = 'DIVIDEND_ENTITLEMENT_OWNERSHIP_REQUIRED'
                 continue
-            # Without exact fill chronology, refuse dates that overlap any
-            # affected order, including a settled post-action execution.
-            orders = [decode(json.loads(payload)) for payload, in self.store.db.execute(
-                'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
-                'WHERE p.account=? AND p.strategy=?', (self.account_id, strategy_id))]
-            affected = [order for order in orders
-                        if order['record'].snapshot.intent.instrument_id == symbol]
-            if any(order['record'].observed_at.astimezone(ZoneInfo('America/New_York')).date()
-                   >= effective_date for order in affected):
+            # TODO: consume individual official execution chronology to attribute
+            # date-only entitlements when an order crosses the action boundary.
+            affected = [o for o in orders if o['record'].snapshot.intent.instrument_id == symbol]
+            if any(o['record'].observed_at.astimezone(ZoneInfo('America/New_York')).date()
+                   >= effective_date for o in affected):
                 blocked[symbol] = 'CORPORATE_ACTION_EXECUTION_CHRONOLOGY_REQUIRED'
                 continue
-            pending.setdefault(symbol, []).append(dict(id=identity, symbol=symbol,
-                quantity_ratio=ratio, basis_ratio=D(1), cash_flow=cash, evidence=evidence))
-        for symbol, actions in pending.items():
+            pending.setdefault(symbol, []).append(dict(id=identity, symbol=symbol, quantity_ratio=ratio,
+                basis_ratio=D(1), cash_flow=cash, evidence=evidence))
+        return pending, blocked
+
+    def _post(self, executor, pending, blocked):
+        for symbol, by_strategy in pending.items():
             if symbol in blocked:
                 continue
-            # Each symbol is independent; unrelated unresolved rights do not
-            # prevent another symbol's fully evidenced batch from posting.
             try:
-                executor.record_corporate_actions(account_id=self.account_id,
-                    strategy_id=strategy_id, actions=actions)
+                executor.record_account_corporate_actions(account_id=self.account_id, by_strategy=by_strategy)
             except ValueError as error:
                 if str(error) not in {'corporate action does not reconcile to official shares',
                                       'corporate action requires settled original orders',
@@ -110,3 +98,56 @@ class CorporateReceiptJournal:
                     raise
                 blocked[symbol] = str(error)
         return blocked
+
+    def reconcile(self, executor, *, strategy_id, announcements, receipts):
+        self.ingest(receipts)
+        pending, blocked = self._pending(strategy_id, announcements, receipts,
+                                         self.store.holdings(self.account_id, strategy_id))
+        return self._post(executor, {s: {strategy_id: actions} for s, actions in pending.items()}, blocked)
+
+    def reconcile_account(self, executor, *, announcements, receipts):
+        """Allocate one receipt across proven sleeves, then post all owners atomically.
+
+        No post-action current-position guess is allowed: crossing chronology is
+        blocked for the affected security. Last-owner residual preserves the exact
+        official Decimal cash total without multiplying account cash by instances.
+        """
+        self.ingest(receipts)
+        total = self.store.holdings(self.account_id)
+        owners = sorted({owner for owner, in self.store.db.execute(
+            'SELECT DISTINCT strategy FROM portfolio_claims WHERE account=?', (self.account_id,))})
+        grouped, blocked = {}, {}
+        for owner in owners:
+            pending, reasons = self._pending(owner, announcements, receipts, total)
+            blocked.update(reasons)
+            for symbol, actions in pending.items():
+                grouped.setdefault(symbol, {})[owner] = actions
+        for receipt in receipts:
+            symbol, identity = receipt.get('symbol'), 'alpaca-nta:' + receipt['id']
+            pending_owners = {owner for owner, actions in grouped.get(symbol, {}).items()
+                              if any(terms['id'] == identity for terms in actions)}
+            posted_owners = {owner for owner, in self.store.db.execute(
+                'SELECT strategy FROM portfolio_corporate_actions WHERE account=? AND event=?',
+                (self.account_id, identity))}
+            if pending_owners and posted_owners:
+                blocked[symbol] = 'PARTIALLY_POSTED_ACCOUNT_CORPORATE_RECEIPT'
+        for symbol, by_owner in grouped.items():
+            holdings = {owner: self.store.holdings(self.account_id, owner)[symbol] for owner in by_owner}
+            entitlement = sum(holdings.values(), D(0))
+            if len(by_owner) == 1:
+                continue
+            if entitlement <= 0:
+                blocked[symbol] = 'CORPORATE_ENTITLEMENT_OWNERSHIP_REQUIRED'
+                continue
+            assigned = {}
+            ordered = sorted(by_owner)
+            for owner in ordered:
+                for terms in by_owner[owner]:
+                    identity, cash = terms['id'], terms['cash_flow']
+                    amount = (cash - assigned.get(identity, D(0)) if owner == ordered[-1]
+                              else cash * holdings[owner] / entitlement)
+                    terms['cash_flow'] = amount
+                    terms['evidence'] = dict(terms['evidence'], allocation={
+                        'strategy': owner, 'quantity': str(holdings[owner]), 'total_quantity': str(entitlement)})
+                    assigned[identity] = assigned.get(identity, D(0)) + amount
+        return self._post(executor, grouped, blocked)

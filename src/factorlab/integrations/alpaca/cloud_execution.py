@@ -57,11 +57,13 @@ def execution_factors(prepared, announcements, session, *, execution_bars=None):
 
 
 class WeeklyExecution:
-    def __init__(self, root, adapter, *, clock):
+    def __init__(self, root, adapter, *, clock, runner=None):
         self.root, self.adapter, self.clock = root, adapter, clock
-        self.store = PortfolioStore(root / 'portfolio.sqlite3')
-        self.runner = AlpacaPortfolioRunner(adapter, self.store, order_not_found=OrderNotFound,
+        self.owns_store = runner is None
+        self.store = PortfolioStore(root / 'portfolio.sqlite3') if runner is None else runner.store
+        self.runner = (AlpacaPortfolioRunner(adapter, self.store, order_not_found=OrderNotFound,
                                             rejection_error=AlpacaError, clock=clock)
+                       if runner is None else runner)
         self.state = {'state': 'STARTING', 'name': 'v69-original', 'frequency': 'natural-week'}
         self.execution = {'enabled': True, 'state': 'RECOVERING'}
         self.identity = None
@@ -92,13 +94,23 @@ class WeeklyExecution:
             raise PreparationIncomplete('SATURATED_CORPORATE_ACTION_WINDOW')
         after = since + 'T00:00:00Z'
         receipts = self.adapter.read_corporate_activities(after=after)
-        blocked = CorporateReceiptJournal(self.store, account).reconcile(
-            self.runner.executor, strategy_id='V69_CAUSAL',
-            announcements=announcements, receipts=receipts)
+        journal = CorporateReceiptJournal(self.store, account)
+        if self.store.allocation(account, 'V69_CAUSAL') is None:
+            blocked = journal.reconcile(self.runner.executor, strategy_id='V69_CAUSAL',
+                                        announcements=announcements, receipts=receipts)
+        else:
+            blocked = journal.reconcile_account(self.runner.executor,
+                                                announcements=announcements, receipts=receipts)
         affected_blocks = {symbol: reason for symbol, reason in blocked.items() if symbol in ASSETS}
         if affected_blocks:
             raise PreparationIncomplete('CORPORATE_RECEIPTS:' + json.dumps(affected_blocks, sort_keys=True))
         return announcements, receipts, after
+
+    def decide(self, context, checkpoint, *, bridge_inputs):
+        return V69Strategy().decide(context, checkpoint)
+
+    def resume_prepared(self, inputs):
+        return create_alpaca_plan(self.runner.executor, now=self.clock(), **inputs)
 
     def prepare(self, service, window, at, facts, *, corporate_evidence=None):
         session, cutoff = window['execution_session'], window['signal_cutoff']
@@ -112,12 +124,14 @@ class WeeklyExecution:
             snapshot = self.adapter.recover()
             if not snapshot.reconciled:
                 raise PreparationIncomplete('ACCOUNT_NOT_RECONCILED')
-            current = {p.instrument_id: p.quantity for p in snapshot.positions
+            inventory = (self.runner.executor.projection(snapshot, 'V69_CAUSAL')
+                         if self.store.allocation(facts.account_id, 'V69_CAUSAL') is not None else snapshot)
+            current = {p.instrument_id: p.quantity for p in inventory.positions
                        if p.instrument_id in ASSETS and p.quantity}
             original = {symbol: quantity for symbol, quantity in inputs['raw_holdings'].items() if quantity}
             if current != original:
                 raise PreparationIncomplete('FROZEN_PREPARATION_HOLDINGS_CHANGED')
-            return create_alpaca_plan(self.runner.executor, now=self.clock(), **inputs)
+            return self.resume_prepared(inputs)
         sessions = service.calendar.schedule.index
         history_days = sessions[sessions <= pd.Timestamp(cutoff)][-252:]
         if len(history_days) != 252:
@@ -159,11 +173,16 @@ class WeeklyExecution:
         if not snapshot.reconciled:
             raise PreparationIncomplete('ACCOUNT_NOT_RECONCILED')
         facts = self.adapter.read_account_details()
-        holdings = {p.instrument_id: p.quantity for p in snapshot.positions if p.instrument_id in ASSETS}
+        allocation = self.store.allocation(facts.account_id, 'V69_CAUSAL')
+        inventory = (self.runner.executor.projection(snapshot, 'V69_CAUSAL')
+                     if allocation is not None else snapshot)
+        cash = (self.store.cash(facts.account_id, 'V69_CAUSAL', reserve=False)
+                if allocation is not None else facts.cash)
+        holdings = {p.instrument_id: p.quantity for p in inventory.positions if p.instrument_id in ASSETS}
         retained = {symbol: D(quantity) for symbol, quantity in self.store.db.execute(
             'SELECT symbol,quantity FROM portfolio_claims WHERE account=? AND strategy=?',
             (facts.account_id, 'V69_CAUSAL')) if symbol not in ASSETS}
-        external = {p.instrument_id: p.quantity for p in snapshot.positions
+        external = {p.instrument_id: p.quantity for p in inventory.positions
                     if p.instrument_id not in ASSETS and p.quantity}
         if any(retained.get(symbol, D(0)) != external.get(symbol, D(0))
                for symbol in retained.keys() | external.keys()):
@@ -171,9 +190,6 @@ class WeeklyExecution:
         rules = self.rules()
         last = self.last_plan(facts.account_id)
         checkpoint = {} if last is None else last['request']['signal_inputs']['checkpoint']
-        decision = V69Strategy().decide(dict(session=session, calendar=service.calendar,
-            close=prepared.adjusted_close, volume=prepared.adjusted_volume,
-            holdings=to_adjusted_holdings(holdings, factors), cash=float(facts.cash)), checkpoint)
         # Publish the preparation before E03 create; a crash in between reuses
         # its original holdings and decision, never a new data acquisition.
         destination = directory / (session + '-' + uuid4().hex + '.parquet')
@@ -182,11 +198,11 @@ class WeeklyExecution:
         if execution_bars is not None:
             execution_snapshot = destination.with_suffix('.execution.parquet')
             execution_bars.to_parquet(execution_snapshot, index=False)
-        inputs = dict(decision=decision, account_id=facts.account_id, session=session,
+        inputs = dict(account_id=facts.account_id, session=session,
             raw_holdings=holdings, factors=factors,
             quantity_steps={s: r.quantity_step for s, r in rules.items()},
             initial_inventory={p.instrument_id: (p.quantity, p.entry_price)
-                               for p in snapshot.positions if p.instrument_id in ASSETS},
+                               for p in inventory.positions if p.instrument_id in ASSETS},
             signal_provenance={'source': 'ALPACA:iex', 'signal_cutoff': cutoff,
                 'factor_session': session, 'adjustment_basis': prepared.adjustment_basis,
                 'prepared_at': prepared.prepared_at.isoformat(), 'snapshot': destination.name,
@@ -196,6 +212,10 @@ class WeeklyExecution:
                 'corporate_receipt_ids': [row['id'] for row in receipts],
                 'corporate_receipts_after': receipts_after,
                 'action_ids': [row['id'] for row in announcements]})
+        inputs['decision'] = self.decide(dict(session=session, calendar=service.calendar,
+            close=prepared.adjusted_close, volume=prepared.adjusted_volume,
+            holdings=to_adjusted_holdings(holdings, factors), cash=float(cash)), checkpoint,
+            bridge_inputs=inputs)
         temporary = frozen.with_suffix('.tmp')
         temporary.write_text(dumps(inputs) + '\n', encoding='utf-8')
         temporary.replace(frozen)
@@ -263,4 +283,5 @@ class WeeklyExecution:
         self.execution.update(state=result.phase, task=plan['id'], reasons=dict(result.reasons))
 
     def close(self):
-        self.store.close()
+        if self.owns_store:
+            self.store.close()

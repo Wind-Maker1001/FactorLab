@@ -154,6 +154,7 @@ def build_portfolio_report(
     economic_multipliers: Mapping[str, Decimal] | None = None,
     initial_capital: Decimal | None = None,
     corporate_actions: Sequence[Mapping] = (),
+    quote_currency: str = 'USD',
 ) -> PortfolioReport:
     """Report one accounting interval from explicit owned basis and broker facts.
 
@@ -261,8 +262,8 @@ def build_portfolio_report(
 
     actual = {}
     for position in account.positions:
-        if position.quote_currency != "USD":
-            raise ValueError("USD positions required")
+        if position.quote_currency != quote_currency:
+            raise ValueError('positions must use the report settlement currency')
         decimal_value(position.quantity, "actual quantity")
         if position.instrument_id in actual:
             raise ValueError("duplicate official position")
@@ -286,11 +287,11 @@ def build_portfolio_report(
         rows.append(PositionAccounting(symbol, quantity, owned.quantity, quantity - owned.quantity,
                     owned.cost_basis, value, target_weights.get(symbol, ZERO), weight,
                     weight * multiplier, realized.get(symbol, ZERO), owned.quantity * mark - owned.cost_basis))
-    usd = [asset for asset in account.assets if asset.currency == "USD"]
-    if len(usd) > 1:
-        raise ValueError("duplicate USD cash balance")
-    cash = usd[0].total if usd else ZERO
-    available = usd[0].available if usd else ZERO
+    settlement = [asset for asset in account.assets if asset.currency == quote_currency]
+    if len(settlement) > 1:
+        raise ValueError('duplicate settlement cash balance')
+    cash = settlement[0].total if settlement else ZERO
+    available = settlement[0].available if settlement else ZERO
     decimal_value(cash, "official cash")
     decimal_value(available, "available cash")
     if len({item.adjustment_id for item in adjustments}) != len(adjustments):

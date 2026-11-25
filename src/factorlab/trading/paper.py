@@ -163,7 +163,7 @@ class PaperBroker:
         new_quantity = old.quantity + signed
         if intent.reduce_only and (old.quantity * signed >= 0 or abs(signed) > abs(old.quantity)):
             raise ValueError("reduce-only fill would increase risk")
-        if self.state.market == Market.BINANCE_EQUITY:
+        if self.state.market in {Market.BINANCE_EQUITY, Market.ALPACA_US_EQUITY}:
             if new_quantity < 0:
                 raise ValueError("paper equity does not support short sales")
             self.state.cash[currency] -= signed * price + fee
