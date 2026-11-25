@@ -119,6 +119,36 @@ def test_existing_owner_allocation_rebases_cash_without_reapplying_fills(tmp_pat
     store.close()
 
 
+def test_shared_history_preserves_original_capital_baseline_and_rolls_back_mismatch(tmp_path):
+    from factorlab.trading.capital import CapitalPolicyMode
+    broker = Broker(cash=D(5000), positions={'AAPL': D('.1')})
+    store, executor = destination(tmp_path, broker)
+    executor.capital_policy.configure(account_id='paper', currency='USD', budget=D(100),
+        fee_rate=D(0), mode=CapitalPolicyMode.SHARED_SAME_DIRECTION)
+    sleeves = [dict(instance_id=owner, logical_strategy='legacy', allocation_id=owner,
+        capital=D(capital), initial_cash=D(capital) - D(quantity) * D(10),
+        initial_inventory={'AAPL': (D(quantity), D(10))}, owned_symbols=['AAPL'],
+        created_at=NOW, trading_session='original', orders=[], events=[],
+        source_receipt=dict(history_complete=True, order_ids=[], event_ids=[], source=owner))
+        for owner, capital, quantity in [('grid', '7', '.04'), ('portfolio', '20', '.06')]]
+    broker.positions['AAPL'] = D('.11')
+    args = dict(receipt_id='shared-original', account_id='paper', sleeves=sleeves, official_equity=D(5000))
+    with pytest.raises(ValueError, match='official inventory'):
+        executor.adopt_existing(**args)
+    assert store.db.execute('SELECT count(*) FROM portfolio_allocations').fetchone()[0] == 0
+    assert store.db.execute('SELECT count(*) FROM capital_migrations').fetchone()[0] == 0
+    broker.positions['AAPL'] = D('.1')
+    executor.adopt_existing(**args)
+    executor.adopt_existing(**args)
+    assert store.allocation('paper', 'grid')['capital'] == D(7)
+    assert store.allocation('paper', 'portfolio')['capital'] == D(20)
+    assert store.holdings('paper') == {'AAPL': D('.1')}
+    assert store.db.execute('SELECT budget FROM capital_accounts').fetchone() == ('100',)
+    assert broker.cash == D(5000)
+    assert store.db.execute('SELECT count(*) FROM capital_migrations').fetchone()[0] == 1
+    store.close()
+
+
 def test_second_sleeve_failure_rolls_back_first_sleeve_and_original_receipt(tmp_path):
     broker, sleeve = legacy(tmp_path)
     store, executor = destination(tmp_path, broker)
