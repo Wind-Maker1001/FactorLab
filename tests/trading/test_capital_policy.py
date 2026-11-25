@@ -109,6 +109,26 @@ def test_pause_preserves_capital_and_other_strategy_admission(tmp_path):
     store.close()
 
 
+def test_paused_owner_recovers_terminal_release_after_restart(tmp_path):
+    broker, store, executor = setup(tmp_path)
+    broker.mode = 'partial'
+    identity = plan(executor, 'one')
+    run(executor, identity)
+    executor.capital_policy.pause('paper', 'one')
+    broker.cancel_order(broker.posts[0].client_order_id)
+    store.close()
+    store = PortfolioStore(tmp_path / 'capital.sqlite3')
+    executor = PortfolioExecutor(broker, store, clock=lambda: NOW)
+    result = run(executor, identity)
+    assert result.reasons['capital'] == 'STRATEGY_PAUSED'
+    snapshot = executor.capital_policy.snapshot('paper', 'one')
+    assert snapshot.reserved == 0
+    assert snapshot.cash == D(20)
+    assert len(broker.posts) == 1
+    assert executor.capital_policy.snapshot('paper', 'two').cash == D(60)
+    store.close()
+
+
 def test_policy_and_bindings_survive_restart(tmp_path):
     broker, store, executor = setup(tmp_path)
     executor.capital_policy.pause('paper', 'one')
