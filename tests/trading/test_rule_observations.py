@@ -126,7 +126,7 @@ def test_real_mutations_blocked_before_network(monkeypatch, method, path):
     client = FuturesClient(Credentials('offline-key', 'offline-secret', Environment.PRODUCTION),
         environment=Environment.PRODUCTION,
         transport=ReadOnlyNetworkTransport(environment=Environment.PRODUCTION, permit_account_read=True))
-    reason = 'endpoint is not allowlisted' if method == 'GET' else 'NO LIVE MONEY: all real trading requests forbidden'
+    reason = 'endpoint is not allowlisted' if method == 'GET' else 'NO LIVE MONEY: production or unauthorized network write forbidden'
     with pytest.raises(SafetyBlocked, match=reason):
         client.request(method, path)
 

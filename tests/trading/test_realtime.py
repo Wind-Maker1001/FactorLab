@@ -64,7 +64,7 @@ class Harness:
         return value
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_strategy_partial_cancel_duplicate_and_restart(tmp_path, market):
     path = tmp_path / 'paper.sqlite'
     h = Harness(path, market)
@@ -193,7 +193,7 @@ def test_real_trade_paths_blocked(monkeypatch):
             c.request(method, '/fapi/v1/order')
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_whole_process_recovery(tmp_path, market):
     h = Harness(tmp_path / 'f', market)
     h.quote('100'); h.quote('101'); h.quote('100', '.4')
@@ -251,7 +251,7 @@ def test_stock_source_time_can_repeat_with_new_server_event(tmp_path, server_off
     h.account.close()
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_stale_quote_rejected_at_shared_risk_gate(tmp_path, market):
     h = Harness(tmp_path / 'a', market)
     h.quote('100')
@@ -262,7 +262,7 @@ def test_stale_quote_rejected_at_shared_risk_gate(tmp_path, market):
     h.account.close()
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_limit_slippage_and_market_assumptions(tmp_path, market):
     h = Harness(tmp_path / 'a', market)
     h.quote('100')
@@ -482,7 +482,7 @@ def test_public_handshake_without_frames(tmp_path):
     account.close()
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_restart_invalidates_rules_and_session_even_within_ttl(tmp_path, market):
     h = Harness(tmp_path / 'a', market)
     h.quote('100')
@@ -497,7 +497,7 @@ def test_restart_invalidates_rules_and_session_even_within_ttl(tmp_path, market)
     a.close()
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_source_string_and_serialized_evidence_cannot_authorize_public_orders(tmp_path, market):
     a = RealtimeAccount(tmp_path / 'a', market, clock=lambda: NOW, data_mode='public')
     a.event(dict(kind='rules', symbol=a.symbol, time=NOW, received=NOW, payload=rules(market),

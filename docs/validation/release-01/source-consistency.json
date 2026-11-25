@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-11-25T11:52:00.897216+00:00",
+  "deployment_sha": "ea9cbbdd7519e5400df097e5661b0d6c47b6c4da",
+  "method": "SHA-256 of every Git-tracked src file compared to bytes read from both deployed source trees over SSH; generated Python bytecode excluded",
+  "binance": {"files_compared": 480, "mismatches": [], "extra_files": [], "tracked_source_matches": true},
+  "alpaca": {
+    "files_compared": 480,
+    "mismatches": [],
+    "tracked_source_matches": true,
+    "generated_packaging_metadata": [
+      "src/factorlab.egg-info/PKG-INFO",
+      "src/factorlab.egg-info/SOURCES.txt",
+      "src/factorlab.egg-info/dependency_links.txt",
+      "src/factorlab.egg-info/entry_points.txt",
+      "src/factorlab.egg-info/requires.txt",
+      "src/factorlab.egg-info/top_level.txt"
+    ]
+  },
+  "initial_verifier_exit": 1,
+  "initial_verifier_explanation": "Strict extra-file rejection flagged Alpaca installation-generated egg-info; all 480 tracked files matched in both services. No source modification was required.",
+  "installed_runtime_verification": {
+    "binance_import": "release source/src/factorlab/integrations/binance_futures_trading/demo_runtime.py",
+    "alpaca_import": "current/venv/lib/python3.13/site-packages/factorlab/integrations/alpaca/adapter.py",
+    "alpaca_installed_files_matching_source": 474,
+    "alpaca_source_only_git_metadata": [".gitattributes", "universe/.gitattributes", "exploratory/market_structure/.gitattributes", "data/csmar/.gitattributes", "engineering/yhh30m/.gitattributes", "universe/status_candidate/.gitattributes"],
+    "explanation": "All 474 installed package files matched verified release source byte-for-byte. Six .gitattributes files are source-control metadata absent from the installed package."
+  },
+  "running_service_identity": {
+    "binance_pid": 521536,
+    "binance_executable": "/opt/factorlab/releases/ea9cbbdd7519e5400df097e5661b0d6c47b6c4da/venv/bin/python",
+    "alpaca_pid": 521249,
+    "alpaca_current": "/opt/factorlab-alpaca/releases/ea9cbbdd7519e5400df097e5661b0d6c47b6c4da"
+  }
+}

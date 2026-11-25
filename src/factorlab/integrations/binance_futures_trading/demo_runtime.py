@@ -176,12 +176,14 @@ class DemoRuntime:
                 and not campaign['smoke']]
 
     def consumption(self, authorization):
-        """The bound account's history includes smoke, portfolio and configuration POSTs."""
+        # The bound account owns this journal, including smoke and portfolio dispatches.
         count, notional = 0, Decimal(0)
-        for payload, in self.db.execute("SELECT parameters FROM dispatches WHERE method='POST'"):
+        for (payload,) in self.db.execute(
+                "SELECT parameters FROM dispatches WHERE method='POST' UNION ALL "
+                "SELECT parameters FROM dispatch_retry_history WHERE method='POST'"):
             params = json.loads(payload)
             count += 1
-            if 'leverage' not in params:
+            if 'quantity' in params:
                 notional += Decimal(params['quantity']) * Decimal(params['price'])
         return dict(posts=count, submitted_notional=str(notional))
 
@@ -318,6 +320,16 @@ class DemoRuntime:
             self.db.execute("DELETE FROM dispatches WHERE method='DELETE' AND client_id=?", (client_id,))
         self._set('cancel-attempt:' + client_id, facts.observed_at.isoformat())
 
+    def _validate_exit_budget(self, authorization, consumed):
+        reservations = self.db.execute(
+            'SELECT notional FROM exit_budget_reservations WHERE authorization=?',
+            (authorization['id'],)).fetchall()
+        if (consumed['posts'] + len(reservations) > authorization['total_orders']
+                or Decimal(consumed['submitted_notional'])
+                    + sum((Decimal(row[0]) for row in reservations), Decimal(0))
+                    > Decimal(authorization['total_notional'])):
+            raise SafetyBlocked('continuous Demo budget must cover account history and reserved exits; update budget before activation')
+
     def start_continuous(self, binding, *, opening_equity, stop_epoch, total_orders=100,
                          total_notional=Decimal('700'), seconds=10800, orders=4,
                          max_loss=Decimal('1'), prefix=None):
@@ -379,6 +391,8 @@ class DemoRuntime:
             if (consumed['posts'] > total_orders
                     or Decimal(consumed['submitted_notional']) > total_notional):
                 raise SafetyBlocked('new continuous Demo budget is below historical consumption')
+            self._validate_exit_budget(dict(saved, total_orders=total_orders,
+                total_notional=str(total_notional)), consumed)
             origin = next((campaign for (payload,) in self.db.execute('SELECT payload FROM campaigns ORDER BY rowid')
                 if (campaign := json.loads(payload))['journal_id'] == saved['journal_id']), None)
             opening_equity = saved['opening_equity'] if origin is None else origin['opening_equity']
@@ -476,6 +490,7 @@ class DemoRuntime:
             if authorization is None or authorization['state'] != 'RUNNING':
                 raise SafetyBlocked('continuous Demo is not RUNNING')
             self._validate_continuous(binding, authorization)
+            self._validate_exit_budget(authorization, self.consumption(authorization))
             if stop_epoch != self.stop_epoch() or authorization['stop_epoch'] != stop_epoch:
                 raise SafetyBlocked('continuous Demo stopped during recovery')
             funds = facts.usdt()

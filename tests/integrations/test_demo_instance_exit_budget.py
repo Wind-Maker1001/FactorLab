@@ -23,7 +23,9 @@ def test_default_capability_resolves_partial_and_final_exit_from_original_entrie
     binding = dict(account_id=account, instance_id='one', allocation_id='funded', configuration={})
     facts = SimpleNamespace(usdt=lambda: dict(walletBalance=D(5000), unrealizedProfit=D(0)))
     session = SimpleNamespace(controller=controller, gateway=gateway,
-        adapter=SimpleNamespace(account_id=account, facts=facts), _now=now, _instance_receipt_sinks={})
+        adapter=SimpleNamespace(account_id=account, facts=facts), _now=now, _instance_receipt_sinks={},
+        symbol_context=lambda symbol: SimpleNamespace(rules=SimpleNamespace(
+            filters={'MAX_NUM_ORDERS': {'limit': 200}})))
     store.record_metadata('demo:instance:one', dict(binding=binding, symbols=['NVDAUSDT'],
         allocation=dict(budget_usdt=D(7))))
     owners = DemoAllocations(controller)

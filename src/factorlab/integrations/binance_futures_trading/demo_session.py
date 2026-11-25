@@ -171,8 +171,9 @@ class DemoSession:
             {'USDT': balance}, leverage=leverage, max_leverage=leverage)
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
         self.gateway.bind_controller(self.controller)
-        from .demo_symbols import DemoSymbolRegistry
+        from .demo_symbols import DemoSymbolContext, DemoSymbolRegistry
         self.symbols = DemoSymbolRegistry(self.adapter, controller_store)
+        self.symbols.contexts[self.symbol] = DemoSymbolContext(observation, configuration)
         if reconcile_on_open:
             self._recover(initial_facts=facts)
 

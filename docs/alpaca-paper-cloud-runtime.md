@@ -2,7 +2,7 @@
 
 The Paper service is independent of Binance Demo: user `factorlab-alpaca`, code `/opt/factorlab-alpaca/releases/<commit>`, persistent state `/var/lib/factorlab-alpaca-paper`, credential `/etc/factorlab-alpaca-paper/paper-secret.json`, and unit `factorlab-alpaca-paper.service`. Never point it at Binance state or credentials.
 
-The initial deployment is `OBSERVE`: its HTTP transport refuses non-GET requests. It authenticates the official Paper account, REST-recovers account facts, maintains trade_updates and explicit IEX market subscriptions, stores REST bar gap repairs and stream events, and publishes separate account, market, strategy and execution states. No request can target a configurable production trading host. Without `FACTORLAB_ALPACA_EXECUTE_V69=1`, strategy scheduling remains `NOT_ENABLED` and no strategy orders are submitted. The flag selects the original F02 strategy and shared E03 execution journal; it is not a substitute-strategy switch.
+The initial deployment is `OBSERVE`: its HTTP transport refuses non-GET requests. It authenticates the official Paper account, REST-recovers account facts, maintains trade_updates and explicit IEX market subscriptions, stores REST bar gap repairs and stream events, and publishes separate account, market, strategy and execution states. No request can target a configurable production trading host. Without native execution enabled or an explicit instance configuration, strategy scheduling remains `NOT_ENABLED` and no strategy orders are submitted. The flag selects the original F02 strategy and shared E03 execution journal; it is not a substitute-strategy switch.
 
 ## Installation
 
@@ -21,6 +21,47 @@ The calendar comes from the official Paper calendar endpoint. The weekly window 
 Execution-day adjustment factors use matched official raw/all-adjusted completed minute bars; these prices never enter the preceding-session signal matrix. Corporate receipts are retained and reconciled before task recovery on every cycle, including nonfirst sessions, from the earliest owned strategy session so late receipts are not lost at weekly cutoff changes. Unambiguous settled splits and dividends post idempotently; missing allocation or chronology evidence blocks dependent inputs rather than inventing terms. Retained child securities remain outside the eight-symbol tradable universe. `asof` is a symbol-mapping date, not a frozen adjustment-knowledge date.
 
 Cloud synthetic acceptance uses `acceptance --phase open|recover|rotate|replay|cleanup`, the same owner lock, credential and journals. Stop the observer while the transient acceptance unit owns the account. Its campaign is `ALP-E04 CLOUD TEST`; fills are not original v69 signals. Cash reconciliation includes only durable order identities belonging to that campaign, even when the shared strategy report contains predecessor fills.
+
+## Instance execution
+
+Instance allocations are cash-funded sleeves, not independent broker accounts. Register funding only after reconciling official cash and explicitly attributed inventory; the sum of sleeve funding cannot reuse the same account capital. Multiple sleeves may own the same security, but one sleeve cannot sell another's shares. Broker inventory remains the authority for aggregate reconciliation.
+
+Freeze each scheduled event before invoking strategy code. A target quantity is compared with that event's sleeve inventory, never the inventory observed after some children have filled. Package and event identities distinguish successive decisions; replay resumes the existing outbox. An omitted target leaves that security unchanged, while an explicit zero closes the sleeve's position. Direct-order acceptance acknowledges durable intents, not fills. Market-order cash reservations use a separately acquired official execution quote, persisted by instance/package/event/security before outbox creation. Receipt recovery reuses that quote and the original order identity; this execution evidence does not add a quote observation to the strategy's declared signal inputs.
+
+Schedules use official regular sessions. Intraday intervals start at session open and require complete contiguous closed minutes; early-close stubs and overnight gaps do not form bars. Daily and natural-week signals end at the previous official session close. Quotes acquired for execution retain their actual feed and current acquisition time; they do not move the historical signal cutoff.
+
+Account corporate receipts are retained once and economically posted to proven owners together. Cash allocations preserve the exact official total. A receipt whose entitlement crosses unresolved execution chronology blocks that security rather than assigning proceeds from post-action positions.
+
+The generic entrypoint is `run --instances <private-config.json> --feed iex|sip`. It uses the same owner lock and account journals as the legacy entrypoint; do not combine it with `--execute-v69`. Build, install and promote packages through shared strategy management before starting the configured instances. The configuration names the installed release directory, explicitly trusts Python strategy execution, and binds each instance to its allocation:
+
+```json
+{
+  "releases": "/var/lib/factorlab-alpaca-paper/releases",
+  "trusted_python": true,
+  "instances": [{
+    "binding": {
+      "market": "ALPACA_US_EQUITY",
+      "account_id": "<official-paper-account-id>",
+      "strategy_id": "alpaca-balanced",
+      "instance_id": "balanced",
+      "allocation_id": "balanced-usd"
+    },
+    "funding": {"capital": "100", "initial_cash": "100"}
+  }]
+}
+```
+
+To enable exclusive-symbol static account risk policy, add top-level `"capital_policy": {"currency": "USD", "budget": "100", "fee_rate": "0.001"}` with explicitly authorized budget and fee reserve rate. This enables persistent instance bindings, exclusive symbol qualification, scoped pause and shared execution risk limits, including native V69 borrowing the runner. The policy is immutable across restart. Without this configuration the shared-security sleeve behavior above remains unchanged; enabling it rejects existing shared symbol claims.
+
+Funding registration is immutable and does not adopt broker positions. The package's configurable universe and schedule determine historical acquisition and subscriptions. Selecting SIP makes real SIP permission failures visible; it never falls back to IEX. The `alpaca_balanced` example keeps ten percent cash and supports daily or closed intraday schedules.
+
+The original `--execute-v69` entrypoint builds the native wrapper with the release's full `--revision` commit, adopts the existing checkpoint and journal into shared deployment storage, and continues using the original plan constructor. Existing frozen preparations remain authoritative. A native event is frozen before the shared decision receipt can create its plan; interruption between those steps reuses that event rather than acquiring new signal inputs.
+
+To include native V69 beside generic packages, register `native_v69: true` with strategy and instance `V69_CAUSAL` and allocation `v69-original`. It borrows the same account runner and journal. Explicit allocation changes V69's inventory and cash inputs to that sleeve only; other owners' shares and corporate child securities do not enter its signal. Without an allocation, the original entrypoint retains its full-account cash semantics.
+
+Package promotion uses `wait_flat`: cancel and reconcile the instance's original children, then wait for its owned positions to be flat before migrating its checkpoint. It does not liquidate a sleeve automatically. Other instances continue independently. Active-version persistence and activation callbacks are separate durable steps; an interrupted callback is retried before that instance receives another event. Building a native wrapper for a newer code release does not promote it automatically: the original active native package remains selected until shared deployment promotion completes. Native releases are installed under `strategy-releases` and must retain the original V69 declaration.
+
+For an already-traded journal, replace `initial_cash` in funding with `current_cash` and a stable `adoption_receipt_id`. Adoption derives the initial cash baseline from confirmed historical fills, fees and corporate cash, without replaying or modifying those records. Capital must equal the specified current sleeve cash plus its explicitly owned inventory at official marks. Reuse the same adoption receipt on restart; do not register current cash as initial cash.
 
 ## Health and reports
 
