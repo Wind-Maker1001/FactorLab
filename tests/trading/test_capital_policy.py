@@ -165,6 +165,37 @@ def test_paused_owner_recovers_terminal_release_after_restart(tmp_path):
     store.close()
 
 
+def test_public_reconcile_records_paused_fills_and_terminal_release_without_execution(tmp_path):
+    from factorlab.trading.contracts import OrderStatus
+    broker, store, executor = setup(tmp_path)
+    broker.mode = 'partial'
+    identity = plan(executor, 'one')
+    run(executor, identity)
+    child = broker.posts[0]
+    executor.capital_policy.pause('paper', 'one')
+    broker.confirm(child.client_order_id, D(3), OrderStatus.PARTIALLY_FILLED)
+    store.close()
+    store = PortfolioStore(tmp_path / 'capital.sqlite3')
+    executor = PortfolioExecutor(broker, store, clock=lambda: NOW)
+    broker.submit_order = lambda _: pytest.fail('reconcile submitted an order')
+    broker.cancel_order = lambda _: pytest.fail('reconcile canceled an order')
+    executor.reconcile('paper')
+    assert store.holdings('paper', 'one') == {'AAPL': D(3)}
+    assert executor.capital_policy.snapshot('paper', 'one').reserved == D(10)
+    broker.confirm(child.client_order_id, D(3), OrderStatus.CANCELED)
+    executor.reconcile('paper')
+    executor.reconcile('paper')
+    snapshot = executor.capital_policy.snapshot('paper', 'one')
+    assert snapshot.cash == D(10)
+    assert snapshot.reserved == 0
+    assert snapshot.paused
+    assert executor.capital_policy.snapshot('paper', 'two').cash == D(60)
+    assert store.db.execute('SELECT count(*) FROM portfolio_plans').fetchone()[0] == 1
+    assert not store.plan(identity).get('stop_reason')
+    assert len(broker.posts) == 1
+    store.close()
+
+
 def test_policy_and_bindings_survive_restart(tmp_path):
     broker, store, executor = setup(tmp_path)
     executor.capital_policy.pause('paper', 'one')
