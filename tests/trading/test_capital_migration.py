@@ -119,6 +119,21 @@ def test_existing_owner_allocation_rebases_cash_without_reapplying_fills(tmp_pat
     store.close()
 
 
+def test_second_sleeve_failure_rolls_back_first_sleeve_and_original_receipt(tmp_path):
+    broker, sleeve = legacy(tmp_path)
+    store, executor = destination(tmp_path, broker)
+    invalid = dict(sleeve, instance_id='two', allocation_id='two-cash', events=[])
+    with pytest.raises(ValueError, match='identity evidence'):
+        executor.adopt_existing(receipt_id='atomic-batch', account_id='paper',
+            sleeves=[sleeve, invalid], official_equity=D(100))
+    for table in ('portfolio_allocations', 'portfolio_claims', 'portfolio_plans',
+                  'portfolio_orders', 'portfolio_confirmations', 'capital_instances',
+                  'capital_symbols', 'capital_migrations'):
+        assert store.db.execute('SELECT count(*) FROM ' + table).fetchone()[0] == 0
+    assert store.db.execute('SELECT budget FROM capital_accounts').fetchone() == ('100',)
+    store.close()
+
+
 def test_incomplete_confirmation_history_rolls_back_all_allocations_and_claims(tmp_path):
     broker, sleeve = legacy(tmp_path)
     store, executor = destination(tmp_path, broker)

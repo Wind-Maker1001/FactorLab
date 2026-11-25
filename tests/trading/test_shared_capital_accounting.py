@@ -1,6 +1,6 @@
 from dataclasses import replace
 from datetime import timedelta
-from decimal import Decimal as D
+from decimal import Decimal as D, localcontext
 
 import pytest
 
@@ -87,6 +87,40 @@ def margin_facts(quantity='.1'):
                initialMargin='10', entryPrice='100', unrealizedProfit='0')
     return AccountFacts(account_id='paper', observed_at=NOW, source_complete=True,
         assets=(), positions=(row,), risk=(row,), open_orders=(), trades=(), income=(), hedge_mode=False)
+
+
+def test_margin_excludes_open_order_margin_and_rejects_conflicting_official_positions(tmp_path):
+    from factorlab.errors import DataQualityError
+    store = shared_store(tmp_path / 'orders.sqlite3')
+    facts = margin_facts()
+    row = dict(facts.positions[0], initialMargin='15', positionInitialMargin='10',
+               openOrderInitialMargin='5')
+    facts = replace(facts, positions=(row,), open_orders=({'symbol': 'BTCUSDT'},))
+    assert dict(attribute_margin(store, 'paper', facts).amounts) == {'one': D(4), 'two': D(6)}
+    unknown = dict(row)
+    del unknown['positionInitialMargin']
+    assert not attribute_margin(store, 'paper', replace(facts, positions=(unknown,))).complete
+    conflict = dict(facts.risk[0], positionAmt='.2')
+    with pytest.raises(DataQualityError, match='conflicting positions'):
+        attribute_margin(store, 'paper', replace(facts, risk=(conflict,)))
+    store.close()
+
+
+def test_settlement_aggregation_ignores_ambient_decimal_precision(tmp_path):
+    store = shared_store(tmp_path / 'precision.sqlite3')
+    facts = margin_facts()
+    row = dict(facts.positions[0], initialMargin='1234.56789')
+    facts = replace(facts, positions=(row,))
+    when = NOW + timedelta(hours=1)
+    event = replace(payment(when, 'BTCUSDT'), amount=D('-1234.56789'))
+    with localcontext() as context:
+        context.prec = 8
+        margins = attribute_margin(store, 'paper', facts)
+        funding = attribute_funding(store, 'paper', [event], coverage(when), when)
+    assert dict(margins.amounts) == {'one': D('493.827156'), 'two': D('740.740734')}
+    assert sum(value for _, value in funding.amounts) == event.amount
+    assert margins.complete and funding.complete
+    store.close()
 
 
 def test_shared_margin_reconciles_total_not_individual_inventory(tmp_path):
