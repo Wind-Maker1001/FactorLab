@@ -271,6 +271,23 @@ same receipt and stable child IDs. An unfinished dispatch must recover before a 
 requested. `load_strategy(package_id)` is required for nonlegacy deployment
 controllers and returns an isolated `LoadedStrategy` for state migration.
 
+### Native deployment adoption
+
+`view.adopt_existing(manifest, checkpoint, watermark, evidence, *, verify)` adopts
+an unchanged existing native runtime without a switch or position drain. It is
+restricted to a pristine registered V2 instance. The required host verifier is
+called as `verify(manifest, binding, checkpoint, watermark, evidence)` and raises
+if native code, account journal, frozen checkpoint or watermark do not match.
+Evidence is ordinary JSON and requires `journal_id` and a 64-character lowercase
+`source_code_sha256`; adapters may add original plan/snapshot identities. The
+verifier must validate these against host-owned records, not trust the strings.
+
+Adoption and the complete request identity are committed atomically. Exact
+redelivery returns current state without rewinding a checkpoint or rerunning
+verification; changed requests are rejected. A later real version change still
+requires the normal switch saga. The API does not create an account ledger,
+change order IDs, cancel outstanding orders or allocate capital.
+
 The adapter preserves the existing `boot_id`, `quiesce`, `reconcile`, `watermark`,
 `cancel`, `reduce`, `prepare`, `activated` boundary. Every adapter is bound to a
 single instance, and its reconciliation view includes only that instance's
