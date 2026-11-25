@@ -155,6 +155,13 @@ class CapitalPolicy:
             elif selected != self.mode(account_id):
                 self.store.db.execute('UPDATE capital_accounts SET mode=? WHERE account=?',
                                       (selected.value, account_id))
+            existing = set(self.store.db.execute('SELECT symbol,strategy FROM portfolio_claims WHERE account=?',
+                                                 (account_id,)))
+            existing.update((order['record'].snapshot.intent.instrument_id, owner)
+                            for owner, order in self._orders(account_id))
+            for symbol, owner in existing:
+                self._tighten_symbol_limit(account_id, symbol,
+                                           self.limits(account_id, owner).max_instrument_exposure)
 
     def _orders(self, account_id):
         for owner, payload in self.store.db.execute(
@@ -209,7 +216,7 @@ class CapitalPolicy:
         for owner, order in self._orders(account_id):
             snapshot = order['record'].snapshot
             intent = snapshot.intent
-            if intent.instrument_id != symbol or snapshot.status in TERMINAL:
+            if intent.instrument_id != symbol or (snapshot.status in TERMINAL and not order['uncertain']):
                 continue
             quantity = intent.quantity - snapshot.cumulative_filled_quantity
             if not quantity:
@@ -303,15 +310,18 @@ class CapitalPolicy:
             symbols[symbol] = symbols.get(symbol, ZERO) + abs(position.quantity) * position.mark_price
         account_exposure = sum(symbols.values(), ZERO)
         pending, local_ids, reductions = [], set(), {}
+        holdings = {strategy_id: owned}
         for owner, order in self._orders(account_id):
             snapshot = order['record'].snapshot
             intent = snapshot.intent
             symbol = intent.instrument_id
             local_ids.add(intent.client_order_id)
-            if snapshot.status in TERMINAL:
+            if snapshot.status in TERMINAL and not order['uncertain']:
                 continue
             quantity = intent.quantity - snapshot.cumulative_filled_quantity
-            held = self.store.holdings(account_id, owner).get(symbol, ZERO)
+            if owner not in holdings:
+                holdings[owner] = self.store.holdings(account_id, owner)
+            held = holdings[owner].get(symbol, ZERO)
             direction = 1 if intent.side == Side.BUY else -1
             reducing = held * direction < ZERO
             if reducing:
@@ -341,6 +351,8 @@ class CapitalPolicy:
         for symbol, amount, increasing in pending:
             if shared:
                 self._same_direction(account_id, symbol)
+            if not increasing:
+                continue
             reason = exposure_limit_reason(limits, order_notional=amount,
                 instrument_exposure=exposures[symbol], account_exposure=sum(exposures.values(), ZERO))
             if reason != 'APPROVED':
