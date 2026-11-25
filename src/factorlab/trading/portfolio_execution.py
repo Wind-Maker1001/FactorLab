@@ -371,7 +371,8 @@ class PortfolioExecutor:
     def create(self, *, account_id, strategy_id, strategy_version, trading_session,
                weights, owned_symbols, now, initial_inventory=None,
                economic_multipliers=None, rebalance_id=None, initial_capital=None,
-               quantity_deltas=None, signal_inputs=None, direct_orders=None):
+               quantity_deltas=None, signal_inputs=None, direct_orders=None,
+               concurrent_direct_orders=False):
         """Persist a complete target vector before any external order side effect.
 
         initial_inventory maps explicitly adopted symbols to (quantity, basis).
@@ -385,6 +386,8 @@ class PortfolioExecutor:
         original holdings snapshot when replaying the same decision.
         """
         utc(now)
+        if type(concurrent_direct_orders) is not bool or concurrent_direct_orders and direct_orders is None:
+            raise ValueError('concurrent execution requires explicit direct orders')
         owned_symbols = tuple(owned_symbols)
         if not all((account_id, strategy_id, strategy_version, trading_session)):
             raise ValueError('complete rebalance identity required')
@@ -432,6 +435,8 @@ class PortfolioExecutor:
                 if intent.order_type == OrderType.LIMIT and intent.limit_price != reservation_price:
                     raise ValueError('limit reservation must use the original limit price')
             request['direct_orders'] = direct_orders
+        if concurrent_direct_orders:
+            request['concurrent_direct_orders'] = True
         with self.store.transaction():
             previous = self.store.plan(identity)
             if previous:
@@ -445,7 +450,10 @@ class PortfolioExecutor:
             active = self.store.db.execute(
                 'SELECT id,payload FROM portfolio_plans WHERE account=? AND strategy=?',
                 (account_id, strategy_id)).fetchall()
-            if any(decode(json.loads(payload))['phase'] != 'COMPLETE' for _, payload in active):
+            unfinished = [decode(json.loads(payload)) for _, payload in active
+                          if decode(json.loads(payload))['phase'] != 'COMPLETE']
+            if unfinished and (not concurrent_direct_orders or any(
+                    not plan['request'].get('concurrent_direct_orders', False) for plan in unfinished)):
                 raise ValueError('previous rebalance must complete before new targets')
             for symbol in sorted(owned_symbols):
                 if configured:
