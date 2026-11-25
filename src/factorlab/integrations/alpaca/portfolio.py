@@ -102,8 +102,14 @@ class AlpacaPortfolioAdapter:
             cumulative_filled_notional=notional)
 
     def submit_order(self, intent):
+        price = intent.limit_price
+        if price is None:
+            row = self.store.db.execute('SELECT plan FROM portfolio_orders WHERE id=?',
+                                        (intent.client_order_id,)).fetchone()
+            price = next(order['reservation_price'] for order in self.store.orders(row[0])
+                         if order['record'].snapshot.intent.client_order_id == intent.client_order_id)
         try:
-            self.adapter.submit_order(intent, reservation_price=intent.limit_price)
+            self.adapter.submit_order(intent, reservation_price=price)
         except RiskRejected as error:
             return OrderEvent(intent.client_order_id, None, OrderStatus.REJECTED, D(0), None,
                 self.clock(), 'alpaca-local-admission:' + error.decision.reason,
