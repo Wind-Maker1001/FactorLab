@@ -114,7 +114,8 @@ class InstanceDecisionRuntime:
         store.bind_runtime(self.package_id, strategy.binding)
 
     def recover(self):
-        if self.store.pending() is not None or self.store.snapshot()['active'] != self.package_id:
+        if (self.store.pending() is not None or self.store.activation_callback() is not None
+                or self.store.snapshot()['active'] != self.package_id):
             raise ValueError('instance quiesced or runtime version is not active')
         for receipt in self.store.outstanding(self.package_id):
             self.adapter.execute(receipt)
@@ -126,18 +127,21 @@ class InstanceDecisionRuntime:
         if event['binding'] != self.store.binding():
             raise ValueError('event routed to the wrong instance/allocation')
         self.recover()
-        input_identity = identity(event)
+        from .identity import content_identity
+        input_identity = content_identity(event)
         saved = self.store.decision(self.package_id, event['event_id'], input_identity)
         if saved is not None:
             return saved
-        checkpoint = self.store.checkpoint()
+        snapshot = self.store.snapshot()
+        checkpoint = snapshot['checkpoint']
         try:
             decision = self.strategy.decide(event, checkpoint)
         except Exception as error:
             self.store.rollback('STRATEGY_FAILED:' + type(error).__name__, expected_active=self.package_id)
             raise
         receipt = self.store.commit_decision(self.package_id, event['event_id'], input_identity,
-            decision_payload(decision), event=event, expected_checkpoint=checkpoint)
+            decision_payload(decision), event=event, expected_checkpoint=checkpoint,
+            expected_watermark=snapshot['watermark'])
         self.adapter.execute(receipt)
         self.store.acknowledge(receipt)
         return receipt
