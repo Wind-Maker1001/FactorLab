@@ -252,10 +252,12 @@ class FundingSensitiveGrid(GridExecution):
         *args: Any,
         funding_policy: FundingPolicy,
         funding_events: list[tuple[datetime, Decimal, Decimal, str]],
+        use_f11_limit_exit: bool = False,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.funding_policy = funding_policy
+        self.use_f11_limit_exit = bool(use_f11_limit_exit)
         # Pre-sort immutably by UTC timestamp; decision code filters <= obs_utc strictly.
         self._all_funding_events = sorted(funding_events, key=lambda e: e[0])
         self._all_funding_times = [e[0] for e in self._all_funding_events]
@@ -263,20 +265,137 @@ class FundingSensitiveGrid(GridExecution):
         self.last_funding_bps_h = 0.0
         self.entry_time_utc: datetime | None = None
         self.entry_price_dec: Decimal | None = None
+        self.entry_time_unrecoverable: bool = False
         self.gate_events: list[dict[str, Any]] = []
+        self.exit_reasons: list[str] = []
+        self._recorded_exit_reasons: set[str] = set()
+        self.funding_exit_triggers = 0
         self.blocked_hours = 0
         self.total_observed_hours = 0
 
     def _stage(self) -> FundingSensitiveGrid:
         staged = super()._stage()
         staged.gate_events = self.gate_events.copy()
+        staged.exit_reasons = self.exit_reasons.copy()
+        staged._recorded_exit_reasons = self._recorded_exit_reasons.copy()
         return staged
 
+    def _subclass_checkpoint(self) -> dict[str, Any]:
+        """Persist explicit FundingSensitiveGrid decision state in the authoritative checkpoint."""
+        return {
+            "schema_version": 1,
+            "entry_time_utc": self.entry_time_utc.isoformat() if self.entry_time_utc is not None else None,
+            "entry_price_dec": str(self.entry_price_dec) if self.entry_price_dec is not None else None,
+            "entry_time_unrecoverable": bool(self.entry_time_unrecoverable),
+            "buy_blocked": bool(self.buy_blocked),
+            "last_funding_bps_h": float(self.last_funding_bps_h),
+            "exit_reasons": list(self.exit_reasons),
+            "funding_exit_triggers": int(self.funding_exit_triggers),
+            "blocked_hours": int(self.blocked_hours),
+            "total_observed_hours": int(self.total_observed_hours),
+        }
+
+    def _recover_entry_from_authoritative_events(
+        self,
+        broker: Any,
+        store: Any,
+        expected_inventory: Decimal,
+    ) -> tuple[datetime | None, Decimal | None]:
+        """Reconstruct open-lot entry timestamp/price strictly from authoritative Paper fill events.
+
+        Returns ``(None, None)`` if authoritative events cannot reliably explain the current
+        inventory (never fabricates ``now`` or zero age).
+        """
+        if expected_inventory <= ZERO or store is None or broker is None:
+            return None, None
+        filled_by_order: dict[str, Decimal] = {}
+        running_inv = ZERO
+        lot_open_time: datetime | None = None
+        lot_open_price: Decimal | None = None
+        orders_map = broker.state.orders
+        for cursor, ev in store.order_events():
+            prev_q = filled_by_order.get(ev.client_order_id, ZERO)
+            delta = ev.cumulative_filled_quantity - prev_q
+            filled_by_order[ev.client_order_id] = ev.cumulative_filled_quantity
+            if delta <= ZERO:
+                continue
+            rec = orders_map.get(ev.client_order_id)
+            if rec is None or rec.snapshot.intent.instrument_id != self.instrument_id:
+                continue
+            if self._baseline is not None and cursor <= self._baseline:
+                continue
+            side = rec.snapshot.intent.side
+            if side == Side.BUY:
+                if running_inv == ZERO:
+                    lot_open_time = parse_utc(ev.event_time)
+                    lot_open_price = ev.fill_price if ev.fill_price is not None else rec.snapshot.intent.limit_price
+                running_inv += delta
+            else:
+                running_inv = max(ZERO, running_inv - delta)
+                if running_inv == ZERO:
+                    lot_open_time = None
+                    lot_open_price = None
+        if running_inv == expected_inventory and lot_open_time is not None:
+            return lot_open_time, lot_open_price
+        return None, None
+
+    def _restore_subclass_checkpoint(self, state: Any, payload: dict[str, Any], broker: Any, store: Any) -> None:
+        """Restore FundingSensitiveGrid explicit decision state with legacy checkpoint fallback."""
+        sub = payload.get("subclass_state")
+        inv = self.account.inventory if self.account is not None else ZERO
+        if isinstance(sub, dict):
+            raw_t = sub.get("entry_time_utc")
+            raw_p = sub.get("entry_price_dec")
+            self.entry_time_utc = parse_utc(raw_t) if raw_t is not None else None
+            self.entry_price_dec = D(str(raw_p)) if raw_p is not None else None
+            self.entry_time_unrecoverable = bool(sub.get("entry_time_unrecoverable", False))
+            self.buy_blocked = bool(sub.get("buy_blocked", False))
+            self.last_funding_bps_h = float(sub.get("last_funding_bps_h", 0.0))
+            restored_reasons = [str(r) for r in sub.get("exit_reasons", [])]
+            self.exit_reasons = restored_reasons
+            self._recorded_exit_reasons = set(restored_reasons)
+            self.funding_exit_triggers = int(sub.get("funding_exit_triggers", 0))
+            self.blocked_hours = int(sub.get("blocked_hours", 0))
+            self.total_observed_hours = int(sub.get("total_observed_hours", 0))
+            if inv == ZERO:
+                self.entry_time_utc = None
+                self.entry_price_dec = None
+                self.entry_time_unrecoverable = False
+            elif self.entry_time_utc is None:
+                rec_t, rec_p = self._recover_entry_from_authoritative_events(broker, store, inv)
+                if rec_t is not None:
+                    self.entry_time_utc = rec_t
+                    if self.entry_price_dec is None:
+                        self.entry_price_dec = rec_p
+                    self.entry_time_unrecoverable = False
+                else:
+                    self.entry_time_unrecoverable = True
+            return
+
+        # Legacy checkpoint without subclass_state: never fabricate current time or zero age.
+        if inv == ZERO:
+            self.entry_time_utc = None
+            self.entry_price_dec = None
+            self.entry_time_unrecoverable = False
+        else:
+            rec_t, rec_p = self._recover_entry_from_authoritative_events(broker, store, inv)
+            if rec_t is not None:
+                self.entry_time_utc = rec_t
+                self.entry_price_dec = rec_p
+                self.entry_time_unrecoverable = False
+            else:
+                self.entry_time_utc = None
+                self.entry_price_dec = None
+                self.entry_time_unrecoverable = True
+
     def deployment(self) -> dict[str, Any]:
-        return super().deployment() | {
+        extra: dict[str, Any] = {
             "r10_strategy": "B_FUNDING_SENSITIVE_GRID",
             "funding_policy": asdict(self.funding_policy),
         }
+        if self.use_f11_limit_exit:
+            extra["use_f11_limit_exit"] = True
+        return super().deployment() | extra
 
     def _grid_gross_spread_bps(self) -> float:
         if len(self.prices) < 2 or self.prices[0] <= 0:
@@ -321,9 +440,11 @@ class FundingSensitiveGrid(GridExecution):
                 if self.entry_time_utc is None:
                     self.entry_time_utc = parse_utc(record.observed_at)
                     self.entry_price_dec = updated.intent.limit_price or self.price
+                    self.entry_time_unrecoverable = False
             elif account.inventory == ZERO:
                 self.entry_time_utc = None
                 self.entry_price_dec = None
+                self.entry_time_unrecoverable = False
         return super()._accept_confirmation(record, account, defer_decision=defer_decision)
 
     def _observe(self, event, account):
@@ -349,6 +470,18 @@ class FundingSensitiveGrid(GridExecution):
             )
 
         super()._observe(event, account)
+
+        if self.use_f11_limit_exit:
+            if self.closed_by_breakout and self.reason and self.reason not in self._recorded_exit_reasons:
+                self._recorded_exit_reasons.add(self.reason)
+                self.exit_reasons.append(self.reason)
+            elif (
+                self.closed_for_limit_exit
+                and not (D(self.prices[0]) <= self.price <= D(self.prices[-1]))
+                and "BREAKOUT" not in self._recorded_exit_reasons
+            ):
+                self._recorded_exit_reasons.add("BREAKOUT")
+                self.exit_reasons.append("BREAKOUT")
 
         if self.state == "RUNNING":
             # Cancel working BUY orders if funding gate is active.
@@ -395,18 +528,41 @@ class FundingSensitiveGrid(GridExecution):
                 elif p.max_hold_hours is not None and hold_h >= p.max_hold_hours and est_bps_h > 0:
                     exit_reason = "FUNDING_AGE_EXIT"
             if exit_reason is not None:
-                self.gate_events.append(
-                    {
-                        "time": obs_utc.isoformat(),
-                        "action": "EXIT_POSITION",
-                        "reason": exit_reason,
-                        "hold_hours": round(hold_h, 2),
-                        "paid_funding_bps": round(paid_bps, 2),
-                        "est_funding_bps_h": round(est_bps_h, 4),
-                    }
-                )
-                self._risk(exit_reason, exit_position=True)
-                self._settle()
+                if self.use_f11_limit_exit:
+                    if exit_reason not in self._recorded_exit_reasons:
+                        self._recorded_exit_reasons.add(exit_reason)
+                        self.exit_reasons.append(exit_reason)
+                        self.funding_exit_triggers += 1
+                        self.gate_events.append(
+                            {
+                                "time": obs_utc.isoformat(),
+                                "action": "EXIT_POSITION_F11",
+                                "reason": exit_reason,
+                                "already_in_limit_exit": bool(self.closed_for_limit_exit),
+                                "hold_hours": round(hold_h, 2),
+                                "paid_funding_bps": round(paid_bps, 2),
+                                "est_funding_bps_h": round(est_bps_h, 4),
+                            }
+                        )
+                    # Route into the single authoritative F11 reduce-only LIMIT exit lifecycle
+                    # without duplicating sell orders or overwriting an already-active F11 exit.
+                    if not self.closed_for_limit_exit:
+                        self._risk(exit_reason, exit_position=False)
+                        self._settle()
+                else:
+                    self.funding_exit_triggers += 1
+                    self.gate_events.append(
+                        {
+                            "time": obs_utc.isoformat(),
+                            "action": "EXIT_POSITION",
+                            "reason": exit_reason,
+                            "hold_hours": round(hold_h, 2),
+                            "paid_funding_bps": round(paid_bps, 2),
+                            "est_funding_bps_h": round(est_bps_h, 4),
+                        }
+                    )
+                    self._risk(exit_reason, exit_position=True)
+                    self._settle()
 
 
 # ---------------------------------------------------------------------------

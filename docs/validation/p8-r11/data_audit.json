@@ -1,0 +1,120 @@
+{
+  "coverage": {
+    "end_exclusive_utc": "2026-11-23T00:00:00+00:00",
+    "segments": {
+      "r04b_certified": {
+        "bars": 2160,
+        "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+        "end_exclusive_utc": "2026-08-12T00:00:00+00:00",
+        "funding_events": 279,
+        "start_utc": "2026-05-14T00:00:00+00:00"
+      },
+      "r07_and_post_supplemented": {
+        "bars": 2472,
+        "end_exclusive_utc": "2026-11-23T00:00:00+00:00",
+        "loaded": true,
+        "parquet_sha256": "4fefc19d5a14bec97842985ad9af4972665c408ecc4d218cf5fed8e30f9cc2b6",
+        "post_r07_funding_events": 39,
+        "r07_funding_events": 275,
+        "start_utc": "2026-08-12T00:00:00+00:00"
+      }
+    },
+    "start_utc": "2026-05-14T00:00:00+00:00",
+    "total_bars": 4632,
+    "total_days": 193.0
+  },
+  "data_independence_notice": "Reuses certified R10 193-day / 4632-bar / 593-funding dataset for comparable historical re-validation. Does NOT constitute unseen independent OOS qualification evidence.",
+  "data_quality": {
+    "duplicate_timestamps": 0,
+    "invalid_ohlcv": 0,
+    "missing_bars": 0,
+    "r07_close_corroboration": {
+      "checked": true,
+      "exact_100pct_match": true,
+      "expected_bars": 2160,
+      "matched_bars": 2160,
+      "max_abs_close_diff": 0.0
+    },
+    "zero_volume_bars": 0
+  },
+  "execution_model": "UNIFIED_F11_F08_LIFECYCLE_V1",
+  "funding_alignment": {
+    "autocorr_lag1": 0.2602,
+    "autocorr_lag3": 0.1909,
+    "demo_vs_mainnet_comparison": {
+      "available": true,
+      "demo_implied_hourly_bps": 22.9669,
+      "demo_settlement_count": 8,
+      "demo_total_funding_usdt": -0.09763384,
+      "finding": "Official Binance Demo experienced hourly settlements averaging ~22.97 bps/h during weekend US-equity market closure, whereas Binance Mainnet settled every 8h with much smaller rates (mostly 0 bps over the weekend). Therefore funding studies MUST evaluate both actual Mainnet funding AND Demo/high-funding stress regimes separately.",
+      "gen1_window_utc": [
+        "2026-11-21T19:00:00+00:00",
+        "2026-11-22T17:00:00+00:00"
+      ],
+      "mainnet_mean_rate_per_settlement_bps": 0.0,
+      "mainnet_rates_bps": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mainnet_settlement_count": 3
+    },
+    "first_event_utc": "2026-05-14T00:00:00.001000+00:00",
+    "last_event_utc": "2026-11-22T16:00:00.001000+00:00",
+    "max_rate_bps": 12.1652,
+    "mean_rate_bps": 0.7256,
+    "median_rate_bps": 0.0,
+    "min_rate_bps": -18.9305,
+    "p90_rate_bps": 2.4695,
+    "pct_negative": 1.69,
+    "pct_positive": 40.81,
+    "pct_zero": 57.5,
+    "regular_count": 591,
+    "special_count": 2,
+    "total_events_in_range": 593
+  },
+  "instrument_id": "BINANCE:USDM:NVDAUSDT",
+  "interval": "1h",
+  "liquidity_and_capacity": {
+    "grid_order_unit": 0.04,
+    "median_hourly_volume_units": 9906.5,
+    "min_hourly_volume_units": 158,
+    "min_notional_usdt": 5.0,
+    "min_participating_capacity_units": 1.58,
+    "note": "At 1% hourly volume participation, even the 5th percentile hour exceeds the 0.04 unit grid order size; however, in May-Nov 2026 NVDAUSDT traded at 128-243 USDT, so 0.04 units requires 5.1-9.7 USDT collateral, exceeding the Demo 7.00 USDT cap in most historical weeks. Historical replay uses 10.00 USDT 1x risk budget, matching R08 Section 6.1.",
+    "p05_hourly_volume_units": 1072.5,
+    "participation_rate": 0.01
+  },
+  "lookahead_audit": {
+    "funding_settlement_tie_rule": "fill_time < funding_time (grid_funding.position_settlements)",
+    "lookahead_detected": false,
+    "paper_execution_lag": "Orders created on bar t can only fill on bars >= t+1 using bar close",
+    "strategy_b_information_set": "Strictly funding_time <= bar_close_utc; verified by unit test",
+    "strategy_c_information_set": "Strictly bar_close_time <= current_bar_close_utc; sigma_ref frozen on training fold"
+  },
+  "price_and_volatility": {
+    "end_close": 135.74,
+    "full_period_return_pct": -40.7301,
+    "hourly_log_return_vol_pct": 0.4774,
+    "mark_price_klines_basis_post_r07": {
+      "abs_p95_basis_bps": 5.3608,
+      "available": true,
+      "max_abs_basis_bps": 19.5971,
+      "mean_trade_minus_mark_bps": 0.5857,
+      "rows": 312,
+      "window": [
+        "2026-11-10T00:00:00+00:00",
+        "2026-11-23T00:00:00+00:00"
+      ]
+    },
+    "mark_vs_trade_close_at_settlement": {
+      "matched_settlements": 592,
+      "max_abs_diff_bps": 6.8126,
+      "mean_trade_minus_mark_bps": 0.2981,
+      "p95_abs_diff_bps": 2.2159
+    },
+    "max_close": 242.61,
+    "min_close": 126.19,
+    "start_close": 229.02
+  }
+}

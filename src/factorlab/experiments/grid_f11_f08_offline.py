@@ -57,6 +57,72 @@ MODEL_BASELINE = "NO_F11_NO_F08_STRANDED_POSITION_BASELINE"
 MODEL_F11_ONLY = "F11_EXIT_ONLY_NO_ROTATION"
 MODEL_F11_F08 = "F11_F08_FULL_LIFECYCLE"
 
+EXIT_PEAK_MONITORING_METHOD = "EVENT_LEVEL_AUTHORITATIVE_LIFECYCLE"
+_TERMINAL_EXIT_STATUS_NAMES = frozenset({s.value for s in TERMINAL})
+_ACTIVE_EXIT_STATUS_NAMES = frozenset(
+    {
+        "SUBMITTED",
+        "NEW",
+        "ACCEPTED",
+        "OPEN",
+        "PARTIALLY_FILLED",
+        "CANCEL_PENDING",
+        "UNKNOWN",
+    }
+)
+
+
+def reconstruct_exit_order_peak_from_events(
+    transitions: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Independently reconstruct peak simultaneous authoritative exit SELL orders from lifecycle events.
+
+    Counts only orders actually submitted to the authoritative broker/exchange that have not
+    yet reached an authoritative terminal status (``FILLED``, ``CANCELED``, ``REJECTED``,
+    ``EXPIRED``). ``CANCEL_PENDING`` and unresolved ``UNKNOWN`` orders remain active.
+    Local unsubmitted proposals must not enter this event stream.
+    """
+    active_ids: set[str] = set()
+    peak = 0
+    submissions = 0
+    overlap_violations: list[dict[str, Any]] = []
+
+    for idx, tr in enumerate(transitions):
+        oid = str(tr["client_order_id"])
+        status = str(tr["status"]).upper()
+        if status in _TERMINAL_EXIT_STATUS_NAMES:
+            active_ids.discard(oid)
+        elif status in _ACTIVE_EXIT_STATUS_NAMES:
+            if status in {"SUBMITTED", "NEW"} and oid not in active_ids:
+                submissions += 1
+            active_ids.add(oid)
+        else:
+            raise ValueError(f"Unrecognized authoritative exit order status: {status}")
+
+        cur_count = len(active_ids)
+        if cur_count > peak:
+            peak = cur_count
+        if cur_count > 1:
+            overlap_violations.append(
+                {
+                    "seq": int(tr.get("seq", idx + 1)),
+                    "event_time": tr.get("event_time"),
+                    "generation": tr.get("generation"),
+                    "trigger_order_id": oid,
+                    "trigger_status": status,
+                    "active_order_ids": sorted(active_ids),
+                    "active_count": cur_count,
+                }
+            )
+
+    return {
+        "peak_simultaneous_exit_orders": peak,
+        "total_exit_submissions": submissions,
+        "active_exit_orders_at_end": sorted(active_ids),
+        "overlap_violations": overlap_violations,
+        "monitoring_method": EXIT_PEAK_MONITORING_METHOD,
+    }
+
 
 @dataclass(frozen=True)
 class DemoGuardrails:
@@ -126,7 +192,11 @@ class _CampaignPaperBroker(PaperBroker):
         campaign = self.campaign
         campaign["window_posts"] += 1
         campaign["posts"] += 1
-        campaign["notional"] += intent.quantity * intent.limit_price
+        ref_px = intent.limit_price
+        if ref_px is None:
+            quote = self.state.quotes.get(intent.instrument_id)
+            ref_px = quote.price if quote is not None else ZERO
+        campaign["notional"] += intent.quantity * ref_px
         return super().submit_order(intent)
 
 
@@ -281,11 +351,13 @@ def _demo_grid_config(
     fee_rate: Decimal,
     slippage: Decimal,
     order_ttl: int = 100,
+    half_width_pct: float = 0.01,
 ) -> GridConfig:
-    """Construct the exact Demo ±1% single-level GridConfig anchored at ``anchor_price``."""
+    """Construct a single-level GridConfig anchored at ``anchor_price`` with tick-aligned bounds."""
     tick = rules.tick_size
-    lower = _floor_step(anchor_price * D("0.99"), tick)
-    upper = _ceil_step(anchor_price * D("1.01"), tick)
+    hw = D(str(max(0.002, min(0.20, float(half_width_pct)))))
+    lower = _floor_step(anchor_price * (D("1") - hw), tick)
+    upper = _ceil_step(anchor_price * (D("1") + hw), tick)
     if upper <= lower:
         upper = lower + tick
     return GridConfig(
@@ -459,15 +531,25 @@ def run_offline_lifecycle(
     initial_anchor_override: Decimal | None = None,
     order_ttl: int = 100,
     record_hourly_series: bool = False,
+    strategy_id: str = "A_FIXED",
+    funding_policy: Any | None = None,
+    vol_policy: Any | None = None,
+    warmup_closes: list[float] | None = None,
+    causal_funding_events: list[tuple[datetime, Decimal, Decimal, str]] | None = None,
+    defer_rotation_when_entry_blocked: bool = True,
 ) -> dict[str, Any]:
     """Execute the full offline Grid + F11 + F08 + Funding lifecycle over PaperBroker.
 
     All orders, partial fills, cancels, funding settlements, and F08 rotations
     share ONE ``TradingController`` + ``PaperBroker`` + ``PaperStore`` ledger
     and reconcile through ``factorlab.experiments.grid_fifo.attribute_events``.
+    Supports Strategy A (fixed ``GridExecution``), Strategy B (``FundingSensitiveGrid``),
+    and Strategy C (``VolatilityAdaptiveGrid``) over the same authoritative lifecycle.
     """
     if not bars:
         raise ValueError("nonempty bars required")
+    if funding_policy is not None and vol_policy is not None:
+        raise ValueError("funding_policy and vol_policy are mutually exclusive")
     rules = rules or default_demo_rules()
     guardrails = guardrails or DemoGuardrails()
     assumptions = assumptions or execution_profile("IDEAL_LIMIT_FILL")
@@ -483,6 +565,98 @@ def run_offline_lifecycle(
     first_close_price = D(str(bars[0]["close"]))
     initial_book = _synthetic_book(first_close_price, None, rules, assumptions)
     anchor_price = initial_anchor_override if initial_anchor_override is not None else initial_book["ask"]
+
+    if funding_policy is not None or vol_policy is not None:
+        from factorlab.experiments.grid_funding_adaptive import (
+            FundingSensitiveGrid,
+            VolatilityAdaptiveGrid,
+            adaptive_half_width,
+            causal_realized_vol_1h,
+        )
+
+    visible_funding: list[tuple[datetime, Decimal, Decimal, str]] = []
+    if funding_policy is not None:
+        if causal_funding_events is not None:
+            visible_funding = sorted(causal_funding_events, key=lambda e: e[0])
+        elif funding.mode == "historical_events":
+            visible_funding = sorted(funding.events, key=lambda e: e[0])
+
+    def build_generation_grid(
+        *,
+        anchor_px: Decimal,
+        dep_identity: str,
+        init_eq: Decimal,
+        prior_close_history: list[float] | None,
+    ) -> tuple[GridExecution, GridConfig, float]:
+        if vol_policy is not None:
+            wc = (
+                list(prior_close_history)
+                if prior_close_history is not None
+                else (list(warmup_closes or []) + [float(anchor_px)])
+            )
+            cur_vol = causal_realized_vol_1h(wc, vol_policy.vol_window_hours, vol_policy.reference_vol_1h)
+            hw = adaptive_half_width(cur_vol, vol_policy)
+            g_cfg = _demo_grid_config(
+                anchor_px,
+                rules,
+                max_cash_committed=strategy_cap_usdt,
+                fee_rate=assumptions.fee_rate,
+                slippage=assumptions.slippage,
+                order_ttl=order_ttl,
+                half_width_pct=hw,
+            )
+            inst = VolatilityAdaptiveGrid(
+                g_cfg,
+                rules,
+                deployment_id=dep_identity,
+                account_id=account_id,
+                market=Market.BINANCE_USDM,
+                instrument_id=instrument_id,
+                initial_equity=init_eq,
+                fee_rate=assumptions.fee_rate,
+                continuous_capacity=True,
+                vol_policy=vol_policy,
+                warmup_closes=wc,
+            )
+            return inst, g_cfg, hw
+        hw = 0.01
+        g_cfg = _demo_grid_config(
+            anchor_px,
+            rules,
+            max_cash_committed=strategy_cap_usdt,
+            fee_rate=assumptions.fee_rate,
+            slippage=assumptions.slippage,
+            order_ttl=order_ttl,
+            half_width_pct=hw,
+        )
+        if funding_policy is not None:
+            inst = FundingSensitiveGrid(
+                g_cfg,
+                rules,
+                deployment_id=dep_identity,
+                account_id=account_id,
+                market=Market.BINANCE_USDM,
+                instrument_id=instrument_id,
+                initial_equity=init_eq,
+                fee_rate=assumptions.fee_rate,
+                continuous_capacity=True,
+                funding_policy=funding_policy,
+                funding_events=visible_funding,
+                use_f11_limit_exit=guardrails.enable_f11,
+            )
+            return inst, g_cfg, hw
+        inst = GridExecution(
+            g_cfg,
+            rules,
+            deployment_id=dep_identity,
+            account_id=account_id,
+            market=Market.BINANCE_USDM,
+            instrument_id=instrument_id,
+            initial_equity=init_eq,
+            fee_rate=assumptions.fee_rate,
+            continuous_capacity=True,
+        )
+        return inst, g_cfg, hw
 
     now = [bar_close_utc(bars[0])]
     broker = _CampaignPaperBroker(
@@ -503,24 +677,11 @@ def run_offline_lifecycle(
 
         generation = 0
         dep_id = grid_deployment_id(family_prefix, generation)
-        cfg = _demo_grid_config(
-            anchor_price,
-            rules,
-            max_cash_committed=strategy_cap_usdt,
-            fee_rate=assumptions.fee_rate,
-            slippage=assumptions.slippage,
-            order_ttl=order_ttl,
-        )
-        grid = GridExecution(
-            cfg,
-            rules,
-            deployment_id=dep_id,
-            account_id=account_id,
-            market=Market.BINANCE_USDM,
-            instrument_id=instrument_id,
-            initial_equity=opening_wallet,
-            fee_rate=assumptions.fee_rate,
-            continuous_capacity=True,
+        grid, cfg, init_hw = build_generation_grid(
+            anchor_px=anchor_price,
+            dep_identity=dep_id,
+            init_eq=opening_wallet,
+            prior_close_history=None,
         )
 
         # Lifecycle telemetry & state
@@ -541,6 +702,8 @@ def run_offline_lifecycle(
         flat_after_breakout_events = 0
         rotations_completed = 0
         rotations_blocked: list[dict[str, Any]] = []
+        rotation_blocked_bars = 0
+        last_rotation_block_reason: str | None = None
         exit_orders_submitted = 0
         exit_orders_filled = 0
         exit_orders_partial_events = 0
@@ -559,6 +722,46 @@ def run_offline_lifecycle(
         cancel_fill_race_injected = False
         pending_unknown_order_id: str | None = None
         rotated_on_this_bar = False
+        max_simultaneous_exit_orders = 0
+        bar_end_max_simultaneous_exit_orders = 0
+        active_exit_order_ids: set[str] = set()
+        exit_lifecycle_transitions: list[dict[str, Any]] = []
+        exit_transition_seq = 0
+        cumulative_funding_blocked_hours = 0
+
+        def record_exit_transition(
+            order_id: str,
+            status_name: str,
+            *,
+            source: str,
+            event_time: datetime | None = None,
+        ) -> None:
+            nonlocal exit_transition_seq, max_simultaneous_exit_orders
+            norm_status = str(status_name).upper()
+            exit_transition_seq += 1
+            ts_str = (event_time or now[0]).isoformat()
+            exit_lifecycle_transitions.append(
+                {
+                    "seq": exit_transition_seq,
+                    "event_time": ts_str,
+                    "generation": generation,
+                    "client_order_id": order_id,
+                    "status": norm_status,
+                    "source": source,
+                }
+            )
+            if norm_status in _TERMINAL_EXIT_STATUS_NAMES:
+                active_exit_order_ids.discard(order_id)
+            elif norm_status in _ACTIVE_EXIT_STATUS_NAMES:
+                active_exit_order_ids.add(order_id)
+            else:
+                raise ValueError(f"Unrecognized exit transition status: {norm_status}")
+            if len(active_exit_order_ids) > max_simultaneous_exit_orders:
+                max_simultaneous_exit_orders = len(active_exit_order_ids)
+        cumulative_vol_blocked_hours = 0
+        cumulative_adaptive_rebuilds = 0
+        cumulative_funding_exit_triggers = 0
+        all_exit_trigger_reasons: list[str] = []
         generations_log: list[dict[str, Any]] = [
             {
                 "generation": 0,
@@ -566,6 +769,7 @@ def run_offline_lifecycle(
                 "anchor_price": float(anchor_price),
                 "lower": cfg.lower,
                 "upper": cfg.upper,
+                "half_width_pct": round(init_hw * 100.0, 4),
                 "start_bar": 0,
                 "start_time": bars[0]["time"],
             }
@@ -630,17 +834,24 @@ def run_offline_lifecycle(
                 }
             )
             if order_meta[event.client_order_id]["purpose"] == "RISK_EXIT":
+                record_exit_transition(
+                    event.client_order_id,
+                    event.status.value,
+                    source="fill",
+                    event_time=event.event_time,
+                )
                 if event.status == OrderStatus.PARTIALLY_FILLED:
                     exit_orders_partial_events += 1
                 elif event.status == OrderStatus.FILLED:
                     exit_orders_filled += 1
 
-        def submit_order_through_paper(key: str, *, purpose: str, bar_idx: int) -> bool:
+        def submit_order_through_paper(key: str, *, purpose: str, bar_idx: int, ref_price: Decimal | None = None) -> bool:
             if check_loss_halt():
                 return False
             order_snap = grid.orders[key]
             intent = order_snap.intent
-            notional = intent.quantity * intent.limit_price
+            px_for_notional = intent.limit_price if intent.limit_price is not None else (ref_price or ZERO)
+            notional = intent.quantity * px_for_notional
             if broker.global_post_blocked(notional) or broker.window_post_blocked():
                 return False
             if len(controller.account().open_orders) >= guardrails.max_open_orders:
@@ -656,6 +867,9 @@ def run_offline_lifecycle(
                 order_meta.pop(key, None)
                 return False
             order_submitted_bar[key] = bar_idx
+            if purpose == "RISK_EXIT":
+                submitted_status = broker.state.orders[key].snapshot.status.value
+                record_exit_transition(key, submitted_status, source="submit_paper")
             return True
 
         def book_funding_event(amount: Decimal, settlement_time: datetime, mark_price: Decimal, rate: Decimal) -> None:
@@ -732,7 +946,7 @@ def run_offline_lifecycle(
             if candidate is None:
                 return ZERO
             quantity, execution_price = candidate
-            if resting_exit:
+            if resting_exit and order_snap.intent.limit_price is not None:
                 # A resting F11 order executes at its posted limit once the adverse bid reaches it.
                 execution_price = order_snap.intent.limit_price
             event = execute_fill(key, quantity, execution_price)
@@ -761,8 +975,12 @@ def run_offline_lifecycle(
 
             # 0. Reconcile any pending UNKNOWN order from a previous cancel fault
             if pending_unknown_order_id is not None:
+                rec_oid = pending_unknown_order_id
                 grid.reconcile_paper(controller, delivery=grid.delivery + 1)
                 exit_reconcile_recoveries += 1
+                if order_meta.get(rec_oid, {}).get("purpose") == "RISK_EXIT" and rec_oid in broker.state.orders:
+                    rec_status = broker.state.orders[rec_oid].snapshot.status.value
+                    record_exit_transition(rec_oid, rec_status, source="reconcile_paper")
                 pending_unknown_order_id = None
 
             # 1. Accrue on the inventory held between closes before any fills at this close.
@@ -771,7 +989,7 @@ def run_offline_lifecycle(
                 elapsed_seconds = (now[0] - prev_bar_close_ts).total_seconds()
                 elapsed_hours = D(str(elapsed_seconds)) / D("3600")
                 holding_hours += elapsed_hours
-                if grid.closed_by_breakout:
+                if grid.closed_for_limit_exit:
                     paused_with_inventory_hours += elapsed_hours
                 if hourly_rate:
                     rate = hourly_rate * elapsed_hours
@@ -820,8 +1038,8 @@ def run_offline_lifecycle(
             grid.observe_paper(controller, obs, delivery=grid.delivery + 1, observed_at=now[0])
             rotated_on_this_bar = False
 
-            # Track first breakout bar for this generation
-            if grid.closed_by_breakout and not current_breakout_recorded:
+            # Track first breakout/limit-exit bar for this generation
+            if grid.closed_for_limit_exit and not current_breakout_recorded:
                 breakout_events += 1
                 current_breakout_recorded = True
                 breakout_started_bar_idx = bar_idx
@@ -830,14 +1048,17 @@ def run_offline_lifecycle(
             for key, order_snap in prior_orders:
                 if key not in broker.state.orders or broker.state.orders[key].snapshot.status in TERMINAL:
                     continue
-                is_exit = order_meta.get(key, {}).get("purpose") == "RISK_EXIT"
-                if is_exit:
+                is_f11_limit_exit = (
+                    order_meta.get(key, {}).get("purpose") == "RISK_EXIT"
+                    and order_snap.intent.order_type == OrderType.LIMIT
+                )
+                if is_f11_limit_exit:
                     if assumptions.exit_cannot_fill:
                         continue
                     age_bars = bar_idx - order_submitted_bar.get(key, bar_idx)
                     if age_bars < assumptions.exit_fill_delay_bars:
                         continue
-                budget -= match_order(key, order_snap, book, budget, resting_exit=is_exit)
+                budget -= match_order(key, order_snap, book, budget, resting_exit=is_f11_limit_exit)
 
             # 5. Process standard Grid cancellations (e.g., breakout cancel or TTL cancel)
             for key in sorted(grid.cancellations):
@@ -846,19 +1067,28 @@ def run_offline_lifecycle(
                     if key in grid.exit_orders:
                         continue
                     grid.cancel_paper(controller, key, delivery=grid.delivery + 1)
+                    if order_meta.get(key, {}).get("purpose") == "RISK_EXIT":
+                        record_exit_transition(
+                            key, broker.state.orders[key].snapshot.status.value, source="cancel_paper"
+                        )
                     deletes_consumed += 1
                     consumed_delete_ids.add(key)
 
-            # 6. Process normal RUNNING Grid proposals vs F11 Breakout Exit lifecycle
+            # 6. Process normal RUNNING Grid proposals vs F11 Breakout/Funding Exit lifecycle
             check_loss_halt()
-            if not grid.closed_by_breakout:
-                # Normal RUNNING Grid submission (respecting max_open_orders=1 and budgets)
+            if not grid.closed_for_limit_exit:
+                # Normal RUNNING Grid submission (or L0 MARKET exit when enable_f11=False)
                 for key, order_snap in list(grid.orders.items()):
                     if order_snap.status == OrderStatus.NEW:
                         if halted:
                             grid.withdraw_unsubmitted_paper(controller, [key], delivery=grid.delivery + 1)
                             break
-                        submitted = submit_order_through_paper(key, purpose="GRID", bar_idx=bar_idx)
+                        order_purpose = "RISK_EXIT" if grid.state == "EXITING" else "GRID"
+                        submitted = submit_order_through_paper(
+                            key, purpose=order_purpose, bar_idx=bar_idx, ref_price=close
+                        )
+                        if submitted and order_purpose == "RISK_EXIT":
+                            exit_orders_submitted += 1
                         if not submitted and key in grid.orders and grid.orders[key].status == OrderStatus.NEW:
                             # Hold reservation or withdraw if blocked by open-order slot
                             if len(controller.account().open_orders) >= guardrails.max_open_orders:
@@ -924,11 +1154,13 @@ def run_offline_lifecycle(
                             ):
                                 # Pre-cancel price band check already verified in _plan_offline_limit_exit
                                 grid.cancel_exit_paper(controller, sell_key, delivery=grid.delivery + 1)
+                                record_exit_transition(sell_key, "CANCEL_PENDING", source="cancel_exit_paper")
                                 if assumptions.inject_cancel_unknown_once and not cancel_fault_injected:
                                     # Simulate cancel HTTP timeout -> UNKNOWN -> EXIT_RECONCILING (forbids replacement)
                                     cancel_fault_injected = True
                                     exit_cancel_faults += 1
                                     grid.mark_unknown_paper(controller, sell_key, delivery=grid.delivery + 1)
+                                    record_exit_transition(sell_key, OrderStatus.UNKNOWN.value, source="mark_unknown_paper")
                                     pending_unknown_order_id = sell_key
                                 elif assumptions.inject_cancel_fill_race_once and not cancel_fill_race_injected:
                                     # Simulate cancel-fill race: order filled before cancel reached exchange!
@@ -941,6 +1173,11 @@ def run_offline_lifecycle(
                                         record_fill_trade(ev, sell, book["bid"])
                                 else:
                                     grid.cancel_paper(controller, sell_key, delivery=grid.delivery + 1)
+                                    record_exit_transition(
+                                        sell_key,
+                                        broker.state.orders[sell_key].snapshot.status.value,
+                                        source="cancel_paper",
+                                    )
                                     deletes_consumed += 1
                                     consumed_delete_ids.add(sell_key)
                                     exit_reprices += 1
@@ -999,11 +1236,20 @@ def run_offline_lifecycle(
                                     controller, [intent.client_order_id], delivery=grid.delivery + 1
                                 )
 
-            # 7. Check FLAT_CONFIRMED after breakout & F08 Automatic Rotation
+            # Track bar-end open exit count for diagnostic parity alongside event-level peak
+            open_exit_count = sum(
+                1
+                for o in controller.account().open_orders
+                if order_meta.get(o.intent.client_order_id, {}).get("purpose") == "RISK_EXIT"
+            )
+            if open_exit_count > bar_end_max_simultaneous_exit_orders:
+                bar_end_max_simultaneous_exit_orders = open_exit_count
+
+            # 7. Check FLAT_CONFIRMED after breakout/funding-exit & F08 Automatic Rotation
             acct_end = grid.account or project_paper_account(controller, instrument_id)
             check_loss_halt()
             if (
-                grid.closed_by_breakout
+                grid.closed_for_limit_exit
                 and acct_end.inventory == ZERO
                 and acct_end.reconciled
                 and not controller.account().open_orders
@@ -1017,45 +1263,70 @@ def run_offline_lifecycle(
 
                 if guardrails.enable_f08 and bar_idx < len(bars) - 1:
                     if halted:
-                        rotations_blocked.append({"bar_idx": bar_idx, "reason": halt_reason or "HALTED"})
+                        reason_blk = halt_reason or "HALTED"
+                        rotation_blocked_bars += 1
+                        if last_rotation_block_reason != reason_blk:
+                            rotations_blocked.append({"bar_idx": bar_idx, "reason": reason_blk})
+                            last_rotation_block_reason = reason_blk
+                    elif defer_rotation_when_entry_blocked and getattr(grid, "buy_blocked", False):
+                        reason_blk = (
+                            "ROTATION_FUNDING_BLOCKED"
+                            if funding_policy is not None
+                            else "ROTATION_EXTREME_VOL_BLOCKED"
+                        )
+                        rotation_blocked_bars += 1
+                        if last_rotation_block_reason != reason_blk:
+                            rotations_blocked.append({"bar_idx": bar_idx, "reason": reason_blk})
+                            last_rotation_block_reason = reason_blk
                     else:
                         next_anchor = book["ask"]
-                        next_cfg = _demo_grid_config(
-                            next_anchor,
-                            rules,
-                            max_cash_committed=strategy_cap_usdt,
-                            fee_rate=assumptions.fee_rate,
-                            slippage=assumptions.slippage,
-                            order_ttl=order_ttl,
+                        prior_hist = list(getattr(grid, "close_history", [])) if vol_policy is not None else None
+                        next_dep_id = grid_deployment_id(family_prefix, generation + 1)
+                        replacement, next_cfg, next_hw = build_generation_grid(
+                            anchor_px=next_anchor,
+                            dep_identity=next_dep_id,
+                            init_eq=acct_end.equity,
+                            prior_close_history=prior_hist,
                         )
                         entry_notional = rules.quantity_unit * D(str(next_cfg.lower))
                         upper_notional = rules.quantity_unit * max(D(str(next_cfg.upper)), next_anchor)
                         if guardrails.enforce_min_notional_on_exit and entry_notional < guardrails.min_notional:
-                            rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_MIN_NOTIONAL"})
+                            rotation_blocked_bars += 1
+                            if last_rotation_block_reason != "ROTATION_MIN_NOTIONAL":
+                                rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_MIN_NOTIONAL"})
+                                last_rotation_block_reason = "ROTATION_MIN_NOTIONAL"
                         elif guardrails.enforce_max_notional_on_exit and upper_notional > guardrails.max_notional:
-                            rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_MAX_NOTIONAL"})
+                            rotation_blocked_bars += 1
+                            if last_rotation_block_reason != "ROTATION_MAX_NOTIONAL":
+                                rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_MAX_NOTIONAL"})
+                                last_rotation_block_reason = "ROTATION_MAX_NOTIONAL"
                         elif broker.global_post_blocked(entry_notional):
-                            rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_GLOBAL_BUDGET_EXHAUSTED"})
+                            rotation_blocked_bars += 1
+                            if last_rotation_block_reason != "ROTATION_GLOBAL_BUDGET_EXHAUSTED":
+                                rotations_blocked.append({"bar_idx": bar_idx, "reason": "ROTATION_GLOBAL_BUDGET_EXHAUSTED"})
+                                last_rotation_block_reason = "ROTATION_GLOBAL_BUDGET_EXHAUSTED"
                         else:
+                            # Accumulate per-generation strategy telemetry before handing off
+                            if funding_policy is not None:
+                                cumulative_funding_blocked_hours += int(getattr(grid, "blocked_hours", 0))
+                                cumulative_funding_exit_triggers += int(getattr(grid, "funding_exit_triggers", 0))
+                                all_exit_trigger_reasons.extend(getattr(grid, "exit_reasons", []))
+                            elif vol_policy is not None:
+                                cumulative_vol_blocked_hours += int(getattr(grid, "blocked_hours", 0))
+                                cumulative_adaptive_rebuilds += int(getattr(grid, "adaptive_rebuilds", 0))
+                                if grid.reason:
+                                    all_exit_trigger_reasons.append(str(grid.reason))
+                            elif grid.reason:
+                                all_exit_trigger_reasons.append(str(grid.reason))
+
                             generation += 1
-                            next_dep_id = grid_deployment_id(family_prefix, generation)
-                            replacement = GridExecution(
-                                next_cfg,
-                                rules,
-                                deployment_id=next_dep_id,
-                                account_id=account_id,
-                                market=Market.BINANCE_USDM,
-                                instrument_id=instrument_id,
-                                initial_equity=acct_end.equity,
-                                fee_rate=assumptions.fee_rate,
-                                continuous_capacity=True,
-                            )
                             grid.rotate_paper(controller, replacement)
                             grid = replacement
                             rotations_completed += 1
                             dispatched_exits_this_gen = 0
                             current_breakout_recorded = False
                             last_exit_block_reason = None
+                            last_rotation_block_reason = None
                             rotated_on_this_bar = True
                             generations_log.append(
                                 {
@@ -1064,6 +1335,7 @@ def run_offline_lifecycle(
                                     "anchor_price": float(next_anchor),
                                     "lower": next_cfg.lower,
                                     "upper": next_cfg.upper,
+                                    "half_width_pct": round(next_hw * 100.0, 4),
                                     "start_bar": bar_idx + 1,
                                     "start_time": bars[bar_idx + 1]["time"],
                                 }
@@ -1132,8 +1404,21 @@ def run_offline_lifecycle(
         fifo_summary = fifo["summary"]
         residual_check = abs(fifo_summary["reconciliation_residual"])
 
-        # Compute exit delay metrics (include censored ongoing breakout delay if still holding at end)
-        still_stranded_breakout = grid.closed_by_breakout and final_acct.inventory > ZERO
+        # Accumulate final generation strategy telemetry
+        if funding_policy is not None:
+            cumulative_funding_blocked_hours += int(getattr(grid, "blocked_hours", 0))
+            cumulative_funding_exit_triggers += int(getattr(grid, "funding_exit_triggers", 0))
+            all_exit_trigger_reasons.extend(getattr(grid, "exit_reasons", []))
+        elif vol_policy is not None:
+            cumulative_vol_blocked_hours += int(getattr(grid, "blocked_hours", 0))
+            cumulative_adaptive_rebuilds += int(getattr(grid, "adaptive_rebuilds", 0))
+            if grid.reason:
+                all_exit_trigger_reasons.append(str(grid.reason))
+        elif grid.reason:
+            all_exit_trigger_reasons.append(str(grid.reason))
+
+        # Compute exit delay metrics (include censored ongoing breakout/exit delay if still holding at end)
+        still_stranded_breakout = grid.closed_for_limit_exit and final_acct.inventory > ZERO
         censored_delay = (
             (len(bars) - 1 - breakout_started_bar_idx)
             if (still_stranded_breakout and breakout_started_bar_idx is not None)
@@ -1153,6 +1438,41 @@ def run_offline_lifecycle(
         residual_inv = fifo_summary["residual_inventory"]
         loss_fraction = float(-net_pnl / strategy_cap_usdt)
 
+        final_pos = broker.state.positions.get(instrument_id)
+        unrealized_pnl = (
+            final_pos.quantity * (final_close - final_pos.entry_price)
+            if (final_pos is not None and final_pos.quantity > ZERO)
+            else ZERO
+        )
+        realized_pnl_total = net_pnl - unrealized_pnl
+        trade_gross_total = trading_net + fees_total + total_slippage
+        submitted_orders_count = len(broker.state.orders)
+        filled_orders_count = sum(
+            1 for r in broker.state.orders.values() if r.snapshot.cumulative_filled_quantity > ZERO
+        )
+        order_fill_rate = (
+            float(filled_orders_count / submitted_orders_count) if submitted_orders_count > 0 else 0.0
+        )
+        traded_notional_usdt = float(sum(r["trade_notional"] for r in trade_rows)) if trade_rows else 0.0
+        turnover_ratio = traded_notional_usdt / float(strategy_cap_usdt)
+
+        # Quantity-weighted lot holding hours from FIFO matches + open lots
+        by_ev_id = {r["event_id"]: _parse_utc(r["event_time"]) for r in trade_rows}
+        lot_frags: list[tuple[float, float]] = []
+        for m_row in fifo.get("matches", []):
+            h = max(0.0, (by_ev_id[m_row["sell_event_id"]] - by_ev_id[m_row["buy_event_id"]]).total_seconds() / 3600.0)
+            lot_frags.append((float(m_row["quantity"]), h))
+        end_cutoff = bar_close_utc(bars[-1])
+        for lot_row in fifo.get("lots", []):
+            rem = float(lot_row["remaining"])
+            if rem > 0:
+                h = max(0.0, (end_cutoff - by_ev_id[lot_row["event_id"]]).total_seconds() / 3600.0)
+                lot_frags.append((rem, h))
+        tot_lot_q = sum(q for q, _ in lot_frags)
+        mean_lot_holding_hours = (
+            float(sum(q * h for q, h in lot_frags) / tot_lot_q) if tot_lot_q > 0 else 0.0
+        )
+
         # Funding erosion ratio:
         # 1) As fraction of strategy capital basis
         # 2) As fraction of positive trading gross (when realized_trade_gross > 0), else None
@@ -1169,11 +1489,20 @@ def run_offline_lifecycle(
             float(rotations_completed / flat_after_breakout_events) if flat_after_breakout_events > 0 else None
         )
 
+        reconstructed_exit_peak = reconstruct_exit_order_peak_from_events(exit_lifecycle_transitions)
+        if reconstructed_exit_peak["peak_simultaneous_exit_orders"] != max_simultaneous_exit_orders:
+            raise AssertionError(
+                "Incremental exit peak disagrees with event-reconstructed peak: "
+                f"{max_simultaneous_exit_orders} vs {reconstructed_exit_peak['peak_simultaneous_exit_orders']}"
+            )
+
         return {
+            "strategy_id": strategy_id,
             "model_label": guardrails.model_label,
             "execution_profile": assumptions.profile_name,
             "evidence_label": assumptions.evidence_label,
             "funding_label": funding.label,
+            "initial_half_width_pct": round(init_hw * 100.0, 4),
             "bars": len(bars),
             "interval": interval,
             "opening_wallet_usdt": str(opening_wallet),
@@ -1187,7 +1516,10 @@ def run_offline_lifecycle(
             "max_drawdown": float(max_drawdown),
             "max_drawdown_pct": float(max_drawdown * D("100")),
             "realized_trade_gross_usdt": float(realized_trade_gross),
+            "trade_gross_pnl_usdt": float(trade_gross_total),
             "trading_net_usdt": float(trading_net),
+            "realized_pnl_usdt": float(realized_pnl_total),
+            "unrealized_pnl_usdt": float(unrealized_pnl),
             "fees_usdt": float(fees_total),
             "slippage_usdt": float(total_slippage),
             "realized_funding_usdt": float(realized_funding),
@@ -1196,15 +1528,21 @@ def run_offline_lifecycle(
             "funding_erosion_of_gross_pct": funding_erosion_of_gross_pct,
             "grid_cycles": int(fifo_summary["grid_cycles"]),
             "fills_total": len(fill_events),
-            "orders_total": len(broker.state.orders),
+            "orders_total": submitted_orders_count,
+            "submitted_orders": submitted_orders_count,
+            "filled_orders": filled_orders_count,
+            "order_fill_rate": order_fill_rate,
+            "traded_notional_usdt": traded_notional_usdt,
+            "turnover_ratio": turnover_ratio,
             "posts_consumed": broker.campaign["posts"],
             "deletes_consumed": deletes_consumed,
             "submitted_notional_usdt": float(broker.campaign["notional"]),
             "holding_hours": float(holding_hours),
+            "mean_lot_holding_hours": mean_lot_holding_hours,
             "paused_with_inventory_hours": float(paused_with_inventory_hours),
             "residual_inventory": float(residual_inv),
             "residual_notional_usdt": float(residual_inv * final_close),
-            "stranded_at_end": bool(residual_inv > ZERO and grid.closed_by_breakout),
+            "stranded_at_end": bool(residual_inv > ZERO and grid.closed_for_limit_exit),
             "breakout_events": breakout_events,
             "flat_after_breakout_events": flat_after_breakout_events,
             "exit_orders_submitted": exit_orders_submitted,
@@ -1220,6 +1558,7 @@ def run_offline_lifecycle(
             "max_exit_delay_hours": max_exit_delay_hours,
             "rotations_completed": rotations_completed,
             "rotations_blocked_count": len(rotations_blocked),
+            "rotation_blocked_bars": rotation_blocked_bars,
             "rotations_blocked": rotations_blocked,
             "rotation_success_rate": rotation_success_rate,
             "flat_rotation_success_rate": flat_rotation_success_rate,
@@ -1229,6 +1568,15 @@ def run_offline_lifecycle(
             "halt_reason": halt_reason,
             "final_state": grid.state,
             "final_reason": grid.reason,
+            "max_simultaneous_exit_orders": max_simultaneous_exit_orders,
+            "bar_end_max_simultaneous_exit_orders": bar_end_max_simultaneous_exit_orders,
+            "exit_peak_monitoring_method": EXIT_PEAK_MONITORING_METHOD,
+            "exit_overlap_violations": reconstructed_exit_peak["overlap_violations"],
+            "funding_blocked_hours": cumulative_funding_blocked_hours,
+            "vol_blocked_hours": cumulative_vol_blocked_hours,
+            "adaptive_rebuilds": cumulative_adaptive_rebuilds,
+            "funding_exit_triggers": cumulative_funding_exit_triggers,
+            "exit_trigger_reasons": all_exit_trigger_reasons,
             "reconciliation_residual_usdt": str(fifo_summary["reconciliation_residual"]),
             "reconciled_zero_residual": bool(residual_check <= D("1e-7")),
             "hourly_series": hourly_series if record_hourly_series else None,

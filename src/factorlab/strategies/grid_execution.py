@@ -263,10 +263,25 @@ class GridExecution:
     def active(self):
         return list(self.orders.values())
 
+    _BREAKOUT_REASONS = ('BREAKOUT', 'BREAKOUT_REBUILD_INTERVAL')
+    _LIMIT_EXIT_REASONS = (
+        'BREAKOUT',
+        'BREAKOUT_REBUILD_INTERVAL',
+        'FUNDING_SPIKE_EXIT',
+        'FUNDING_EXTREME_EXIT',
+        'FUNDING_AGE_EXIT',
+        'FUNDING_MARGIN_EXHAUSTED',
+    )
+
     @property
     def closed_by_breakout(self):
         """A latched range termination can be replaced once external exposure is settled."""
-        return self.state in ('PAUSED', 'EXITED') and self.reason in ('BREAKOUT', 'BREAKOUT_REBUILD_INTERVAL')
+        return self.state in ('PAUSED', 'EXITED') and self.reason in self._BREAKOUT_REASONS
+
+    @property
+    def closed_for_limit_exit(self):
+        """A latched termination eligible for the unified F11 reduce-only LIMIT exit & F08 rotation."""
+        return self.state in ('PAUSED', 'EXITED') and self.reason in self._LIMIT_EXIT_REASONS
 
     def estimated_cost(self, side, price, quantity):
         """Reserve one minimum-fee execution per quantity step, not one per order."""
@@ -477,8 +492,8 @@ class GridExecution:
 
     def _propose_limit_exit(self, spec, account):
         self._validate_account(account)
-        if not self.closed_by_breakout:
-            raise ValueError('limit exit requires breakout termination')
+        if not self.closed_for_limit_exit:
+            raise ValueError('limit exit requires breakout or funding exit termination')
         if (self.conflict is not None or not account.reconciled
                 or any(o.reconcile_required or o.status == OrderStatus.UNKNOWN for o in self.active)):
             raise ValueError('RECONCILE_REQUIRED')
@@ -509,8 +524,8 @@ class GridExecution:
 
     def _cancel_exit(self, order_id, account):
         self._validate_account(account)
-        if not self.closed_by_breakout:
-            raise ValueError('exit cancel requires breakout termination')
+        if not self.closed_for_limit_exit:
+            raise ValueError('exit cancel requires breakout or funding exit termination')
         if (self.conflict is not None or not account.reconciled
                 or any(o.reconcile_required or o.status == OrderStatus.UNKNOWN for o in self.active)):
             raise ValueError('RECONCILE_REQUIRED')
@@ -695,7 +710,7 @@ class GridExecution:
         else:
             self.records[key], self.orders[key] = record, updated
         self.account = account
-        if (is_exit and updated.status in TERMINAL and self.closed_by_breakout
+        if (is_exit and updated.status in TERMINAL and self.closed_for_limit_exit
                 and not self.active and self.account.inventory == ZERO):
             self.state = 'EXITED'
         reverse = (cancel_requested, level, old.intent.side, delta)
@@ -768,6 +783,14 @@ class GridExecution:
             raise ValueError('Grid checkpoint requires authority reconciliation')
         return saved['revision'], payload
 
+    def _subclass_checkpoint(self):
+        """Optional subclass-specific decision state persisted in the checkpoint payload."""
+        return None
+
+    def _restore_subclass_checkpoint(self, state, payload, broker, store):
+        """Optional subclass hook invoked after base GridExecution fields are restored."""
+        return None
+
     def _write_checkpoint(self, state, cursor, deployment):
         working = {}
         for key, order in self.orders.items():
@@ -779,6 +802,9 @@ class GridExecution:
                        timestamp=self.timestamp.isoformat(), true_ranges=list(self.true_ranges),
                        pending_rebuild=self.pending_rebuild, pending_bar=self.pending_bar, working=working,
                        cancellations=sorted(self.cancellations), expirations=sorted(self.expirations))
+        sub_state = self._subclass_checkpoint()
+        if sub_state is not None:
+            payload['subclass_state'] = sub_state
         self._revision = _fingerprint(payload)
         state.runtime[_CHECKPOINT] = dict(revision=self._revision, checkpoint=payload)
 
@@ -820,6 +846,7 @@ class GridExecution:
                 raise ValueError('Grid checkpoint turnover disagrees with Paper journal')
             staged._turnover = turnover
             staged.account = _project_paper_account(broker, staged.instrument_id, turnover)
+            staged._restore_subclass_checkpoint(broker.state, payload, broker, store)
         self.__dict__ = staged.__dict__
         self._bind_admission(controller)
 
@@ -885,7 +912,7 @@ class GridExecution:
                            or (intent.order_type == OrderType.LIMIT
                                and intent.client_order_id in decision.get('exit_orders', ())
                                and decision['state'] in ('PAUSED', 'EXITED')
-                               and decision['reason'] in ('BREAKOUT', 'BREAKOUT_REBUILD_INTERVAL'))
+                               and decision['reason'] in self._LIMIT_EXIT_REASONS)
                        )
                        and position is not None and ZERO < quantity <= position.quantity)
         if not liquidation:
@@ -957,8 +984,8 @@ class GridExecution:
         """
         if not isinstance(replacement, GridExecution):
             raise ValueError('replacement must be a GridExecution')
-        if not self.closed_by_breakout:
-            raise ValueError('rotation requires a breakout-terminated Grid deployment')
+        if not self.closed_for_limit_exit:
+            raise ValueError('rotation requires a breakout- or exit-terminated Grid deployment')
         if self._revision is None:
             raise ValueError('rotation requires a Paper-bound Grid deployment')
         if replacement.delivery or replacement._revision is not None or replacement.active:
