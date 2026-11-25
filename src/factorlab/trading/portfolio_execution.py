@@ -340,7 +340,8 @@ class PortfolioExecutor:
         cash = self.store.cash(account.account_id, strategy_id, reserve=False)
         positions = tuple(replace(p, quantity=holdings[p.instrument_id]) for p in account.positions
                           if holdings.get(p.instrument_id, ZERO))
-        assets = tuple(replace(a, total=cash, reserved=ZERO) if a.currency == self.quote_currency else a
+        reserved = cash - self.store.cash(account.account_id, strategy_id)
+        assets = tuple(replace(a, total=cash, reserved=reserved) if a.currency == self.quote_currency else a
                        for a in account.assets)
         return replace(account, positions=positions, assets=assets, open_orders=())
 
@@ -452,6 +453,13 @@ class PortfolioExecutor:
             self.store.db.execute('INSERT INTO portfolio_plans VALUES (?,?,?,?,?)',
                 (identity, account_id, strategy_id, trading_session, dumps(plan)))
             if direct_orders is not None:
+                sells = {}
+                for intent, _ in direct_orders:
+                    if intent.side == Side.SELL:
+                        sells[intent.instrument_id] = sells.get(intent.instrument_id, ZERO) + intent.quantity
+                holdings = self.store.holdings(account_id, strategy_id)
+                if any(quantity > holdings.get(symbol, ZERO) for symbol, quantity in sells.items()):
+                    raise ValueError('direct orders exceed owned inventory')
                 for intent, price in direct_orders:
                     if intent.market != self.adapter.read_account().market:
                         raise ValueError('direct order market differs from the account')
@@ -636,15 +644,21 @@ class PortfolioExecutor:
             if not connected:
                 break
             remaining = unrelated
+        exclusive = self.store.db.execute(
+            'SELECT 1 FROM capital_accounts WHERE account=?', (account_id,)).fetchone() is not None
         for symbol in children:
-            claim = self.store.db.execute(
-                'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=? AND strategy=?',
-                (account_id, symbol, strategy_id)).fetchone()
-            if claim is None:
+            if exclusive:
+                self.capital_policy.claim(account_id, strategy_id, symbol)
+            claims = self.store.db.execute(
+                'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
+                (account_id, symbol)).fetchall()
+            if any(owner != strategy_id and (
+                    exclusive or self.store.allocation(account_id, owner) is None
+                    or self.store.allocation(account_id, strategy_id) is None) for owner, in claims):
+                raise ValueError('corporate allocation conflicts with inventory ownership')
+            if not any(owner == strategy_id for owner, in claims):
                 self.store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
                     (account_id, symbol, strategy_id, '0', '0', '0'))
-            elif claim[0] != strategy_id:
-                raise ValueError('corporate allocation conflicts with inventory ownership')
         orders = [decode(json.loads(payload)) for payload, in self.store.db.execute(
             'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
             'WHERE p.account=? AND p.strategy=?', (account_id, strategy_id))]

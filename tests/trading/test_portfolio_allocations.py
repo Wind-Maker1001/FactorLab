@@ -58,6 +58,10 @@ def test_partial_fill_reserves_only_its_sleeve_and_blocks_overlapping_broker_ord
     run(executor, first)
     assert store.cash('paper', 'one') == 0
     assert store.cash('paper', 'two') == D(60)
+    projection = executor.projection(broker.read_account(), 'one')
+    asset = next(asset for asset in projection.assets if asset.currency == 'USD')
+    assert asset.total == asset.reserved == D(20)
+    assert executor.report(first, official_equity=D(100), readonly=True).available_cash == 0
     assert run(executor, second).reasons['AAPL'] == 'FOREIGN_ORDER_CONFLICT'
     executor.cancel(first, broker.posts[0].client_order_id)
     assert store.cash('paper', 'one') == D(20)
@@ -138,6 +142,36 @@ def test_direct_order_cannot_spend_another_sleeves_cash(tmp_path):
     assert store.db.execute('SELECT count(*) FROM portfolio_orders').fetchone()[0] == 0
     assert broker.posts == []
     assert store.cash('paper', 'two') == D(60)
+    store.close()
+
+
+@pytest.mark.parametrize('quantities', [(D(7), D(7)), (D(4), D(6))])
+def test_direct_sell_batch_reserves_only_owned_total_atomically(tmp_path, quantities):
+    from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side
+    broker = Broker(cash=D(0), positions={'AAPL': D(10)})
+    store = PortfolioStore(tmp_path / 'sell.sqlite3')
+    executor = PortfolioExecutor(broker, store, clock=lambda: NOW)
+    initial = executor.create(account_id='paper', strategy_id='one', strategy_version='1',
+        trading_session='2026-11-24', weights={'AAPL': D(1)}, owned_symbols=['AAPL'],
+        initial_inventory={'AAPL': (D(10), D(10))}, now=NOW)
+    run(executor, initial)
+    run(executor, initial)
+    orders = [(OrderIntent(Market.BINANCE_EQUITY, 'AAPL', Side.SELL, OrderType.LIMIT,
+        quantity, D(10), 'sell-' + str(index), time_in_force='GTC'), D(10))
+        for index, quantity in enumerate(quantities)]
+    args = dict(account_id='paper', strategy_id='one', strategy_version='1',
+        trading_session='2026-11-24', weights={}, owned_symbols=['AAPL'], now=NOW,
+        rebalance_id='sell-event', direct_orders=orders)
+    if sum(quantities) > 10:
+        with pytest.raises(ValueError, match='owned inventory'):
+            executor.create(**args)
+        assert store.db.execute('SELECT count(*) FROM portfolio_plans').fetchone()[0] == 1
+        assert store.db.execute('SELECT count(*) FROM portfolio_orders').fetchone()[0] == 0
+    else:
+        identity = executor.create(**args)
+        assert executor.create(**args) == identity
+        assert len(store.orders(identity)) == 2
+    assert broker.posts == []
     store.close()
 
 

@@ -6,6 +6,7 @@ from datetime import timedelta
 import pytest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pandas as pd
 
@@ -122,3 +123,48 @@ def test_real_package_two_asset_execution_and_restart_do_not_repeat_decision_or_
     assert host.state['instances']['balanced']['state'] == 'RUNNING'
     assert len(account.posts) == 2
     host.close()
+
+
+@pytest.mark.parametrize('phase', ['COMPLETE', 'ABANDONED'])
+def test_terminal_original_orders_reconcile_before_receipt_recovery(tmp_path, phase):
+    calls = []
+    plan = {'id': 'old', 'phase': phase}
+    runner = SimpleNamespace(report=lambda identity: calls.append('orders'), store=Mock())
+    runtime = SimpleNamespace(recover=lambda: calls.append('receipts'))
+    instance = AlpacaInstance(tmp_path, {'instance_id': 'owner'}, 'package', None, runtime, runner, None, clock=lambda: NOW)
+    instance.plans = lambda: [plan]
+    assert instance.recover(None, None)
+    assert calls == ['orders', 'receipts']
+
+
+@pytest.mark.parametrize('finished', [False, True])
+def test_open_plan_advances_before_receipt_replay_and_gates_new_event(tmp_path, finished):
+    calls = []
+    plan = dict(id='old', phase='EXECUTING', request=dict(session=str(NOW.date()), owned=['SPY']))
+    store = Mock()
+    store.plan.return_value = plan
+    def advance(*args, **kwargs):
+        calls.append('advance')
+        if finished:
+            plan['phase'] = 'COMPLETE'
+    runner = SimpleNamespace(store=store, report=lambda _: calls.append('orders'), run_once=advance)
+    runtime = SimpleNamespace(recover=lambda: calls.append('receipts'))
+    assets = Mock()
+    data = SimpleNamespace(assets=assets, quotes=lambda *args, **kwargs:
+        {'SPY': SimpleNamespace(ask=D('.1234'), valid=True)})
+    spec = SimpleNamespace(execution={'fractional_quantities': False})
+    instance = AlpacaInstance(tmp_path, {'instance_id': 'owner'}, 'package', spec, runtime, runner, data, clock=lambda: NOW)
+    instance.plans = lambda: [plan]
+    assert instance.recover(None, pd.Timestamp(NOW)) is finished
+    assert calls == ['orders', 'advance'] + (['receipts'] if finished else [])
+    assets.rules.assert_called_once_with(['SPY'], prices={'SPY': D('.1234')}, fractional_quantities=False)
+
+
+def test_subdollar_rules_preserve_whole_share_package_restriction(tmp_path):
+    with closing(PortfolioStore(tmp_path / 'rules.sqlite3')) as store:
+        assets = StrategyAssets(Account(), store, clock=lambda: NOW)
+        rule = assets.rules(['SPY'], prices={'SPY': D('.1234')}, fractional_quantities=False)['SPY']
+        assert rule.price_tick == D('.0001')
+        assert rule.quantity_step == D(1)
+        fractional = assets.rules(['SPY'], prices={'SPY': D('.1234')}, fractional_quantities=True)['SPY']
+        assert fractional.quantity_step == D('.000000001')

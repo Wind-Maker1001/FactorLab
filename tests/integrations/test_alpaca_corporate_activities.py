@@ -21,7 +21,10 @@ def test_nontrade_activity_pagination_preserves_filters_and_dividend_eligibility
 
     def request(method, path, *, params):
         calls.append((method, path, dict(params)))
-        return first if 'page_token' not in params else [dividend]
+        assert 'activity_types' not in params
+        return first if 'page_token' not in params else [
+            dict(id='fill', activity_type='FILL'), dividend,
+            dict(id='cash', activity_type='CSD')]
 
     adapter = object.__new__(AlpacaAdapter)
     adapter.http = SimpleNamespace(request=request)
@@ -32,7 +35,7 @@ def test_nontrade_activity_pagination_preserves_filters_and_dividend_eligibility
     assert calls[1][2]['page_token'] == '99'
     for _, _, params in calls:
         assert params['after'] == '2026-11-23T00:00:00Z'
-        assert params['activity_types'] == 'DIV,DIVNRA,DIVFEE,SSP,SSO,REORG'
+        assert 'activity_types' not in params
         assert params['direction'] == 'asc'
 
 

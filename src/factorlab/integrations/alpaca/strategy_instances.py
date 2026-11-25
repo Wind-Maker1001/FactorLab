@@ -161,6 +161,7 @@ class StrategyInstances:
                 self.state['instances'][owner] = dict(instance.state)
                 continue
             view, controller = self.views[owner], self.controllers[owner]
+            instance.runtime.adapter.bind_market(service, instance.data)
             if view.pending() is not None or view.activation_callback() is not None:
                 for receipt in view.outstanding(instance.package_id):
                     instance.runtime.adapter.execute(receipt)
@@ -175,6 +176,7 @@ class StrategyInstances:
                     self._bind(owner, snapshot['active'], account)
                     instance = self.instances[owner]
                     controller.adapter.instance = instance
+                    instance.runtime.adapter.bind_market(service, instance.data)
             required_feed = instance.spec.data.get('feed')
             if required_feed is not None and required_feed != service.client.feed:
                 raise ValueError('strategy requires its declared real market-data feed')

@@ -14,6 +14,12 @@ A complete weight vector is an immutable rebalance input. Weights are never norm
 
 The planner extends the foundation in PR #239 with explicit settlement currency while preserving its default USDT behavior and reduction-first API. `TradingController` retains its existing local-paper boundary. Broker networking and market-data acquisition are separate integrations.
 
+## Shared capital execution boundary
+
+Alpaca instance hosting depends on `trading/capital.py` for static allocation, exclusive ownership, qualification and fee-aware reservation admission. `portfolio_execution.py` owns the common outbox, terminal/uncertain-order recovery and expiry; `portfolio_accounting.py`, `control.py` and `paper.py` preserve its accounting and shared exposure-limit semantics. These are shared execution dependencies, not a second strategy-management implementation.
+
+`capital_adoption.py` and `capital_migration.py` implement the executor's existing-journal adoption APIs, preserving original cash contributions, orders, events and corporate actions. `capital_funding.py` supplies the shared policy's Binance funding attribution; Alpaca does not use funding adjustments. Keep these modules with their public executor/policy callers so both integrations consume one complete implementation. Regression coverage is in `test_capital_policy.py`, `test_capital_funding.py`, `test_capital_migration.py`, `test_portfolio_allocations.py` and `test_paper_control.py` under `tests/trading`.
+
 ## Static instance capital policy
 
 `PortfolioExecutor.capital_policy.configure(account_id=..., currency=..., budget=..., fee_rate=...)` explicitly enables static account budgeting and exclusive symbol admission. Configuration is immutable and does not grant exchange authorization. The fee reservation rate is an explicit upper bound supplied with the account policy; it is not inferred from observed fills.

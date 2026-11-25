@@ -47,6 +47,48 @@ def test_direct_intent_identity_and_cross_instance_cancellation(tmp_path):
     store.close()
 
 
+def test_market_order_uses_durable_execution_quote_without_signal_quote(tmp_path):
+    from factorlab.trading.portfolio_execution import ExecutionQuote
+    now = datetime(2026, 11, 24, 15, tzinfo=timezone.utc)
+    spec = replace(V69AlpacaStrategy('paper').describe(), strategy_id='example',
+        symbols=['SPY'], decision_kind='orders',
+        execution=dict(V69AlpacaStrategy('paper').describe().execution, order_types=['MARKET']))
+    binding = dict(market=spec.market, account_id='paper', strategy_id='example',
+        instance_id='alpha', allocation_id='alpha-usd')
+    path = tmp_path / 'portfolio.sqlite3'
+    store = PortfolioStore(path)
+    executor = PortfolioExecutor(Account(), store, clock=lambda: now)
+    executor.allocate(account_id='paper', strategy_id='alpha', allocation_id='alpha-usd',
+        capital=D(100), initial_cash=D(100), official_equity=D(100))
+    intent = OrderIntent(Market.ALPACA_US_EQUITY, 'SPY', Side.BUY, OrderType.MARKET,
+        D(2), None, 'original-market-client-id', time_in_force='DAY')
+    receipt = dict(binding=binding, package_id='package', event_id='event', input_identity='inputs',
+        event=dict(binding=binding, allocation={'positions': {}}, symbols={},
+            context={'execution_session': '2026-11-24'}),
+        decision=decision_payload(DecisionV2('orders', orders=(intent,))))
+    quote = ExecutionQuote('SPY', D(9), D(10), now, now, '2026-11-24', 'alpaca:iex')
+    adapter = AlpacaDecisionExecution(executor, SimpleNamespace(), spec, binding, {},
+        clock=lambda: now, quote_provider=lambda symbols: {'SPY': quote})
+    executor.create = lambda **kwargs: (_ for _ in ()).throw(OSError('interrupted before outbox'))
+    with pytest.raises(OSError, match='interrupted'):
+        adapter.execute(receipt)
+    assert store.db.execute('SELECT count(*) FROM portfolio_plans').fetchone()[0] == 0
+    store.close()
+    store = PortfolioStore(path)
+    executor = PortfolioExecutor(Account(), store, clock=lambda: now)
+    adapter = AlpacaDecisionExecution(executor, SimpleNamespace(), spec, binding, {},
+        clock=lambda: now, quote_provider=lambda symbols: pytest.fail('recovery reacquired quote'))
+    adapter.execute(receipt)
+    adapter.execute(receipt)
+    plan_id = store.db.execute('SELECT id FROM portfolio_plans').fetchone()[0]
+    child, = store.orders(plan_id)
+    assert child['record'].snapshot.intent == intent
+    assert child['reservation_price'] == D(10)
+    assert store.cash('paper', 'alpha') == D(80)
+    assert receipt['event']['symbols'] == {}
+    store.close()
+
+
 @pytest.mark.parametrize('kind', ['target_quantities', 'quantity_deltas', 'target_weights'])
 def test_frozen_receipt_replay_retains_intents_and_omitted_symbols(tmp_path, kind):
     now = datetime(2026, 11, 24, 15, tzinfo=timezone.utc)
