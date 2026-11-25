@@ -36,6 +36,21 @@ def create_alpaca_plan(executor, *, decision, account_id, session, now,
     """
     if decision['weights'] is None:
         return None
+    weights, deltas = original_plan_quantities(decision, raw_holdings=raw_holdings,
+        factors=factors, quantity_steps=quantity_steps)
+    return executor.create(account_id=account_id, strategy_id='V69_CAUSAL',
+        strategy_version='69.2', trading_session=str(session), weights=weights,
+        owned_symbols=list(ASSETS), now=now, initial_inventory=initial_inventory,
+        economic_multipliers={'TQQQ': D(3)}, quantity_deltas=deltas,
+        signal_inputs=dict(kind='V69_NATURAL', checkpoint=decision.get('state', {}),
+            raw_holdings={s: str(raw_holdings.get(s, 0)) for s in ASSETS},
+            adjustment_factors={s: str(factors[s]) for s in ASSETS},
+            quantity_steps={s: str(quantity_steps[s]) for s in ASSETS},
+            provenance=signal_provenance))
+
+
+def original_plan_quantities(decision, *, raw_holdings, factors, quantity_steps):
+    """Translate original adjusted-share orders with the original broker-step rounding."""
     _factors(factors)
     weights = {s: D(str(decision['weights'][s])) for s in ASSETS}
     validate_weights(weights)
@@ -64,15 +79,5 @@ def create_alpaca_plan(executor, *, decision, account_id, session, now,
         targets[symbol] += quantity if order['side'] == 'buy' else -quantity
     if any(not q.is_finite() or q < 0 for q in targets.values()):
         raise ValueError('invalid long-only inventory')
-    # Public E03 contract atomically freezes quantities and their checkpoint.
-    # No access to executor.store, plan dictionaries or transaction internals.
     deltas = {s: targets[s] - D(str(raw_holdings.get(s, 0))) for s in ASSETS}
-    return executor.create(account_id=account_id, strategy_id='V69_CAUSAL',
-        strategy_version='69.2', trading_session=str(session), weights=weights,
-        owned_symbols=list(ASSETS), now=now, initial_inventory=initial_inventory,
-        economic_multipliers={'TQQQ': D(3)}, quantity_deltas=deltas,
-        signal_inputs=dict(kind='V69_NATURAL', checkpoint=decision.get('state', {}),
-            raw_holdings={s: str(raw_holdings.get(s, 0)) for s in ASSETS},
-            adjustment_factors={s: str(factors[s]) for s in ASSETS},
-            quantity_steps={s: str(quantity_steps[s]) for s in ASSETS},
-            provenance=signal_provenance))
+    return weights, deltas
