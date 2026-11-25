@@ -202,6 +202,33 @@ def direct_sell(executor, name, quantity):
         now=NOW, direct_orders=[(intent, D(10))], concurrent_direct_orders=True)
 
 
+def test_released_flat_history_does_not_block_exclusive_create_or_corporate_child(tmp_path):
+    from factorlab.trading.capital import CapitalPolicyMode
+    broker, store, executor = shared_executor(tmp_path)
+    for owner in ('one', 'two'):
+        identity = executor.create(account_id='paper', strategy_id=owner, strategy_version='1',
+            trading_session='2026-11-24', weights={}, owned_symbols=['AAPL', 'CHILD'],
+            quantity_deltas={'AAPL': D(0), 'CHILD': D(0)}, now=NOW)
+        assert run(executor, identity).phase == 'COMPLETE'
+    with store.transaction():
+        executor.capital_policy.release('paper', 'one', 'AAPL')
+        executor.capital_policy.release('paper', 'one', 'CHILD')
+    executor.capital_policy.configure(account_id='paper', currency='USD', budget=D(100),
+        fee_rate=D(0), mode=CapitalPolicyMode.EXCLUSIVE)
+    identity = plan(executor, 'two', rebalance_id='exclusive-buy', quantity_deltas={'AAPL': D(2)})
+    run(executor, identity)
+    assert run(executor, identity).phase == 'COMPLETE'
+    broker.positions['CHILD'] = D(1)
+    executor.record_corporate_actions(account_id='paper', strategy_id='two', actions=[
+        dict(id='history-child', symbol='AAPL', quantity_ratio=D(1), basis_ratio=D(1),
+             cash_flow=D(0), evidence={'activity': 'official'},
+             allocations=[dict(symbol='CHILD', quantity=D(1), basis_fraction=D(0))])])
+    assert store.holdings('paper', 'two') == {'AAPL': D(2), 'CHILD': D(1)}
+    assert store.db.execute('SELECT quantity FROM portfolio_claims WHERE account=? AND strategy=? AND symbol=?',
+        ('paper', 'one', 'AAPL')).fetchone() == ('0',)
+    store.close()
+
+
 def test_shared_create_cannot_adopt_inventory_without_migration_receipt(tmp_path):
     _, store, executor = shared_executor(tmp_path)
     with pytest.raises(ValueError, match='explicit migration receipt'):
