@@ -1,6 +1,6 @@
-# Unified strategy management V2 — interface proposal
+# Unified strategy management V2
 
-This document defines the proposed public boundary. `FACTORLAB_DECISION_V1` and
+This document defines the public boundary. `FACTORLAB_DECISION_V1` and
 `factorlab.demo.evaluate/v1` retain their existing payloads, bindings and validation.
 V2 is opt-in; passing a V2 decision to a V1 runtime is an error.
 
@@ -23,16 +23,17 @@ execution receipts, state and order ownership may not. Allocation identity is
 immutable for an instance; its configured budget may change through the account
 owner's allocation mechanism. Multiple instances may trade the same symbol.
 Every receipt and order attribution carries instance and allocation identity;
-symbol identity alone never establishes ownership. The execution adapter handles
-netting, reduce-only constraints and allocation-level close attribution against
-the single account ledger.
+symbol identity alone never establishes ownership. The execution adapter enforces
+account policy on opposing exposures, reduce-only constraints and allocation-level
+close attribution against the single account ledger. Shared-symbol registration
+does not imply permission for internal netting or opposing strategy positions.
 
 The market adapter resolves account identities and checks execution authority.
 Neither a package nor a strategy decision grants authority or allocates funds.
 
 ## Strategy declaration
 
-`factorlab.strategies.protocol` will export `StrategySpecV2` and `DecisionV2` in
+`factorlab.strategies.protocol` exports `StrategySpecV2` and `DecisionV2` in
 addition to the unchanged V1 classes. The new protocol constant is
 `FACTORLAB_DECISION_V2`.
 
@@ -153,6 +154,10 @@ window. `observed_at` must not be later than decision time; future `effective_at
 is allowed for forecasts, not evidence of a realized settlement. A host supplies
 only information causally available at event time.
 
+An optional `context` data object carries adapter-specific projections such as
+`context.native_v69`. It uses the same typed JSON boundary, participates in the
+input identity, and cannot carry host objects, stores, callbacks or credentials.
+
 The host supplies read-only account/allocation projections, with no controller,
 store, transport, credentials or trading callback. An event can update a subset
 of symbols; unchanged observations retain explicit watermarks. Durable decision
@@ -198,7 +203,10 @@ Existing `code_commit`, `entrypoint`, `files`, `configuration`, `dependencies`,
 `migration` remains the position-draining policy (`wait_flat` or `reduce_only`),
 not JSON state migration. A V2 package does not carry the old singular `symbol`
 or Demo-only `environment`; its adapter validates the market/account binding.
-Package ID covers the full manifest except `package_id` itself.
+Package ID covers the full manifest except `package_id` itself. In manifest JSON,
+`requirements.capital.requested` is a decimal string; `manifest_spec` reconstructs
+its Decimal value. JSON state remains ordinary JSON. Runtime spec/decision
+payloads use the existing typed Decimal wire encoding.
 
 Public functions retain `build_package(source, manifest, destination)`,
 `install_package(archive, releases)`, `load_package(path)` and
@@ -219,20 +227,26 @@ controller. Existing Binance imports remain compatibility exports.
 ```python
 DeploymentStore(path)  # legacy-compatible default view
 store.register_instance(binding: dict, *, fallback_package_id: str | None = None)
-store.for_instance(instance_id: str) -> DeploymentStore
+store.for_instance(instance_id: str) -> DeploymentStore  # caller closes the view
 store.instances() -> list[dict]
+store.register_package(manifest) -> None
 
 # All methods below act only on the selected instance.
 view.snapshot() -> dict
 view.pending() -> dict | None
 view.summary() -> dict
 view.request(manifest, candidate, *, mode="hot", boot="unknown") -> int
-view.rollback(reason, *, expected=None)
-view.commit_decision(package_id, event_id, input_identity, decision) -> dict
+view.rollback(reason, *, expected=None, expected_active=None)
+view.record_order(client_id, package_id, event_id, *, reduce_only=False)
+view.order(client_id) -> dict | None
+view.commit_decision(package_id, event_id, input_identity, decision,
+                     *, event, expected_checkpoint) -> dict
 view.checkpoint() -> dict
 view.deployment_id_for(package_id, prefix) -> str
 
-DeploymentController(view, adapter).step() -> dict
+DeploymentController(view, adapter, *, load_strategy=None).step() -> dict
+InstanceDecisionRuntime(strategy, view, adapter, *, allocation).decide(event) -> dict
+InstanceDecisionRuntime(strategy, view, adapter, *, allocation).recover() -> None
 ```
 
 `register_instance` is idempotent only for identical binding and fallback.
@@ -240,6 +254,22 @@ New instances start with `active=stable=previous=None` until first activation;
 only the legacy default starts with `legacy-grid`. A failure without a previous
 or configured fallback package leaves the instance inactive/blocked, never
 activates an unrelated legacy strategy.
+
+`InstanceDecisionRuntime` is exported from `factorlab.strategies.decision_runtime`.
+It persists a decision before dispatch, advances its checkpoint atomically, and
+recovers unacknowledged receipts before accepting another event. A receipt contains
+`binding`, `package_id`, `event_id`, `input_identity`, `event`, and `decision`.
+`decision` is the versioned payload map, with Decimal targets and existing
+OrderIntent objects reconstructed by the shared wire decoder. The decision key is
+`(binding.instance_id, package_id, event_id)`; `input_identity` binds the complete
+event, not just prices. The executor returns normally only after every child
+intent is durably owned by the existing execution core. This acknowledges intent
+acceptance, not order completion or fill confirmation. Uncertain and nonterminal
+orders remain with that core and block deployment through reconciliation. If
+child intent persistence is incomplete, the executor raises; recovery reuses the
+same receipt and stable child IDs. An unfinished dispatch must recover before a switch is
+requested. `load_strategy(package_id)` is required for nonlegacy deployment
+controllers and returns an isolated `LoadedStrategy` for state migration.
 
 The adapter preserves the existing `boot_id`, `quiesce`, `reconcile`, `watermark`,
 `cancel`, `reduce`, `prepare`, `activated` boundary. Every adapter is bound to a
@@ -295,7 +325,9 @@ V2 promotion schema: `FACTORLAB_CHAMPION_PROMOTION_V2`.
 }
 ```
 
-A public router resolves exactly one instance and rejects binding, package,
+`factorlab.strategies.promotion.route_promotion(store, promotion, manifest,
+mode="hot", boot="unknown")` requests a switch and returns its ID; `mode` and
+`boot` are keyword-only arguments. This router resolves exactly one instance and rejects binding, package,
 evidence or active-baseline mismatches. Deduplication is instance-scoped. Market
 adapters validate native selection evidence and execution eligibility before
 creating this envelope. Existing V1 Binance selection adaptation stays intact.
