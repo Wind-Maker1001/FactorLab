@@ -143,8 +143,10 @@ class RuntimeStore:
 
 class MarketWorker:
     """Separate connection and SQLite owner; no account or order API access."""
-    def __init__(self, config, root, symbols, stop):
-        self.config, self.root, self.symbols, self.stop = config, root, symbols, stop
+    def __init__(self, config, root, symbols, stop, *, feed='iex'):
+        self.config, self.root, self.symbols, self.stop = config, root, tuple(symbols), stop
+        self.feed = feed
+        self.loop, self.changed = None, None
         self.lock = threading.Lock()
         self.state = {'state': 'STARTING', 'last_event_at': None, 'last_rest_at': None,
                       'recoveries': 0, 'error': None}
@@ -158,6 +160,15 @@ class MarketWorker:
         with self.lock:
             return dict(self.state)
 
+    def replace_symbols(self, symbols):
+        symbols = tuple(sorted(set(symbols)))
+        with self.lock:
+            if symbols == tuple(sorted(self.symbols)):
+                return
+            self.symbols = symbols
+            if self.loop is not None:
+                self.loop.call_soon_threadsafe(self.changed.set)
+
     def run(self):
         try:
             asyncio.run(self.consume())
@@ -166,8 +177,10 @@ class MarketWorker:
 
     async def consume(self):
         from websockets.exceptions import ConnectionClosed, InvalidHandshake
+        with self.lock:
+            self.loop, self.changed = asyncio.get_running_loop(), asyncio.Event()
         client = MarketDataClient(Credentials(self.config.key_id, self.config.secret_key),
-                                  feed='iex', attempts=1)
+                                  feed=self.feed, attempts=1)
         db = sqlite3.connect(self.root / 'market-stream.sqlite3')
         db.executescript('''
             CREATE TABLE IF NOT EXISTS events (
@@ -199,7 +212,7 @@ class MarketWorker:
                 try:
                     await recover_gap(start=last, end=now())
                     stream = AlpacaStream(api_key=self.config.key_id, secret_key=self.config.secret_key,
-                        feed='iex', subscriptions={'bars': self.symbols, 'quotes': self.symbols},
+                        feed=self.feed, subscriptions={'bars': self.symbols, 'quotes': self.symbols},
                         recover_gap=recover_gap, max_reconnects=3)
                     async for event in stream.events():
                         last = event.received_at
@@ -221,31 +234,56 @@ class MarketWorker:
 
         task = asyncio.create_task(events())
         stopped = asyncio.create_task(wait_for_stop())
+        changed = asyncio.create_task(self.changed.wait())
         try:
-            done, _ = await asyncio.wait((task, stopped), return_when=asyncio.FIRST_COMPLETED)
-            if task in done:
-                await task
+            while True:
+                done, _ = await asyncio.wait((task, stopped, changed), return_when=asyncio.FIRST_COMPLETED)
+                if stopped in done:
+                    break
+                if task in done:
+                    await task
+                    break
+                task.cancel()
+                await asyncio.gather(task, return_exceptions=True)
+                self.changed.clear()
+                task = asyncio.create_task(events())
+                changed = asyncio.create_task(self.changed.wait())
         finally:
+            with self.lock:
+                self.loop = None
             task.cancel()
             stopped.cancel()
-            await asyncio.gather(task, stopped, return_exceptions=True)
+            changed.cancel()
+            await asyncio.gather(task, stopped, changed, return_exceptions=True)
             db.close()
 
 
 class Supervisor:
     def __init__(self, root, config, *, symbols=SYMBOLS, interval=15, revision='unknown',
-                 execute_v69=False):
+                 execute_v69=False, instances_configuration=None, feed='iex'):
         self.root, self.config, self.symbols = root, config, tuple(symbols)
         self.interval, self.revision = interval, revision
         self.stop = threading.Event()
         self.store = RuntimeStore(root)
-        self.adapter = AlpacaAdapter((PaperHTTP if execute_v69 else ObservationHTTP)(config), root / 'account.sqlite3')
+        if execute_v69 and feed != 'iex':
+            raise ValueError('original V69 input provenance requires IEX')
+        if execute_v69 and instances_configuration is not None:
+            raise ValueError('legacy V69 and generic instance configuration cannot own the same runtime')
+        enabled = execute_v69 or instances_configuration is not None
+        self.adapter = AlpacaAdapter((PaperHTTP if enabled else ObservationHTTP)(config), root / 'account.sqlite3')
         self.execution = None
         if execute_v69:
-            from .cloud_execution import WeeklyExecution
-            self.execution = WeeklyExecution(root, self.adapter, clock=now)
-        self.client = MarketDataClient(Credentials(config.key_id, config.secret_key), feed='iex', attempts=1)
-        self.market = MarketWorker(config, root, self.symbols, self.stop)
+            from .native_v69 import NativeWeeklyExecution
+            self.execution = NativeWeeklyExecution(root, self.adapter, clock=now, revision=revision)
+        if instances_configuration is not None:
+            from .strategy_instances import StrategyInstances
+            self.execution = StrategyInstances(root, self.adapter, instances_configuration,
+                                               clock=now, revision=revision)
+            self.symbols = self.execution.symbols
+            if not self.symbols:
+                raise ValueError('generic runtime requires a registered active or pending package')
+        self.client = MarketDataClient(Credentials(config.key_id, config.secret_key), feed=feed, attempts=1)
+        self.market = MarketWorker(config, root, self.symbols, self.stop, feed=feed)
         self.started = now()
         self.last_poll = None
         self.calendar_day = None
@@ -300,13 +338,16 @@ class Supervisor:
             self.health.update(account_recovered=snapshot.reconciled,
                                last_recovery_at=at.isoformat(), schedule=window,
                                market_rest={'received_at': received.isoformat(), 'missing_symbols': missing,
-                                            'feed': 'iex', 'clock_open': clock['is_open'],
+                                            'feed': self.client.feed, 'clock_open': clock['is_open'],
                                             'fresh_quotes': fresh})
             self.store.event('RECOVERED', {'reconciled': snapshot.reconciled})
             if self.execution and snapshot.reconciled:
                 from factorlab.trading.control import RiskLimits
                 self.adapter.limits = RiskLimits(facts.equity, facts.equity, facts.equity, 30)
                 self.execution.tick(self.service, window, at, facts)
+                if 'instances' in self.execution.state:
+                    self.symbols = self.execution.symbols
+                    self.market.replace_symbols(self.symbols)
                 snapshot = self.adapter.recover()
                 facts = self.adapter.read_account_details()
                 self.health['account_recovered'] = snapshot.reconciled
@@ -329,6 +370,8 @@ class Supervisor:
             from decimal import Decimal
             report['equity_change_since_baseline'] = str(facts.equity - Decimal(baseline['equity']))
             report['strategy_return'] = None
+            if self.execution and 'instances' in self.execution.state:
+                report['instances'] = self.execution.report()
             if self.execution and self.execution.identity:
                 from dataclasses import asdict
                 plan = self.execution.store.plan(self.execution.identity)
@@ -432,6 +475,8 @@ def main(argv=None):
     parser.add_argument('--execute-v69', action='store_true',
                         default=os.environ.get('FACTORLAB_ALPACA_EXECUTE_V69') == '1')
     parser.add_argument('--symbols', default=','.join(SYMBOLS))
+    parser.add_argument('--instances', type=Path)
+    parser.add_argument('--feed', choices=('iex', 'sip'), default='iex')
     args = parser.parse_args(argv)
     if args.action == 'acceptance' and args.phase is None:
         parser.error('acceptance requires --phase')
@@ -455,8 +500,11 @@ def main(argv=None):
                                         campaign='ALP-E04 CLOUD TEST')
                 print(json.dumps(result), flush=True)
                 return 0
+            instances = (json.loads(args.instances.read_text(encoding='utf-8'))
+                         if args.instances is not None else None)
             runtime = Supervisor(root, config, symbols=args.symbols.split(','), revision=args.revision,
-                                 execute_v69=args.execute_v69)
+                                 execute_v69=args.execute_v69, instances_configuration=instances,
+                                 feed=args.feed)
             for signum in (signal.SIGTERM, signal.SIGINT):
                 signal.signal(signum, lambda *_: runtime.stop.set())
             runtime.run()

@@ -117,6 +117,47 @@ def test_acceptance_requires_explicit_phase():
     assert error.value.code == 2
 
 
+def test_subscription_change_restarts_stream_and_recovers_new_symbols(tmp_path, monkeypatch):
+    import asyncio
+    import threading
+    import factorlab.integrations.alpaca.cloud_runtime as module
+
+    stop = threading.Event()
+    worker = module.MarketWorker(AlpacaConfig('key', 'secret'), tmp_path, ['SPY'], stop, feed='sip')
+    recoveries, subscriptions = [], []
+
+    class Client:
+        def __init__(self, credentials, *, feed, attempts):
+            assert feed == 'sip'
+
+        def bars(self, symbols, *args, **kwargs):
+            recoveries.append(tuple(symbols))
+            return []
+
+    class Stream:
+        def __init__(self, **kwargs):
+            assert kwargs['feed'] == 'sip'
+            subscriptions.append(kwargs['subscriptions'])
+
+        async def events(self):
+            if len(subscriptions) == 1:
+                worker.replace_symbols(['SPY', 'IWM', 'SPY'])
+                await asyncio.Future()
+            else:
+                stop.set()
+            if False:
+                yield
+
+    monkeypatch.setattr(module, 'MarketDataClient', Client)
+    monkeypatch.setattr(module, 'AlpacaStream', Stream)
+    asyncio.run(worker.consume())
+    assert recoveries == [('SPY',), ('IWM', 'SPY')]
+    assert subscriptions == [
+        {'bars': ('SPY',), 'quotes': ('SPY',)},
+        {'bars': ('IWM', 'SPY'), 'quotes': ('IWM', 'SPY')},
+    ]
+
+
 def test_incompatible_schema_refused(tmp_path):
     import sqlite3
     with sqlite3.connect(tmp_path / 'runtime.sqlite3') as db:

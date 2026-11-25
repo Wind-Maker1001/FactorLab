@@ -71,6 +71,78 @@ def test_official_split_batch_and_dividend_post_without_changing_dividend_shares
     store.close()
 
 
+def test_account_receipt_is_apportioned_once_across_shared_owners(tmp_path):
+    path = tmp_path / 'portfolio.sqlite3'
+    store = PortfolioStore(path)
+    for owner, quantity in [('alpha', '3'), ('beta', '7')]:
+        store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                         ('paper', 'AAPL', owner, quantity, quantity, '100'))
+    account = AccountSnapshot(Market.ALPACA_US_EQUITY, 'paper',
+        (AssetBalance('USD', D(100), D(0)),),
+        (Position('AAPL', D(20), D(50), D(50), 'USD'),),
+        (), datetime(2026, 11, 24, tzinfo=timezone.utc), True)
+    broker = SimpleNamespace(read_account=lambda: account)
+    announcements = [dict(id='split', ca_type='split', initiating_symbol='AAPL',
+                          ex_date='2026-11-24', old_rate='1', new_rate='2')]
+    receipts = [dict(id='div', activity_type='DIV', symbol='AAPL',
+                     date='2026-11-23', net_amount='1.01', qty='10'),
+                dict(id='split', activity_type='SSP', symbol='AAPL',
+                     date='2026-11-24', net_amount='0', qty='10')]
+    journal = CorporateReceiptJournal(store, 'paper')
+    assert journal.reconcile_account(PortfolioExecutor(broker, store),
+        announcements=announcements, receipts=receipts) == {}
+    assert store.holdings('paper', 'alpha')['AAPL'] == 6
+    assert store.holdings('paper', 'beta')['AAPL'] == 14
+    from factorlab.trading.storage import decode
+    import json
+    posted = {(owner, event): decode(json.loads(payload))
+              for owner, event, payload in store.db.execute(
+                  'SELECT strategy,event,payload FROM portfolio_corporate_actions')}
+    assert posted['alpha', 'alpaca-nta:div']['cash_flow'] == D('.303')
+    assert posted['beta', 'alpaca-nta:div']['cash_flow'] == D('.707')
+    store.close()
+    store = PortfolioStore(path)
+    assert CorporateReceiptJournal(store, 'paper').reconcile_account(
+        PortfolioExecutor(broker, store), announcements=announcements, receipts=receipts) == {}
+    assert store.db.execute('SELECT COUNT(*) FROM portfolio_corporate_actions').fetchone()[0] == 4
+    store.close()
+
+
+def test_late_dividend_for_flat_inventory_still_requires_historical_entitlement(tmp_path):
+    store = PortfolioStore(tmp_path / 'portfolio.sqlite3')
+    store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                     ('paper', 'AAPL', 'alpha', '0', '0', '100'))
+    receipt = dict(id='late-div', activity_type='DIV', symbol='AAPL',
+                   date='2026-11-23', net_amount='1', qty='10')
+    blocked = CorporateReceiptJournal(store, 'paper').reconcile_account(
+        PortfolioExecutor(None, store), announcements=[], receipts=[receipt])
+    assert blocked == {'AAPL': 'DIVIDEND_ENTITLEMENT_OWNERSHIP_REQUIRED'}
+    assert store.db.execute('SELECT COUNT(*) FROM portfolio_corporate_actions').fetchone()[0] == 0
+    store.close()
+
+
+def test_partially_posted_legacy_receipt_cannot_be_reallocated_in_full(tmp_path):
+    store = PortfolioStore(tmp_path / 'portfolio.sqlite3')
+    for owner, quantity in [('alpha', '3'), ('beta', '7')]:
+        store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                         ('paper', 'AAPL', owner, quantity, quantity, '100'))
+    account = AccountSnapshot(Market.ALPACA_US_EQUITY, 'paper',
+        (AssetBalance('USD', D(100), D(0)),),
+        (Position('AAPL', D(10), D(100), D(100), 'USD'),),
+        (), datetime(2026, 11, 24, tzinfo=timezone.utc), True)
+    executor = PortfolioExecutor(SimpleNamespace(read_account=lambda: account), store)
+    receipt = dict(id='legacy-div', activity_type='DIV', symbol='AAPL',
+                   date='2026-11-23', net_amount='1', qty='10')
+    executor.record_corporate_actions(account_id='paper', strategy_id='alpha', actions=[
+        dict(id='alpaca-nta:legacy-div', symbol='AAPL', quantity_ratio=D(1),
+             basis_ratio=D(1), cash_flow=D('.3'), evidence={'receipt': receipt})])
+    blocked = CorporateReceiptJournal(store, 'paper').reconcile_account(executor,
+        announcements=[], receipts=[receipt])
+    assert blocked == {'AAPL': 'PARTIALLY_POSTED_ACCOUNT_CORPORATE_RECEIPT'}
+    assert store.db.execute('SELECT COUNT(*) FROM portfolio_corporate_actions').fetchone()[0] == 1
+    store.close()
+
+
 def test_receipts_survive_restart_without_interpreting_dividend_qty(tmp_path):
     path = tmp_path / 'portfolio.sqlite3'
     receipt = dict(id='official-DIV', activity_type='DIV', symbol='AAPL',
