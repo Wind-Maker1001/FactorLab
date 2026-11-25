@@ -13,7 +13,9 @@ def main():
     source_root, package = (Path(p).resolve() for p in sys.argv[1:])
     sys.path.insert(0, str(source_root))
     from factorlab.trading.storage import decode, dumps
-    from factorlab.strategies.protocol import Decision, StrategySpec, decision_payload, spec_payload
+    from factorlab.strategies.protocol import (Decision, StrategySpec, DecisionV2, StrategySpecV2,
+                                               decision_payload, spec_payload, json_value)
+    from factorlab.strategies.events import validate_event
     request = decode(json.loads(sys.stdin.read(4 * 1024 * 1024)))
     # Import library dependencies before restricting IO. Trusted strategy code
     # still runs with a guard against accidental file/network/process access.
@@ -56,15 +58,27 @@ def main():
             module_spec.loader.exec_module(module)
             strategy = getattr(module, manifest['class'])(**manifest['parameters'])
             spec = strategy.describe()
-            if not isinstance(spec, StrategySpec):
-                raise ValueError('describe must return StrategySpec')
+            if not isinstance(spec, (StrategySpec, StrategySpecV2)):
+                raise ValueError('describe must return a versioned StrategySpec')
             if request['operation'] == 'describe':
                 value = spec_payload(spec)
-            else:
+            elif request['operation'] == 'migrate':
+                if not isinstance(spec, StrategySpecV2):
+                    raise ValueError('migration requires V2')
+                value = strategy.migrate_state(request['state'], request['event']['from_version'])
+                if not isinstance(value, dict):
+                    raise ValueError('migrated state must be a JSON object')
+                value = json_value(value)
+            elif request['operation'] == 'decide':
+                v2 = isinstance(spec, StrategySpecV2)
+                if v2:
+                    validate_event(request['event'], spec)
                 decision = strategy.decide(request['event'], request['state'])
-                if not isinstance(decision, Decision):
-                    raise ValueError('decide must return Decision')
-                value = decision_payload(decision.validate(spec, request['event']['symbol']))
+                if not isinstance(decision, DecisionV2 if v2 else Decision):
+                    raise ValueError('decide must return a matching versioned Decision')
+                value = decision_payload(decision.validate(spec, None if v2 else request['event']['symbol']))
+            else:
+                raise ValueError('unknown strategy operation')
         response = dict(value=value)
     except Exception as error:
         response = dict(error=type(error).__name__ + ': ' + str(error))
