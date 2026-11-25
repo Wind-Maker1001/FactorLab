@@ -227,6 +227,54 @@ def test_instance_risk_limits_reuse_controller_caps_without_affecting_other_owne
     store.close()
 
 
+def test_expire_unsubmitted_plan_releases_only_with_durable_adapter_evidence(tmp_path):
+    from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side
+    from factorlab.trading.portfolio_execution import SubmissionNotAttempted
+    broker, store, executor = setup(tmp_path)
+    intent = OrderIntent(Market.BINANCE_EQUITY, 'AAPL', Side.BUY, OrderType.LIMIT,
+                         D(4), D(10), 'expire-original', time_in_force='GTC')
+    identity = executor.create(account_id='paper', strategy_id='one', strategy_version='1',
+        trading_session='2026-11-24', weights={}, owned_symbols=['AAPL'], now=NOW,
+        direct_orders=[(intent, D(10))])
+    assert executor.expire(identity).phase == 'WAITING'
+    assert executor.capital_policy.snapshot('paper', 'one').reserved == D(40)
+    assert run(executor, identity).phase == 'WAITING'
+    assert broker.posts == []
+    with pytest.raises(ValueError, match='previous rebalance'):
+        plan(executor, 'one', rebalance_id='after-expiry')
+    def never_submitted(_):
+        raise SubmissionNotAttempted('durable adapter journal')
+    broker.query_order = never_submitted
+    assert executor.expire(identity).phase == 'COMPLETE'
+    assert executor.expire(identity).reasons['plan'] == 'EXPIRED_REBALANCE'
+    assert executor.capital_policy.snapshot('paper', 'one').reserved == 0
+    assert executor.capital_policy.snapshot('paper', 'two').cash == D(60)
+    assert run(executor, identity).phase == 'COMPLETE'
+    assert broker.posts == []
+    assert store.db.execute('SELECT id FROM portfolio_orders').fetchone() == ('expire-original',)
+    plan(executor, 'one', rebalance_id='after-expiry')
+    store.close()
+
+
+def test_expire_partial_plan_cancels_original_and_preserves_fills(tmp_path):
+    broker, store, executor = setup(tmp_path)
+    broker.mode = 'partial'
+    identity = plan(executor, 'one')
+    run(executor, identity)
+    result = executor.expire(identity)
+    assert result.phase == 'COMPLETE'
+    assert result.reasons['plan'] == 'EXPIRED_REBALANCE'
+    assert store.holdings('paper', 'one') == {'AAPL': D(2)}
+    assert executor.capital_policy.snapshot('paper', 'one').cash == D(20)
+    assert len(broker.posts) == 1
+    store.close()
+    store = PortfolioStore(tmp_path / 'capital.sqlite3')
+    executor = PortfolioExecutor(broker, store, clock=lambda: NOW)
+    assert run(executor, identity).reasons['plan'] == 'EXPIRED_REBALANCE'
+    assert len(broker.posts) == 1
+    store.close()
+
+
 def test_optimizer_recommendation_does_not_change_static_allocations(tmp_path):
     import pandas as pd
     from factorlab.portfolio.optimizer import PortfolioOptimizer, OptimizationInput, OptimizerConfig
