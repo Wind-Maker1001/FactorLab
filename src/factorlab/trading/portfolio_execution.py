@@ -525,8 +525,16 @@ class PortfolioExecutor:
                 self.store.db.execute(
                     'DELETE FROM portfolio_claims WHERE account=? AND symbol=? AND strategy=?',
                     (account_id, symbol, from_strategy))
+                original = self.store.db.execute(
+                    'SELECT initial_quantity,entry_price FROM portfolio_claim_history '
+                    'WHERE account=? AND symbol=? AND strategy=?',
+                    (account_id, symbol, to_strategy)).fetchone()
+                initial_quantity, entry_price = original if original is not None else ('0', '0')
                 self.store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
-                    (account_id, symbol, to_strategy, '0', '0', '0'))
+                    (account_id, symbol, to_strategy, '0', initial_quantity, entry_price))
+                self.store.db.execute(
+                    'DELETE FROM portfolio_claim_history WHERE account=? AND symbol=? AND strategy=?',
+                    (account_id, symbol, to_strategy))
                 self.store.db.execute(
                     'UPDATE capital_symbols SET strategy=? WHERE account=? AND symbol=? AND strategy=?',
                     (to_strategy, account_id, symbol, from_strategy))

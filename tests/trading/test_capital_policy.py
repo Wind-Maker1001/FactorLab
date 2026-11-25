@@ -94,6 +94,13 @@ def test_flat_transfer_keeps_predecessor_cost_history_and_symbol_reservation(tmp
     with pytest.raises(ValueError, match='ownership conflict'):
         plan(executor, 'one', rebalance_id='reclaim')
     assert store.db.execute('SELECT strategy FROM portfolio_plans WHERE id=?', (identity,)).fetchone() == ('one',)
+    executor.transfer_flat_ownership(account_id='paper', from_strategy='two', to_strategy='one', symbols=['AAPL'])
+    assert store.db.execute('SELECT initial_quantity,entry_price FROM portfolio_claims '
+        'WHERE account=? AND symbol=? AND strategy=?', ('paper', 'AAPL', 'one')).fetchone() == ('2', '8')
+    assert store.db.execute('SELECT count(*) FROM portfolio_claim_history WHERE strategy=?', ('one',)).fetchone()[0] == 0
+    assert executor.report(identity, official_equity=D(100), readonly=True).realized_pnl == D(4)
+    executor.transfer_flat_ownership(**args)
+    assert executor.report(identity, official_equity=D(100), readonly=True).realized_pnl == D(4)
     store.close()
 
 
