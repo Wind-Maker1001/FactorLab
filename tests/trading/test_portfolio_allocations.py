@@ -308,6 +308,57 @@ def test_known_uncertain_symbol_does_not_stop_another_symbol(tmp_path):
     store.close()
 
 
+def test_registered_market_buy_uses_its_original_reservation_price(tmp_path):
+    from factorlab.trading.contracts import Market, OrderEvent, OrderIntent, OrderStatus, OrderType, Side
+
+    class MarketBroker(Broker):
+        def submit_order(self, intent):
+            self.posts.append(intent)
+            self.orders[intent.client_order_id] = intent
+            event = OrderEvent(intent.client_order_id, 'broker-' + intent.client_order_id,
+                OrderStatus.SUBMITTED, D(0), None, NOW, 'broker', intent.client_order_id + '-accepted')
+            self.events[intent.client_order_id] = event
+            return event
+
+    broker, store, executor = shared_executor(tmp_path, broker=MarketBroker())
+    first = OrderIntent(Market.BINANCE_EQUITY, 'AAPL', Side.BUY, OrderType.MARKET,
+        D(1), None, 'market-buy', time_in_force='GTC')
+    identity = executor.create(account_id='paper', strategy_id='one', strategy_version='1',
+        trading_session='2026-11-24', weights={}, owned_symbols=['AAPL'], now=NOW,
+        direct_orders=[(first, D(10))])
+    run(executor, identity)
+    second = OrderIntent(Market.BINANCE_EQUITY, 'QQQ', Side.BUY, OrderType.LIMIT,
+        D(1), D(10), 'other-buy', time_in_force='GTC')
+    other = executor.create(account_id='paper', strategy_id='two', strategy_version='1',
+        trading_session='2026-11-24', weights={}, owned_symbols=['QQQ'], now=NOW,
+        direct_orders=[(second, D(10))])
+    assert store.plan(other) is not None
+    assert store.cash('paper', 'one') == D(30)
+    assert store.cash('paper', 'two') == D(50)
+    store.close()
+
+
+def test_shared_rebalance_keeps_its_reduction_barrier(tmp_path):
+    broker, store, executor = shared_executor(tmp_path)
+    initial = plan(executor, 'one', quantity_deltas={'AAPL': D(2)})
+    run(executor, initial)
+    run(executor, initial)
+    rebalance = executor.create(account_id='paper', strategy_id='one', strategy_version='1',
+        trading_session='2026-11-24', rebalance_id='rotate', weights={},
+        owned_symbols=['AAPL', 'QQQ'], now=NOW, quantity_deltas={'AAPL': D(-1), 'QQQ': D(1)})
+    broker.mode = 'pending'
+    run(executor, rebalance)
+    assert run(executor, rebalance).phase == 'WAITING'
+    assert [order.instrument_id for order in broker.posts] == ['AAPL', 'AAPL']
+    sell = broker.posts[-1]
+    from factorlab.trading.contracts import OrderStatus
+    broker.confirm(sell.client_order_id, sell.quantity, OrderStatus.FILLED)
+    broker.mode = 'fill'
+    run(executor, rebalance)
+    assert [order.instrument_id for order in broker.posts] == ['AAPL', 'AAPL', 'QQQ']
+    store.close()
+
+
 def test_shared_account_cash_is_not_reserved_twice_across_instances(tmp_path):
     from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side
     broker, store, executor = shared_executor(tmp_path)
