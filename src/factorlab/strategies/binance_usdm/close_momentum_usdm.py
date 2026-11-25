@@ -1,8 +1,8 @@
 """S01 CloseMomentum custom trend target strategy for Binance USD-M NVDAUSDT 1x long-only.
 
-Matches examples/protocol_strategy/close_momentum_v1/decision.py with configurable
-lookback and weight, implementing both S01 UnifiedStrategy and S03
-factorlab.demo.evaluate/v1 worker entrypoint.
+Implements the native S01/S04 FACTORLAB_DECISION_V1 protocol (describe/decide)
+with target_weight execution matching examples/protocol_strategy/close_momentum_v1
+with configurable lookback, weight, and threshold_bps.
 """
 from decimal import Decimal
 
@@ -10,7 +10,8 @@ from decimal import Decimal
 class CloseMomentumUsdmStrategy:
     strategy_family = "target_protocol"
     s03_compatible = True
-    s03_entrypoint = "close_momentum_usdm:evaluate"
+    s03_protocol = "FACTORLAB_DECISION_V1"
+    s03_entrypoint = "close_momentum_usdm:CloseMomentumUsdmStrategy"
 
     def __init__(
         self,
@@ -66,33 +67,3 @@ class CloseMomentumUsdmStrategy:
         ret_bps = (latest - prior) / prior * Decimal("10000")
         target = Decimal(str(self.weight)) if ret_bps > Decimal(str(self.threshold_bps)) else Decimal("0")
         return Decision(target_weight=target, state=next_state)
-
-
-def evaluate(context: dict, state: dict) -> dict:
-    """S03 factorlab.demo.evaluate/v1 entrypoint for Demo closed-bar execution."""
-    if context.get("event") == "probe":
-        return {"state": dict(state), "intents": []}
-    cfg = context.get("configuration", {})
-    lookback = int(cfg.get("lookback", 1))
-    threshold_bps = Decimal(str(cfg.get("threshold_bps", 0.0)))
-    order_qty = Decimal(str(cfg.get("order_quantity", "0.04")))
-    bar = context.get("bar", {})
-    close = str(bar["close"])
-    closes = list(state.get("closes", []))
-    closes.append(close)
-    closes = closes[-(lookback + 1):]
-    next_state = {"closes": closes, "decisions": int(state.get("decisions", 0)) + 1}
-    if len(closes) < lookback + 1:
-        return {"state": next_state, "intents": []}
-    latest = Decimal(closes[-1])
-    prior = Decimal(closes[0])
-    ret_bps = (latest - prior) / prior * Decimal("10000")
-    account = context.get("account", {})
-    positions = account.get("positions", [])
-    held = sum((Decimal(str(p.get("quantity", "0"))) for p in positions), Decimal("0"))
-    intents = []
-    if ret_bps > threshold_bps and held <= Decimal("0"):
-        intents.append({"side": "BUY", "quantity": str(order_qty)})
-    elif ret_bps <= threshold_bps and held > Decimal("0"):
-        intents.append({"side": "SELL", "quantity": str(held)})
-    return {"state": next_state, "intents": intents}

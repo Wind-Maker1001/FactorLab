@@ -173,6 +173,9 @@ class DemoStrategyRuntime:
     def closed_bar(self, bar, *, historical=False):
         if not isinstance(bar, ClosedBar) or bar.symbol != self.symbol or bar.closed_at > self.controller.clock():
             raise ValueError('confirmed deployment bar required')
+        expected_interval = self.strategy.describe().get('interval_seconds')
+        if expected_interval is not None and bar.interval_seconds != expected_interval:
+            raise ValueError('confirmed deployment bar interval mismatch')
         if not bar.complete:
             return False
         def operation():

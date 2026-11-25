@@ -2,7 +2,7 @@
   "cash_benchmark_net_return": 0.0,
   "decisions": [
     {
-      "candidate_id": "c-b97c8b599be80d00b44fcc8e",
+      "candidate_id": "c-ef5d445aa2f93fb3e13cfc27",
       "eligible": false,
       "evidence": {
         "annual_mean_improvement": 0.8909105921912059,
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "candidate_id": "c-f13e00ea46ee334f54d722a6",
+      "candidate_id": "c-771426d69d072db5f561c7b1",
       "eligible": false,
       "evidence": {
         "annual_mean_improvement": 1.6952302837396855,
@@ -83,6 +83,19 @@
   "family_size": 25,
   "incumbent_candidate_id": "c-7eefa330d4d7fa022db5d1ff",
   "oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS",
+  "oos_freshness_audit": {
+    "audit_mode": false,
+    "blocked_reasons": [
+      "overlaps_known_consumed_history_through_2026-11-22"
+    ],
+    "declared_oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS",
+    "downgraded": false,
+    "effective_oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS",
+    "known_consumed_through": "2026-11-22",
+    "overlapping_registry_entries": [],
+    "registry_path": "D:\\Code\\p8-s02-f01-real-run-v2\\oos-consumption-registry.json",
+    "registry_recorded": true
+  },
   "prior_studies": [
     "P7-R04B",
     "P7-R09",
@@ -92,6 +105,6 @@
     "P8-R10"
   ],
   "schema": "FACTORLAB_PAIRED_STATISTICS_V1",
-  "study_id": "p8-s02-f01-nvda-real-v1",
+  "study_id": "p8-s02-f01-nvda-real-v2",
   "verdict": "INCONCLUSIVE"
 }

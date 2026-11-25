@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 
 from factorlab.dataset.identity import file_hash, json_hash
+from factorlab.forward.integrity import workflow_lock
 from factorlab.experiments.grid_f11_f08_offline import (
     DEFAULT_PAPER_FEE_RATE,
     DEFAULT_PAPER_SLIPPAGE,
@@ -85,6 +86,26 @@ from factorlab.trading.target import target_quantity
 D = Decimal
 BINANCE_EXECUTION = "binance_usdm_demo_nvda_limit_long_only"
 FUNDING_TIE_RULE = "settlement_before_exact_tie_fill"
+OOS_REGISTRY_SCHEMA = "FACTORLAB_OOS_CONSUMPTION_REGISTRY_V1"
+# Audited historical range already consumed by prior R04B/R07/R08/R09/R10/R11 studies.
+# Any REAL_CANDIDATE test window whose start <= known_end can NEVER claim FRESH_UNCONSUMED_OOS.
+KNOWN_CONSUMED_HISTORY_END_UTC: dict[tuple[str, str], str] = {
+    ("BINANCE_USDM", "NVDAUSDT"): "2026-11-22",
+}
+KNOWN_PRIOR_STUDIES: dict[tuple[str, str], list[str]] = {
+    ("BINANCE_USDM", "NVDAUSDT"): ["P7-R04B", "P7-R09", "P8-R07", "P8-R08", "P8-R09", "P8-R10"],
+}
+
+
+class CollateralDepletedError(ValueError):
+    """Raised ONLY when authoritative PaperBroker ledger proves equity <= 0."""
+
+    def __init__(self, message: str, *, final_equity: float, halt_reason: str | None = None):
+        super().__init__(message)
+        self.final_equity = float(final_equity)
+        self.halt_reason = halt_reason
+
+
 SUPPORTED_LIFECYCLES = {MODEL_F11_F08, MODEL_BASELINE}
 SUPPORTED_EXIT_PROFILES = {
     "IDEAL_LIMIT_FILL",
@@ -292,11 +313,235 @@ def register_binance_candidate(
         decision_kind=proto_spec.decision_kind,
         spec=asdict(proto_spec),
         s03_compatible=bool(getattr(instance, "s03_compatible", False)),
+        s03_protocol=getattr(instance, "s03_protocol", None),
         s03_entrypoint=getattr(instance, "s03_entrypoint", None),
         s04_requirements=getattr(instance, "s04_requirements", None),
         source_filename=file_path.name,
     )
     return candidate, compatibility
+
+
+def validate_funding_coverage(
+    bars: list[dict[str, Any]],
+    funding_events: list[tuple[datetime, Decimal, Decimal, str]],
+    *,
+    max_boundary_lag_hours: float = 8.05,
+    max_internal_gap_hours: float = 24.0,
+) -> dict[str, Any]:
+    """Fail closed if funding events do not cover the full exported bar timeline.
+
+    Distinguishes observed 0.0 funding-rate events (present in the stream) from
+    missing funding cache files or truncated tail/internal segments.
+    """
+    if not bars:
+        raise ValueError("cannot validate funding coverage on empty bars")
+    bar_start = parse_utc(bars[0]["time"])
+    bar_end_excl = parse_utc(bars[-1]["time"]) + timedelta(hours=1)
+    in_range = sorted([ev for ev in funding_events if bar_start <= ev[0] < bar_end_excl], key=lambda e: e[0])
+    if not in_range:
+        raise ValueError(
+            f"incomplete funding coverage: zero funding events in [{bar_start.isoformat()}, {bar_end_excl.isoformat()})"
+        )
+    first_ts = in_range[0][0]
+    last_ts = in_range[-1][0]
+    start_lag_h = (first_ts - bar_start).total_seconds() / 3600.0
+    end_lag_h = (bar_end_excl - last_ts).total_seconds() / 3600.0
+    if start_lag_h > max_boundary_lag_hours:
+        raise ValueError(
+            f"incomplete funding coverage at start: first funding {first_ts.isoformat()} lags bar start "
+            f"{bar_start.isoformat()} by {start_lag_h:.2f}h (> {max_boundary_lag_hours}h)"
+        )
+    if end_lag_h > max_boundary_lag_hours:
+        raise ValueError(
+            f"incomplete funding coverage at tail: last funding {last_ts.isoformat()} ends {end_lag_h:.2f}h "
+            f"before bar end {bar_end_excl.isoformat()} (> {max_boundary_lag_hours}h)"
+        )
+    max_gap_h = 0.0
+    for prev_ev, curr_ev in zip(in_range, in_range[1:]):
+        gap_h = (curr_ev[0] - prev_ev[0]).total_seconds() / 3600.0
+        if gap_h > max_gap_h:
+            max_gap_h = gap_h
+    if max_gap_h > max_internal_gap_hours:
+        raise ValueError(
+            f"incomplete funding coverage: internal gap of {max_gap_h:.2f}h exceeds {max_internal_gap_hours}h limit"
+        )
+    zero_rate_events = sum(1 for ev in in_range if ev[2] == ZERO)
+    return {
+        "complete": True,
+        "bar_start_utc": bar_start.isoformat(),
+        "bar_end_excl_utc": bar_end_excl.isoformat(),
+        "funding_events_in_range": len(in_range),
+        "funding_first_utc": first_ts.isoformat(),
+        "funding_last_utc": last_ts.isoformat(),
+        "start_lag_hours": round(start_lag_h, 4),
+        "end_lag_hours": round(end_lag_h, 4),
+        "max_internal_gap_hours": round(max_gap_h, 4),
+        "zero_rate_events": zero_rate_events,
+    }
+
+
+def _atomic_write_json(path: Path, payload: Any) -> None:
+    import tempfile
+
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(payload, stream, sort_keys=True, indent=2, allow_nan=False)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+
+
+def evaluate_and_reserve_oos_freshness(
+    *,
+    market: str,
+    symbol: str,
+    test_window: list[str],
+    source_kind: str,
+    declared_oos_eligibility: str,
+    declared_prior_studies: list[str],
+    study_id: str,
+    bars_sha256: str,
+    funding_sha256: str,
+    registry_path: Path | None,
+    audit: bool = False,
+) -> tuple[str, list[str], dict[str, Any]]:
+    """Verify OOS freshness against known history and cross-study consumption registry.
+
+    Rules:
+    1. REAL_CANDIDATE overlapping KNOWN_CONSUMED_HISTORY_END_UTC can NEVER claim FRESH_UNCONSUMED_OOS.
+    2. REAL_CANDIDATE overlapping any previously consumed [test_start, test_end] in the shared registry
+       (even partial overlap, new state_path, new study_id, or re-exported files) is downgraded to
+       HISTORICAL_REUSE_PSEUDO_OOS.
+    3. Non-audit REAL_CANDIDATE runs atomically record a TEST_RESERVED entry BEFORE test execution.
+    4. audit=True (independent replay) NEVER mutates the consumption registry.
+    """
+    test_start, test_end = str(test_window[0]), str(test_window[1])
+    ts_start, ts_end = pd.Timestamp(test_start), pd.Timestamp(test_end)
+    effective = declared_oos_eligibility
+    prior_studies = list(declared_prior_studies)
+    blocked_reasons: list[str] = []
+    overlapping_entries: list[dict[str, Any]] = []
+
+    if source_kind == "REAL_CANDIDATE":
+        known_end = KNOWN_CONSUMED_HISTORY_END_UTC.get((market, symbol))
+        if known_end is not None and ts_start <= pd.Timestamp(known_end):
+            if effective == "FRESH_UNCONSUMED_OOS":
+                effective = "HISTORICAL_REUSE_PSEUDO_OOS"
+            blocked_reasons.append(f"overlaps_known_consumed_history_through_{known_end}")
+            for s in KNOWN_PRIOR_STUDIES.get((market, symbol), []):
+                if s not in prior_studies:
+                    prior_studies.append(s)
+
+    registry_recorded = False
+    if not audit and source_kind == "REAL_CANDIDATE" and registry_path is not None:
+        reg_path = Path(registry_path).resolve()
+        reg_path.parent.mkdir(parents=True, exist_ok=True)
+        with workflow_lock(reg_path.with_suffix(reg_path.suffix + ".lock")):
+            if reg_path.exists():
+                reg = json.loads(reg_path.read_text(encoding="utf-8"))
+                if reg.get("schema") != OOS_REGISTRY_SCHEMA or not isinstance(reg.get("entries"), list):
+                    raise ValueError("corrupt cross-study OOS consumption registry")
+            else:
+                reg = {"schema": OOS_REGISTRY_SCHEMA, "entries": []}
+
+            for entry in reg["entries"]:
+                if entry.get("market") != market or entry.get("symbol") != symbol:
+                    continue
+                if entry.get("source_kind") != "REAL_CANDIDATE":
+                    continue
+                e_start = pd.Timestamp(entry["test_start"])
+                e_end = pd.Timestamp(entry["test_end"])
+                if e_start <= ts_end and ts_start <= e_end:
+                    overlapping_entries.append(
+                        {
+                            "study_id": entry["study_id"],
+                            "test_start": entry["test_start"],
+                            "test_end": entry["test_end"],
+                            "status": entry.get("status"),
+                        }
+                    )
+            if overlapping_entries:
+                if effective == "FRESH_UNCONSUMED_OOS":
+                    effective = "HISTORICAL_REUSE_PSEUDO_OOS"
+                blocked_reasons.append("overlaps_prior_consumed_oos_registry_entry")
+                for ov in overlapping_entries:
+                    if ov["study_id"] not in prior_studies:
+                        prior_studies.append(ov["study_id"])
+
+            reg["entries"].append(
+                {
+                    "market": market,
+                    "symbol": symbol,
+                    "test_start": test_start,
+                    "test_end": test_end,
+                    "study_id": study_id,
+                    "source_kind": source_kind,
+                    "status": "TEST_RESERVED",
+                    "declared_oos_eligibility": declared_oos_eligibility,
+                    "effective_oos_eligibility": effective,
+                    "bars_sha256": bars_sha256,
+                    "funding_sha256": funding_sha256,
+                    "reserved_at_utc": datetime.now(timezone.utc).isoformat(),
+                }
+            )
+            _atomic_write_json(reg_path, reg)
+            registry_recorded = True
+
+    audit_info = {
+        "declared_oos_eligibility": declared_oos_eligibility,
+        "effective_oos_eligibility": effective,
+        "downgraded": effective != declared_oos_eligibility,
+        "blocked_reasons": blocked_reasons,
+        "known_consumed_through": KNOWN_CONSUMED_HISTORY_END_UTC.get((market, symbol)) if source_kind == "REAL_CANDIDATE" else None,
+        "overlapping_registry_entries": overlapping_entries,
+        "registry_path": str(Path(registry_path).resolve()) if (registry_path is not None and not audit) else None,
+        "registry_recorded": registry_recorded,
+        "audit_mode": bool(audit),
+    }
+    return effective, prior_studies, audit_info
+
+
+def complete_oos_registry_entry(
+    *,
+    registry_path: Path | None,
+    study_id: str,
+    market: str,
+    symbol: str,
+    test_window: list[str],
+    promoted: bool,
+    verdict: str,
+    audit: bool = False,
+) -> None:
+    """Mark the reserved OOS registry entry as COMPLETED without deleting history."""
+    if audit or registry_path is None:
+        return
+    reg_path = Path(registry_path).resolve()
+    if not reg_path.exists():
+        return
+    with workflow_lock(reg_path.with_suffix(reg_path.suffix + ".lock")):
+        reg = json.loads(reg_path.read_text(encoding="utf-8"))
+        for entry in reversed(reg.get("entries", [])):
+            if (
+                entry.get("study_id") == study_id
+                and entry.get("market") == market
+                and entry.get("symbol") == symbol
+                and entry.get("test_start") == str(test_window[0])
+                and entry.get("test_end") == str(test_window[1])
+                and entry.get("status") == "TEST_RESERVED"
+            ):
+                entry["status"] = "COMPLETED"
+                entry["promoted"] = bool(promoted)
+                entry["verdict"] = str(verdict)
+                entry["completed_at_utc"] = datetime.now(timezone.utc).isoformat()
+                break
+        _atomic_write_json(reg_path, reg)
 
 
 def load_binance_bars_and_funding(
@@ -327,7 +572,7 @@ def load_binance_bars_and_funding(
                 "low": l,
                 "close": c,
                 "price": c,
-                "volume": int(D(str(v))),
+                "volume": v,
                 "completed_bar": True,
             }
         )
@@ -570,12 +815,25 @@ def _compute_financial_metrics(
     )
     daily_close = daily_close.rename(columns={"utc_day": "date"})
     eq = daily_close["equity"].to_numpy(dtype=float)
-    if len(eq) < 2 or not np.isfinite(eq).all() or (eq <= 0).any():
-        raise ValueError("invalid or nonpositive Binance daily equity series")
+    hourly_eq_raw = work["equity"].to_numpy(dtype=float)
+    if not np.isfinite(eq).all() or not np.isfinite(hourly_eq_raw).all():
+        raise ValueError("nonfinite Binance equity series")
+    if (eq <= 0).any() or (hourly_eq_raw <= 0).any():
+        raise CollateralDepletedError(
+            "authoritative PaperBroker ledger equity depleted (<= 0)",
+            final_equity=float(hourly_eq_raw[-1]),
+            halt_reason=telemetry.get("halt_reason"),
+        )
+    if len(eq) < 2:
+        raise ValueError("insufficient Binance daily equity observations")
     origin_eq = np.r_[float(initial_cash), eq]
     daily_returns = origin_eq[1:] / origin_eq[:-1] - 1.0
     if not np.isfinite(daily_returns).all() or (daily_returns <= -1.0).any():
-        raise ValueError("invalid Binance daily net-return series")
+        raise CollateralDepletedError(
+            "authoritative PaperBroker daily net return reached <= -100%",
+            final_equity=float(eq[-1]),
+            halt_reason=telemetry.get("halt_reason"),
+        )
     daily_close["strategy_nav"] = eq / float(initial_cash)
     daily_close["strategy_return"] = daily_returns
 
@@ -624,9 +882,17 @@ def _compute_financial_metrics(
     capital_utilization = float(work["net_exposure"].mean() / float(initial_cash))
     max_committed_ratio = float(work["committed"].max() / float(initial_cash))
 
-    exit_attempts = int(telemetry["exit_attempts"])
-    exit_failures = int(telemetry["exit_failures"])
-    exit_failure_ratio = (exit_failures / exit_attempts) if exit_attempts > 0 else 0.0
+    exit_lifecycle_count = int(telemetry["exit_lifecycle_count"])
+    failed_exit_lifecycle_count = int(telemetry["failed_exit_lifecycle_count"])
+    exit_order_attempt_count = int(telemetry["exit_order_attempt_count"])
+    failed_exit_order_attempt_count = int(telemetry["failed_exit_order_attempt_count"])
+    exit_status_poll_checks = int(telemetry["exit_status_poll_checks"])
+    exit_attempts = exit_lifecycle_count
+    exit_failures = failed_exit_lifecycle_count
+    exit_failure_ratio = (failed_exit_lifecycle_count / exit_lifecycle_count) if exit_lifecycle_count > 0 else 0.0
+    exit_order_failure_ratio = (
+        failed_exit_order_attempt_count / exit_order_attempt_count if exit_order_attempt_count > 0 else 0.0
+    )
 
     final_equity = float(eq[-1])
     total_fees = float(telemetry["total_fees_usdt"])
@@ -683,6 +949,12 @@ def _compute_financial_metrics(
         "exit_attempts": exit_attempts,
         "exit_failures": exit_failures,
         "exit_failure_ratio": float(exit_failure_ratio),
+        "exit_lifecycle_count": exit_lifecycle_count,
+        "failed_exit_lifecycle_count": failed_exit_lifecycle_count,
+        "exit_order_attempt_count": exit_order_attempt_count,
+        "failed_exit_order_attempt_count": failed_exit_order_attempt_count,
+        "exit_order_failure_ratio": float(exit_order_failure_ratio),
+        "exit_status_poll_checks": exit_status_poll_checks,
         "final_equity_usdt": final_equity,
         "funding_reconciliation_residual": float(telemetry["funding_reconciliation_residual"]),
         "equity_reconciliation_residual": float(telemetry["equity_reconciliation_residual"]),
@@ -739,6 +1011,7 @@ def simulate_binance_candidate(
     policy: SelectionPolicy,
     funding_override: dict[str, Any] | None = None,
     account_id: str = "s02-binance",
+    cancel_fill_race: bool = False,
 ) -> dict[str, Any]:
     """Execute one candidate over stage_bars using the authoritative PaperBroker + R09/R10 stack."""
     cls = _load_class(source_path, candidate["class_name"], candidate["code_version"])
@@ -810,13 +1083,118 @@ def simulate_binance_candidate(
         total_slippage = ZERO
         partial_fill_events = 0
         canceled_orders = 0
-        exit_attempts = 0
-        exit_failures = 0
+        in_exit_lifecycle = False
+        current_exit_failed_recorded = False
+        current_exit_order_blocked_recorded = False
+        exit_lifecycle_count = 0
+        failed_exit_lifecycle_count = 0
+        exit_order_attempt_count = 0
+        failed_exit_order_attempt_count = 0
+        exit_status_poll_checks = 0
+        active_exit_order_ids: set[str] = set()
+        pending_halt_cancels: set[str] = set()
         halted = False
         halt_reason: str | None = None
 
         hist_funding_idx = 0
         sorted_window_funding = sorted(window_funding, key=lambda x: x[0])
+
+        def begin_exit_lifecycle() -> None:
+            nonlocal in_exit_lifecycle, current_exit_failed_recorded, current_exit_order_blocked_recorded
+            nonlocal exit_lifecycle_count
+            if not in_exit_lifecycle:
+                in_exit_lifecycle = True
+                current_exit_failed_recorded = False
+                current_exit_order_blocked_recorded = False
+                exit_lifecycle_count += 1
+
+        def close_exit_lifecycle_if_flat(inv: Decimal) -> None:
+            nonlocal in_exit_lifecycle, current_exit_failed_recorded, current_exit_order_blocked_recorded
+            if in_exit_lifecycle and inv == ZERO:
+                in_exit_lifecycle = False
+                current_exit_failed_recorded = False
+                current_exit_order_blocked_recorded = False
+
+        def record_exit_order_submitted(oid: str) -> None:
+            nonlocal exit_order_attempt_count, current_exit_order_blocked_recorded
+            exit_order_attempt_count += 1
+            active_exit_order_ids.add(oid)
+            current_exit_order_blocked_recorded = False
+
+        def record_exit_order_filled(oid: str) -> None:
+            active_exit_order_ids.discard(oid)
+
+        def record_exit_order_failed(oid: str) -> None:
+            nonlocal failed_exit_order_attempt_count
+            if oid in active_exit_order_ids:
+                active_exit_order_ids.discard(oid)
+                failed_exit_order_attempt_count += 1
+
+        def record_exit_submission_rejected() -> None:
+            nonlocal exit_order_attempt_count, failed_exit_order_attempt_count
+            exit_order_attempt_count += 1
+            failed_exit_order_attempt_count += 1
+
+        def record_exit_blocked_poll(*, terminal_block: bool = False) -> None:
+            nonlocal exit_status_poll_checks, exit_order_attempt_count, failed_exit_order_attempt_count
+            nonlocal current_exit_order_blocked_recorded, failed_exit_lifecycle_count, current_exit_failed_recorded
+            exit_status_poll_checks += 1
+            if not active_exit_order_ids and not current_exit_order_blocked_recorded:
+                exit_order_attempt_count += 1
+                failed_exit_order_attempt_count += 1
+                current_exit_order_blocked_recorded = True
+            if terminal_block and in_exit_lifecycle and not current_exit_failed_recorded:
+                failed_exit_lifecycle_count += 1
+                current_exit_failed_recorded = True
+
+        def cancel_open_entry_buys_on_halt(*, grid_ref=None) -> None:
+            """Upon risk halt, withdraw unsubmitted BUY proposals and cancel active non-reduce-only BUY orders.
+
+            Preserves legitimate reduce-only SELL exits. When cancel_fill_race is True, queues cancel for
+            post-race confirmation so any real fill prior to cancel acknowledgement is booked honestly.
+            """
+            nonlocal canceled_orders
+            if grid_ref is not None:
+                unsub_buys = [
+                    o.intent.client_order_id
+                    for o in grid_ref.active
+                    if o.intent.client_order_id not in broker.state.orders
+                    and o.intent.side is Side.BUY
+                    and not o.intent.reduce_only
+                ]
+                if unsub_buys:
+                    grid_ref.withdraw_unsubmitted_paper(controller, unsub_buys, delivery=grid_ref.delivery + 1)
+            for oo in list(controller.account().open_orders):
+                if oo.intent.side is not Side.BUY or oo.intent.reduce_only:
+                    continue
+                ok = oo.intent.client_order_id
+                if ok in consumed_delete_ids:
+                    continue
+                if cancel_fill_race:
+                    pending_halt_cancels.add(ok)
+                    continue
+                if grid_ref is not None:
+                    if ok not in grid_ref.cancellations:
+                        grid_ref.cancel_exit_paper(controller, ok, delivery=grid_ref.delivery + 1)
+                    grid_ref.cancel_paper(controller, ok, delivery=grid_ref.delivery + 1)
+                else:
+                    controller.cancel(ok)
+                consumed_delete_ids.add(ok)
+                canceled_orders += 1
+
+        def flush_pending_halt_cancels(*, grid_ref=None) -> None:
+            nonlocal canceled_orders
+            for ok in sorted(pending_halt_cancels):
+                if ok in broker.state.orders and broker.state.orders[ok].snapshot.status not in TERMINAL and ok not in consumed_delete_ids:
+                    if grid_ref is not None:
+                        if ok not in grid_ref.cancellations:
+                            grid_ref.cancel_exit_paper(controller, ok, delivery=grid_ref.delivery + 1)
+                        grid_ref.cancel_paper(controller, ok, delivery=grid_ref.delivery + 1)
+                    else:
+                        controller.cancel(ok)
+                    consumed_delete_ids.add(ok)
+                    canceled_orders += 1
+            pending_halt_cancels.clear()
 
         def check_loss_halt(current_equity: Decimal) -> bool:
             nonlocal halted, halt_reason
@@ -1065,7 +1443,9 @@ def simulate_binance_candidate(
                 pre_acct = _read_usdm_account(broker, symbol)
                 if pre_acct["raw_available"] < ZERO or pre_acct["equity"] <= ZERO:
                     halted = True
-                    halt_reason = "COLLATERAL_EXHAUSTED_UNDER_FUNDING"
+                    halt_reason = halt_reason or "COLLATERAL_EXHAUSTED_UNDER_FUNDING"
+                    cancel_open_entry_buys_on_halt(grid_ref=grid)
+                    flush_pending_halt_cancels(grid_ref=grid)
                     controller.quote(Quote(symbol, close, now[0]))
                     acct_end = _read_usdm_account(broker, symbol)
                     pos_end = broker.state.positions.get(symbol)
@@ -1093,6 +1473,9 @@ def simulate_binance_candidate(
                     prev_close_ts = now[0]
                     continue
 
+                if check_loss_halt(pre_acct["equity"]):
+                    cancel_open_entry_buys_on_halt(grid_ref=grid)
+
                 # 2. Capture prior working orders
                 prior_orders = [
                     (key, record.snapshot)
@@ -1108,7 +1491,7 @@ def simulate_binance_candidate(
                     "high": D(str(bar["high"])),
                     "low": D(str(bar["low"])),
                     "close": close,
-                    "volume": max(0, int(bar["volume"])),
+                    "volume": max(0, int(D(str(bar["volume"])))),
                     "completed_bar": True,
                 }
                 grid.observe_paper(controller, obs, delivery=grid.delivery + 1, observed_at=now[0])
@@ -1144,6 +1527,11 @@ def simulate_binance_candidate(
                         bar_slip += sd
                         bar_notional += qd * ev.fill_price
                         budget -= qd
+                        if is_exit and ev.status == OrderStatus.FILLED:
+                            record_exit_order_filled(key)
+
+                flush_pending_halt_cancels(grid_ref=grid)
+                close_exit_lifecycle_if_flat(_read_usdm_account(broker, symbol)["inventory"])
 
                 # 5. Standard cancellations
                 for key in sorted(grid.cancellations):
@@ -1153,23 +1541,25 @@ def simulate_binance_candidate(
                         grid.cancel_paper(controller, key, delivery=grid.delivery + 1)
                         consumed_delete_ids.add(key)
                         canceled_orders += 1
+                        record_exit_order_failed(key)
 
                 if grid.pending_bar is not None:
                     grid.complete_bar_paper(controller, delivery=grid.delivery + 1)
 
                 # 6. Normal submissions vs F11 breakout exit & F08 rotation
                 acct_now = grid.account or project_paper_account(controller, symbol)
-                check_loss_halt(acct_now.equity)
+                if check_loss_halt(acct_now.equity):
+                    cancel_open_entry_buys_on_halt(grid_ref=grid)
 
                 if not grid.closed_by_breakout:
                     for key, order_snap in list(grid.orders.items()):
                         if order_snap.status == OrderStatus.NEW:
                             is_grid_exit = grid.state == "EXITING" or order_snap.intent.reduce_only
                             if is_grid_exit:
-                                exit_attempts += 1
+                                begin_exit_lifecycle()
                             if halted and not is_grid_exit:
                                 grid.withdraw_unsubmitted_paper(controller, [key], delivery=grid.delivery + 1)
-                                break
+                                continue
                             notional = order_snap.intent.quantity * (order_snap.intent.limit_price or close)
                             if (
                                 broker.global_post_blocked(notional)
@@ -1177,14 +1567,14 @@ def simulate_binance_candidate(
                                 or len(controller.account().open_orders) >= guardrails.max_open_orders
                             ):
                                 if is_grid_exit:
-                                    exit_failures += 1
+                                    record_exit_blocked_poll(terminal_block=False)
                                 break
                             band_err = _check_percent_price(
                                 order_snap.intent.limit_price or close, book["ask"], book["mark"], guardrails
                             )
                             if band_err is not None:
                                 if is_grid_exit:
-                                    exit_failures += 1
+                                    record_exit_submission_rejected()
                                 grid.withdraw_unsubmitted_paper(controller, [key], delivery=grid.delivery + 1)
                                 continue
                             order_meta[key] = {"purpose": "RISK_EXIT" if is_grid_exit else "GRID", "generation": generation}
@@ -1192,10 +1582,12 @@ def simulate_binance_candidate(
                                 grid.submit_paper(controller, key, delivery=grid.delivery + 1)
                                 order_submitted_bar[key] = bar_idx
                                 record_volume_demand(order_snap.intent.quantity, bar_idx)
+                                if is_grid_exit:
+                                    record_exit_order_submitted(key)
                             except RiskRejected:
                                 order_meta.pop(key, None)
                                 if is_grid_exit:
-                                    exit_failures += 1
+                                    record_exit_submission_rejected()
                 elif guardrails.enable_f11:
                     unsubmitted = [
                         o.intent.client_order_id
@@ -1205,6 +1597,8 @@ def simulate_binance_candidate(
                     if unsubmitted:
                         grid.withdraw_unsubmitted_paper(controller, unsubmitted, delivery=grid.delivery + 1)
                     acct_now = grid.account or project_paper_account(controller, symbol)
+                    if acct_now.inventory > ZERO:
+                        begin_exit_lifecycle()
                     open_orders = controller.account().open_orders
                     open_buys = [o for o in open_orders if o.intent.side is Side.BUY]
                     if open_buys:
@@ -1245,13 +1639,16 @@ def simulate_binance_candidate(
                                     grid.cancel_paper(controller, sk, delivery=grid.delivery + 1)
                                     consumed_delete_ids.add(sk)
                                     canceled_orders += 1
+                                    record_exit_order_failed(sk)
                                 elif plan_block is not None and not (
                                     plan_block == "EXIT_MIN_NOTIONAL" and sell.cumulative_filled_quantity > ZERO
                                 ):
-                                    exit_attempts += 1
-                                    exit_failures += 1
+                                    record_exit_blocked_poll(
+                                        terminal_block=plan_block in {"EXIT_MAX_ATTEMPTS", "HALTED_BLOCK", "EXIT_MIN_NOTIONAL"}
+                                    )
+                                else:
+                                    exit_status_poll_checks += 1
                     elif acct_now.inventory > ZERO and not open_orders:
-                        exit_attempts += 1
                         target_px, target_qty, plan_block = _plan_offline_limit_exit(
                             grid=grid,
                             inventory=acct_now.inventory,
@@ -1279,6 +1676,7 @@ def simulate_binance_candidate(
                                     dispatched_exits_this_gen += 1
                                     order_submitted_bar[ex_key] = bar_idx
                                     record_volume_demand(target_qty, bar_idx)
+                                    record_exit_order_submitted(ex_key)
                                     if (
                                         assumptions.exit_marketable_at_submit
                                         and not assumptions.exit_cannot_fill
@@ -1301,14 +1699,19 @@ def simulate_binance_candidate(
                                                 bar_slip += sd
                                                 bar_notional += qd * ev_ex.fill_price
                                                 budget -= qd
+                                                if ev_ex.status == OrderStatus.FILLED:
+                                                    record_exit_order_filled(ex_key)
+                                                close_exit_lifecycle_if_flat(_read_usdm_account(broker, symbol)["inventory"])
                                 except RiskRejected:
                                     order_meta.pop(ex_key, None)
                                     grid.withdraw_unsubmitted_paper(controller, [ex_key], delivery=grid.delivery + 1)
-                                    exit_failures += 1
+                                    record_exit_submission_rejected()
                             else:
-                                exit_failures += 1
+                                record_exit_blocked_poll(terminal_block=False)
                         else:
-                            exit_failures += 1
+                            record_exit_blocked_poll(
+                                terminal_block=plan_block in {"EXIT_MAX_ATTEMPTS", "HALTED_BLOCK", "EXIT_MIN_NOTIONAL"}
+                            )
 
                 # 7. F08 post-flat rotation
                 if guardrails.enable_f08 and grid.closed_by_breakout and not halted and bar_idx < len(stage_bars) - 1:
@@ -1391,13 +1794,21 @@ def simulate_binance_candidate(
                 # 1. Funding strictly BEFORE current-bar fills
                 settle_funding_before_fills(prev_close_ts, now[0])
 
-                # 2. Capture prior working orders & update mark quote
+                # 2. Update mark quote & check pre-fill risk halt (funding/MTM breach cancels open BUY immediately unless race modeled)
+                controller.quote(Quote(symbol, close, now[0]))
+                pre_acct = _read_usdm_account(broker, symbol)
+                if pre_acct["raw_available"] < ZERO or pre_acct["equity"] <= ZERO:
+                    halted = True
+                    halt_reason = halt_reason or "COLLATERAL_EXHAUSTED_UNDER_FUNDING"
+                if check_loss_halt(pre_acct["equity"]):
+                    cancel_open_entry_buys_on_halt()
+
+                # Capture prior working orders (after immediate halt cancellation if not in race mode)
                 prior_orders = [
                     (key, record.snapshot)
                     for key, record in broker.state.orders.items()
                     if record.observed_at < now[0] and record.snapshot.status not in TERMINAL
                 ]
-                controller.quote(Quote(symbol, close, now[0]))
 
                 # 3. Match prior working orders
                 for key, order_snap in prior_orders:
@@ -1430,6 +1841,10 @@ def simulate_binance_candidate(
                         budget -= qd
                         if is_exit and ev.status == OrderStatus.FILLED:
                             consecutive_exit_attempts = 0
+                            record_exit_order_filled(key)
+
+                flush_pending_halt_cancels()
+                close_exit_lifecycle_if_flat(_read_usdm_account(broker, symbol)["inventory"])
 
                 # 4. Append completed bar strictly causally & ask S01 strategy for Decision
                 history_bars.append(
@@ -1459,8 +1874,9 @@ def simulate_binance_candidate(
                 acct_now = _read_usdm_account(broker, symbol)
                 if acct_now["raw_available"] < ZERO or acct_now["equity"] <= ZERO:
                     halted = True
-                    halt_reason = "COLLATERAL_EXHAUSTED_UNDER_FUNDING"
-                check_loss_halt(acct_now["equity"])
+                    halt_reason = halt_reason or "COLLATERAL_EXHAUSTED_UNDER_FUNDING"
+                if check_loss_halt(acct_now["equity"]):
+                    cancel_open_entry_buys_on_halt()
                 open_orders = list(controller.account().open_orders)
 
                 if decision.target_weight is not None:
@@ -1470,14 +1886,30 @@ def simulate_binance_candidate(
                     desired_qty = target_quantity(
                         equity=max(ZERO, acct_now["equity"]),
                         weight=desired_weight,
-                        price=close,
+                        price=buy_limit,
                         budget_price=buy_limit,
                         fee_rate=assumptions.fee_rate,
                         current=acct_now["inventory"],
                         available=acct_now["available"],
                         step=rules.step_size,
                     )
-                    desired_qty = min(desired_qty, guardrails.max_quantity)
+                    if desired_qty < acct_now["inventory"]:
+                        desired_qty = target_quantity(
+                            equity=max(ZERO, acct_now["equity"]),
+                            weight=desired_weight,
+                            price=sell_limit,
+                            budget_price=sell_limit,
+                            fee_rate=assumptions.fee_rate,
+                            current=acct_now["inventory"],
+                            available=acct_now["available"],
+                            step=rules.step_size,
+                        )
+                    ref_cap_price = buy_limit if desired_qty >= acct_now["inventory"] else sell_limit
+                    desired_qty = min(
+                        desired_qty,
+                        _floor_step(guardrails.max_notional / ref_cap_price, rules.step_size),
+                        guardrails.max_quantity,
+                    )
                     delta = desired_qty - acct_now["inventory"]
 
                     # Cancel stale or conflicting working orders
@@ -1500,12 +1932,19 @@ def simulate_binance_candidate(
                             controller.cancel(ok)
                             consumed_delete_ids.add(ok)
                             canceled_orders += 1
+                            record_exit_order_failed(ok)
 
                     open_orders = list(controller.account().open_orders)
                     acct_now = _read_usdm_account(broker, symbol)
                     delta = desired_qty - acct_now["inventory"]
                     if delta >= ZERO or acct_now["inventory"] == ZERO:
                         consecutive_exit_attempts = 0
+                        if acct_now["inventory"] == ZERO:
+                            close_exit_lifecycle_if_flat(ZERO)
+                        elif in_exit_lifecycle and desired_weight > ZERO:
+                            in_exit_lifecycle = False
+                            current_exit_failed_recorded = False
+                            current_exit_order_blocked_recorded = False
 
                     if not open_orders and delta > ZERO and not halted:
                         buy_qty = _floor_step(min(delta, guardrails.max_quantity - acct_now["inventory"]), rules.step_size)
@@ -1541,6 +1980,9 @@ def simulate_binance_candidate(
                             except RiskRejected:
                                 order_meta.pop(oid, None)
 
+                    elif open_orders and delta < ZERO and acct_now["inventory"] > ZERO:
+                        exit_status_poll_checks += 1
+
                     elif not open_orders and delta < ZERO and acct_now["inventory"] > ZERO:
                         raw_sell_qty = _floor_step(min(abs(delta), acct_now["inventory"]), rules.step_size)
                         is_true_exit = desired_weight == ZERO or raw_sell_qty >= acct_now["inventory"]
@@ -1559,12 +2001,12 @@ def simulate_binance_candidate(
                                 sell_qty = raw_sell_qty
                         notional = sell_qty * sell_limit
                         # Skip sub-min_notional partial rebalance trims while staying long;
-                        # count exit_attempts / exit_failures strictly on genuine exit intents.
+                        # count exit lifecycles / order attempts strictly on genuine exit intents.
                         if not is_true_exit and (sell_qty < rules.min_quantity or notional < rules.min_notional):
                             pass
                         else:
                             if is_true_exit:
-                                exit_attempts += 1
+                                begin_exit_lifecycle()
                             band_err = _check_percent_price(sell_limit, book["ask"], book["mark"], guardrails)
                             if (
                                 sell_qty >= rules.min_quantity
@@ -1594,12 +2036,20 @@ def simulate_binance_candidate(
                                     controller.submit(intent)
                                     order_submitted_bar[oid] = bar_idx
                                     record_volume_demand(sell_qty, bar_idx)
+                                    if is_true_exit:
+                                        record_exit_order_submitted(oid)
                                 except RiskRejected:
                                     order_meta.pop(oid, None)
                                     if is_true_exit:
-                                        exit_failures += 1
+                                        record_exit_submission_rejected()
                             elif is_true_exit:
-                                exit_failures += 1
+                                record_exit_blocked_poll(
+                                    terminal_block=(
+                                        consecutive_exit_attempts >= guardrails.exit_max_attempts
+                                        or sell_qty < rules.min_quantity
+                                        or notional < rules.min_notional
+                                    )
+                                )
 
                 # 6. Record hourly snapshot
                 acct_end = _read_usdm_account(broker, symbol)
@@ -1662,6 +2112,13 @@ def simulate_binance_candidate(
         unfilled_orders = sum(1 for r in orders_map.values() if r.snapshot.cumulative_filled_quantity == ZERO)
         mean_hold_h, max_hold_h = _holding_durations_from_trades(trades, window_end)
 
+        # Finalize any exit orders / exit lifecycle still unresolved at window end
+        failed_exit_order_attempt_count += len(active_exit_order_ids)
+        active_exit_order_ids.clear()
+        if in_exit_lifecycle and acct_final["inventory"] > ZERO and not current_exit_failed_recorded:
+            failed_exit_lifecycle_count += 1
+            current_exit_failed_recorded = True
+
         hourly_df = pd.DataFrame(hourly_rows)
         telemetry = {
             "submitted_orders": submitted_orders,
@@ -1674,12 +2131,18 @@ def simulate_binance_candidate(
             "total_funding_usdt": float(total_booked_funding),
             "mean_holding_hours": mean_hold_h,
             "max_holding_hours": max_hold_h,
-            "exit_attempts": exit_attempts,
-            "exit_failures": exit_failures,
+            "exit_attempts": exit_lifecycle_count,
+            "exit_failures": failed_exit_lifecycle_count,
+            "exit_lifecycle_count": exit_lifecycle_count,
+            "failed_exit_lifecycle_count": failed_exit_lifecycle_count,
+            "exit_order_attempt_count": exit_order_attempt_count,
+            "failed_exit_order_attempt_count": failed_exit_order_attempt_count,
+            "exit_status_poll_checks": exit_status_poll_checks,
             "funding_reconciliation_residual": funding_residual,
             "equity_reconciliation_residual": equity_residual,
             "halted": halted,
             "halt_reason": halt_reason,
+            "cancel_fill_race_mode": bool(cancel_fill_race),
         }
         daily_nav, metrics = _compute_financial_metrics(
             hourly_df,
@@ -1718,26 +2181,38 @@ def simulate_binance_candidate(
         store.db.close()
 
 
-def _simulate_worker(payload: tuple[str, dict[str, Any]]) -> tuple[str, dict[str, Any] | None, str | None]:
+def _simulate_worker(payload: tuple[str, dict[str, Any]]) -> tuple[str, dict[str, Any] | None, dict[str, Any] | None]:
     tag, kwargs = payload
     try:
         return tag, simulate_binance_candidate(**kwargs), None
+    except CollateralDepletedError as exc:
+        return tag, None, {
+            "category": "COLLATERAL_DEPLETED",
+            "error_type": type(exc).__name__,
+            "detail": str(exc),
+            "final_equity": exc.final_equity,
+            "halt_reason": exc.halt_reason,
+        }
     except Exception as exc:
-        return tag, None, str(exc)
+        return tag, None, {
+            "category": "SIMULATION_FAILED",
+            "error_type": type(exc).__name__,
+            "detail": str(exc),
+        }
 
 
 def run_simulations_batch(
     tasks: list[tuple[str, dict[str, Any]]],
     *,
     max_workers: int | None = None,
-) -> dict[str, tuple[dict[str, Any] | None, str | None]]:
+) -> dict[str, tuple[dict[str, Any] | None, dict[str, Any] | str | None]]:
     """Run independent PaperBroker simulations deterministically (parallel when >= 4 tasks)."""
     if not tasks:
         return {}
     workers = max_workers if max_workers is not None else min(6, os.cpu_count() or 1)
     if workers <= 1 or len(tasks) < 4:
         return {tag: (sim, err) for tag, sim, err in (_simulate_worker(t) for t in tasks)}
-    results: dict[str, tuple[dict[str, Any] | None, str | None]] = {}
+    results: dict[str, tuple[dict[str, Any] | None, dict[str, Any] | str | None]] = {}
     with ProcessPoolExecutor(max_workers=min(workers, len(tasks))) as pool:
         for tag, sim, err in pool.map(_simulate_worker, tasks):
             results[tag] = (sim, err)
@@ -1812,12 +2287,17 @@ def run_risk_stress_suite(
         res, err = batch[tag]
         if res is not None:
             m = res["metrics"]
+            t_info = res["telemetry"]
+            row_status = "RISK_HALTED" if t_info.get("halted") else "OK"
             rows.append(
                 {
                     "candidate_id": cand["candidate_id"],
                     "strategy_id": cand["strategy_id"],
                     "regime": regime_name,
-                    "status": "OK",
+                    "status": row_status,
+                    "halt_reason": t_info.get("halt_reason"),
+                    "error_type": None,
+                    "detail": None,
                     "net_return": m["net_return"],
                     "max_drawdown": m["max_drawdown"],
                     "cvar_95": m["cvar_95"],
@@ -1830,14 +2310,16 @@ def run_risk_stress_suite(
                     "exit_failure_ratio": m["exit_failure_ratio"],
                 }
             )
-        else:
+        elif isinstance(err, dict) and err.get("category") == "COLLATERAL_DEPLETED":
             rows.append(
                 {
                     "candidate_id": cand["candidate_id"],
                     "strategy_id": cand["strategy_id"],
                     "regime": regime_name,
                     "status": "COLLATERAL_DEPLETED",
-                    "detail": err or "simulation_failed",
+                    "halt_reason": err.get("halt_reason"),
+                    "error_type": err.get("error_type", "CollateralDepletedError"),
+                    "detail": err.get("detail") or "authoritative PaperBroker ledger equity depleted",
                     "net_return": -1.0,
                     "max_drawdown": 1.0,
                     "cvar_95": None,
@@ -1850,13 +2332,46 @@ def run_risk_stress_suite(
                     "exit_failure_ratio": None,
                 }
             )
+        else:
+            err_type = err.get("error_type", "Exception") if isinstance(err, dict) else "Exception"
+            err_detail = err.get("detail", "simulation_failed") if isinstance(err, dict) else (err or "simulation_failed")
+            rows.append(
+                {
+                    "candidate_id": cand["candidate_id"],
+                    "strategy_id": cand["strategy_id"],
+                    "regime": regime_name,
+                    "status": "SIMULATION_FAILED",
+                    "halt_reason": None,
+                    "error_type": err_type,
+                    "detail": err_detail,
+                    "net_return": None,
+                    "max_drawdown": None,
+                    "cvar_95": None,
+                    "funding_pnl_usdt": None,
+                    "funding_erosion_pct": None,
+                    "fill_rate": None,
+                    "trade_count": None,
+                    "holding_hours": None,
+                    "residual_inventory": None,
+                    "exit_failure_ratio": None,
+                }
+            )
+    summary = {
+        "total_runs": len(rows),
+        "ok_runs": sum(1 for r in rows if r["status"] == "OK"),
+        "risk_halted_runs": sum(1 for r in rows if r["status"] == "RISK_HALTED"),
+        "collateral_depleted_runs": sum(1 for r in rows if r["status"] == "COLLATERAL_DEPLETED"),
+        "simulation_failed_runs": sum(1 for r in rows if r["status"] == "SIMULATION_FAILED"),
+    }
     return {
         "evidence_classification": "RISK_STRESS_ONLY_NOT_OOS_EVIDENCE",
         "note": (
             "Funding stress regimes (5x Mainnet, Demo 22.97 bps/h over 168h, and 48h burst switch over 168h) "
-            "test downside resilience only; they NEVER substitute for fresh unseen OOS qualification."
+            "test downside resilience only; they NEVER substitute for fresh unseen OOS qualification. "
+            "Program/data/strategy exceptions are classified as SIMULATION_FAILED (net_return=None) and excluded from financial risk summaries."
         ),
         "regimes": [name for name, _, _, _ in regimes],
+        "summary": summary,
         "results": rows,
     }
 
@@ -1871,10 +2386,18 @@ def build_s03_release_envelope(
     expected_active: str | None = None,
     migration: str = "wait_flat",
 ) -> dict[str, Any]:
-    """Build S03-consumable release envelope and verify through champion_release_adapter."""
+    """Build native S04 FACTORLAB_DECISION_V1 StrategyPackage & verify via adapt_selection + LoadedStrategy."""
+    import tempfile
+
     from factorlab.integrations.binance_futures_trading.champion_release_adapter import adapt_selection
     from factorlab.integrations.binance_futures_trading.strategy_deployment import LEGACY
-    from factorlab.integrations.binance_futures_trading.strategy_package import build_package, digest
+    from factorlab.integrations.binance_futures_trading.strategy_package import (
+        DECISION_INTERFACE,
+        build_package,
+        digest,
+        install_package,
+    )
+    from factorlab.strategies.loader import LoadedStrategy
 
     if expected_active is None:
         expected_active = LEGACY
@@ -1898,25 +2421,41 @@ def build_s03_release_envelope(
             "package_id": None,
         }
 
-    if not compat.get("s03_compatible") or not compat.get("s03_entrypoint") or compat.get("s03_entrypoint") == "LEGACY_DEMO_GRID_BRIDGE":
+    if (
+        not compat.get("s03_compatible")
+        or not compat.get("s03_entrypoint")
+        or compat.get("s03_entrypoint") == "LEGACY_DEMO_GRID_BRIDGE"
+        or compat.get("s03_protocol") != DECISION_INTERFACE
+    ):
         return {
             "status": "PROMOTED_REQUIRES_S04_RUNTIME_BRIDGE",
             "promoted": True,
             "s03_compatible": False,
-            "s04_requirements": compat.get("s04_requirements") or "Grid runtime bridge owned by S04",
+            "s04_requirements": compat.get("s04_requirements") or "Native FACTORLAB_DECISION_V1 strategy bridge required",
             "package_id": None,
         }
+
+    spec = compat.get("spec") or {}
+    interval_seconds = int(selected["parameters"].get("interval_seconds", 3600))
+    if not spec.get("strategy_id") or not spec.get("version") or not spec.get("decision_kind"):
+        raise ValueError("missing StrategySpec metadata for native FACTORLAB_DECISION_V1 release package")
+    if interval_seconds not in (spec.get("intervals") or []):
+        raise ValueError("selected interval_seconds is not declared in frozen StrategySpec.intervals")
 
     evidence_entry = next(c for c in selection["candidates"] if c["candidate"]["candidate_id"] == cid)
     test_stage = evidence_entry["stages"]["test"]
     source_name = selected["strategy"]["file"].replace("\\", "/").rsplit("/", 1)[-1]
     manifest_draft = {
         "schema_version": 1,
-        "interface": "factorlab.demo.evaluate/v1",
+        "interface": DECISION_INTERFACE,
         "environment": "BINANCE_USDM_DEMO",
         "symbol": selection["common"]["symbol"],
         "code_commit": code_commit,
-        "state_version": 1,
+        "strategy_id": str(spec["strategy_id"]),
+        "strategy_version": str(spec["version"]),
+        "state_version": str(spec.get("state_version", "1")),
+        "execution_mode": str(spec["decision_kind"]),
+        "interval_seconds": interval_seconds,
         "entrypoint": compat["s03_entrypoint"],
         "files": [source_name],
         "dependencies": [],
@@ -1937,6 +2476,17 @@ def build_s03_release_envelope(
         archive_path.unlink()
     manifest = build_package(source_dir, manifest_draft, archive_path)
     adapted = adapt_selection(selection, manifest)
+
+    # Verify the built package loads cleanly through the real S04 isolated worker & matches StrategySpec.
+    with tempfile.TemporaryDirectory(prefix="factorlab-s04-pkg-verify-") as staging:
+        release_dir, installed = install_package(archive_path, Path(staging) / "releases")
+        loaded = LoadedStrategy.from_strategy_package(release_dir, installed, trusted=True)
+        loaded.spec.require(
+            symbol=selection["common"]["symbol"],
+            interval_seconds=interval_seconds,
+            data_types=["closed_bar"],
+        )
+
     envelope = {
         "archive": archive_name,
         "selection": selection,
@@ -1948,6 +2498,9 @@ def build_s03_release_envelope(
         "status": "PROMOTE_PACKAGE_BUILT_AND_VERIFIED",
         "promoted": True,
         "s03_compatible": True,
+        "protocol": DECISION_INTERFACE,
+        "interval_seconds": interval_seconds,
+        "execution_mode": str(spec["decision_kind"]),
         "package_id": manifest["package_id"],
         "archive_path": str(archive_path),
         "envelope_path": str(envelope_path),

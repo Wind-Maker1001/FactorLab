@@ -69,7 +69,7 @@
       "P8-R09",
       "P8-R10"
     ],
-    "sha256": "2a1280648190c2dd724b43e9adc8d6bd24c01c8a5f9096bf279d46925c8ffb5a",
+    "sha256": "d06277bebc1062bef514d27dfbad5fb1382c66f0be6201b9556069575a1ab0d5",
     "source_kind": "REAL_CANDIDATE"
   },
   "policy": {
@@ -108,7 +108,7 @@
         "interval_seconds": 3600,
         "symbol": "NVDAUSDT"
       },
-      "sha256": "c0e1ddc26ae8f5782366d095b3e8708ca4272a67be4ef07c68d05532441d5cfb",
+      "sha256": "b8a64e2ad5bcdc9d6092c971c9e8e3e29453decfb4fce1193ecb88ab3b433a43",
       "strategy_id": "CASH"
     },
     {
@@ -399,7 +399,7 @@
         "max_weight": 0.9,
         "symbol": "NVDAUSDT"
       },
-      "sha256": "6cbaf67d0b378215baba96d7a36e5adfabbb8e757f99467cf40c2d4c357beb01",
+      "sha256": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
       "strategy_id": "DUAL_MA"
     },
     {
@@ -421,11 +421,11 @@
         "symbol": "NVDAUSDT",
         "weight": 0.9
       },
-      "sha256": "2f5f0ed27ec277bf978758bcdce8788b48dc09a317c7312a6af19a11766e9a3b",
+      "sha256": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
       "strategy_id": "CLOSE_MOMENTUM"
     }
   ],
-  "study_id": "p8-s02-f01-nvda-real-v1",
+  "study_id": "p8-s02-f01-nvda-real-v2",
   "windows": {
     "test": [
       "2026-09-12",

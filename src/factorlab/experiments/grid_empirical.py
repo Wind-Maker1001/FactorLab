@@ -44,9 +44,9 @@ def load_hourly(snapshot):
         o, h, l, c, v = map(D, (row.open, row.high, row.low, row.close, row.volume))
         if not all(x.is_finite() for x in (o, h, l, c, v)) or not (0 < l <= min(o, c) <= max(o, c) <= h) or v < 0:
             raise ValueError('invalid hourly OHLC or volume')
-    bars = [dict(id=f'hour-{i}', time=row.open_time.isoformat(), price=float(row.close),
+    bars = [dict(id=f'hour-{i}', time=row.open_time.isoformat(), open=float(row.open), price=float(row.close),
                  high=float(row.high), low=float(row.low), close=float(row.close),
-                 volume=int(D(row.volume)), completed_bar=True)
+                 volume=int(D(row.volume)), raw_volume=float(row.volume), completed_bar=True)
             for i, row in enumerate(frame.itertuples())]
     receipts = [r for r in manifest['raw_receipts'] if r['endpoint'] == 'klines' and r['params'].get('interval') == '1h']
     identity = dict(data_version=manifest['data_version'], bars_sha256=digest,

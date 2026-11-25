@@ -16,16 +16,16 @@
   "s03_cycle_results": [
     {
       "accepted": false,
-      "file": "p8-s02-f01-nvda-real-v1.candidate.json",
+      "file": "p8-s02-f01-nvda-real-v2.candidate.json",
       "reason": "RETAIN_CHAMPION"
     }
   ],
   "s03_envelope": {
-    "envelope_path": "D:\\Code\\p8-s02-f01-real-run\\s03-verify\\inbox\\p8-s02-f01-nvda-real-v1.candidate.json",
+    "envelope_path": "D:\\Code\\p8-s02-f01-real-run-v2\\s03-verify\\inbox\\p8-s02-f01-nvda-real-v2.candidate.json",
     "package_id": null,
     "promoted": false,
     "s03_adapter_result": null,
     "status": "RETAIN_ENVELOPE_WRITTEN"
   },
-  "verified_at_utc": "2026-11-24T21:33:48.934805+00:00"
+  "verified_at_utc": "2026-11-25T06:22:24.097130+00:00"
 }

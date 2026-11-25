@@ -33,6 +33,7 @@ from factorlab.research.binance_perpetual import (
     BINANCE_EXECUTION,
     FUNDING_TIE_RULE,
     build_s03_release_envelope,
+    validate_funding_coverage,
 )
 
 
@@ -55,7 +56,11 @@ def export_audited_nvda_dataset(
     dest_dir: Path,
     allow_network: bool = False,
 ) -> dict[str, Any]:
-    """Export audited 193-day continuous NVDAUSDT 1h bars parquet and funding JSON."""
+    """Export audited 193-day continuous NVDAUSDT 1h bars parquet and complete funding JSON.
+
+    Preserves exact source open/high/low/close/volume (never substituting close for open or
+    truncating fractional volume) and fails closed if any funding cache segment is missing.
+    """
     dest_dir = Path(dest_dir).resolve()
     dest_dir.mkdir(parents=True, exist_ok=True)
     bars, funding, audit = load_and_audit_r10_dataset(
@@ -64,22 +69,47 @@ def export_audited_nvda_dataset(
         cache_dir=cache_dir,
         allow_network_supplement=allow_network,
     )
+    if not bars:
+        raise ValueError("audited NVDAUSDT bar dataset is empty")
+
+    bar_end_excl = pd.Timestamp(bars[-1]["time"]).tz_convert("UTC") + pd.Timedelta(hours=1)
+    post_r07_cutoff = pd.Timestamp("2026-11-10T00:00:00Z")
+    post_funding_path = Path(cache_dir) / "nvdausdt_funding_20261110_20261123.json"
+    if bar_end_excl > post_r07_cutoff and not post_funding_path.is_file():
+        raise ValueError(
+            f"missing post-R07 funding cache required for bar end {bar_end_excl.isoformat()}: {post_funding_path}"
+        )
+
     rows = []
+    exported_bars_for_check = []
     for b in bars:
-        open_px = float(b.get("open", b["close"]))
-        hi = max(float(b["high"]), open_px, float(b["close"]))
-        lo = min(float(b["low"]), open_px, float(b["close"]))
+        if "open" not in b or b["open"] is None:
+            raise ValueError(f"source bar missing real open price at {b.get('time')}")
+        if "raw_volume" not in b or b["raw_volume"] is None:
+            raise ValueError(f"source bar missing exact raw_volume at {b.get('time')}")
+        open_px = float(b["open"])
+        hi = float(b["high"])
+        lo = float(b["low"])
+        cl = float(b["close"])
+        vol = float(b["raw_volume"])
+        if not (0.0 < lo <= min(open_px, cl) <= max(open_px, cl) <= hi) or vol < 0.0:
+            raise ValueError(f"invalid OHLCV invariant at {b.get('time')}: O={open_px} H={hi} L={lo} C={cl} V={vol}")
+        ts = pd.Timestamp(b["time"]).tz_convert("UTC")
         rows.append(
             {
-                "open_time": pd.Timestamp(b["time"]).tz_convert("UTC"),
+                "open_time": ts,
                 "symbol": "NVDAUSDT",
+                "interval": "1h",
                 "open": open_px,
                 "high": hi,
                 "low": lo,
-                "close": float(b["close"]),
-                "volume": float(b["volume"]),
+                "close": cl,
+                "volume": vol,
             }
         )
+        exported_bars_for_check.append({"time": ts.isoformat()})
+
+    funding_coverage = validate_funding_coverage(exported_bars_for_check, funding)
     bars_df = pd.DataFrame(rows)
     bars_path = dest_dir / "nvdausdt_1h_audited.parquet"
     bars_df.to_parquet(bars_path, index=False)
@@ -97,6 +127,14 @@ def export_audited_nvda_dataset(
     ]
     funding_path = dest_dir / "nvdausdt_funding_audited.json"
     write_json(funding_path, funding_rows)
+    audit = dict(audit)
+    audit["funding_coverage"] = funding_coverage
+    audit["ohlcv_export_fidelity"] = {
+        "open_preserved_from_source": True,
+        "bars_with_open_ne_close": int((bars_df["open"] != bars_df["close"]).sum()),
+        "bars_with_fractional_volume": int((bars_df["volume"] % 1.0 != 0.0).sum()),
+        "volume_preserved_float": True,
+    }
     audit_path = dest_dir / "data_audit.json"
     write_json(audit_path, audit)
     return {
@@ -107,6 +145,7 @@ def export_audited_nvda_dataset(
         "audit_path": str(audit_path),
         "total_bars": len(rows),
         "total_funding_events": len(funding_rows),
+        "funding_coverage": funding_coverage,
         "audit": audit,
     }
 

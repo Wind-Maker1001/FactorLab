@@ -1,160 +1,141 @@
 # FactorLab P8-S02-F01：Binance 永续合约自动研究、优化与 Champion 选择报告
 
-> **安全边界**：`NO LIVE MONEY` · 纯离线研究与 Champion 选择流程，不操作 Azure，不提交真实 Binance Demo 订单，`financial_admission = FORMAL_ADMISSION_BLOCKED` 保持不变。
+> **安全边界**：`NO LIVE MONEY` · 纯离线研究、Champion 选择与 S04 原生协议接线，不操作 Azure，不提交真实 Binance Demo 订单，`financial_admission = FORMAL_ADMISSION_BLOCKED` 保持不变。
 
 ## 0. 五大核心问题明确回答
 
 1. **自动研究功能是否真实运行？**
-   **是。** 已在现有 S02 唯一编排与选择框架（`factorlab.research.automatic.run` / `replay` + `ChampionSelector` + `ExperimentTracker` + `tools/research/select_champion.py`）上完成 Binance USD-M 扩展，并执行了：(a) 完整合成协议端到端验收（`tests/research/test_binance_champion_research.py`）；(b) 基于本地已审计 193 天真实 `NVDAUSDT` 1h 行情（4,632 根 K 线）与 593 条历史资金费结算记录的真实 6 大家族 25 组候选 + 既有 `FIXED_GRID` incumbent 完整自动研究与独立重放（`tools/research/run_binance_champion_research.py`，研究 ID `p8-s02-f01-nvda-real-v1`）。
+   **是。** 在现有 S02 唯一编排与选择框架（`factorlab.research.automatic.run` / `replay` + `ChampionSelector` + `ExperimentTracker` + `tools/research/select_champion.py`）上完成 Binance USD-M 扩展，并已基于修复后的代码与最新 `origin/main`（`2529fa6`，含 PR #246 S04）重跑完整两类实证：(a) 合成协议端到端验收及全部 9 项独立审查缺陷 + OOS 新鲜度回归测试（`tests/research/test_binance_champion_research.py`、`tests/integrations/test_binance_champion_s04_integration.py`）；(b) 基于本地已审计 193 天真实 `NVDAUSDT` 1h 行情（4,632 根真实 OHLCV K 线，零失真导出）与完整 593 条历史资金费结算记录的真实 6 大家族 25 组候选 + 既有 `FIXED_GRID` incumbent 完整自动研究、风险压力测试、独立回放与 S03/S04 发布校验（`tools/research/run_binance_champion_research.py`，研究 ID `p8-s02-f01-nvda-real-v2`）。
 
 2. **Binance 执行及资金费口径是否完整？**
-   **离线研究第一阶段口径完整且零残差对账，但明确不冒充真实交易所撮合深度。** 严格限定 `NVDAUSDT`、单向持仓（`ONE_WAY_LONG_ONLY`）、`LIMIT` 挂单、1x 全额抵押风险口径，复用现有 `PaperBroker` + `TradingController` + `execution_candidate` + R09 F11/F08 生命周期护栏（`DELAYED_EXIT_FILL` / `LIMITED_CAPACITY_PARTIAL` / `UNFILLED_EXIT_TIMEOUT`）与 R10 修复后的同时间戳资金费结算规则（`fill_time < funding_time`，每根 K 线撮合前先按成交前库存结算资金费，禁止成交后反算），逐候选通过资金费对账（残差 `< 1e-4 USDT`）与权益盯市对账（残差 `< 1e-6 USDT`）。同时在合同与报告中明确标注：离线 1h 成交收盘价 + 合成盘口不是真实交易所逐笔订单簿撮合证据，且历史高价期（126–243 USDT）单笔 `0.04 NVDAUSDT` 超过现行 Demo `7.00 USDT` 上限，故沿用 R08/R09/R10 的 `10.00 USDT` 1x 历史回放预算并显式记录 `demo_live_cap_usdt = 7.0`。
+   **离线研究第一阶段口径完整、零残差对账且修复了全部已复现执行/核算缺陷，但明确不冒充真实交易所撮合深度。** 严格限定 `NVDAUSDT`、单向持仓（`ONE_WAY_LONG_ONLY`）、`LIMIT` 挂单、1x 全额抵押风险口径，复用现有 `PaperBroker` + `TradingController` + `execution_candidate` + R09 F11/F08 生命周期护栏与 R10 修复后的同时间戳资金费结算规则（`fill_time < funding_time`），并补齐：(a) 风险触发 `halted` 后立即撤除全部未成交/部分成交非只减仓 `BUY` 挂单并保留合法只减仓 `SELL`（支持显式撤单成交竞态假设）；(b) 退出事件生命周期与订单尝试次数严格与每小时轮询检查解耦；(c) 压力测试异常与真实 `PaperBroker` 账本爆仓严格分类；(d) 导出数据完整保留真实 `open` 与浮点 `volume` 且缺失资金费分段一律 fail-closed。
 
 3. **是否产生真实合格 Challenger？**
-   **否（真实历史研究结论为 `INCONCLUSIVE`，`promoted = false`，原样保留 incumbent `FIXED_GRID` `c-7eefa330d4d7fa022db5d1ff`，版本保持 `v0`）。** 在真实 193 天 NVDAUSDT 数据（`train: 2026-05-14..2026-07-13`，`validation: 2026-07-14..2026-09-11`，`test: 2026-09-12..2026-11-22`）上：
+   **否（真实历史研究结论仍为 `INCONCLUSIVE`，`promoted = false`，原样保留 incumbent `FIXED_GRID` `c-7eefa330d4d7fa022db5d1ff`，版本保持 `v0`）。** 在真实 193 天 NVDAUSDT 数据（`train: 2026-05-14..2026-07-13`，`validation: 2026-07-14..2026-09-11`，`test: 2026-09-12..2026-11-22`）上：
    - 全部网格类候选（`FIXED_GRID_ALT`、`FUNDING_SENSITIVE_GRID` B1–B6、`VOL_ADAPTIVE_GRID` C1–C6）在验证期均为负收益（`-7.31%` 至 `-12.00%`）而止步验证阶段；
-   - `CASH` 基准零成交零收益，被 `capacity_insufficient_or_unknown`、`net_return_below_floor` 与 `insufficient_trade_activity` 阻断，不能充当正 Alpha 晋升候选；
-   - 仅 2 组 S01 趋势目标候选入围封闭测试（`DUAL_MA (5/48)` 验证 `+1.80%`、`CLOSE_MOMENTUM (lb=1)` 验证 `+4.61%`），但在 72 天下跌测试窗口中分别录得 `-12.53%` 与 `-25.89%` 净收益（尽管点估计亏损小于 incumbent `FIXED_GRID` 的 `-38.27%`），同时触发 `net_return_below_floor`、`oos_window_not_fresh_unconsumed`（历史窗口已被 R04B/R07/R09/R10 复用）、以及 25 候选族 Bonferroni 调整后 HAC/Bootstrap/Score 置信区间跨零等多项否决条件。严格拒绝因"少亏"或点估计略高而放宽门槛。
+   - `CASH` 基准零成交零收益，被 `capacity_insufficient_or_unknown`、`net_return_below_floor` 与 `insufficient_trade_activity` 阻断；
+   - 入围封闭测试的 2 组 S01 趋势目标候选 `DUAL_MA (5/48)`（`c-771426d69d072db5f561c7b1`）与 `CLOSE_MOMENTUM (lb=1)`（`c-ef5d445aa2f93fb3e13cfc27`）在 72 天下跌测试窗口中分别录得 `-12.53%` 与 `-25.89%` 净收益，触发 `net_return_below_floor`、`oos_window_not_fresh_unconsumed`（强制锁定 `<= 2026-11-22` 为历史复用伪 OOS）以及 25 候选族 Bonferroni 调整后 HAC/Bootstrap/Score 置信区间跨零。严格拒绝因"少亏"或点估计略高而放宽门槛。
 
 4. **输出能否被 S03/S04 正常消费？**
-   **能。** 输出原生 `FACTORLAB_CHAMPION_SELECTION_V1`（`common.execution = binance_usdm_demo_nvda_limit_long_only`，`common.symbol = NVDAUSDT`）与 `package_mapping.json`，并已通过两类离线消费实证：
-   - **真实历史未晋升结果**：经 `build_s03_release_envelope` 与 S03 `azure_strategy_deploy.cycle` 实际消费，返回 `accepted = false, reason = "RETAIN_CHAMPION"`（无需发布包、不触发现有部署状态表）；
-   - **合成合格晋升结果**（`tests/research/test_binance_champion_research.py`）：端到端通过 S03 `build_package` → `install_package` → `champion_release_adapter.adapt_selection` → `strategy_worker.invoke(probe)` → `azure_strategy_deploy.cycle` 全链路，返回 `accepted = true`。
-   - 同时在 `package_mapping.json` 中诚实标注兼容性边界：`CASH`、`DUAL_MA`、`CLOSE_MOMENTUM` 原生支持 S03 `factorlab.demo.evaluate/v1`；`FIXED_GRID` 对应既有 `LEGACY_DEMO_GRID_BRIDGE`；`FUNDING_SENSITIVE_GRID` 与 `VOL_ADAPTIVE_GRID` 需由 S04 补齐云端资金费/波动率上下文与多单网格运行桥接，绝不伪造部署能力。
+   **能，且已全面切换至最新 `main`（PR #246）原生 `FACTORLAB_DECISION_V1` 协议。**
+   - 删除了 `dual_ma_usdm.py`、`close_momentum_usdm.py`、`cash_benchmark.py` 中与研究不等价的固定 `0.04` 数量 `evaluate/v1` 逻辑；
+   - `build_s03_release_envelope` 直接以原始冻结策略源码、策略类与参数构建原生 `FACTORLAB_DECISION_V1` `StrategyPackage`（携带 `strategy_id`、`strategy_version`、`state_version`、`execution_mode="target"`、`interval_seconds=3600`），并经 `adapt_selection`、`LoadedStrategy.from_strategy_package` 隔离 worker、以及 S04 `ReleaseConsumer` + `DemoStrategyRuntime` 真实 `closed_bar` → `quote` → 假网络 `POST /fapi/v1/order` 全链路实证（不再仅用 `probe`）；
+   - 真实历史未晋升结果经 `azure_strategy_deploy.cycle` 离线消费，返回 `accepted = false, reason = "RETAIN_CHAMPION"`；
+   - 网格族策略继续诚实标记兼容性边界：`FIXED_GRID` 对应 `LEGACY_DEMO_GRID_BRIDGE`，`FUNDING_SENSITIVE_GRID` 与 `VOL_ADAPTIVE_GRID` 明确记录待 S04/R11 补齐资金费/波动率上下文桥接。
 
 5. **还缺哪些实际证据？**
-   - **真正未消费的新 OOS 样本窗口**：现有已审计 193 天历史数据（截至 `2026-11-23T00:00:00Z`）均已被 R04B/R07/R09/R10 观察或参与研究，尚未累积足够长度（至少 `min_oos_days = 60` 个完整新 UTC 日）的全新未见样本；
-   - **真实交易所历史订单簿/逐笔成交与实时规则快照证据**：离线回放采用 1h 成交收盘价与 `DELAYED_EXIT_FILL` 假设，缺少真实逐笔 L2 深度与历史每小时交易所过滤规则演变记录；
-   - **R11 并行研究与 S04 云端发布控制器联调证据**：本任务按约定不等待并行的 R11/S04，已预留兼容接口；待 R11 新策略与 S04 部署接线完成后，可在新 OOS 窗口复跑并接入云端；
-   - **Codex Review 复审记录**：用户确认当前 Codex Review 额度已耗尽，待用户后续自行复审。
+   - **真正未消费的新 OOS 样本窗口**：现有已审计 193 天历史数据（截至 `2026-11-23T00:00:00Z`）已内置为不可伪造新鲜度的历史复用基线，需等待至少 `min_oos_days = 60` 个完整新 UTC 日的真实未见样本；
+   - **真实交易所历史订单簿/逐笔成交与实时规则快照证据**：离线回放采用 1h 成交收盘价与 `DELAYED_EXIT_FILL` 假设，不代表真实 L2 盘口深度；
+   - **并行 PR #251（R11）与 PR #252（PERF-01）合入后的后续联调**：本轮严格不引入未合入 PR 代码，已在第 8 节明确记录与 R11 生命周期边界对齐点；
+   - **独立审查复核与 Codex Review**：本轮已修复原独立审查报告中全部 9 项缺陷 + OOS 新鲜度问题，待原独立审查代理复审（Codex Review 额度耗尽，用户后续自行复审）。
 
 ---
 
-## 1. 能力审计与架构复用结论
+## 1. PR #253 独立审查缺陷修复总览（P1 × 3 + P2 × 6 + OOS 新鲜度）
 
-| 模块 | 现有能力（PR #234–#238） | P8-S02-F01 审计发现的缺口 | 最小充分接线实现 |
+> 同步最新 `origin/main` 基线：`2529fa61f5f8b862970ea430f797effe1c2f7bc6`（含 PR #246 `P8-S04: S01/S03 unified strategy protocol and Azure cloud execution acceptance`），零冲突合入原分支 `4704bcfbf4cb720b5050ac24cf8ed95ccc841265`，保留全部 S04 既有行为。
+
+| 编号 | 级别 | 独立审查确认问题 | 根因定位与修复方案 | 修改文件 | 回归测试覆盖 |
+| --- | --- | --- | --- | --- | --- |
+| **F1** | **P1** | 研究与发布仓位语义不一致（发布侧 `evaluate()` 硬编码 `0.04` 忽略 `weight`/`max_weight`、权益与部分持仓） | 删除 `dual_ma_usdm.py` / `close_momentum_usdm.py` / `cash_benchmark.py` 的固定 `0.04` `evaluate/v1` 实现；`build_s03_release_envelope` 改为构建原生 S04 `FACTORLAB_DECISION_V1` 策略包（`execution_mode="target"`），经 `LoadedStrategy.from_strategy_package` + `DemoStrategyRuntime` 直接调用同一冻结策略 `decide()` 与 `target_quantity`；研究侧目标仓位计算同步对齐 `buy_limit`/`sell_limit` 与 `max_notional` 截断合同 | `src/factorlab/strategies/binance_usdm/{dual_ma_usdm,close_momentum_usdm,cash_benchmark}.py`, `src/factorlab/research/binance_perpetual.py`, `src/factorlab/research/automatic.py` | `test_f1_legacy_fixed_quantity_evaluate_removed_from_new_candidates`, `test_f1_research_and_s04_release_position_sizing_equivalence` (4 组参数化场景，覆盖 DualMA/CloseMomentum、不同权益、部分持仓、减仓、MIN_NOTIONAL 与假网络 `POST /fapi/v1/order`) |
+| **F2** | **P1** | 冻结 `3600s` 策略可在 `60s` Feed 上运行并提交 `LIMIT BUY` | 策略包 manifest 显式绑定 `interval_seconds=3600` 并经 `LoadedStrategy.from_strategy_package` 与 `ReleaseConsumer._load_decision_runner` 严格校验 `manifest.interval_seconds == active_feed.seconds`；在 `DemoStrategyRuntime.closed_bar`（同时覆盖 `historical_bar`）补充 `bar.interval_seconds` 周期一致性守卫；不匹配时在激活/热切/重启/回补前直接拒绝并回滚，零 POST | `src/factorlab/research/binance_perpetual.py`, `src/factorlab/integrations/binance_futures_trading/strategy_runtime.py` | `test_f2_hourly_3600s_strategy_rejected_on_60s_feed_with_zero_posts` (覆盖 60s 激活拒绝、3600s 正常激活、未闭合/60s 历史与实时 bar/重复/乱序/缺口 bar、重启切换 60s 回滚，全程零 POST) |
+| **F3** | **P1** | 风险 `halted=True` 后旧部分成交 `BUY` 挂单未撤销并在下根 K 线继续成交加仓 | 在 `simulate_binance_candidate` 的目标与网格双循环中，于资金费扣减后及亏损触发 `halted` 时无条件调用 `cancel_open_entry_buys_on_halt()`（不依赖 `decision.target_weight` 是否为 `None`），立即撤回未提交 `BUY` 提案并撤销全部活跃非只减仓 `BUY` 挂单；严格保留合法 `reduce_only=True` `SELL` 退出单；支持显式 `cancel_fill_race=True` 撤单成交竞态假设（真实记录竞态成交不伪造零成交）；`halted` 单调不可重置并阻断 F08 轮换 | `src/factorlab/research/binance_perpetual.py` | `test_f3_halt_cancels_partially_filled_open_buy_even_on_hold_signal` (含 MTM 停机、资金费停机与 `cancel_fill_race=True` 对照), `test_f3_halt_preserves_reduce_only_sell_and_never_resets_on_rebound` |
+| **F4** | **P2** | 共享账户多标的持仓污染（旧 `evaluate()` 累加全部币种持仓） | 移除旧 `evaluate()` 后全面复用 S04 `DemoStrategyRuntime`（仅读取 `instrument_id == self.symbol` 的 `NVDAUSDT` 持仓，同时保持账户级共享 USDT 权益与可用余额约束） | `src/factorlab/strategies/binance_usdm/*.py`, S04 `strategy_runtime.py` | `test_f4_multi_symbol_shared_account_positions_do_not_contaminate_nvda` (假交易所 `/fapi/v3/account` & `/fapi/v3/positionRisk` 注入 `QQQUSDT=5.00`、`BTCUSDT=0.50` 时 `NVDAUSDT` 正确执行 `BUY`) |
+| **F5** | **P2** | 首次激活丢弃历史预热，策略从空历史冷启动 | 切换原生 `FACTORLAB_DECISION_V1` 后，复用 S04 `ReleaseConsumer.historical_bar` + `history_watermark()` + `SignalAdapter`：`history_limit` 未满时处于显式 `INSUFFICIENT_DATA`（零 POST），通过历史 bar 预热补足窗口且零历史下单，首根可交易实时闭合 bar 与研究侧决策完全一致 | `src/factorlab/research/binance_perpetual.py`, S04 `demo_strategy_release.py` | `test_f5_first_activation_historical_warmup_without_historical_orders` (`DualMA(5, 20)` `history_limit=21` 预热前后对比与假网络下单) |
+| **F6** | **P2** | 重复每小时轮询检查计入 `exit_attempts` / `exit_failures`，导致退出失败率随窗口时长畸变 | 拆分并独立记录 `exit_lifecycle_count`、`failed_exit_lifecycle_count`、`exit_order_attempt_count`、`failed_exit_order_attempt_count` 与 `exit_status_poll_checks`；`exit_failure_ratio = failed_exit_lifecycle_count / exit_lifecycle_count`，轮询检查永不进入分子或分母 | `src/factorlab/research/binance_perpetual.py` | `test_f6_exit_failure_metrics_do_not_inflate_with_window_duration` (`UNFILLED_EXIT_TIMEOUT` 48h vs 72h 退出生命周期、订单尝试与失败率完全一致，轮询计数严格分离) |
+| **F7** | **P2** | 风险压力测试将任意程序/校验异常伪装为 `COLLATERAL_DEPLETED` 与 `-100%` 收益 | 引入 `CollateralDepletedError` 仅在权威 `PaperBroker` 账本证明 `equity <= 0` 时抛出；压力套件明确区分 `OK`、`RISK_HALTED`、`COLLATERAL_DEPLETED` 与 `SIMULATION_FAILED`（程序异常输出 `net_return=None`, `max_drawdown=None`, `cvar_95=None`, `error_type`, `detail`，绝不伪造 `-1.0`） | `src/factorlab/research/binance_perpetual.py`, `src/factorlab/research/automatic.py` | `test_f7_stress_suite_distinguishes_program_exceptions_from_collateral_depletion` (覆盖 `ValueError` checksum 异常与真实 `CollateralDepletedError`) |
+| **F8** | **P2** | 缺少后 13 天资金费缓存文件时离线导出静默按 0 资金费继续 | 在 `export_audited_nvda_dataset` 与 `validate_funding_coverage` 中强制校验完整资金费时间覆盖：当导出 bar 越过 `2026-11-10Z` 且缺失 `nvdausdt_funding_20261110_20261123.json` 或首尾滞后 `> 8.05h` / 内部缺口 `> 24h` 时直接 fail-closed 报错，同时正确保留真实 `0.0` 费率事件（341 条） | `tools/research/run_binance_champion_research.py`, `src/factorlab/research/binance_perpetual.py`, `src/factorlab/research/automatic.py` | `test_f8_and_f9_funding_coverage_and_true_ohlcv_export_fidelity` (覆盖 0 费率合法通过、缺尾 13 天报错、内部缺口报错、缺缓存文件报错) |
+| **F9** | **P2** | 导出的“已审计 OHLCV”用 `close` 覆盖真实 `open` 并截断 `volume` 为整数 | 在 `grid_empirical.py` 与 `grid_funding_adaptive.py` 保留源 `open` 与 `raw_volume`（保持原有 R02/R10 `volume` 整数接口兼容）；`export_audited_nvda_dataset` 严禁以 `close` 替代 `open`（缺失直接报错），完整保留真实 `open` 与浮点 `volume`；`load_binance_bars_and_funding` 保留浮点 `volume` | `src/factorlab/experiments/grid_empirical.py`, `src/factorlab/experiments/grid_funding_adaptive.py`, `tools/research/run_binance_champion_research.py`, `src/factorlab/research/binance_perpetual.py` | `test_f8_and_f9_funding_coverage_and_true_ohlcv_export_fidelity` + 真实 4,632 根导出回环校验（5 列最大绝对误差均为 `0.000000000000`） |
+| **OOS 新鲜度** | **治理阻断** | 新建 `state_path` 并将历史窗口改标为 `FRESH_UNCONSUMED_OOS` 可绕过历史复用拦截 | (1) 内置权威已知历史消费下界 `KNOWN_CONSUMED_HISTORY_END_UTC[("BINANCE_USDM", "NVDAUSDT")] = "2026-11-22"`，任何 `REAL_CANDIDATE` 与之重叠（含部分重叠）均强制降级为 `HISTORICAL_REUSE_PSEUDO_OOS` 且永不晋升；(2) 增加带文件锁的跨研究共享消费台账 `oos-consumption-registry.json`（`TEST_RESERVED` 原子落盘，按 `(market, symbol, [test_start, test_end])` 拦截跨 `state_path`、换 `study_id`、重导出文件和部分重叠复用）；(3) `replay(audit=True)` 永不修改台账 | `src/factorlab/research/binance_perpetual.py`, `src/factorlab/research/automatic.py` | `test_oos_freshness_blocks_relabeling_known_history_and_cross_state_reuse` (覆盖已知历史改标、跨 `state_path` 部分重叠复用、`replay` 零变更) |
+
+---
+
+## 2. 真实 NVDAUSDT 研究重跑前后对比（旧 HEAD `4704bcf` vs 修复后 `v2`）
+
+### 2.1 数据导出与资金费覆盖前后对比
+
+| 审计项 | 修复前 (`4704bcf` / `p8-s02-f01-nvda-real-v1`) | 修复后 (`v2` / `p8-s02-f01-nvda-real-v2`) | 变化说明 |
 | --- | --- | --- | --- |
-| **S02 核心选择器** (`src/factorlab/research/champion.py`) | `SelectionPolicy`、`ChampionSelector.select`、HAC + 移动块 Bootstrap + Bonferroni 族校正 + Score CI | 仅校验 `capacity_cny`，缺少 USDT 容量、最低交易活跃度（防空仓充 Alpha）、退出失败率上限与 `oos_eligibility` 新鲜度门槛 | 向后兼容扩展 `SelectionPolicy`（`min_capacity_usdt`、`min_trade_count`、`max_exit_failure_ratio`）、`oos_eligibility` 校验与 `classify_verdict`；保留唯一 `ChampionSelector` |
-| **S02 自动编排** (`src/factorlab/research/automatic.py`) | `run`/`replay`、文件锁、`TEST_RESERVED` 中断保护、OOS 消费拦截、冷却期、`pre-run-state.json`、`ExperimentTracker` | 仅硬编码接受 `a_share_daily_long_only_next_open_t1` 与 `funding_bps == 0` | 保留全部 A 股路径不变，按 `common.execution` 分发至 `_run_binance`，复用同一状态机、锁、Tracker、Replay 与 `FACTORLAB_CHAMPION_SELECTION_V1` 输出 |
-| **S01 策略协议** (`src/factorlab/strategies/protocol.py` 等) | `StrategySpec`、`Decision`、`UnifiedStrategy`、`DualMAAdapter`、`CloseMomentum` | 需将 6 大家族封装为哈希固定、参数规范化且同时对齐 S01/S03 契约的候选文件 | 新增 `src/factorlab/strategies/binance_usdm/` 下 6 个独立候选模块，均实现 `describe()`/`normalized_parameters()`，目标类同时提供无外部依赖的 `evaluate(context, state)` |
-| **R09 完整离线执行** (`src/factorlab/experiments/grid_f11_f08_offline.py`) | `PaperBroker` + `TradingController` + `DemoGuardrails` + `ExecutionAssumptions` + F11 只减仓 LIMIT 退出 + F08 轮换 | 仅覆盖单一固定网格，未对接 S01 目标策略与 R10 资金费/波动率网格统一评估 | 在 `src/factorlab/research/binance_perpetual.py` 中基于同一 `PaperBroker`/`TradingController` 统一驱动网格族与目标族，并加入浮盈仓位只减仓分拆、负可用保证金安全投影与单次退出重试重置 |
-| **R10 资金费结算与滤波** (`grid_funding_adaptive.py`, `grid_funding.py`) | `validate_hourly_timeline`、`FundingSensitiveGrid`、`VolatilityAdaptiveGrid`、`position_settlements`（`fill_time < funding_time`） | `FundingSensitiveGrid` 的 `_risk(exit_position=True)` 原产生 `MARKET` 单，不符合 Binance `LIMIT`-only 合同 | 子类 `_LimitOnlyFundingSensitiveGrid` 将资金费退出转为合法只减仓 `LIMIT` 单；每根 K 线撮合前先按成交前库存入账资金费，并以 `position_settlements` 独立核验零残差 |
-| **S03 发布适配** (`champion_release_adapter.py`, `strategy_package.py`, `azure_strategy_deploy.py`) | 严格消费 `FACTORLAB_CHAMPION_SELECTION_V1` + `binance_usdm_demo_nvda_limit_long_only` | 需要将 S02 输出自动映射为 S03 `StrategyPackage` 与 `.candidate.json` 入箱信封 | 新增 `build_s03_release_envelope` 与 `package_mapping.json`，默认 `expected_active` 对齐 `strategy_deployment.LEGACY` (`legacy-grid`) |
+| 导出 K 线数量 / 连续性 | 4,632（0 缺失） | 4,632（0 缺失，新增 `interval="1h"` 列） | 完整连续 |
+| 真实 `open != close` 根数 | **0 / 4,632**（全部被 `close` 覆盖） | **4,576 / 4,632**（与原始 R04B + R07/Post-R07 差值 `0.0`） | F9 彻底修复 |
+| 浮点 `volume` 保留根数 | **0 / 4,632**（全部截断为整数） | **4,585 / 4,632**（与原始源最大差值 `0.0`） | F9 彻底修复 |
+| 资金费覆盖事件与校验 | 593 条（缺后 13 天缓存时静默退化为 554 条） | **593 条**（`2026-05-14T00:00Z` → `2026-11-22T16:00Z`，最大间隔 `8.0h`，`341` 条真实 `0.0` 费率，缺缓存强制报错） | F8 彻底修复 |
+| `bars_sha256` | `e7a86b3a...`（旧失真文件） | 见最新 [p8_s02_f01_binance_nvda_frozen.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/configs/research/p8_s02_f01_binance_nvda_frozen.json) | 真实 OHLCV 哈希重新冻结 |
 
----
+### 2.2 核心候选测试阶段前后指标对比（`test: 2026-09-12..2026-11-22`，72d）
 
-## 2. Binance 永续合约第一阶段研究合同
+| 策略 | 版本 | 净收益 | MaxDD | 资金费 PnL | 成交笔数 | 退出失败率（新旧口径对比） | 轮询检查次数 | 停机标志 |
+| --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: |
+| `FIXED_GRID` (Incumbent) | 旧 `4704bcf` | -38.27% | 42.19% | -0.0509 U | 65 | `336 / 432` (**77.8%**, 受轮询畸变) | 未分离 | `1.0` |
+| `FIXED_GRID` (Incumbent) | **新 `v2`** | **-38.27%** | **42.19%** | **-0.0509 U** | **65** | 生命周期 `1 / 33` (**3.0%**)；订单尝试 `65 / 97` | **378** | **`1.0`** |
+| `DUAL_MA (5/48)` | 旧 `4704bcf` | -12.53% | 17.87% | -0.0536 U | 39 | `0 / 24` (0.0%) | 未分离 | `0.0` |
+| `DUAL_MA (5/48)` | **新 `v2`** | **-12.53%** | **17.87%** | **-0.0536 U** | **39** | 生命周期 `0 / 24` (**0.0%**)；订单尝试 `5 / 24` | **0** | **`0.0`** |
+| `CLOSE_MOMENTUM (lb=1)` | 旧 `4704bcf` | -25.89% | 33.47% | -0.1173 U | 17 | `157 / 850` (18.5%) | 未分离 | `1.0` |
+| `CLOSE_MOMENTUM (lb=1)` | **新 `v2`** | **-25.89%** | **33.47%** | **-0.1173 U** | **17** | 生命周期 `78 / 427` (**18.3%**)；订单尝试 `763 / 771` | **167** | **`1.0`** |
+| `CASH` | 旧 / **新 `v2`** | 0.00% | 0.00% | 0.0000 U | 0 | `0 / 0` (0.0%) | 0 | `0.0` |
 
-冻结配置位于 [p8_s02_f01_binance_nvda_frozen.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/configs/research/p8_s02_f01_binance_nvda_frozen.json)，核心合同参数如下：
+> **关键变化说明**：
+> - 修复 F6 后，`FIXED_GRID` 在 72 天测试窗口的真实退出生命周期失败率从畸变的 `77.8% (336/432)` 还原为 `3.0% (1/33)`，378 次每小时状态轮询检查被单独记录于 `exit_status_poll_checks`；
+> - 验证期 25 组候选的入围集合保持完全一致（仍为 `DUAL_MA (5/48)` 与 `CLOSE_MOMENTUM (lb=1)`），两者的 `candidate_id` 因切换至原生 `FACTORLAB_DECISION_V1` 策略源码哈希而同步更新（`DUAL_MA`: `c-771426d69d072db5f561c7b1`，`CLOSE_MOMENTUM`: `c-ef5d445aa2f93fb3e13cfc27`）；
+> - 最终 Champion 结论保持不变：`verdict = INCONCLUSIVE`、`promoted = false`、`selected = FIXED_GRID (c-7eefa330d4d7fa022db5d1ff)`、`version = v0`、`financial_admission = FORMAL_ADMISSION_BLOCKED`。
 
-- **执行合同标识**：`binance_usdm_demo_nvda_limit_long_only`（与 S03 `champion_release_adapter.EXECUTION` 精确一致）
-- **标的 / 市场 / 周期 / 持仓 / 订单 / 杠杆**：`NVDAUSDT` / `BINANCE_USDM` / `1h` UTC / `ONE_WAY_LONG_ONLY` / `LIMIT` / `1x`（禁止加杠杆、做空、市价单或多标的扩展）
-- **交易价格与假设边界**：1h 成交收盘价叠加不利滑点与 `DELAYED_EXIT_FILL` 被动限价排队退出（R09 主对比档位，退出限价单至少排队 2 根 K 线，超时改价最多 5 次）；显式声明不代表真实交易所逐笔盘口撮合证据
-- **交易所过滤规则**：`min_notional = 5 USDT`、`step_size = 0.01`、`tick_size = 0.01`、`min_quantity = 0.01`、`quantity_unit = 0.04`、`max_quantity = 0.04`、`PERCENT_PRICE = [0.97, 1.03]`
-- **成本与流动性**：手续费 `3.0 bps`、滑点 `2.0 bps`、成交参与度上限 `1.0%`（支持部分成交与未成交撤单）、目标策略限价缓冲 `10.0 bps`
-- **账户风险预算与历史边界**：离线 1x 抵押预算 `10.00 USDT`（因 May–Nov 2026 历史价位 `126.19–242.61 USDT` 下 `0.04` 单位名义额为 `5.05–9.70 USDT`，超过现行 Demo `7.00 USDT` 上限；合同中显式记录 `demo_live_cap_usdt = 7.0` 与 `max_loss_ratio = 0.25`）
-- **资金费结算规则**：严格复用 R10 `settlement_before_exact_tie_fill`（`fill_time < funding_time`），每根 K 线在撮合当期成交前先按成交前持仓结算 `(prev_close, now]` 内的资金费事件，并由 `grid_funding.position_settlements` 独立复核零残差。
+### 2.3 风险压力测试前后对比（`RISK_STRESS_ONLY_NOT_OOS_EVIDENCE`）
 
----
-
-## 3. 首批 6 大候选策略家族与兼容性矩阵
-
-| 家族 | 策略文件 | 候选数量 | 预声明参数空间 | 离线研究状态 | S03 发布兼容性 |
-| --- | --- | ---: | --- | --- | --- |
-| **A. `CASH`** | [cash_benchmark.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/cash_benchmark.py) | 1 | 现金空仓基准 | 已运行（基准对照；不可作为正 Alpha 晋升） | 原生 `cash_benchmark:evaluate`（仅作研究基准/空仓保持） |
-| **B. `FIXED_GRID`** | [fixed_grid.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/fixed_grid.py) | 1 incumbent + 2 alt | Incumbent `half_width=1.0%`；Challenger `[1.5%, 2.0%]` | 已运行 | `LEGACY_DEMO_GRID_BRIDGE`（现有 Demo 网格控制组） |
-| **C. `FUNDING_SENSITIVE_GRID`** | [funding_sensitive_grid.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/funding_sensitive_grid.py) | 6 (`B1..B6`) | 复用 R10 预声明 `B1..B6` 因果资金费门控与退出参数 | 已运行（转 `LIMIT` 只减仓退出） | 需 S04 补齐云端已结算资金费事件上下文与网格桥接 |
-| **D. `VOL_ADAPTIVE_GRID`** | [vol_adaptive_grid.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/vol_adaptive_grid.py) | 6 (`C1..C6`) | 复用 R10 预声明 `C1..C6`，`sigma_ref` 仅在训练窗拟合冻结 | 已运行 | 需 S04 补齐云端滚动波动率状态与网格桥接 |
-| **E. `DUAL_MA`** | [dual_ma_usdm.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/dual_ma_usdm.py) | 4 | `fast=[5, 12] × slow=[20, 48]`，`max_weight=0.90` | 已运行（S01 `UnifiedStrategy`） | **原生兼容** `dual_ma_usdm:evaluate`（已通过 S03 worker 隔离验证） |
-| **F. `CLOSE_MOMENTUM`** | [close_momentum_usdm.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/close_momentum_usdm.py) | 6 | `lookback=[1, 6, 24] × threshold_bps=[0, 25]`，`weight=0.90` | 已运行（S01 `UnifiedStrategy`） | **原生兼容** `close_momentum_usdm:evaluate`（已通过 S03 worker 隔离验证） |
-
----
-
-## 4. 真实 NVDAUSDT 193 天历史研究结果（Section 9B）
-
-### 4.1 数据审计与窗口划分
-
-- **数据来源**：认证 R04B 快照（`2026-05-14` → `2026-08-12`，2,160h）+ 核验 R07/Post-R07（`2026-08-12` → `2026-11-23`，2,472h），合计 `4,632` 根连续无缺失 1h K 线（`0` 缺失、`0` 重复、`0` 异常 OHLCV），配对 `593` 条主网真实资金费结算事件（详见 [data_audit.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/data_audit.json)）。
-- **窗口划分**：
-  - `train`: `2026-05-14` → `2026-07-13`（61 天 / 1,464h，仅用于 `VOL_ADAPTIVE_GRID` 拟合 `sigma_ref`）
-  - `validation`: `2026-07-14` → `2026-09-11`（60 天 / 1,440h，25 组候选筛选与冻结入围清单 [frozen-search.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/frozen-search.json)）
-  - `test`: `2026-09-12` → `2026-11-22`（72 天 / 1,728h，封闭对比测试）
-- **数据独立性标记**：`oos_eligibility = HISTORICAL_REUSE_PSEUDO_OOS`，显式登记重叠历史研究 `["P7-R04B", "P7-R09", "P8-R07", "P8-R08", "P8-R09", "P8-R10"]`，**不宣称未见新样本**。
-
-### 4.2 完整候选金融评价表（含全部成本、资金费与残仓盯市）
-
-| 策略 | 参数摘要 | 阶段 | 净收益 | vs 现金 | vs Incumbent | MaxDD | VaR95 / CVaR95 | Sharpe / Sortino | 日亏损率 | 成交率 (笔数) | 换手 | 资金费侵蚀 | 持仓时长 (均值) | 资金利用率 | 期末残仓 | 退出失败率 | 状态 |
-| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `FIXED_GRID` | `hw=0.01, ttl=100` (Incumbent) | `test` | -38.27% | -38.27% | +0.00% | 42.19% | 5.17% / 7.40% | -5.60 / -5.80 | 41.7% | 40.6% (65) | 55.65x | 0.509% | 538h (16.3h) | 22.4% | 0.04 | 77.8% | `INCUMBENT_EVALUATED` |
-| `CASH` | 现金基准 | `test` | +0.00% | +0.00% | +38.27% | 0.00% | 0.00% / 0.00% | N/A / N/A | 0.0% | 0.0% (0) | 0.00x | 0.000% | 0h (0.0h) | 0.0% | 0.00 | 0.0% | `BENCHMARK_CASH_EVALUATED` |
-| `FIXED_GRID_ALT` | `hw=0.015` | `validation` | -10.95% | — | — | 11.48% | 1.75% / 2.16% | -6.16 / -6.03 | 28.3% | 43.3% (42) | 35.83x | 0.045% | 140h (6.7h) | 8.3% | 0.00 | 46.2% | `VALIDATION_REJECTED` |
-| `FIXED_GRID_ALT` | `hw=0.02` | `validation` | -7.31% | — | — | 7.58% | 0.98% / 1.83% | -5.58 / -5.40 | 21.7% | 37.0% (20) | 17.01x | 0.061% | 67h (6.7h) | 3.8% | 0.00 | 37.5% | `VALIDATION_REJECTED` |
-| `FUNDING_SENSITIVE_GRID_B1` | `entry<=0.25, exit=none` | `validation` | -11.73% | — | — | 11.73% | 1.66% / 2.00% | -7.20 / -6.89 | 31.7% | 37.5% (42) | 35.02x | 0.004% | 147h (7.0h) | 8.6% | 0.00 | 46.9% | `VALIDATION_REJECTED` |
-| `FUNDING_SENSITIVE_GRID_B2` | `entry<=0.50, exit=none` | `validation` | -11.41% | — | — | 11.93% | 1.66% / 1.99% | -6.96 / -6.71 | 31.7% | 38.6% (44) | 36.70x | 0.009% | 151h (6.9h) | 8.8% | 0.00 | 45.9% | `VALIDATION_REJECTED` |
-| `FUNDING_SENSITIVE_GRID_B3` | `entry<=1.00, exit=none` | `validation` | -11.41% | — | — | 11.93% | 1.66% / 1.99% | -6.96 / -6.71 | 31.7% | 38.6% (44) | 36.70x | 0.009% | 151h (6.9h) | 8.8% | 0.00 | 45.9% | `VALIDATION_REJECTED` |
-| `FUNDING_SENSITIVE_GRID_B4` | `entry<=0.25, bleed/72h` | `validation` | -11.73% | — | — | 11.73% | 1.66% / 2.00% | -7.20 / -6.89 | 31.7% | 37.5% (42) | 35.02x | 0.004% | 147h (7.0h) | 8.6% | 0.00 | 46.9% | `VALIDATION_REJECTED` |
-| `FUNDING_SENSITIVE_GRID_B5` | `entry<=0.50, bleed/72h` | `validation` | -11.41% | — | — | 11.93% | 1.66% / 1.99% | -6.96 / -6.71 | 31.7% | 38.6% (44) | 36.70x | 0.009% | 151h (6.9h) | 8.8% | 0.00 | 45.9% | `VALIDATION_REJECTED` |
-| `FUNDING_SENSITIVE_GRID_B6` | `net_margin/96h` | `validation` | -11.41% | — | — | 11.93% | 1.66% / 1.99% | -6.96 / -6.71 | 31.7% | 38.6% (44) | 36.70x | 0.009% | 151h (6.9h) | 8.8% | 0.00 | 45.9% | `VALIDATION_REJECTED` |
-| `VOL_ADAPTIVE_GRID_C1` | `24h RV static` | `validation` | -11.80% | — | — | 12.76% | 1.67% / 2.30% | -6.76 / -6.51 | 31.7% | 37.3% (38) | 31.87x | 0.004% | 154h (8.1h) | 9.0% | 0.00 | 46.4% | `VALIDATION_REJECTED` |
-| `VOL_ADAPTIVE_GRID_C2` | `48h RV static` | `validation` | -11.28% | — | — | 12.12% | 1.73% / 2.08% | -6.70 / -6.46 | 30.0% | 36.8% (32) | 26.89x | 0.004% | 133h (8.3h) | 7.8% | 0.00 | 50.0% | `VALIDATION_REJECTED` |
-| `VOL_ADAPTIVE_GRID_C3` | `72h RV static` | `validation` | -11.13% | — | — | 12.11% | 1.34% / 2.07% | -6.90 / -6.63 | 33.3% | 40.4% (38) | 32.12x | -0.081% | 140h (7.4h) | 8.2% | 0.00 | 48.9% | `VALIDATION_REJECTED` |
-| `VOL_ADAPTIVE_GRID_C4` | `24h RV + 2.0x guard` | `validation` | -12.00% | — | — | 13.12% | 1.68% / 2.30% | -6.90 / -6.62 | 36.7% | 34.8% (46) | 38.58x | -0.013% | 168h (7.3h) | 9.8% | 0.00 | 43.7% | `VALIDATION_REJECTED` |
-| `VOL_ADAPTIVE_GRID_C5` | `48h RV + 2.0x guard` | `validation` | -12.00% | — | — | 12.77% | 1.74% / 2.09% | -7.05 / -6.75 | 31.7% | 31.3% (36) | 30.19x | -0.013% | 143h (7.9h) | 8.4% | 0.00 | 47.3% | `VALIDATION_REJECTED` |
-| `VOL_ADAPTIVE_GRID_C6` | `72h RV + 1.8x guard` | `validation` | -10.23% | — | — | 11.02% | 1.15% / 2.08% | -6.69 / -6.46 | 35.0% | 34.4% (42) | 35.53x | 0.004% | 146h (7.0h) | 8.6% | 0.00 | 46.2% | `VALIDATION_REJECTED` |
-| `DUAL_MA` | `fast=5, slow=20` | `validation` | -0.39% | — | — | 9.26% | 1.44% / 3.86% | +0.03 / +0.04 | 38.3% | 81.4% (57) | 46.96x | 0.230% | 807h (28.2h) | 46.8% | 0.04 | 0.0% | `VALIDATION_REJECTED` |
-| `DUAL_MA` | `fast=5, slow=48` (入围) | `validation` | +1.80% | — | — | 8.06% | 2.20% / 4.04% | +0.55 / +0.73 | 30.0% | 80.0% (24) | 20.22x | 0.192% | 741h (60.2h) | 42.6% | 0.00 | 0.0% | `OOS_REJECTED` |
-| **`DUAL_MA`** | **`fast=5, slow=48` (测试)** | **`test`** | **-12.53%** | **-12.53%** | **+25.75%** | **17.87%** | **2.74% / 3.82%** | **-2.90 / -3.34** | **40.3%** | **84.8% (39)** | **30.25x** | **0.536%** | **802h (39.5h)** | **37.2%** | **0.04** | **0.0%** | **`OOS_REJECTED`** |
-| `DUAL_MA` | `fast=12, slow=20` | `validation` | -1.30% | — | — | 11.07% | 1.74% / 3.86% | -0.18 / -0.23 | 43.3% | 78.3% (47) | 38.84x | 0.107% | 923h (38.9h) | 53.1% | 0.03 | 0.0% | `VALIDATION_REJECTED` |
-| `DUAL_MA` | `fast=12, slow=48` | `validation` | -1.02% | — | — | 8.63% | 2.44% / 3.67% | -0.08 / -0.10 | 48.3% | 76.0% (19) | 16.39x | 0.183% | 1085h (108.4h) | 65.0% | 0.04 | 0.0% | `VALIDATION_REJECTED` |
-| `CLOSE_MOMENTUM` | `lb=1, th=0` (入围) | `validation` | +4.61% | — | — | 9.77% | 2.65% / 3.89% | +1.00 / +1.42 | 48.3% | 1.6% (11) | 9.35x | 0.342% | 1428h (237.8h) | 85.5% | 0.04 | 1.9% | `OOS_REJECTED` |
-| **`CLOSE_MOMENTUM`** | **`lb=1, th=0` (测试)** | **`test`** | **-25.89%** | **-25.89%** | **+12.38%** | **33.47%** | **3.44% / 5.15%** | **-4.25 / -4.67** | **54.2%** | **2.4% (17)** | **14.54x** | **1.173%** | **1710h (172.4h)** | **68.7%** | **0.03** | **18.5%** | **`OOS_REJECTED`** |
-| `CLOSE_MOMENTUM` | `lb=1, th=25bps` | `validation` | -3.32% | — | — | 5.47% | 1.55% / 1.97% | -1.19 / -1.67 | 46.7% | 32.2% (112) | 90.73x | 0.105% | 484h (8.7h) | 27.2% | 0.00 | 22.6% | `VALIDATION_REJECTED` |
-| `CLOSE_MOMENTUM` | `lb=6, th=0` | `validation` | -3.76% | — | — | 11.80% | 2.74% / 3.92% | -0.68 / -0.91 | 55.0% | 41.6% (148) | 114.23x | 0.234% | 1076h (14.6h) | 57.9% | 0.00 | 12.1% | `VALIDATION_REJECTED` |
-| `CLOSE_MOMENTUM` | `lb=6, th=25bps` | `validation` | -0.65% | — | — | 10.41% | 1.98% / 4.01% | -0.02 / -0.03 | 51.7% | 47.3% (150) | 125.65x | 0.259% | 619h (8.2h) | 35.6% | 0.00 | 20.2% | `VALIDATION_REJECTED` |
-| `CLOSE_MOMENTUM` | `lb=24, th=0` | `validation` | -6.31% | — | — | 10.00% | 1.78% / 3.51% | -1.50 / -1.92 | 53.3% | 46.1% (70) | 54.65x | 0.159% | 970h (26.8h) | 51.3% | 0.00 | 39.1% | `VALIDATION_REJECTED` |
-| `CLOSE_MOMENTUM` | `lb=24, th=25bps` | `validation` | -2.42% | — | — | 10.49% | 1.90% / 3.34% | -0.54 / -0.72 | 45.0% | 41.9% (72) | 57.37x | 0.164% | 752h (21.0h) | 42.0% | 0.00 | 0.0% | `VALIDATION_REJECTED` |
-
-### 4.3 同窗口配对统计推断（`family_size = 25`，Bonferroni 调整，6,000 次移动块 Bootstrap）
-
-详见 [paired_statistics.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/paired_statistics.json)：
-
-| 入围候选 vs `FIXED_GRID` | 日均差 HAC 调整区间 | 移动块 Bootstrap 调整区间 | 目标分数差 CI | 块胜率 | 尾部有效重采样 | 否决原因 |
-| --- | --- | --- | --- | ---: | ---: | --- |
-| `DUAL_MA (5/48)` (`c-f13e00ea46ee334f54d722a6`) | `[-0.172%, +1.101%]` | `[-0.025%, +1.107%]` | `[-0.013, +4.610]` | 64.3% | `6.0 >= 5` | `net_return_below_floor`, `oos_window_not_fresh_unconsumed`, `oos_advantage_statistically_uncertain`, `risk_adjusted_advantage_statistically_uncertain` |
-| `CLOSE_MOMENTUM (lb=1)` (`c-b97c8b599be80d00b44fcc8e`) | `[-0.079%, +0.567%]` | `[-0.047%, +0.575%]` | `[-0.063, +2.246]` | 71.4% | `6.0 >= 5` | `max_drawdown_breach_or_unknown`, `daily_cvar_breach_or_unknown`, `net_return_below_floor`, `oos_window_not_fresh_unconsumed`, `oos_advantage_statistically_uncertain`, `risk_adjusted_advantage_statistically_uncertain` |
-
-### 4.4 风险压力测试（`RISK_STRESS_ONLY_NOT_OOS_EVIDENCE`，不替代 OOS 资格）
-
-详见 [risk_stress.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/risk_stress.json)：
+详见最新 [risk_stress.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/risk_stress.json)（总计 `16` 组：`ok_runs = 9`、`risk_halted_runs = 7`、`collateral_depleted_runs = 0`、`simulation_failed_runs = 0`）：
 
 | 策略 | `mainnet_historical_full` (72d) | `mainnet_5x_funding_full` (72d) | `demo_high_funding_22_97bps_h_168h` (7d) | `funding_regime_switch_48h_168h` (7d) |
 | --- | --- | --- | --- | --- |
-| `FIXED_GRID` | 净收益 `-38.27%`, DD `42.19%`, 资费 `-0.0509 U` | 净收益 `-40.31%`, DD `43.97%`, 资费 `-0.2547 U` | 净收益 `-24.55%`, DD `25.72%`, 资费 `-1.4866 U` | 净收益 `-20.37%`, DD `21.69%`, 资费 `-1.0688 U` |
-| `DUAL_MA (5/48)` | 净收益 `-12.53%`, DD `17.87%`, 资费 `-0.0536 U` | 净收益 `-14.65%`, DD `19.18%`, 资费 `-0.2680 U` | 净收益 `-4.86%`, DD `5.82%`, 资费 `-0.3810 U` | 净收益 `-4.86%`, DD `5.82%`, 资费 `-0.3810 U` |
-| `CLOSE_MOMENTUM (lb=1)` | 净收益 `-25.89%`, DD `33.47%`, 资费 `-0.1173 U` | 净收益 `-30.79%`, DD `36.41%`, 资费 `-0.5644 U` | 净收益 `-32.56%`, DD `33.68%`, 资费 `-2.2179 U` | 净收益 `-26.05%`, DD `27.33%`, 资费 `-1.5676 U` |
-| `CASH` | `0.00%` / DD `0.00%` | `0.00%` / DD `0.00%` | `0.00%` / DD `0.00%` | `0.00%` / DD `0.00%` |
+| `FIXED_GRID` | `RISK_HALTED` `-38.27%`, DD `42.19%`, 资费 `-0.0509 U` | `RISK_HALTED` `-40.31%`, DD `43.97%`, 资费 `-0.2547 U` | `RISK_HALTED` `-24.55%`, DD `25.72%`, 资费 `-1.4866 U` | `OK` `-20.37%`, DD `21.69%`, 资费 `-1.0688 U` |
+| `DUAL_MA (5/48)` | `OK` `-12.53%`, DD `17.87%`, 资费 `-0.0536 U` | `OK` `-14.65%`, DD `19.18%`, 资费 `-0.2680 U` | `OK` `-4.86%`, DD `5.82%`, 资费 `-0.3810 U` | `OK` `-4.86%`, DD `5.82%`, 资费 `-0.3810 U` |
+| `CLOSE_MOMENTUM (lb=1)` | `RISK_HALTED` `-25.89%`, DD `33.47%`, 资费 `-0.1173 U` | `RISK_HALTED` **`-29.52%`** (旧 `-30.79%`), DD **`35.98%`** (旧 `36.41%`), 资费 `-0.5778 U` | `RISK_HALTED` `-32.56%`, DD `33.68%`, 资费 `-2.2179 U` | `RISK_HALTED` `-26.05%`, DD `27.33%`, 资费 `-1.5676 U` |
+| `CASH` | `OK` `0.00%` / DD `0.00%` | `OK` `0.00%` / DD `0.00%` | `OK` `0.00%` / DD `0.00%` | `OK` `0.00%` / DD `0.00%` |
+
+> `CLOSE_MOMENTUM` 在 `mainnet_5x_funding_full` 下净收益由 `-30.79%` 改善至 `-29.52%`（最大回撤由 `36.41%` 降至 `35.98%`），直接源于 F3 修复后在停机瞬间及时撤销了未成交入场 `BUY` 挂单。
 
 ---
 
-## 5. 工程协议端到端验收（Section 9A，合成数据）
+## 3. Binance 永续合约第一阶段研究合同与首批 6 大家族兼容性矩阵
 
-> 合成晋升仅验证软件行为与治理逻辑，不代表真实金融优势。
+冻结配置位于 [p8_s02_f01_binance_nvda_frozen.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/configs/research/p8_s02_f01_binance_nvda_frozen.json)：
 
-由 [test_binance_champion_research.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/tests/research/test_binance_champion_research.py) 覆盖全部 9 项协议验收场景：
+- **执行合同**：`binance_usdm_demo_nvda_limit_long_only`（`NVDAUSDT` / `BINANCE_USDM` / `1h` UTC / `ONE_WAY_LONG_ONLY` / `LIMIT` / `1x`）
+- **过滤与成本**：`min_notional = 5 USDT`、`step_size = 0.01`、`tick_size = 0.01`、`quantity_unit = 0.04`、`max_quantity = 0.04`、`PERCENT_PRICE = [0.97, 1.03]`、手续费 `3.0 bps`、滑点 `2.0 bps`、参与度上限 `1.0%`、离线 1x 抵押预算 `10.00 USDT`（显式记录 `demo_live_cap_usdt = 7.0`）
+- **资金费规则**：严格复用 R10 `settlement_before_exact_tie_fill`（`fill_time < funding_time`），逐候选资金费与权益盯市对账残差 `< 1e-6`
 
-1. **研究合同与搜索边界**：拒绝非 `NVDAUSDT`、杠杆 `!= 1`、做空、`MARKET` 单、非 R10 资金费规则、缺少 `prior_studies` 的伪 OOS 及超限搜索网格；
-2. **R10 同时间戳资金费规则**：精确构造与 BUY/SELL 成交同微秒的资金费结算，验证 BUY 同点收 0 资金费、SELL 同点按成交前持仓扣费，残差 `< 1e-7`；
-3. **部分成交与退出失败核算**：验证 `LIMITED_CAPACITY_PARTIAL` 触发真实部分成交计数与 `UNFILLED_EXIT_TIMEOUT` 残仓盯市零残差；
-4. **合成合格 Challenger 晋升 + Tracker + Replay + S03 消费**：合成趋势下 `PROMOTE_CHALLENGER`（`version = 1`），`ExperimentTracker.reproduction(verify_artifacts=True)` 全绿，独立 `replay` 逐字段一致，S03 `build_package` → `install_package` → `adapt_selection` → `strategy_worker.invoke(probe)` → `azure_strategy_deploy.cycle` 返回 `accepted = true`；
-5. **高资金费空仓拒充正 Alpha**：在极端资费下验证空仓避险收益 `0%` 被 `net_return_below_floor` 与 `insufficient_trade_activity` 拒绝；
-6. **冷却期保持**：365 天冷却期内合格候选被 `promotion_cooldown` 阻断，保留原 Champion 版本 `v3`；
-7. **中断恢复与防重放**：测试阶段注入 `KeyboardInterrupt` 后状态保留 `TEST_RESERVED`、incumbent 不变、OOS 窗口已不可逆消费；
-8. **旧 OOS 重复消费拒绝**：同窗口重跑明确抛出 `OOS window already consumed`；
-9. **测试集扰动零泄露 & 历史复用伪 OOS 阻断**：测试窗口价格 `+30%` 扰动对 `frozen-search.json` 与验证指标零影响；`HISTORICAL_REUSE_PSEUDO_OOS` 强制阻断晋升并输出 `INCONCLUSIVE`。
+| 家族 | 策略文件 | 候选数 | 离线研究状态 | S03/S04 发布兼容性（已升级至最新 `main` S04） |
+| --- | --- | ---: | --- | --- |
+| **A. `CASH`** | [cash_benchmark.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/cash_benchmark.py) | 1 | 已运行（仅对照基准，不可充当正 Alpha） | 原生 `FACTORLAB_DECISION_V1` (`cash_benchmark:CashBenchmarkStrategy`, `target`, `3600s`) |
+| **B. `FIXED_GRID`** | [fixed_grid.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/fixed_grid.py) | 1 incumbent + 2 alt | 已运行 | `LEGACY_DEMO_GRID_BRIDGE`（现有 Demo 网格控制组） |
+| **C. `FUNDING_SENSITIVE_GRID`** | [funding_sensitive_grid.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/funding_sensitive_grid.py) | 6 (`B1..B6`) | 已运行（转 `LIMIT` 只减仓退出） | 需 S04/R11 补齐云端资金费事件上下文与网格桥接（禁止伪造兼容） |
+| **D. `VOL_ADAPTIVE_GRID`** | [vol_adaptive_grid.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/vol_adaptive_grid.py) | 6 (`C1..C6`) | 已运行（`sigma_ref` 仅在训练窗拟合） | 需 S04/R11 补齐云端滚动波动率状态与网格桥接（禁止伪造兼容） |
+| **E. `DUAL_MA`** | [dual_ma_usdm.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/dual_ma_usdm.py) | 4 | 已运行 | **原生兼容 `FACTORLAB_DECISION_V1`** (`dual_ma_usdm:DualMAUsdmStrategy`, `target`, `3600s`，已通过 S04 假网络闭环下单等价验证) |
+| **F. `CLOSE_MOMENTUM`** | [close_momentum_usdm.py](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/src/factorlab/strategies/binance_usdm/close_momentum_usdm.py) | 6 | 已运行 | **原生兼容 `FACTORLAB_DECISION_V1`** (`close_momentum_usdm:CloseMomentumUsdmStrategy`, `target`, `3600s`，已通过 S04 假网络闭环下单等价验证) |
 
 ---
 
-## 6. 独立重放、策略包映射与交付工件
+## 4. 配对统计推断结果（`p8-s02-f01-nvda-real-v2`，`family_size = 25`，Bonferroni 调整）
+
+详见 [paired_statistics.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/paired_statistics.json)：
+
+| 入围候选 vs `FIXED_GRID` | 日均差 HAC 调整区间 | 移动块 Bootstrap 调整区间 | 目标分数差 CI | 块胜率 | 否决原因 |
+| --- | --- | --- | --- | ---: | --- |
+| `DUAL_MA (5/48)` (`c-771426d69d072db5f561c7b1`) | `[-0.172%, +1.101%]` | `[-0.025%, +1.107%]` | `[-0.013, +4.610]` | 64.3% | `net_return_below_floor`, `oos_window_not_fresh_unconsumed`, `oos_advantage_statistically_uncertain`, `risk_adjusted_advantage_statistically_uncertain` |
+| `CLOSE_MOMENTUM (lb=1)` (`c-ef5d445aa2f93fb3e13cfc27`) | `[-0.079%, +0.567%]` | `[-0.047%, +0.575%]` | `[-0.063, +2.246]` | 71.4% | `max_drawdown_breach_or_unknown`, `daily_cvar_breach_or_unknown`, `net_return_below_floor`, `oos_window_not_fresh_unconsumed`, `oos_advantage_statistically_uncertain`, `risk_adjusted_advantage_statistically_uncertain` |
+
+---
+
+## 5. 与未合入 PR #251 (R11) 生命周期边界说明（Section 12）
+
+本轮严格不引入尚未合入 `main` 的 PR #251（R11）与 PR #252（PERF-01）代码，同时确保 `src/factorlab/research/binance_perpetual.py` 中的 F3（风险停机撤单）与 F6（退出生命周期核算）与 R11 保持清晰的后续统一接口：
+
+- **可统一复用的状态与边界**：
+  1. `cancel_open_entry_buys_on_halt()` 与 `cancel_fill_race` 竞态模型：统一以 `controller.account().open_orders` 为权威挂单源，按 `side == BUY and not reduce_only` 过滤撤销，严格保留 `reduce_only=True` 的 `SELL` 退出单；
+  2. `exit_lifecycle_count` / `failed_exit_lifecycle_count` / `exit_order_attempt_count` / `failed_exit_order_attempt_count` / `exit_status_poll_checks` 五项指标契约：后续 R11 合入后可直接对接同一退出生命周期状态机与遥测字段名，避免两套退出失败率口径漂移；
+  3. 跨研究 OOS 消费台账 `FACTORLAB_OOS_CONSUMPTION_REGISTRY_V1` 与 `KNOWN_CONSUMED_HISTORY_END_UTC`：R11 新策略接入 S02 时自动受同一历史基线（`<= 2026-11-22`）与跨 `state_path` 防重复消费保护。
+
+---
+
+## 6. 交付工件与独立回放核验
 
 - **冻结研究配置**：[configs/research/p8_s02_f01_binance_nvda_frozen.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/configs/research/p8_s02_f01_binance_nvda_frozen.json)
 - **原生 Champion 决策结果**（`FACTORLAB_CHAMPION_SELECTION_V1`）：[docs/validation/p8-s02-f01/selection.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/selection.json)
@@ -162,21 +143,26 @@
 - **冻结入围清单**：[docs/validation/p8-s02-f01/frozen-search.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/frozen-search.json)
 - **配对统计报告**：[docs/validation/p8-s02-f01/paired_statistics.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/paired_statistics.json)
 - **风险压力报告**：[docs/validation/p8-s02-f01/risk_stress.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/risk_stress.json)
-- **策略包身份映射证据**：[docs/validation/p8-s02-f01/package_mapping.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/package_mapping.json)
-- **独立重放与 S03 消费核验收据**（11/11 重放一致性检查全绿）：[docs/validation/p8-s02-f01/replay_and_s03_verification.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/replay_and_s03_verification.json)
-- **可执行入口**：
-  - 统一 S02 CLI：`python tools/research/select_champion.py --config <cfg> --output <dir> --store <tracker> --state <state>` / `--replay-from <run> --audit-dir <audit>`
-  - Binance 真实研究复现脚本：`python tools/research/run_binance_champion_research.py --r04b-snapshot <r04b> --cache-dir <cache> --work-dir <work>`
+- **策略包身份映射证据**（含原生 `FACTORLAB_DECISION_V1` 与 `StrategySpec`）：[docs/validation/p8-s02-f01/package_mapping.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/package_mapping.json)
+- **数据审计证据**（含 `funding_coverage` 与 `ohlcv_export_fidelity`）：[docs/validation/p8-s02-f01/data_audit.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/data_audit.json)
+- **独立重放与 S03/S04 消费核验收据**（11/11 重放一致性检查全绿）：[docs/validation/p8-s02-f01/replay_and_s03_verification.json](file:///D:/Code/FactorLab-worktrees/p8-s02-f01-binance-champion/docs/validation/p8-s02-f01/replay_and_s03_verification.json)
 
 ---
 
-## 7. 定向与关联回归及审查状态
+## 7. 定向与关联回归验证状态
 
-- **定向与关联测试**（`111 passed, 0 failed`）：
-  - `tests/research/test_binance_champion_research.py`（7 passed：Binance 合同校验、R10 同时间戳资金费规则、部分成交与退出失败核算、合成合格晋升/独立重放/防重放/S03 消费、高资金费空仓拒充 Alpha、冷却期/中断恢复/历史复用伪 OOS 拦截、测试集零泄露）
-  - `tests/research/test_champion_selector.py`（15 passed：既有 A 股 S02 全流程零回归）
-  - `tests/integrations/test_strategy_deployment_s03.py`（39 passed：S03 发布适配、包校验与部署控制器）
-  - `tests/research/test_grid_r10_review_regressions.py`（22 passed：R10 资金费 tie 规则与小时时间轴校验）
-  - `tests/research/test_p8_r09_funding.py`（6 passed：R09 资金费入账核算）
-  - `tests/integrations/test_unified_strategy.py`（22 passed：S01 统一策略协议与隔离 worker）
-- **Codex Review**：用户确认当前 Codex Review 额度已耗尽，待用户后续自行复审；本地已完成全量 diff 自查与全部关联回归验证。
+全部验证均在合并最新 `origin/main`（`2529fa6`）后的工作树中实际执行：
+
+- `python -m compileall -q src tests tools`：通过（0 错误）
+- `git diff --check`：通过（0 格式问题）
+- 定向与关联 pytest 套件（合计 `135 passed, 0 failed`）：
+  - `tests/research/test_binance_champion_research.py`（13 passed：含 F3/F6/F7/F8/F9、OOS 新鲜度跨 `state_path` 阻断、R10 tie 规则、合成晋升 + 原生 `FACTORLAB_DECISION_V1` S04 策略包加载与回放）
+  - `tests/integrations/test_binance_champion_s04_integration.py`（8 passed：含 F1 仓位等价与真实 `closed_bar`→假网络 `POST /fapi/v1/order`、F2 3600s/60s 周期阻断、F4 多标的隔离、F5 首次激活历史预热）
+  - `tests/research/test_champion_selector.py`（15 passed）
+  - `tests/integrations/test_strategy_deployment_s03.py`（39 passed）
+  - `tests/integrations/test_unified_cloud_strategy_s04.py`（13 passed）
+  - `tests/integrations/test_s04_history_recovery.py`（13 passed）
+  - `tests/integrations/test_s04_package_failures.py`（6 passed）
+  - `tests/research/test_grid_r10_review_regressions.py`（22 passed）
+  - `tests/research/test_p8_r09_funding.py`（6 passed）
+- 独立审查 worktree（`D:/Code/FactorLab-worktrees/pr253-independent-review`）及原始复现脚本均保持原样未修改。

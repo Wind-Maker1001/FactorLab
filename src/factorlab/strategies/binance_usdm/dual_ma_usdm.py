@@ -1,8 +1,8 @@
 """S01 Dual Moving Average target strategy for Binance USD-M NVDAUSDT 1x long-only.
 
-Implements both S01 UnifiedStrategy (describe/decide) and self-contained S03
-factorlab.demo.evaluate/v1 worker entrypoint so winning packages can be verified
-and installed without external dependencies.
+Implements the native S01/S04 FACTORLAB_DECISION_V1 protocol (describe/decide)
+with target_weight execution so research and Demo release use the exact same
+decision class, parameters, interval constraints, and target-position sizing.
 """
 from decimal import Decimal
 
@@ -28,7 +28,8 @@ def _crossover_signal(closes: list[float], fast_window: int, slow_window: int) -
 class DualMAUsdmStrategy:
     strategy_family = "target_protocol"
     s03_compatible = True
-    s03_entrypoint = "dual_ma_usdm:evaluate"
+    s03_protocol = "FACTORLAB_DECISION_V1"
+    s03_entrypoint = "dual_ma_usdm:DualMAUsdmStrategy"
 
     def __init__(
         self,
@@ -82,28 +83,3 @@ class DualMAUsdmStrategy:
         if sig == "SELL":
             return Decision(target_weight=Decimal("0"), state=next_state)
         return Decision(target_weight=None, state=next_state)
-
-
-def evaluate(context: dict, state: dict) -> dict:
-    """S03 factorlab.demo.evaluate/v1 entrypoint for Demo closed-bar execution."""
-    if context.get("event") == "probe":
-        return {"state": dict(state), "intents": []}
-    cfg = context.get("configuration", {})
-    fast_window = int(cfg.get("fast_window", 5))
-    slow_window = int(cfg.get("slow_window", 20))
-    order_qty = Decimal(str(cfg.get("order_quantity", "0.04")))
-    bar = context.get("bar", {})
-    close = float(bar["close"])
-    closes = list(state.get("closes", []))
-    closes.append(close)
-    closes = closes[-(slow_window + 1):]
-    sig = _crossover_signal(closes, fast_window, slow_window)
-    account = context.get("account", {})
-    positions = account.get("positions", [])
-    held = sum((Decimal(str(p.get("quantity", "0"))) for p in positions), Decimal("0"))
-    intents = []
-    if sig == "BUY" and held <= Decimal("0"):
-        intents.append({"side": "BUY", "quantity": str(order_qty)})
-    elif sig == "SELL" and held > Decimal("0"):
-        intents.append({"side": "SELL", "quantity": str(held)})
-    return {"state": {"closes": closes, "decisions": int(state.get("decisions", 0)) + 1}, "intents": intents}

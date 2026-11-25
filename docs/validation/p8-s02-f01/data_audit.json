@@ -72,6 +72,18 @@
     "special_count": 2,
     "total_events_in_range": 593
   },
+  "funding_coverage": {
+    "bar_end_excl_utc": "2026-11-23T00:00:00+00:00",
+    "bar_start_utc": "2026-05-14T00:00:00+00:00",
+    "complete": true,
+    "end_lag_hours": 8.0,
+    "funding_events_in_range": 593,
+    "funding_first_utc": "2026-05-14T00:00:00.001000+00:00",
+    "funding_last_utc": "2026-11-22T16:00:00.001000+00:00",
+    "max_internal_gap_hours": 8.0,
+    "start_lag_hours": 0.0,
+    "zero_rate_events": 341
+  },
   "instrument_id": "BINANCE:USDM:NVDAUSDT",
   "interval": "1h",
   "liquidity_and_capacity": {
@@ -90,6 +102,12 @@
     "paper_execution_lag": "Orders created on bar t can only fill on bars >= t+1 using bar close",
     "strategy_b_information_set": "Strictly funding_time <= bar_close_utc; verified by unit test",
     "strategy_c_information_set": "Strictly bar_close_time <= current_bar_close_utc; sigma_ref frozen on training fold"
+  },
+  "ohlcv_export_fidelity": {
+    "bars_with_fractional_volume": 4585,
+    "bars_with_open_ne_close": 4576,
+    "open_preserved_from_source": true,
+    "volume_preserved_float": true
   },
   "price_and_volatility": {
     "end_close": 135.74,

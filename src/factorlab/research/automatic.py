@@ -20,6 +20,8 @@ from factorlab.experiments.provenance import capture_provenance
 from factorlab.forward.integrity import research_source_sha256, workflow_lock
 from factorlab.research.binance_perpetual import (
     BINANCE_EXECUTION,
+    complete_oos_registry_entry,
+    evaluate_and_reserve_oos_freshness,
     load_binance_bars_and_funding,
     register_binance_candidate,
     run_risk_stress_suite,
@@ -27,6 +29,7 @@ from factorlab.research.binance_perpetual import (
     simulate_binance_candidate,
     slice_stage_bars,
     validate_binance_config,
+    validate_funding_coverage,
 )
 _DEFAULT_SIMULATE_BINANCE = simulate_binance_candidate
 from factorlab.research.champion import (ChampionSelector, SelectionPolicy,
@@ -146,7 +149,7 @@ def _register(item, base, common, windows, root):
     return dict(identity, candidate_id="c-"+json_hash(identity)[:24], strategy=spec)
 
 
-def run(config_path, *, output, store, state_path, command=()):
+def run(config_path, *, output, store, state_path, command=(), oos_registry_path=None):
     """Run once. OS cron/Task Scheduler may call this same entry periodically.
 
     The state file belongs to ONE deployment mandate. Keep it across invocations.
@@ -158,10 +161,15 @@ def run(config_path, *, output, store, state_path, command=()):
     policy = validate_config(config)
     state_path = Path(state_path).absolute()
     state_path.parent.mkdir(parents=True, exist_ok=True)
+    if oos_registry_path is None:
+        env_reg = os.environ.get("FACTORLAB_OOS_REGISTRY")
+        oos_registry_path = Path(env_reg).resolve() if env_reg else (Path(store).resolve().parent / "oos-consumption-registry.json")
+    else:
+        oos_registry_path = Path(oos_registry_path).resolve()
     with workflow_lock(state_path.with_suffix(state_path.suffix+".lock")):
         old = read_json(state_path) if state_path.exists() else None
         return _run(config, config_path.parent, Path(output).resolve(), store, state_path,
-                    policy, command, old=old)
+                    policy, command, old=old, oos_registry_path=oos_registry_path)
 
 
 def replay(source, *, audit_dir, command=()):
@@ -229,9 +237,12 @@ def _snapshot_date(value):
     return date
 
 
-def _run(config, base, output, store, state_path, policy, command, *, old, audit=False):
+def _run(config, base, output, store, state_path, policy, command, *, old, audit=False, oos_registry_path=None):
     if config["common"].get("execution") == BINANCE_EXECUTION:
-        return _run_binance(config, base, output, store, state_path, policy, command, old=old, audit=audit)
+        return _run_binance(
+            config, base, output, store, state_path, policy, command,
+            old=old, audit=audit, oos_registry_path=oos_registry_path,
+        )
     common, windows = config["common"], config["windows"]
     common_hash = json_hash(common)
     if old is not None:
@@ -425,10 +436,11 @@ def asdict_policy(policy):
     return asdict(policy)
 
 
-def _run_binance(config, base, output, store, state_path, policy, command, *, old, audit=False):
+def _run_binance(config, base, output, store, state_path, policy, command, *, old, audit=False, oos_registry_path=None):
     common, windows, data_cfg = config["common"], config["windows"], config["data"]
     common_hash = json_hash(common)
-    oos_eligibility = data_cfg["oos_eligibility"]
+    declared_oos_eligibility = data_cfg["oos_eligibility"]
+    declared_prior_studies = list(data_cfg.get("prior_studies", []))
     if old is not None:
         if old["schema"] != STATE_SCHEMA or old["common_hash"] != common_hash:
             raise ValueError("deployment mandate/common comparison contract changed")
@@ -448,6 +460,9 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
     all_bars, all_funding = load_binance_bars_and_funding(
         bars_payload, funding_payload, symbol=common["symbol"]
     )
+    funding_coverage = None
+    if common["funding_mode"] == "historical_events":
+        funding_coverage = validate_funding_coverage(all_bars, all_funding)
     train_warmup, train_bars = slice_stage_bars(all_bars, windows["train"][0], windows["train"][1])
     val_warmup, val_bars = slice_stage_bars(all_bars, windows["validation"][0], windows["validation"][1])
     test_warmup, test_bars = slice_stage_bars(all_bars, windows["test"][0], windows["test"][1])
@@ -466,6 +481,38 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
             "consumed_bars": len(consumed_bars),
         }
     )
+
+    # Pre-check known consumed history + existing registry (read-only) before archiving replay config;
+    # atomic registry reservation happens strictly at TEST_RESERVED time right before OOS test evaluation.
+    oos_eligibility, effective_prior_studies, oos_freshness_audit = evaluate_and_reserve_oos_freshness(
+        market=common["market"],
+        symbol=common["symbol"],
+        test_window=windows["test"],
+        source_kind=data_cfg["source_kind"],
+        declared_oos_eligibility=declared_oos_eligibility,
+        declared_prior_studies=declared_prior_studies,
+        study_id=config["study_id"],
+        bars_sha256=data_cfg["sha256"],
+        funding_sha256=data_cfg["funding_sha256"],
+        registry_path=oos_registry_path,
+        audit=True,
+    )
+    # Also inspect existing registry entries read-only on non-audit runs so archived replay config captures prior overlap.
+    if not audit and data_cfg["source_kind"] == "REAL_CANDIDATE" and oos_registry_path is not None:
+        reg_p = Path(oos_registry_path).resolve()
+        if reg_p.exists():
+            reg_doc = read_json(reg_p)
+            ts_start, ts_end = pd.Timestamp(windows["test"][0]), pd.Timestamp(windows["test"][1])
+            for entry in reg_doc.get("entries", []):
+                if entry.get("market") != common["market"] or entry.get("symbol") != common["symbol"]:
+                    continue
+                if entry.get("source_kind") != "REAL_CANDIDATE":
+                    continue
+                if pd.Timestamp(entry["test_start"]) <= ts_end and ts_start <= pd.Timestamp(entry["test_end"]):
+                    if oos_eligibility == "FRESH_UNCONSUMED_OOS":
+                        oos_eligibility = "HISTORICAL_REUSE_PSEUDO_OOS"
+                    if entry["study_id"] not in effective_prior_studies:
+                        effective_prior_studies.append(entry["study_id"])
 
     output.mkdir(parents=True, exist_ok=False)
     (output / "sources").mkdir()
@@ -516,6 +563,9 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
     archived_config = deepcopy(config)
     archived_config["data"]["bars"] = "input-bars.parquet"
     archived_config["data"]["funding"] = "input-funding.json"
+    archived_config["data"]["oos_eligibility"] = oos_eligibility
+    if oos_eligibility == "HISTORICAL_REUSE_PSEUDO_OOS":
+        archived_config["data"]["prior_studies"] = list(effective_prior_studies) or ["PRIOR_CONSUMED_OOS"]
     for entry in archived_config["strategies"]:
         entry["file"] = "sources/" + entry["sha256"] + ".py"
     archived_champion = dict(
@@ -586,6 +636,8 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
             if precomputed is not None:
                 sim, err = precomputed
                 if err is not None:
+                    if isinstance(err, dict):
+                        raise RuntimeError(f"{err.get('error_type', 'Error')}: {err.get('detail', 'simulation failed')}")
                     raise RuntimeError(err)
             else:
                 stage_warmup, stage_bars = stage_slices[stage]
@@ -705,7 +757,25 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
     )
     write_json(output / "frozen-search.json", frozen)
 
-    # Consume before test access. Crash leaves incumbent and reservation intact.
+    # Consume before test access (atomic across both mandate state and cross-study OOS registry).
+    # Crash leaves incumbent and reservation intact; replay (audit=True) never mutates the registry.
+    oos_eligibility, effective_prior_studies, oos_freshness_audit = evaluate_and_reserve_oos_freshness(
+        market=common["market"],
+        symbol=common["symbol"],
+        test_window=windows["test"],
+        source_kind=data_cfg["source_kind"],
+        declared_oos_eligibility=declared_oos_eligibility if not audit else oos_eligibility,
+        declared_prior_studies=effective_prior_studies,
+        study_id=config["study_id"],
+        bars_sha256=data_cfg["sha256"],
+        funding_sha256=data_cfg["funding_sha256"],
+        registry_path=oos_registry_path,
+        audit=audit,
+    )
+    frozen["oos_eligibility"] = oos_eligibility
+    frozen["oos_freshness_audit"] = oos_freshness_audit
+    write_json(output / "frozen-search.json", frozen)
+
     state = dict(
         schema=AUDIT_STATE_SCHEMA if audit else STATE_SCHEMA,
         champion=champion_item,
@@ -811,7 +881,8 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
         "schema": "FACTORLAB_PAIRED_STATISTICS_V1",
         "study_id": config["study_id"],
         "oos_eligibility": oos_eligibility,
-        "prior_studies": data_cfg.get("prior_studies", []),
+        "oos_freshness_audit": oos_freshness_audit,
+        "prior_studies": effective_prior_studies,
         "family_size": len(candidates),
         "incumbent_candidate_id": champion_item["candidate_id"],
         "cash_benchmark_net_return": cash_net_return,
@@ -834,7 +905,10 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
                 "parameters": entry["candidate"]["parameters"],
                 "source_filename": entry["compatibility"]["source_filename"],
                 "strategy_family": entry["compatibility"]["strategy_family"],
+                "decision_kind": entry["compatibility"]["decision_kind"],
+                "spec": entry["compatibility"]["spec"],
                 "s03_compatible": entry["compatibility"]["s03_compatible"],
+                "s03_protocol": entry["compatibility"].get("s03_protocol"),
                 "s03_entrypoint": entry["compatibility"]["s03_entrypoint"],
                 "s04_requirements": entry["compatibility"]["s04_requirements"],
             }
@@ -849,7 +923,9 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
         version=state["version"] + int(decision["promoted"]),
         verdict=verdict,
         oos_eligibility=oos_eligibility,
-        prior_studies=data_cfg.get("prior_studies", []),
+        oos_freshness_audit=oos_freshness_audit,
+        funding_coverage=funding_coverage,
+        prior_studies=effective_prior_studies,
         **decision,
         frozen_search_sha256=file_hash(output / "frozen-search.json"),
         windows=windows,
@@ -927,4 +1003,14 @@ def _run_binance(config, base, output, store, state_path, policy, command, *, ol
     if decision["promoted"]:
         state["last_promotion_end"] = windows["test"][1]
     write_json(state_path, state)
+    complete_oos_registry_entry(
+        registry_path=oos_registry_path,
+        study_id=config["study_id"],
+        market=common["market"],
+        symbol=common["symbol"],
+        test_window=windows["test"],
+        promoted=bool(decision["promoted"]),
+        verdict=verdict,
+        audit=audit,
+    )
     return report
