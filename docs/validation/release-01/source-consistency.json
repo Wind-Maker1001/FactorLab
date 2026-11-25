@@ -18,6 +18,13 @@
   },
   "initial_verifier_exit": 1,
   "initial_verifier_explanation": "Strict extra-file rejection flagged Alpaca installation-generated egg-info; all 480 tracked files matched in both services. No source modification was required.",
+  "installed_runtime_verification": {
+    "binance_import": "release source/src/factorlab/integrations/binance_futures_trading/demo_runtime.py",
+    "alpaca_import": "current/venv/lib/python3.13/site-packages/factorlab/integrations/alpaca/adapter.py",
+    "alpaca_installed_files_matching_source": 474,
+    "alpaca_source_only_git_metadata": [".gitattributes", "universe/.gitattributes", "exploratory/market_structure/.gitattributes", "data/csmar/.gitattributes", "engineering/yhh30m/.gitattributes", "universe/status_candidate/.gitattributes"],
+    "explanation": "All 474 installed package files matched verified release source byte-for-byte. Six .gitattributes files are source-control metadata absent from the installed package."
+  },
   "running_service_identity": {
     "binance_pid": 521536,
     "binance_executable": "/opt/factorlab/releases/ea9cbbdd7519e5400df097e5661b0d6c47b6c4da/venv/bin/python",

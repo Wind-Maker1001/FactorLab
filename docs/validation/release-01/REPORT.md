@@ -5,7 +5,7 @@
 Frozen integration baseline: `bbda212299ccb1b6c2b4dcb021662397d19923d0`.
 Both Azure runtimes were deployed at `ea9cbbdd7519e5400df097e5661b0d6c47b6c4da` on 2026-11-25.
 Subsequent archival documentation does not change that deployed revision.
-At 2026-11-25 11:52 UTC, all 480 tracked source files in each deployed tree matched that commit byte-for-byte. Alpaca also contained six installation-generated egg-info metadata files, which triggered the initial strict extra-file rejection but did not change tracked source. Service executable/current-release paths selected the same revision; details are in `source-consistency.json`.
+At 2026-11-25 11:52 UTC, all 480 tracked source files in each deployed tree matched that commit byte-for-byte. Alpaca also contained six installation-generated egg-info metadata files, which triggered the initial strict extra-file rejection but did not change tracked source. Service executable/current-release paths selected the same revision. Binance imports the matched source tree directly. Alpaca imports its installed package: all 474 package files matched the verified release source byte-for-byte; six source-only `.gitattributes` files are not installed. Details are in `source-consistency.json`.
 
 This patch addresses two observed integration defects: Alpaca Paper rejected the SSP activity query filter with HTTP 422; the Demo continuous budget omitted historical smoke and portfolio dispatches. Corporate activities now use complete pagination before local receipt filtering. Demo consumption includes account-wide POST history, and portfolio POST admission preserves the continuous authorization's exit reservations.
 
