@@ -131,11 +131,11 @@ def test_direct_order_cannot_spend_another_sleeves_cash(tmp_path):
     allocate(executor, 'two', '60')
     intent = OrderIntent(Market.BINANCE_EQUITY, 'AAPL', Side.BUY, OrderType.LIMIT,
                          D(5), D(10), 'overspend', time_in_force='GTC')
-    identity = executor.create(account_id='paper', strategy_id='one', strategy_version='1',
-        trading_session='2026-11-24', weights={}, owned_symbols=['AAPL'], now=NOW,
-        direct_orders=[(intent, D(10))])
-    result = run(executor, identity)
-    assert result.reasons['AAPL'] == 'INSUFFICIENT_CASH'
+    with pytest.raises(ValueError, match='allocated cash'):
+        executor.create(account_id='paper', strategy_id='one', strategy_version='1',
+            trading_session='2026-11-24', weights={}, owned_symbols=['AAPL'], now=NOW,
+            direct_orders=[(intent, D(10))])
+    assert store.db.execute('SELECT count(*) FROM portfolio_orders').fetchone()[0] == 0
     assert broker.posts == []
     assert store.cash('paper', 'two') == D(60)
     store.close()
