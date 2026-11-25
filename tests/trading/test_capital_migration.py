@@ -63,6 +63,26 @@ def test_original_fills_and_receipt_migrate_once_without_resubmission(tmp_path):
     store.close()
 
 
+def test_original_corporate_action_migrates_with_fill_basis_and_identity(tmp_path):
+    from datetime import timedelta
+    broker, sleeve = legacy(tmp_path)
+    action = dict(id='original-split', symbol='AAPL', quantity_ratio=D(2),
+        basis_ratio=D(1), cash_flow=D(0), evidence={'activity': 'official-split'},
+        effective_at=NOW + timedelta(seconds=1))
+    broker.positions['AAPL'] *= 2
+    sleeve['corporate_actions'] = [action]
+    sleeve['source_receipt']['corporate_action_ids'] = [action['id']]
+    store, executor = destination(tmp_path, broker)
+    executor.adopt_existing(receipt_id='split-history', account_id='paper',
+                            sleeves=[sleeve], official_equity=D(140))
+    assert store.holdings('paper', 'one') == {'AAPL': D(8)}
+    identity = store.db.execute('SELECT id FROM portfolio_plans').fetchone()[0]
+    report = executor.report(identity, official_equity=D(140), readonly=True)
+    assert report.positions[0].owned_cost_basis == D(40)
+    assert store.db.execute('SELECT event FROM portfolio_corporate_actions').fetchone() == ('original-split',)
+    store.close()
+
+
 def test_partial_order_migration_preserves_remaining_reservation_and_owned_cancel(tmp_path):
     broker, sleeve = legacy(tmp_path, partial=True)
     store, executor = destination(tmp_path, broker)

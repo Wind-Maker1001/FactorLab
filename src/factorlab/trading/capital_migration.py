@@ -57,7 +57,10 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
                 raise ValueError('initial inventory exceeds explicit legacy ownership')
             orders, events = tuple(sleeve['orders']), tuple(sleeve['events'])
             intents = [order['record'].snapshot.intent for order in orders]
+            actions = tuple(sleeve.get('corporate_actions', ()))
             evidence = sleeve['source_receipt']
+            if actions and set(evidence.get('corporate_action_ids', ())) != {action['id'] for action in actions}:
+                raise ValueError('complete original corporate action identity evidence required')
             if (evidence.get('history_complete') is not True
                     or set(evidence['order_ids']) != {intent.client_order_id for intent in intents}
                     or set(evidence['event_ids']) != {event.event_id for event in events}
@@ -69,7 +72,8 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
                 events=events, reference_prices={order['record'].snapshot.intent.client_order_id:
                     order['reference_price'] for order in orders}, account=account,
                 prices={position.instrument_id: position.mark_price for position in account.positions},
-                official_equity=official_equity, target_weights={}, quote_currency=executor.quote_currency)
+                official_equity=official_equity, target_weights={}, quote_currency=executor.quote_currency,
+                corporate_actions=actions)
             for order in orders:
                 snapshot = order['record'].snapshot
                 fills = [fill for fill in report.fills if fill.client_order_id == snapshot.intent.client_order_id]
@@ -105,6 +109,9 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
             for order in orders:
                 store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
                                   (order['record'].snapshot.intent.client_order_id, identity, dumps(order)))
+            for action in actions:
+                store.db.execute('INSERT INTO portfolio_corporate_actions VALUES (?,?,?,?)',
+                    (account_id, owner, action['id'], dumps(action)))
             for event in events:
                 existing = store.db.execute('SELECT payload FROM portfolio_confirmations WHERE account=? AND event=?',
                                             (account_id, event.event_id)).fetchone()
