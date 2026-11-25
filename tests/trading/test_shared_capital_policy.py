@@ -7,7 +7,9 @@ from factorlab.trading.capital import CapitalPolicy, CapitalPolicyMode
 from factorlab.trading.portfolio_execution import PortfolioExecutor, PortfolioStore
 from test_capital_policy import setup
 from test_portfolio_allocations import allocate, plan
-from test_portfolio_execution import Broker, NOW
+from test_portfolio_execution import Broker, NOW, run
+from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side
+from factorlab.trading.storage import dumps
 
 
 SHARED = CapitalPolicyMode.SHARED_SAME_DIRECTION
@@ -147,4 +149,136 @@ def test_qualify_failure_rolls_back_all_claims_binding_and_tighter_limit(tmp_pat
     assert [o.symbol for o in policy.ownership('paper')] == ['BLOCKED']
     with pytest.raises(KeyError):
         policy.symbol_limit('paper', 'AAPL')
+    store.close()
+
+
+def reserve(executor, owner, symbol, quantity, client_id):
+    intent = OrderIntent(Market.BINANCE_EQUITY, symbol, Side.BUY, OrderType.LIMIT,
+                         D(quantity), D(10), client_id, time_in_force='GTC')
+    return executor.create(account_id='paper', strategy_id=owner, strategy_version='1',
+        trading_session='2026-11-24', weights={}, owned_symbols=[symbol], now=NOW,
+        direct_orders=[(intent, D(10))])
+
+
+@pytest.mark.parametrize('uncertain_canceled', [False, True])
+def test_aggregate_symbol_limit_is_not_multiplied_by_instance_count(tmp_path, uncertain_canceled):
+    broker, store, executor = setup(tmp_path)
+    share(executor.capital_policy)
+    claim(store, 'one')
+    claim(store, 'two')
+    first = reserve(executor, 'one', 'AAPL', '3', 'first')
+    if uncertain_canceled:
+        from dataclasses import replace
+        from factorlab.trading.contracts import OrderStatus
+        order = store.orders(first)[0]
+        order['record'] = replace(order['record'], snapshot=replace(order['record'].snapshot,
+                                  status=OrderStatus.CANCELED))
+        order['uncertain'] = True
+        with store.transaction():
+            store.db.execute('UPDATE portfolio_orders SET payload=? WHERE id=?', (dumps(order), 'first'))
+    from factorlab.trading.contracts import OrderSnapshot
+    from factorlab.trading.state import OrderRecord
+    intent = OrderIntent(Market.BINANCE_EQUITY, 'AAPL', Side.BUY, OrderType.LIMIT,
+                         D(2), D(10), 'second', time_in_force='GTC')
+    order = dict(record=OrderRecord(OrderSnapshot(intent), NOW, D(10)),
+                 reference_price=D(10), reservation_price=D(10), attempted=False, uncertain=False)
+    with pytest.raises(ValueError, match='SYMBOL_EXPOSURE_LIMIT'):
+        with store.transaction():
+            store.db.execute('INSERT INTO portfolio_plans VALUES (?,?,?,?,?)',
+                             ('second-plan', 'paper', 'two', '2026-11-24', dumps({})))
+            store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
+                             ('second', 'second-plan', dumps(order)))
+            executor.capital_policy.validate_orders(broker.read_account(), 'two')
+    assert len(store.orders(first)) == 1
+    assert store.db.execute("SELECT count(*) FROM portfolio_orders WHERE id='second'").fetchone()[0] == 0
+    store.close()
+
+
+def test_pending_order_prevents_release_and_exclusive_downgrade(tmp_path):
+    _, store, executor = setup(tmp_path)
+    share(executor.capital_policy)
+    reserve(executor, 'one', 'AAPL', '1', 'live')
+    with pytest.raises(ValueError, match='unfinished orders'):
+        with store.transaction():
+            executor.capital_policy.release('paper', 'one', 'AAPL')
+    with pytest.raises(ValueError, match='unfinished orders'):
+        executor.capital_policy.configure(account_id='paper', currency='USD', budget=D(100),
+            fee_rate=D(0), mode=CapitalPolicyMode.EXCLUSIVE)
+    assert executor.capital_policy.mode('paper') == SHARED
+    store.close()
+
+
+def test_configure_seeds_limits_for_existing_orders_before_plan_replay(tmp_path):
+    broker = Broker()
+    store = PortfolioStore(tmp_path / 'legacy-orders.sqlite3')
+    executor = PortfolioExecutor(broker, store, clock=lambda: NOW)
+    allocate(executor, 'one', '40')
+    identity = reserve(executor, 'one', 'AAPL', '4', 'legacy-order')
+    policy = executor.capital_policy
+    policy.configure(account_id='paper', currency='USD', budget=D(100), fee_rate=D(0))
+    policy.bind(account_id='paper', strategy_id='one', instance_id='one', allocation_id='one-cash')
+    assert reserve(executor, 'one', 'AAPL', '4', 'legacy-order') == identity
+    assert policy.symbol_limit('paper', 'AAPL') == D(40)
+    with store.transaction():
+        policy.validate_orders(broker.read_account(), 'one', include_id='legacy-order')
+    store.close()
+
+
+def test_partial_fill_and_broker_duplicate_count_remaining_only_once(tmp_path):
+    broker, store, executor = setup(tmp_path)
+    share(executor.capital_policy)
+    identity = reserve(executor, 'one', 'AAPL', '4', 'partial')
+    broker.mode = 'partial'
+    run(executor, identity)
+    assert store.holdings('paper', 'one')['AAPL'] == D(2)
+    assert executor.capital_policy.snapshot('paper', 'one').reserved == D(20)
+    with store.transaction():
+        executor.capital_policy.validate_orders(broker.read_account(), 'one', include_id='partial')
+    broker.mode = 'fill'
+    store.close()
+
+
+@pytest.mark.parametrize('quantity', ['1', '4'])
+def test_appreciated_inventory_can_be_reduced_above_entry_risk_limits(tmp_path, quantity):
+    broker, store, executor = setup(tmp_path)
+    share(executor.capital_policy)
+    identity = reserve(executor, 'one', 'AAPL', '4', 'entry')
+    run(executor, identity)
+    run(executor, identity)
+    intent = OrderIntent(Market.BINANCE_EQUITY, 'AAPL', Side.SELL, OrderType.LIMIT,
+                         D(quantity), D(20), 'exit', time_in_force='GTC')
+    executor.create(account_id='paper', strategy_id='one', strategy_version='1',
+        trading_session='2026-11-24', rebalance_id='exit', weights={}, owned_symbols=['AAPL'], now=NOW,
+        direct_orders=[(intent, D(20))])
+    store.close()
+
+
+def test_account_limit_includes_other_symbols_and_cannot_be_split_by_instance(tmp_path):
+    broker, store, executor = setup(tmp_path)
+    share(executor.capital_policy)
+    reserve(executor, 'one', 'AAPL', '3', 'new-risk')
+    broker.positions['QQQ'] = D(8)
+    with pytest.raises(ValueError, match='ACCOUNT_BUDGET_LIMIT'):
+        with store.transaction():
+            executor.capital_policy.validate_orders(broker.read_account(), 'one', include_id='new-risk')
+    store.close()
+
+
+def test_exit_preserves_other_shared_owner_and_allocation_binding(tmp_path):
+    _, store, executor = setup(tmp_path)
+    policy = executor.capital_policy
+    share(policy)
+    claim(store, 'one')
+    claim(store, 'two')
+    with store.transaction():
+        store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                         ('paper', 'AAPL', 'one', '0', '0', '0'))
+        store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                         ('paper', 'AAPL', 'two', '2', '2', '10'))
+        policy.release('paper', 'one', 'AAPL')
+    assert [o.instance_id for o in policy.ownership('paper', 'AAPL')] == ['two']
+    policy.configure(account_id='paper', currency='USD', budget=D(100), fee_rate=D(0),
+                     mode=CapitalPolicyMode.EXCLUSIVE)
+    assert store.holdings('paper', 'two')['AAPL'] == D(2)
+    assert policy.snapshot('paper', 'one').capital == D(40)
     store.close()
