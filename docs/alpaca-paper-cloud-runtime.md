@@ -51,6 +51,8 @@ The generic entrypoint is `run --instances <private-config.json> --feed iex|sip`
 }
 ```
 
+To enable exclusive-symbol static account risk policy, add top-level `"capital_policy": {"currency": "USD", "budget": "100", "fee_rate": "0.001"}` with explicitly authorized budget and fee reserve rate. This enables persistent instance bindings, exclusive symbol qualification, scoped pause and shared execution risk limits, including native V69 borrowing the runner. The policy is immutable across restart. Without this configuration the shared-security sleeve behavior above remains unchanged; enabling it rejects existing shared symbol claims.
+
 Funding registration is immutable and does not adopt broker positions. The package's configurable universe and schedule determine historical acquisition and subscriptions. Selecting SIP makes real SIP permission failures visible; it never falls back to IEX. The `alpaca_balanced` example keeps ten percent cash and supports daily or closed intraday schedules.
 
 The original `--execute-v69` entrypoint builds the native wrapper with the release's full `--revision` commit, adopts the existing checkpoint and journal into shared deployment storage, and continues using the original plan constructor. Existing frozen preparations remain authoritative. A native event is frozen before the shared decision receipt can create its plan; interruption between those steps reuses that event rather than acquiring new signal inputs.

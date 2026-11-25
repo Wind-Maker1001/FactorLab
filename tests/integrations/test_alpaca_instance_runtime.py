@@ -37,8 +37,9 @@ class Account(Adapter):
                     status='active', tradable=True, fractionable=True)
 
 
+@pytest.mark.parametrize('managed', [False, True])
 @pytest.mark.parametrize('interval_seconds', [None, 60, 3600])
-def test_real_package_two_asset_execution_and_restart_do_not_repeat_decision_or_post(tmp_path, interval_seconds, monkeypatch):
+def test_real_package_two_asset_execution_and_restart_do_not_repeat_decision_or_post(tmp_path, interval_seconds, monkeypatch, managed):
     now = NOW + timedelta(hours=1)
     monkeypatch.setattr('test_alpaca_portfolio.NOW', now)
     parameters = dict(account_id='paper', symbols=['SPY', 'IWM'], capital='100',
@@ -107,9 +108,15 @@ def test_real_package_two_asset_execution_and_restart_do_not_repeat_decision_or_
             assert len(list((tmp_path / 'events').glob('*.json'))) == 1
     account.http = SimpleNamespace(request=lambda *args, **kwargs: [])
     account.read_corporate_activities = lambda **kwargs: []
-    host = StrategyInstances(tmp_path, account, dict(releases=str(tmp_path / 'releases'),
+    configuration = dict(releases=str(tmp_path / 'releases'),
         trusted_python=True, instances=[dict(binding=binding,
-            funding={'capital': '100', 'initial_cash': '100'})]), clock=lambda: now)
+            funding={'capital': '100', 'initial_cash': '100'})])
+    if managed:
+        configuration['capital_policy'] = dict(currency='USD', budget='100', fee_rate='0')
+    host = StrategyInstances(tmp_path, account, configuration, clock=lambda: now)
+    assert bool(host.store.db.execute('SELECT 1 FROM capital_accounts').fetchone()) == managed
+    if managed:
+        assert host.store.db.execute('SELECT symbol FROM capital_symbols ORDER BY symbol').fetchall() == [('IWM',), ('SPY',)]
     host.tick(service, {}, now, account.read_account_details())
     assert host.symbols == ('IWM', 'SPY')
     assert host.state['instances']['balanced']['state'] == 'RUNNING'

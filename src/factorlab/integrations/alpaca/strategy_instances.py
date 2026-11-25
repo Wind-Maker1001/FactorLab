@@ -40,6 +40,10 @@ class StrategyInstances:
         self.execution = {'enabled': True, 'state': 'RECOVERING'}
         account = adapter.recover()
         facts = adapter.read_account_details()
+        policy = configuration.get('capital_policy')
+        if policy is not None:
+            self.store.capital_policy.configure(account_id=facts.account_id,
+                currency=policy['currency'], budget=D(policy['budget']), fee_rate=D(policy['fee_rate']))
         for registration in configuration['instances']:
             binding = registration['binding']
             if binding['account_id'] != facts.account_id:
@@ -60,12 +64,18 @@ class StrategyInstances:
                 self.runner.executor.allocate(account_id=facts.account_id, strategy_id=owner,
                     allocation_id=binding['allocation_id'], capital=D(funding['capital']),
                     initial_cash=D(funding['initial_cash']), official_equity=facts.equity)
+            if policy is not None:
+                self.store.capital_policy.bind(account_id=facts.account_id, strategy_id=owner,
+                    instance_id=owner, allocation_id=binding['allocation_id'],
+                    logical_strategy=binding['strategy_id'])
             if registration.get('native_v69', False):
                 from .native_v69 import NativeWeeklyExecution
                 native = NativeWeeklyExecution(self.root, adapter, clock=clock, revision=revision,
                     runner=self.runner, deployments=self.deployments)
                 if binding != native.view.binding():
                     raise ValueError('native V69 registration must preserve its original binding')
+                if policy is not None:
+                    self.store.capital_policy.qualify(native.strategy.spec, binding)
                 self.native[owner] = native
                 continue
             snapshot = view.snapshot()
