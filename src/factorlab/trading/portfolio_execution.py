@@ -1050,6 +1050,15 @@ class PortfolioExecutor:
                 return RebalanceResult(identity, 'COMPLETE', dict(plan['reasons']),
                     dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
                                                 for o in self.store.orders(identity)))
+            if plan.get('stop_reason'):
+                settled = all(o['record'].snapshot.status in TERMINAL and not o['uncertain']
+                              for o in self.store.orders(identity))
+                plan['phase'] = 'COMPLETE' if settled else 'WAITING'
+                plan['reasons']['plan'] = plan['stop_reason']
+                self.store.save_plan(plan)
+                return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
+                    dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
+                                                for o in self.store.orders(identity)))
             if plan.get('corporate_action_blocks'):
                 plan['phase'] = 'WAITING'
                 plan['reasons'] = {'corporate_action': 'FROZEN_INTENT_REQUIRES_ACTION_RECONCILIATION'}
@@ -1087,7 +1096,7 @@ class PortfolioExecutor:
             with self.store.transaction():
                 plan = self.store.plan(identity)
                 self._capital_admission(plan['request']['account'], plan['request']['strategy'])
-                if plan.get('corporate_action_blocks') or self._account_uncertain(plan['request']['account']):
+                if plan.get('stop_reason') or plan.get('corporate_action_blocks') or self._account_uncertain(plan['request']['account']):
                     break
                 order = next(o for o in self.store.orders(identity)
                              if o['record'].snapshot.intent.client_order_id == client_id)
@@ -1146,7 +1155,7 @@ class PortfolioExecutor:
                     plan = self.store.plan(identity)
                     order = next(o for o in self.store.orders(identity)
                                  if o['record'].snapshot.intent.client_order_id == client_id)
-                    if self._account_uncertain(plan['request']['account']):
+                    if plan.get('stop_reason') or self._account_uncertain(plan['request']['account']):
                         break
                     if order['record'].snapshot.status in TERMINAL or order['uncertain']:
                         continue
@@ -1227,21 +1236,43 @@ class PortfolioExecutor:
             return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
                 dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id for o in orders))
 
-    def abandon(self, identity):
-        """Stop a rebalance without releasing ownership or erasing its fills."""
+    def expire(self, identity, *, reason='EXPIRED_REBALANCE'):
+        """Freeze submissions durably, cancel original children and retain unknown reserves.
+
+        Repeating this operation resumes cleanup. Only authoritative terminal
+        children permit COMPLETE; WAITING still prevents the owner's next plan.
+        """
+        with self.store.transaction():
+            plan = self.store.plan(identity)
+            if plan is None:
+                raise KeyError(identity)
+            plan.setdefault('stop_reason', reason)
+            plan['reasons']['plan'] = plan['stop_reason']
+            self.store.save_plan(plan)
         for order in self.store.orders(identity):
             if order['record'].snapshot.status not in TERMINAL or order['uncertain']:
                 self.cancel(identity, order['record'].snapshot.intent.client_order_id)
         with self.store.transaction():
             plan = self.store.plan(identity)
             self._recover_account(plan['request']['account'])
-            if any(o['record'].snapshot.status not in TERMINAL or o['uncertain']
-                   for o in self.store.orders(identity)):
-                raise ValueError('cannot abandon unresolved orders')
+            plan = self.store.plan(identity)
+            settled = all(o['record'].snapshot.status in TERMINAL and not o['uncertain']
+                          for o in self.store.orders(identity))
+            plan['phase'] = 'COMPLETE' if settled else 'WAITING'
+            plan['reasons']['plan'] = plan['stop_reason']
+            self.store.save_plan(plan)
+            return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
+                dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
+                                            for o in self.store.orders(identity)))
+
+    def abandon(self, identity):
+        """Stop a rebalance without releasing ownership or erasing its fills."""
+        result = self.expire(identity, reason='ABANDONED_REBALANCE')
+        if result.phase != 'COMPLETE':
+            raise ValueError('cannot abandon unresolved orders')
+        with self.store.transaction():
             plan = self.store.plan(identity)
             plan['abandoned'] = True
-            plan['phase'] = 'COMPLETE'
-            plan['reasons']['plan'] = 'ABANDONED_REBALANCE'
             self.store.save_plan(plan)
 
     def cancel(self, identity, client_order_id):
@@ -1260,6 +1291,10 @@ class PortfolioExecutor:
                 event = OrderEvent(client_order_id, None, OrderStatus.CANCELED, ZERO, None,
                     self.clock(), 'local-unsubmitted-cancellation',
                     'local-unsubmitted-cancellation:' + client_order_id)
+            except (OrderAbsent, TimeoutError, ConnectionError):
+                order['uncertain'] = True
+                self.store.save_order(order)
+                return
             self._accept(plan, order, event)
             if order['record'].snapshot.status in TERMINAL or order['uncertain']:
                 return
