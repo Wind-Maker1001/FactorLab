@@ -4,7 +4,7 @@
 
 Frozen integration baseline: `bbda212299ccb1b6c2b4dcb021662397d19923d0`.
 Both Azure runtimes were deployed at `ea9cbbdd7519e5400df097e5661b0d6c47b6c4da` on 2026-11-25.
-Subsequent archival documentation does not change that deployed revision.
+The PR additionally protects the legacy-authorization upgrade boundary: migration (including idempotent requests) must cover account-wide history plus outstanding exit commitments, and continuous-window activation rejects insufficient budgets. This follow-up is not deployed; Azure remains at `ea9cbbdd7519e5400df097e5661b0d6c47b6c4da`. The source-consistency evidence below establishes the deployed patch, not equivalence with the PR's later source changes.
 At 2026-11-25 11:52 UTC, all 480 tracked source files in each deployed tree matched that commit byte-for-byte. Alpaca also contained six installation-generated egg-info metadata files, which triggered the initial strict extra-file rejection but did not change tracked source. Service executable/current-release paths selected the same revision. Binance imports the matched source tree directly. Alpaca imports its installed package: all 474 package files matched the verified release source byte-for-byte; six source-only `.gitattributes` files are not installed. Details are in `source-consistency.json`.
 
 This patch addresses two observed integration defects: Alpaca Paper rejected the SSP activity query filter with HTTP 422; the Demo continuous budget omitted historical smoke and portfolio dispatches. Corporate activities now use complete pagination before local receipt filtering. Demo consumption includes account-wide POST history, and portfolio POST admission preserves the continuous authorization's exit reservations.
@@ -26,6 +26,8 @@ Patch regression:
 | Alpaca corporate activities and cloud execution | 18 passed | 9.36 s |
 | Demo migration, continuous campaign, strategy budget and portfolio consumer | 61 passed | 72.21 s |
 | Final portfolio admission guard and migration tests | 25 passed | 15.88 s |
+
+The PR-only upgrade-boundary follow-up passed 67 targeted tests in 71.75 seconds across migration, continuous campaigns, strategy budgets and portfolio admission, including five new migration/activation cases. It was re-reviewed with no further patch-specific finding.
 
 These patch groups overlap and are not additive. The 61-test run began before the final portfolio guard edit; the final 25-test run covers that guard. Preserved console evidence is in `regression-evidence.json`. Existing research evidence in `../p8-r11/REPORT.md` and `../p8-s02-f01/REPORT.md` remains the basis for retaining the incumbent; no Challenger was promoted.
 
