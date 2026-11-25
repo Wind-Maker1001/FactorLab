@@ -1,0 +1,117 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-24T12:52:42.215426+00:00",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "python_version": "3.13.9",
+    "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+    "cpu_physical_cores": 20,
+    "cpu_logical_processors": 28,
+    "ram_total_gb": 63.82,
+    "ram_available_gb": 23.13,
+    "numpy_version": "2.3.4",
+    "pandas_version": "2.3.3",
+    "gpu": {
+      "nvidia_smi_available": true,
+      "name": "NVIDIA GeForce RTX 2070",
+      "memory_total_mb": 8192,
+      "memory_free_mb": 1952,
+      "driver_version": "617.42",
+      "utilization_gpu_pct": 99,
+      "cupy_probe": {
+        "available": false,
+        "reason": "runtime cupy unavailable: No module named 'cupy'",
+        "version": null,
+        "driver_visible": null,
+        "runtime_available": false
+      }
+    },
+    "git_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+    "git_dirty": true,
+    "blas_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "suite": "bench_d",
+  "bench_d": {
+    "suite": "BENCH-D",
+    "repeats": 3,
+    "workers": 8,
+    "d1_r10_walkforward_and_funding_sweep": {
+      "timing": {
+        "all_runs_s": [
+          390.209934,
+          377.459989,
+          359.440457
+        ],
+        "cold_s": 390.209934,
+        "warm_median_s": 368.450223,
+        "median_s": 377.459989,
+        "min_s": 359.440457,
+        "max_s": 390.209934
+      },
+      "last_phase_breakdown": {
+        "precompute_ac_s": 112.6927,
+        "wf_mainnet_s": 67.7805,
+        "wf_demo_stress_s": 67.3716,
+        "funding_sweep_8regimes_s": 111.5957
+      },
+      "semantics": {
+        "mainnet_oos_a_ret_pct": 0.1648,
+        "mainnet_oos_b_ret_pct": 0.0,
+        "mainnet_oos_c_ret_pct": 0.641,
+        "demo_oos_b_ret_pct": 0.0,
+        "sweep_rows": 32
+      }
+    },
+    "d2_s02_automatic_12candidates": {
+      "timing": {
+        "all_runs_s": [
+          11.394536,
+          14.278726,
+          14.376882
+        ],
+        "cold_s": 11.394536,
+        "warm_median_s": 14.327804,
+        "median_s": 14.278726,
+        "min_s": 11.394536,
+        "max_s": 14.376882
+      },
+      "semantics": {
+        "candidates": 13,
+        "selected": "c-e6b0d748191fb67033994937",
+        "promoted": false,
+        "reason": "retain_champion_no_qualified_challenger"
+      }
+    },
+    "d3_s01_isolated_grid_8bars": {
+      "timing": {
+        "all_runs_s": [
+          36.145112,
+          40.252313,
+          39.867594
+        ],
+        "cold_s": 36.145112,
+        "warm_median_s": 40.059953,
+        "median_s": 39.867594,
+        "min_s": 36.145112,
+        "max_s": 40.252313
+      },
+      "last_run_detail": {
+        "n_bars": 8,
+        "load_strategy_s": 2.121164,
+        "replay_s": 37.74643,
+        "total_s": 39.867594,
+        "decide_events": 16,
+        "ms_per_decide_event": 2359.15,
+        "final_state_json_bytes": 12053,
+        "max_state_json_bytes": 12053,
+        "sqlite_transactions": 85,
+        "orders_created": 1
+      }
+    }
+  },
+  "total_benchmark_wall_s": 1285.54
+}

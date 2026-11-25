@@ -107,10 +107,14 @@ def run_custom_strategy(bars, calendar, config_path, *, fee_schedule=None, sourc
     if not np.allclose(ratio, ratio.iloc[0], rtol=1e-10, atol=1e-12):
         raise SchemaError("variable adjustment ratio requires qualified execution ledger")
     rows = []
+    columns = list(dict.fromkeys(("date", "symbol", *strategy.required_fields)))
+    frame_cols = frame.loc[:, columns]
+    frame_dates = frame["date"].to_numpy()
+    all_calendar = pd.DatetimeIndex(frame["date"])
     for day in research:
-        columns = list(dict.fromkeys(("date", "symbol", *strategy.required_fields)))
-        history = frame.loc[frame.date <= day, columns].copy()
-        history_calendar = pd.DatetimeIndex(history.date)
+        end_pos = int(np.searchsorted(frame_dates, day.to_datetime64(), side="right"))
+        history = frame_cols.iloc[:end_pos].copy()
+        history_calendar = all_calendar[:end_pos]
         try:
             targets = strategy.generate_targets(history, history_calendar.copy())
         except Exception as exc:

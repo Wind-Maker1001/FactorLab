@@ -116,14 +116,41 @@ def analyze_account(directory, events, output, *, end=END):
 
 def position_settlements(trades, events):
     """Settle each account independently, with settlement before exact-tie fills."""
+    parsed_trades = sorted(
+        (
+            timestamp(r['event_time']),
+            D(str(r['executed_shares'])) * (1 if r['side'] == 'BUY' else -1),
+        )
+        for r in trades
+    )
+    if not events:
+        return []
+    is_sorted = all(events[i][0] <= events[i + 1][0] for i in range(len(events) - 1))
+    if not is_sorted:
+        flows = []
+        for time, price, rate, kind in events:
+            before = sum((q for t, q in parsed_trades if t < time), ZERO)
+            after = before + sum((q for t, q in parsed_trades if t == time), ZERO)
+            flows.append(dict(time=time.isoformat(), quantity=before, rate=rate, mark_price=price,
+                              rate_type=kind, funding=cashflow(before, price, rate),
+                              tie_alternative=cashflow(after, price, rate)))
+        return flows
     flows = []
+    n_trades = len(parsed_trades)
+    idx = 0
+    running_before = ZERO
     for time, price, rate, kind in events:
-        before = sum((D(r['executed_shares']) * (1 if r['side']=='BUY' else -1)
-                      for r in trades if timestamp(r['event_time']) < time), ZERO)
-        after = before + sum((D(r['executed_shares']) * (1 if r['side']=='BUY' else -1)
-                             for r in trades if timestamp(r['event_time']) == time), ZERO)
-        flows.append(dict(time=time.isoformat(), quantity=before, rate=rate, mark_price=price,
-                          rate_type=kind, funding=cashflow(before, price, rate),
+        while idx < n_trades and parsed_trades[idx][0] < time:
+            running_before += parsed_trades[idx][1]
+            idx += 1
+        tie_qty = ZERO
+        j = idx
+        while j < n_trades and parsed_trades[j][0] == time:
+            tie_qty += parsed_trades[j][1]
+            j += 1
+        after = running_before + tie_qty
+        flows.append(dict(time=time.isoformat(), quantity=running_before, rate=rate, mark_price=price,
+                          rate_type=kind, funding=cashflow(running_before, price, rate),
                           tie_alternative=cashflow(after, price, rate)))
     return flows
 

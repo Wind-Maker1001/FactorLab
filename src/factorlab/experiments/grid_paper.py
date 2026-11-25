@@ -1,6 +1,6 @@
 """Close-quote research driven exclusively by authoritative Paper transactions."""
 from dataclasses import asdict, replace
-from datetime import timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_CEILING
 import json
 from pathlib import Path
@@ -12,7 +12,7 @@ from factorlab._identity import source_context_root
 from factorlab.experiments.provenance import capture_provenance
 from factorlab.evaluation.research import EvaluationContext, ResearchEvaluation, compare_results
 from factorlab.strategies.grid import GridConfig
-from factorlab.strategies.grid_execution import GridExecution, project_paper_account
+from factorlab.strategies.grid_execution import GridExecution, _project_paper_account, project_paper_account
 from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side, OrderStatus, Position, ZERO, decimal_value
 from factorlab.trading.control import RiskLimits, TradingController, RiskRejected
 from factorlab.trading.execution import execution_candidate
@@ -94,7 +94,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                    account_id='research-grid', max_exit_quantity=None,
                    scenario=None, synthetic_capacity=None, inventory_risk=None,
                    research_wal=False, grid_factory=None, provenance=None,
-                   research_execution=None):
+                   research_execution=None, in_memory_store=False, return_artifacts=False):
     """Run one fresh dedicated equity Paper account and save auditable receipts.
 
     Capital is total starting equity; declared inventory is an endowed position,
@@ -140,11 +140,25 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
     if cash < 0:
         raise ValueError('capital does not cover endowed inventory')
     config = replace(config, initial_cash=float(cash))
-    output = Path(output).resolve()
-    output.mkdir(parents=True, exist_ok=False)
+    write_files = not (in_memory_store and return_artifacts)
+    if write_files:
+        output = Path(output).resolve()
+        output.mkdir(parents=True, exist_ok=False)
+    bar_delta = timedelta(hours=1) if interval == '1h' else timedelta(days=1)
+    close_offset = bar_delta - timedelta(microseconds=1)
+
+    def open_utc(bar):
+        raw = bar['time']
+        if isinstance(raw, datetime):
+            dt = raw
+        else:
+            dt = datetime.fromisoformat(str(raw).replace('Z', '+00:00'))
+        if dt.tzinfo is None:
+            return dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+
     def close_time(bar):
-        return (pd.Timestamp(bar['time']) + pd.Timedelta(interval)
-                - pd.Timedelta(microseconds=1)).to_pydatetime().replace(tzinfo=timezone.utc)
+        return open_utc(bar) + close_offset
 
     now = [close_time(bars[0])]
     broker = PaperBroker(market, account_id, (Instrument(instrument_id, currency),),
@@ -155,7 +169,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             state.positions[instrument_id] = Position(instrument_id, inventory, D(config.initial_price),
                                                       D(config.initial_price), currency)
 
-    store = PaperStore(output / 'paper.sqlite', research_wal=research_wal)
+    store = (PaperStore(':memory:') if in_memory_store
+             else PaperStore(output / 'paper.sqlite', research_wal=research_wal))
     try:
         controller = TradingController(broker, store, clock=lambda: now[0], initialize_state=initialize,
             limits=RiskLimits(capital, capital, capital, 1000))
@@ -173,6 +188,8 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
         lifecycle = []
         last_risk = None
         estimated_total = ZERO
+        fees_to_date = ZERO
+        ref_turnover = ZERO
         peak = capital
 
         def working_orders():
@@ -256,7 +273,7 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                     observation['scenario'] = scenario
                 if interval == '1h':
                     # Grid's observation contract uses timezone-free UTC coordinates.
-                    observation['time'] = pd.Timestamp(bar['time']).tz_convert('UTC').tz_localize(None).isoformat()
+                    observation['time'] = open_utc(bar).replace(tzinfo=None).isoformat()
                 if research_execution is not None:
                     # Grid's volume field is an integer; research capacity is independent.
                     observation['volume'] = int(D(bar['volume']))
@@ -322,12 +339,16 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                         and current_risk != last_risk):
                     risk.append(dict(time=bar['time'], kind='RISK_TRIGGER', state=grid.state, reason=grid.reason))
                 last_risk = current_risk
-            account = project_paper_account(controller, instrument_id)
+            if no_trade or buy_hold:
+                ref_turnover += day_notional
+                account = _project_paper_account(broker, instrument_id, ref_turnover)
+            else:
+                account = grid.account
             peak = max(peak, account.equity)
             position = broker.state.positions.get(instrument_id)
             unrealized = (position.quantity * (position.mark_price - position.entry_price)
                           if position else ZERO)
-            fees_to_date = sum((record.snapshot.cumulative_fee for record in broker.state.orders.values()), ZERO)
+            fees_to_date += day_fee
             rows.append(dict(date=bar['time'], close=float(close),
                 state='REFERENCE' if no_trade or buy_hold else grid.state,
                 state_reason=None if no_trade or buy_hold else grid.reason,
@@ -355,24 +376,28 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
             'transaction_cost', 'estimated_budget_cost'])
         for column in ('trade_notional', 'transaction_cost'):
             ledger[column] = ledger[column].astype(float)
-        evaluation_daily, evaluation_ledger = daily.copy(), ledger.copy()
-        if interval == '1h':
-            evaluation_daily.date = evaluation_daily.date.dt.tz_convert('UTC').dt.tz_localize(None).dt.normalize()
-            sums = {'transaction_cost', 'fee', 'slippage', 'turnover'}
-            evaluation_daily = evaluation_daily.groupby('date', as_index=False).agg(
-                {c: 'sum' if c in sums else 'last' for c in daily.columns if c != 'date'})
-            for prefix in ('strategy', 'benchmark'):
-                nav = evaluation_daily[prefix + '_nav']
-                evaluation_daily[prefix + '_return'] = nav.pct_change().fillna(nav.iloc[0] - 1)
-            evaluation_ledger.execution_date = pd.to_datetime(
-                evaluation_ledger.execution_date, utc=True).dt.tz_localize(None).dt.normalize()
-        context = EvaluationContext(dataset_id=json_hash(bars), universe_id=instrument_id,
-            label='not_used', label_id='not_used', benchmark_id='endowment-no-trade',
-            calendar=tuple(evaluation_daily.date.dt.strftime('%Y-%m-%d')), holding_days=1,
-            periods_per_year=365 if interval == '1h' else 252,
-            source_kind='REAL_CANDIDATE' if isinstance(data_identity, dict) else 'SYNTHETIC')
-        result = ResearchEvaluation(context).portfolio('no-trade' if no_trade else 'buy-hold' if buy_hold else config.mode,
-                                                     evaluation_daily, trades=evaluation_ledger)
+        dataset_id = json_hash(bars) if write_files else ''
+        if write_files:
+            evaluation_daily, evaluation_ledger = daily.copy(), ledger.copy()
+            if interval == '1h':
+                evaluation_daily.date = evaluation_daily.date.dt.tz_convert('UTC').dt.tz_localize(None).dt.normalize()
+                sums = {'transaction_cost', 'fee', 'slippage', 'turnover'}
+                evaluation_daily = evaluation_daily.groupby('date', as_index=False).agg(
+                    {c: 'sum' if c in sums else 'last' for c in daily.columns if c != 'date'})
+                for prefix in ('strategy', 'benchmark'):
+                    nav = evaluation_daily[prefix + '_nav']
+                    evaluation_daily[prefix + '_return'] = nav.pct_change().fillna(nav.iloc[0] - 1)
+                evaluation_ledger.execution_date = pd.to_datetime(
+                    evaluation_ledger.execution_date, utc=True).dt.tz_localize(None).dt.normalize()
+            context = EvaluationContext(dataset_id=dataset_id, universe_id=instrument_id,
+                label='not_used', label_id='not_used', benchmark_id='endowment-no-trade',
+                calendar=tuple(evaluation_daily.date.dt.strftime('%Y-%m-%d')), holding_days=1,
+                periods_per_year=365 if interval == '1h' else 252,
+                source_kind='REAL_CANDIDATE' if isinstance(data_identity, dict) else 'SYNTHETIC')
+            result = ResearchEvaluation(context).portfolio('no-trade' if no_trade else 'buy-hold' if buy_hold else config.mode,
+                                                         evaluation_daily, trades=evaluation_ledger)
+        else:
+            result = None
         final = dict(schema_version=SCHEMA_VERSION, evidence=EVIDENCE,
             execution=dict(interval=interval, buy_hold=buy_hold, scenario=scenario,
                            synthetic_capacity=str(synthetic_capacity) if close_only else None,
@@ -394,28 +419,43 @@ def run_experiment(output, *, bars, config, rules, capital, fee_rate, slippage,
                     for key, record in broker.state.orders.items()})
         if research_execution is not None:
             final['execution'].update(research_execution.model())
-        daily.to_csv(output / 'daily.csv', index=False)
-        ledger.to_csv(output / 'trades.csv', index=False)
-        _write(output / 'evaluation.json', result.to_dict())
-        if inventory_risk is not None:
-            _write(output / 'inventory-risk.json', dict(rule=inventory_risk, events=grid.risk_events))
-        _write(output / 'result.json', final)
-        _write(output / 'manifest.json', dict(schema_version=SCHEMA_VERSION,
-            dataset_id=json_hash(bars), data_identity=data_identity,
-            window=dict(start=bars[0]['time'], end=bars[-1]['time'], bars=len(bars)),
-            provenance=(capture_provenance(source_context_root()) if provenance is None else provenance),
-            deterministic=True,
-            config=asdict(config), rules=asdict(rules), capital=capital, fee_rate=fee_rate,
-            slippage=slippage, participation=participation, no_trade=no_trade,
-            interval=interval, buy_hold=buy_hold, scenario=scenario,
-            synthetic_capacity=synthetic_capacity,
-            account_id=account_id, reference_budget=reference_budget,
-            max_exit_quantity=max_exit_quantity,
-            **({'inventory_risk': inventory_risk} if inventory_risk is not None else {}),
-            **({'research_grid': grid.deployment()} if grid_factory is not None else {}),
-            **({'research_execution': research_execution.model()} if research_execution is not None else {}),
-            market=market.value, instrument_id=instrument_id,
-            fee_estimate=[asdict(rule) for rule in grid.fees.rules]))
+        if write_files:
+            daily.to_csv(output / 'daily.csv', index=False)
+            ledger.to_csv(output / 'trades.csv', index=False)
+            _write(output / 'evaluation.json', result.to_dict())
+            if inventory_risk is not None:
+                _write(output / 'inventory-risk.json', dict(rule=inventory_risk, events=grid.risk_events))
+            _write(output / 'result.json', final)
+            _write(output / 'manifest.json', dict(schema_version=SCHEMA_VERSION,
+                dataset_id=dataset_id, data_identity=data_identity,
+                window=dict(start=bars[0]['time'], end=bars[-1]['time'], bars=len(bars)),
+                provenance=(capture_provenance(source_context_root()) if provenance is None else provenance),
+                deterministic=True,
+                config=asdict(config), rules=asdict(rules), capital=capital, fee_rate=fee_rate,
+                slippage=slippage, participation=participation, no_trade=no_trade,
+                interval=interval, buy_hold=buy_hold, scenario=scenario,
+                synthetic_capacity=synthetic_capacity,
+                account_id=account_id, reference_budget=reference_budget,
+                max_exit_quantity=max_exit_quantity,
+                **({'inventory_risk': inventory_risk} if inventory_risk is not None else {}),
+                **({'research_grid': grid.deployment()} if grid_factory is not None else {}),
+                **({'research_execution': research_execution.model()} if research_execution is not None else {}),
+                market=market.value, instrument_id=instrument_id,
+                fee_estimate=[asdict(rule) for rule in grid.fees.rules]))
+        if return_artifacts:
+            fill_events = [ev for _, ev in store.order_events() if ev.fill_price is not None]
+            funding_events_all = [ev for _, ev in store.funding_events()] if hasattr(store, 'funding_events') else []
+            artifacts = {
+                'daily': daily,
+                'rows': rows,
+                'trades': trades,
+                'ledger': ledger,
+                'result': final,
+                'fill_events': fill_events,
+                'funding_events': funding_events_all,
+                'state': store.load(),
+            }
+            return result, artifacts
         return result
     finally:
         store.db.close()

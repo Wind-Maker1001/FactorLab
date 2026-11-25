@@ -249,6 +249,7 @@ class GridExecution:
         self.last_input = self.conflict = None
         self._turnover = ZERO
         self._revision = self._baseline = None
+        self._authority_order_cache = {}
 
     def _stage(self):
         staged = copy(self)
@@ -731,13 +732,24 @@ class GridExecution:
             raise ValueError('Paper account deployment mismatch')
         digest = sha256(dumps([cursor, state.sequence, state.fee_rate, state.instruments,
                                state.cash, state.positions, state.quotes]).encode())
+        cache = self._authority_order_cache
+        confirmations = state.confirmations
         for key, record in state.orders.items():
+            conf = confirmations.get(key)
+            cached = cache.get(key)
+            if cached is not None and cached[0] is record and cached[1] is conf:
+                digest.update(cached[2])
+                continue
             # A restart changes presentation to UNKNOWN, preserving confirmed facts.
+            normalized = record
             snapshot = record.snapshot
             if snapshot.status == OrderStatus.UNKNOWN and snapshot.reconcile_required:
-                record = replace(record, snapshot=replace(snapshot, status=record.confirmed_status,
-                                                          reconcile_required=False))
-            digest.update(dumps([key, record, state.confirmations.get(key)]).encode())
+                normalized = replace(record, snapshot=replace(snapshot, status=record.confirmed_status,
+                                                              reconcile_required=False))
+            encoded = dumps([key, normalized, conf]).encode()
+            if type(record) is OrderRecord and (conf is None or type(conf).__name__ == 'OrderEvent'):
+                cache[key] = (record, conf, encoded)
+            digest.update(encoded)
         return digest.hexdigest()
 
     def _paper_deployment(self, controller):

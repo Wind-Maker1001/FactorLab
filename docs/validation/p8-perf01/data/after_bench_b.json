@@ -1,0 +1,283 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-24T16:57:40.454303+00:00",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "python_version": "3.13.9",
+    "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+    "cpu_physical_cores": 20,
+    "cpu_logical_processors": 28,
+    "ram_total_gb": 63.82,
+    "ram_available_gb": 27.84,
+    "numpy_version": "2.3.4",
+    "pandas_version": "2.3.3",
+    "gpu": {
+      "nvidia_smi_available": true,
+      "name": "NVIDIA GeForce RTX 2070",
+      "memory_total_mb": 8192,
+      "memory_free_mb": 6310,
+      "driver_version": "617.42",
+      "utilization_gpu_pct": 6,
+      "cupy_probe": {
+        "available": false,
+        "reason": "runtime cupy unavailable: No module named 'cupy'",
+        "version": null,
+        "driver_visible": null,
+        "runtime_available": false
+      }
+    },
+    "git_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+    "git_dirty": true,
+    "blas_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "suite": "bench_b",
+  "bench_b": {
+    "suite": "BENCH-B",
+    "repeats": 3,
+    "r09_f11_f08_lifecycle": [
+      {
+        "tier": "small_16accts_1w",
+        "n_paths": 8,
+        "n_accounts": 16,
+        "workers": 1,
+        "timing": {
+          "all_runs_s": [
+            6.821901,
+            6.18795,
+            6.594207
+          ],
+          "cold_s": 6.821901,
+          "warm_median_s": 6.391079,
+          "median_s": 6.594207,
+          "min_s": 6.18795,
+          "max_s": 6.821901
+        },
+        "accounts_per_sec_median": 2.43,
+        "paths_per_sec_median": 1.21,
+        "semantics": {
+          "accounts": 16,
+          "all_zero_fifo_residual": true,
+          "sum_net_pnl_usdt": -8.61609875,
+          "sum_fees_usdt": 0.30149094,
+          "sum_slippage_usdt": 0.20099312,
+          "sum_funding_usdt": -7.87422532,
+          "total_orders": 313,
+          "total_fills": 188,
+          "total_grid_cycles": 0,
+          "total_rotations": 226,
+          "mean_max_dd": 0.07843635,
+          "var_95": 0.29907773,
+          "cvar_95": 0.29917872,
+          "loss_prob": 0.75
+        }
+      },
+      {
+        "tier": "medium_64accts_8w",
+        "n_paths": 32,
+        "n_accounts": 64,
+        "workers": 8,
+        "timing": {
+          "all_runs_s": [
+            11.786247,
+            6.100996,
+            5.766402
+          ],
+          "cold_s": 11.786247,
+          "warm_median_s": 5.933699,
+          "median_s": 6.100996,
+          "min_s": 5.766402,
+          "max_s": 11.786247
+        },
+        "accounts_per_sec_median": 10.49,
+        "paths_per_sec_median": 5.25,
+        "semantics": {
+          "accounts": 64,
+          "all_zero_fifo_residual": true,
+          "sum_net_pnl_usdt": -31.29179156,
+          "sum_fees_usdt": 1.03872113,
+          "sum_slippage_usdt": 0.6924776,
+          "sum_funding_usdt": -29.39039765,
+          "total_orders": 1113,
+          "total_fills": 649,
+          "total_grid_cycles": 0,
+          "total_rotations": 783,
+          "mean_max_dd": 0.07184562,
+          "var_95": 0.32390417,
+          "cvar_95": 0.33267891,
+          "loss_prob": 0.734375
+        }
+      },
+      {
+        "tier": "large_256accts_8w",
+        "n_paths": 128,
+        "n_accounts": 256,
+        "workers": 8,
+        "timing": {
+          "all_runs_s": [
+            10.601683,
+            10.801422,
+            10.963579
+          ],
+          "cold_s": 10.601683,
+          "warm_median_s": 10.8825,
+          "median_s": 10.801422,
+          "min_s": 10.601683,
+          "max_s": 10.963579
+        },
+        "accounts_per_sec_median": 23.7,
+        "paths_per_sec_median": 11.85,
+        "semantics": {
+          "accounts": 256,
+          "all_zero_fifo_residual": true,
+          "sum_net_pnl_usdt": -126.01178361,
+          "sum_fees_usdt": 4.43981626,
+          "sum_slippage_usdt": 2.95986448,
+          "sum_funding_usdt": -119.76545402,
+          "total_orders": 4531,
+          "total_fills": 2770,
+          "total_grid_cycles": 0,
+          "total_rotations": 3131,
+          "mean_max_dd": 0.07175858,
+          "var_95": 0.30861151,
+          "cvar_95": 0.3294921,
+          "loss_prob": 0.738281
+        }
+      }
+    ],
+    "r10_file_wal_lifecycle": [
+      {
+        "tier": "small_12accts_1w",
+        "n_windows": 4,
+        "n_accounts": 12,
+        "workers": 1,
+        "timing": {
+          "all_runs_s": [
+            1.277136,
+            1.276513,
+            1.244149
+          ],
+          "cold_s": 1.277136,
+          "warm_median_s": 1.260331,
+          "median_s": 1.276513,
+          "min_s": 1.244149,
+          "max_s": 1.277136
+        },
+        "accounts_per_sec_median": 9.4,
+        "semantics": {
+          "accounts": 12,
+          "all_zero_fifo_residual": true,
+          "sum_trade_net_pnl_usdt": -2.61251623,
+          "sum_funding_pnl_usdt": -0.16267541,
+          "sum_final_net_pnl_usdt": -2.77519166,
+          "sum_fees_usdt": 0.02647103,
+          "sum_slippage_usdt": 0.0176452,
+          "total_fills": 10,
+          "total_submitted_orders": 13,
+          "total_grid_cycles": 0,
+          "mean_max_dd_with_funding_pct": 3.673275
+        }
+      },
+      {
+        "tier": "medium_36accts_8w",
+        "n_windows": 12,
+        "n_accounts": 36,
+        "workers": 8,
+        "timing": {
+          "all_runs_s": [
+            13.010304,
+            16.025206,
+            12.768046
+          ],
+          "cold_s": 13.010304,
+          "warm_median_s": 14.396626,
+          "median_s": 13.010304,
+          "min_s": 12.768046,
+          "max_s": 16.025206
+        },
+        "accounts_per_sec_median": 2.77,
+        "semantics": {
+          "accounts": 36,
+          "all_zero_fifo_residual": true,
+          "sum_trade_net_pnl_usdt": -2.75564745,
+          "sum_funding_pnl_usdt": -0.24497088,
+          "sum_final_net_pnl_usdt": -3.00061834,
+          "sum_fees_usdt": 0.05307073,
+          "sum_slippage_usdt": 0.03537672,
+          "total_fills": 21,
+          "total_submitted_orders": 52,
+          "total_grid_cycles": 0,
+          "mean_max_dd_with_funding_pct": 2.060825
+        }
+      },
+      {
+        "tier": "large_72accts_8w",
+        "n_windows": 24,
+        "n_accounts": 72,
+        "workers": 8,
+        "timing": {
+          "all_runs_s": [
+            13.565759,
+            13.820127,
+            17.839641
+          ],
+          "cold_s": 13.565759,
+          "warm_median_s": 15.829884,
+          "median_s": 13.820127,
+          "min_s": 13.565759,
+          "max_s": 17.839641
+        },
+        "accounts_per_sec_median": 5.21,
+        "semantics": {
+          "accounts": 72,
+          "all_zero_fifo_residual": true,
+          "sum_trade_net_pnl_usdt": -1.4876131,
+          "sum_funding_pnl_usdt": -0.28295414,
+          "sum_final_net_pnl_usdt": -1.77056723,
+          "sum_fees_usdt": 0.09193158,
+          "sum_slippage_usdt": 0.06128152,
+          "total_fills": 36,
+          "total_submitted_orders": 97,
+          "total_grid_cycles": 0,
+          "mean_max_dd_with_funding_pct": 1.4868
+        }
+      }
+    ],
+    "r10_disk_wal_preserved": {
+      "tier": "small_12accts_1w_disk_wal_preserved",
+      "n_windows": 4,
+      "n_accounts": 12,
+      "workers": 1,
+      "timing": {
+        "all_runs_s": [
+          28.353966,
+          24.953916,
+          27.373105
+        ],
+        "cold_s": 28.353966,
+        "warm_median_s": 26.163511,
+        "median_s": 27.373105,
+        "min_s": 24.953916,
+        "max_s": 28.353966
+      },
+      "accounts_per_sec_median": 0.44,
+      "semantics": {
+        "accounts": 12,
+        "all_zero_fifo_residual": true,
+        "sum_trade_net_pnl_usdt": -2.61251623,
+        "sum_funding_pnl_usdt": -0.16267541,
+        "sum_final_net_pnl_usdt": -2.77519166,
+        "sum_fees_usdt": 0.02647103,
+        "sum_slippage_usdt": 0.0176452,
+        "total_fills": 10,
+        "total_submitted_orders": 13,
+        "total_grid_cycles": 0,
+        "mean_max_dd_with_funding_pct": 3.673275
+      }
+    }
+  },
+  "total_benchmark_wall_s": 250.717
+}

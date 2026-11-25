@@ -16,6 +16,7 @@ Strict causality guarantees:
 """
 from __future__ import annotations
 
+from bisect import bisect_right
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
@@ -30,7 +31,10 @@ import numpy as np
 import pandas as pd
 
 from factorlab.experiments.grid_empirical import load_hourly
-from factorlab.experiments.grid_fifo import attribution as paper_fifo_attribution
+from factorlab.experiments.grid_fifo import (
+    attribute_events as paper_fifo_attribute_events,
+    attribution as paper_fifo_attribution,
+)
 from factorlab.experiments.grid_funding import (
     cashflow as funding_cashflow,
     position_settlements,
@@ -197,6 +201,7 @@ def causal_funding_rate_bps_h(
     *,
     lookback_hours: int = 24,
     conservative: bool = True,
+    _sorted_times: list[datetime] | None = None,
 ) -> tuple[float, int, float]:
     """Estimate current hourly funding rate (bps/h) using ONLY events <= obs_utc.
 
@@ -204,26 +209,39 @@ def causal_funding_rate_bps_h(
     Positive values mean longs pay shorts.
     """
     window_start = obs_utc - timedelta(hours=lookback_hours)
-    past_all = [ev for ev in funding_events if ev[0] <= obs_utc]
-    if not past_all:
-        return 0.0, 0, 0.0
-    recent = [ev for ev in past_all if ev[0] > window_start]
-    if not recent:
-        # Decay gracefully if no settlement occurred inside lookback window.
-        return 0.0, 0, 0.0
-    # Convert total settled rate inside the lookback window to bps/hour.
-    total_bps = sum(float(ev[2]) * 10_000.0 for ev in recent)
-    mean_bps_h = total_bps / float(lookback_hours)
-
-    # Estimate the latest event's implied hourly rate from the gap to the prior event.
-    last_ev = past_all[-1]
-    if len(past_all) >= 2:
-        gap_h = max(1.0, min(8.0, (last_ev[0] - past_all[-2][0]).total_seconds() / 3600.0))
+    if _sorted_times is not None:
+        end_idx = bisect_right(_sorted_times, obs_utc)
+        if end_idx == 0:
+            return 0.0, 0, 0.0
+        start_idx = bisect_right(_sorted_times, window_start, 0, end_idx)
+        if start_idx >= end_idx:
+            return 0.0, 0, 0.0
+        total_bps = sum(float(funding_events[i][2]) * 10_000.0 for i in range(start_idx, end_idx))
+        n_recent = end_idx - start_idx
+        last_ev = funding_events[end_idx - 1]
+        if end_idx >= 2:
+            gap_h = max(1.0, min(8.0, (last_ev[0] - funding_events[end_idx - 2][0]).total_seconds() / 3600.0))
+        else:
+            gap_h = 8.0
     else:
-        gap_h = 8.0
+        past_all = [ev for ev in funding_events if ev[0] <= obs_utc]
+        if not past_all:
+            return 0.0, 0, 0.0
+        recent = [ev for ev in past_all if ev[0] > window_start]
+        if not recent:
+            # Decay gracefully if no settlement occurred inside lookback window.
+            return 0.0, 0, 0.0
+        total_bps = sum(float(ev[2]) * 10_000.0 for ev in recent)
+        n_recent = len(recent)
+        last_ev = past_all[-1]
+        if len(past_all) >= 2:
+            gap_h = max(1.0, min(8.0, (last_ev[0] - past_all[-2][0]).total_seconds() / 3600.0))
+        else:
+            gap_h = 8.0
+    mean_bps_h = total_bps / float(lookback_hours)
     last_bps_h = float(last_ev[2]) * 10_000.0 / gap_h
     est = max(mean_bps_h, last_bps_h) if conservative else mean_bps_h
-    return est, len(recent), last_bps_h
+    return est, n_recent, last_bps_h
 
 
 class FundingSensitiveGrid(GridExecution):
@@ -240,6 +258,7 @@ class FundingSensitiveGrid(GridExecution):
         self.funding_policy = funding_policy
         # Pre-sort immutably by UTC timestamp; decision code filters <= obs_utc strictly.
         self._all_funding_events = sorted(funding_events, key=lambda e: e[0])
+        self._all_funding_times = [e[0] for e in self._all_funding_events]
         self.buy_blocked = False
         self.last_funding_bps_h = 0.0
         self.entry_time_utc: datetime | None = None
@@ -274,6 +293,7 @@ class FundingSensitiveGrid(GridExecution):
             obs_utc,
             lookback_hours=p.lookback_hours,
             conservative=p.conservative,
+            _sorted_times=self._all_funding_times,
         )
         gross_bps = self._grid_gross_spread_bps()
         tx_bps = self._roundtrip_tx_bps()
@@ -309,8 +329,7 @@ class FundingSensitiveGrid(GridExecution):
     def _observe(self, event, account):
         # Compute causal observation time strictly BEFORE super()._observe so initial
         # sequence==1 seeding obeys the causal funding gate.
-        ts = pd.Timestamp(event["time"])
-        obs_utc = ts.to_pydatetime().replace(tzinfo=timezone.utc) + timedelta(hours=1, microseconds=-1)
+        obs_utc = parse_utc(event["time"]) + timedelta(hours=1, microseconds=-1)
         blocked, est_bps_h, net_margin_bps, block_reason = self._evaluate_entry_block(obs_utc)
         prev_blocked = self.buy_blocked
         self.buy_blocked = blocked
@@ -353,10 +372,11 @@ class FundingSensitiveGrid(GridExecution):
         ):
             hold_h = max(0.0, (obs_utc - self.entry_time_utc).total_seconds() / 3600.0)
             # Compute causal cumulative funding already paid on this open lot (events strictly <= obs_utc).
+            lo = bisect_right(self._all_funding_times, self.entry_time_utc)
+            hi = bisect_right(self._all_funding_times, obs_utc, lo)
             paid_bps = sum(
-                float(ev[2]) * 10_000.0
-                for ev in self._all_funding_events
-                if self.entry_time_utc < ev[0] <= obs_utc
+                float(self._all_funding_events[i][2]) * 10_000.0
+                for i in range(lo, hi)
             )
             exit_reason = None
             if p.exit_mode == "funding_bleed":
@@ -1151,32 +1171,71 @@ def run_paired_window(
         )
         grid_factory = None
 
-    run_experiment(
-        out_dir,
-        bars=bars,
-        config=cfg,
-        rules=rules,
-        capital=capital,
-        fee_rate=fee_rate,
-        slippage=slippage,
-        participation=participation,
-        interval="1h",
-        market=Market.BINANCE_USDM,
-        instrument_id="NVDAUSDT",
-        scenario=scenario,
-        synthetic_capacity=synthetic_capacity,
-        research_wal=True,
-        account_id=account_id,
-        grid_factory=grid_factory,
-        provenance=provenance,
-    )
-
-    fifo_full = paper_fifo_attribution(out_dir)
-    fifo = fifo_full["summary"]
-    life = lifecycle_metrics(out_dir)
-    result = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
-    nav_df = pd.read_csv(out_dir / "daily.csv")
-    trades_df = pd.read_csv(out_dir / "trades.csv")
+    if cleanup_dir:
+        _, artifacts = run_experiment(
+            out_dir,
+            bars=bars,
+            config=cfg,
+            rules=rules,
+            capital=capital,
+            fee_rate=fee_rate,
+            slippage=slippage,
+            participation=participation,
+            interval="1h",
+            market=Market.BINANCE_USDM,
+            instrument_id="NVDAUSDT",
+            scenario=scenario,
+            synthetic_capacity=synthetic_capacity,
+            research_wal=True,
+            account_id=account_id,
+            grid_factory=grid_factory,
+            provenance=provenance,
+            in_memory_store=True,
+            return_artifacts=True,
+        )
+        result = artifacts["result"]
+        nav_df = artifacts["daily"]
+        trades_df = artifacts["ledger"]
+        closes = {
+            datetime.fromisoformat(str(r["date"]).replace("Z", "+00:00")): D(str(r["close"]))
+            for r in artifacts["rows"]
+        }
+        fifo_full = paper_fifo_attribute_events(
+            result,
+            artifacts["trades"],
+            closes,
+            artifacts["fill_events"],
+            artifacts["state"],
+            funding_events=artifacts["funding_events"] or None,
+        )
+        fifo = fifo_full["summary"]
+        life = {"final_state": nav_df["state"].iloc[-1]}
+    else:
+        run_experiment(
+            out_dir,
+            bars=bars,
+            config=cfg,
+            rules=rules,
+            capital=capital,
+            fee_rate=fee_rate,
+            slippage=slippage,
+            participation=participation,
+            interval="1h",
+            market=Market.BINANCE_USDM,
+            instrument_id="NVDAUSDT",
+            scenario=scenario,
+            synthetic_capacity=synthetic_capacity,
+            research_wal=True,
+            account_id=account_id,
+            grid_factory=grid_factory,
+            provenance=provenance,
+        )
+        fifo_full = paper_fifo_attribution(out_dir)
+        fifo = fifo_full["summary"]
+        life = lifecycle_metrics(out_dir)
+        result = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+        nav_df = pd.read_csv(out_dir / "daily.csv")
+        trades_df = pd.read_csv(out_dir / "trades.csv")
 
     if abs(float(fifo["reconciliation_residual"])) > 1e-8:
         raise ValueError(f"FIFO reconciliation residual {fifo['reconciliation_residual']} for {account_id}")
@@ -1331,32 +1390,71 @@ def run_paired_window_multi_overlay(
         )
         grid_factory = None
 
-    run_experiment(
-        out_dir,
-        bars=bars,
-        config=cfg,
-        rules=rules,
-        capital=capital,
-        fee_rate=fee_rate,
-        slippage=slippage,
-        participation=participation,
-        interval="1h",
-        market=Market.BINANCE_USDM,
-        instrument_id="NVDAUSDT",
-        scenario=scenario,
-        synthetic_capacity=synthetic_capacity,
-        research_wal=True,
-        account_id=account_id,
-        grid_factory=grid_factory,
-        provenance=provenance,
-    )
-
-    fifo_full = paper_fifo_attribution(out_dir)
-    fifo = fifo_full["summary"]
-    life = lifecycle_metrics(out_dir)
-    result = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
-    nav_df = pd.read_csv(out_dir / "daily.csv")
-    trades_df = pd.read_csv(out_dir / "trades.csv")
+    if cleanup_dir:
+        _, artifacts = run_experiment(
+            out_dir,
+            bars=bars,
+            config=cfg,
+            rules=rules,
+            capital=capital,
+            fee_rate=fee_rate,
+            slippage=slippage,
+            participation=participation,
+            interval="1h",
+            market=Market.BINANCE_USDM,
+            instrument_id="NVDAUSDT",
+            scenario=scenario,
+            synthetic_capacity=synthetic_capacity,
+            research_wal=True,
+            account_id=account_id,
+            grid_factory=grid_factory,
+            provenance=provenance,
+            in_memory_store=True,
+            return_artifacts=True,
+        )
+        result = artifacts["result"]
+        nav_df = artifacts["daily"]
+        trades_df = artifacts["ledger"]
+        closes = {
+            datetime.fromisoformat(str(r["date"]).replace("Z", "+00:00")): D(str(r["close"]))
+            for r in artifacts["rows"]
+        }
+        fifo_full = paper_fifo_attribute_events(
+            result,
+            artifacts["trades"],
+            closes,
+            artifacts["fill_events"],
+            artifacts["state"],
+            funding_events=artifacts["funding_events"] or None,
+        )
+        fifo = fifo_full["summary"]
+        life = {"final_state": nav_df["state"].iloc[-1]}
+    else:
+        run_experiment(
+            out_dir,
+            bars=bars,
+            config=cfg,
+            rules=rules,
+            capital=capital,
+            fee_rate=fee_rate,
+            slippage=slippage,
+            participation=participation,
+            interval="1h",
+            market=Market.BINANCE_USDM,
+            instrument_id="NVDAUSDT",
+            scenario=scenario,
+            synthetic_capacity=synthetic_capacity,
+            research_wal=True,
+            account_id=account_id,
+            grid_factory=grid_factory,
+            provenance=provenance,
+        )
+        fifo_full = paper_fifo_attribution(out_dir)
+        fifo = fifo_full["summary"]
+        life = lifecycle_metrics(out_dir)
+        result = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+        nav_df = pd.read_csv(out_dir / "daily.csv")
+        trades_df = pd.read_csv(out_dir / "trades.csv")
 
     if abs(float(fifo["reconciliation_residual"])) > 1e-8:
         raise ValueError(f"FIFO reconciliation residual {fifo['reconciliation_residual']} for {account_id}")

@@ -1,0 +1,1277 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-24T12:37:06.985033+00:00",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "python_version": "3.13.9",
+    "python_executable": "D:\\Environments\\factorlab-py313\\Scripts\\python.exe",
+    "cpu_physical_cores": 20,
+    "cpu_logical_processors": 28,
+    "ram_total_gb": 63.82,
+    "ram_available_gb": 23.81,
+    "numpy_version": "2.3.4",
+    "pandas_version": "2.3.3",
+    "gpu": {
+      "nvidia_smi_available": true,
+      "name": "NVIDIA GeForce RTX 2070",
+      "memory_total_mb": 8192,
+      "memory_free_mb": 1198,
+      "driver_version": "617.42",
+      "utilization_gpu_pct": 99,
+      "cupy_probe": {
+        "available": false,
+        "reason": "runtime cupy unavailable: No module named 'cupy'",
+        "version": null,
+        "driver_visible": null,
+        "runtime_available": false
+      }
+    },
+    "git_commit": "5e9f29abcbe8d577b7dabae761f0ae0b6365c54c",
+    "git_dirty": true,
+    "blas_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "suite": "profile",
+  "profile": {
+    "r09_4paths_168h_model_b": {
+      "wall_s": 16.94827,
+      "per_path_s": 4.237067,
+      "sqlite": {
+        "store_opens": 4,
+        "transactions": 1130,
+        "commits": 1130,
+        "commit_seconds": 0.008154,
+        "loads": 1130,
+        "load_seconds": 2.123983,
+        "saves": 1126,
+        "save_seconds": 3.058735,
+        "record_metadata_calls": 296,
+        "order_events_scans": 102,
+        "funding_events_scans": 4,
+        "max_snapshot_bytes": 70488
+      },
+      "total_orders": 148,
+      "total_fills": 94,
+      "total_rotations": 107,
+      "total_funding_events": 0,
+      "profile": {
+        "top_cumtime": [
+          {
+            "func": "benchmark_p8_perf01.py:402:_instrument_paper_store_counts",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 6.7e-05,
+            "cumtime_s": 16.948171
+          },
+          {
+            "func": "benchmark_p8_perf01.py:659:_run_r09_4",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.000361,
+            "cumtime_s": 16.9481
+          },
+          {
+            "func": "grid_f11_f08_offline.py:445:run_offline_lifecycle",
+            "calls": 4,
+            "prim_calls": 4,
+            "tottime_s": 0.034239,
+            "cumtime_s": 16.940558
+          },
+          {
+            "func": "control.py:74:_atomic",
+            "calls": 1122,
+            "prim_calls": 1122,
+            "tottime_s": 0.048094,
+            "cumtime_s": 16.436866
+          },
+          {
+            "func": "grid_execution.py:995:_paper_command",
+            "calls": 1015,
+            "prim_calls": 1015,
+            "tottime_s": 0.051528,
+            "cumtime_s": 15.44702
+          },
+          {
+            "func": "grid_execution.py:809:observe_paper",
+            "calls": 676,
+            "prim_calls": 676,
+            "tottime_s": 0.004587,
+            "cumtime_s": 9.977638
+          },
+          {
+            "func": "storage.py:58:dumps",
+            "calls": 48314,
+            "prim_calls": 48314,
+            "tottime_s": 0.120172,
+            "cumtime_s": 8.58896
+          },
+          {
+            "func": "storage.py:24:encode",
+            "calls": 2474587,
+            "prim_calls": 48314,
+            "tottime_s": 3.275848,
+            "cumtime_s": 6.944931
+          },
+          {
+            "func": "grid_execution.py:1000:apply",
+            "calls": 1015,
+            "prim_calls": 1015,
+            "tottime_s": 0.022398,
+            "cumtime_s": 6.124594
+          },
+          {
+            "func": "grid_execution.py:723:_authority",
+            "calls": 2120,
+            "prim_calls": 2120,
+            "tottime_s": 0.087641,
+            "cumtime_s": 5.14953
+          },
+          {
+            "func": "copy.py:119:deepcopy",
+            "calls": 2103645,
+            "prim_calls": 24642,
+            "tottime_s": 2.136942,
+            "cumtime_s": 4.758235
+          },
+          {
+            "func": "copy.py:248:_reconstruct",
+            "calls": 140892,
+            "prim_calls": 5379,
+            "tottime_s": 0.325226,
+            "cumtime_s": 4.683196
+          },
+          {
+            "func": "copy.py:218:_deepcopy_dict",
+            "calls": 121113,
+            "prim_calls": 1122,
+            "tottime_s": 0.539855,
+            "cumtime_s": 4.644532
+          },
+          {
+            "func": "benchmark_p8_perf01.py:439:wrapped_save",
+            "calls": 1126,
+            "prim_calls": 1126,
+            "tottime_s": 0.008378,
+            "cumtime_s": 3.095551
+          },
+          {
+            "func": "storage.py:129:save",
+            "calls": 1126,
+            "prim_calls": 1126,
+            "tottime_s": 0.003032,
+            "cumtime_s": 3.055593
+          },
+          {
+            "func": "grid_execution.py:741:_read_checkpoint",
+            "calls": 1105,
+            "prim_calls": 1105,
+            "tottime_s": 0.005867,
+            "cumtime_s": 2.867419
+          },
+          {
+            "func": "grid_execution.py:754:_write_checkpoint",
+            "calls": 1015,
+            "prim_calls": 1015,
+            "tottime_s": 0.031048,
+            "cumtime_s": 2.652466
+          },
+          {
+            "func": "grid_f11_f08_offline.py:638:submit_order_through_paper",
+            "calls": 148,
+            "prim_calls": 148,
+            "tottime_s": 0.001299,
+            "cumtime_s": 2.253163
+          }
+        ],
+        "top_tottime": [
+          {
+            "func": "storage.py:24:encode",
+            "calls": 2474587,
+            "prim_calls": 48314,
+            "tottime_s": 3.275848,
+            "cumtime_s": 6.944931
+          },
+          {
+            "func": "copy.py:119:deepcopy",
+            "calls": 2103645,
+            "prim_calls": 24642,
+            "tottime_s": 2.136942,
+            "cumtime_s": 4.758235
+          },
+          {
+            "func": "~:0:<built-in method builtins.isinstance>",
+            "calls": 12358837,
+            "prim_calls": 12358837,
+            "tottime_s": 1.554698,
+            "cumtime_s": 1.554698
+          },
+          {
+            "func": "encoder.py:205:iterencode",
+            "calls": 48314,
+            "prim_calls": 48314,
+            "tottime_s": 1.293464,
+            "cumtime_s": 1.293464
+          },
+          {
+            "func": "storage.py:40:decode",
+            "calls": 966517,
+            "prim_calls": 5620,
+            "tottime_s": 1.149299,
+            "cumtime_s": 1.86487
+          },
+          {
+            "func": "~:0:<method 'get' of 'dict' objects>",
+            "calls": 4339405,
+            "prim_calls": 4339405,
+            "tottime_s": 0.600082,
+            "cumtime_s": 0.600082
+          },
+          {
+            "func": "dataclasses.py:1331:is_dataclass",
+            "calls": 1429677,
+            "prim_calls": 1429677,
+            "tottime_s": 0.590513,
+            "cumtime_s": 0.904079
+          },
+          {
+            "func": "dataclasses.py:1308:fields",
+            "calls": 268074,
+            "prim_calls": 268074,
+            "tottime_s": 0.580262,
+            "cumtime_s": 0.923728
+          },
+          {
+            "func": "copy.py:218:_deepcopy_dict",
+            "calls": 121113,
+            "prim_calls": 1122,
+            "tottime_s": 0.539855,
+            "cumtime_s": 4.644532
+          },
+          {
+            "func": "~:0:<built-in method builtins.getattr>",
+            "calls": 2927089,
+            "prim_calls": 2927085,
+            "tottime_s": 0.47551,
+            "cumtime_s": 0.475518
+          },
+          {
+            "func": "copy.py:248:_reconstruct",
+            "calls": 140892,
+            "prim_calls": 5379,
+            "tottime_s": 0.325226,
+            "cumtime_s": 4.683196
+          },
+          {
+            "func": "~:0:<method 'isoformat' of 'datetime.datetime' objects>",
+            "calls": 131158,
+            "prim_calls": 131158,
+            "tottime_s": 0.289192,
+            "cumtime_s": 0.289192
+          },
+          {
+            "func": "decoder.py:351:raw_decode",
+            "calls": 5620,
+            "prim_calls": 5620,
+            "tottime_s": 0.285348,
+            "cumtime_s": 0.285348
+          },
+          {
+            "func": "~:0:<built-in method builtins.id>",
+            "calls": 2673807,
+            "prim_calls": 2673807,
+            "tottime_s": 0.27101,
+            "cumtime_s": 0.27101
+          },
+          {
+            "func": "dataclasses.py:1323:<genexpr>",
+            "calls": 2244469,
+            "prim_calls": 2244469,
+            "tottime_s": 0.253271,
+            "cumtime_s": 0.253271
+          },
+          {
+            "func": "~:0:<built-in method builtins.hasattr>",
+            "calls": 1566959,
+            "prim_calls": 1566959,
+            "tottime_s": 0.20088,
+            "cumtime_s": 0.20088
+          },
+          {
+            "func": "~:0:<method 'execute' of 'sqlite3.Connection' objects>",
+            "calls": 8583,
+            "prim_calls": 8583,
+            "tottime_s": 0.142957,
+            "cumtime_s": 0.142957
+          },
+          {
+            "func": "copy.py:232:_keep_alive",
+            "calls": 281783,
+            "prim_calls": 281783,
+            "tottime_s": 0.128418,
+            "cumtime_s": 0.211745
+          }
+        ]
+      }
+    },
+    "r10_6accounts_168h_wal": {
+      "wall_s": 13.749082,
+      "per_account_s": 2.291514,
+      "sqlite": {
+        "store_opens": 18,
+        "transactions": 2034,
+        "commits": 2034,
+        "commit_seconds": 8.138149,
+        "loads": 2046,
+        "load_seconds": 0.567241,
+        "saves": 1026,
+        "save_seconds": 0.422265,
+        "record_metadata_calls": 12,
+        "order_events_scans": 1026,
+        "funding_events_scans": 6,
+        "max_snapshot_bytes": 4659
+      },
+      "total_fills": 6,
+      "profile": {
+        "top_cumtime": [
+          {
+            "func": "benchmark_p8_perf01.py:402:_instrument_paper_store_counts",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 2.6e-05,
+            "cumtime_s": 13.749009
+          },
+          {
+            "func": "benchmark_p8_perf01.py:702:_run_r10_6",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.000641,
+            "cumtime_s": 13.748977
+          },
+          {
+            "func": "grid_funding_adaptive.py:1065:run_paired_window",
+            "calls": 6,
+            "prim_calls": 6,
+            "tottime_s": 0.005557,
+            "cumtime_s": 13.744995
+          },
+          {
+            "func": "grid_paper.py:90:run_experiment",
+            "calls": 6,
+            "prim_calls": 6,
+            "tottime_s": 0.088364,
+            "cumtime_s": 13.431189
+          },
+          {
+            "func": "grid_execution.py:995:_paper_command",
+            "calls": 1020,
+            "prim_calls": 1020,
+            "tottime_s": 0.032314,
+            "cumtime_s": 11.324402
+          },
+          {
+            "func": "grid_execution.py:809:observe_paper",
+            "calls": 1008,
+            "prim_calls": 1008,
+            "tottime_s": 0.007198,
+            "cumtime_s": 11.247825
+          },
+          {
+            "func": "control.py:74:_atomic",
+            "calls": 1020,
+            "prim_calls": 1020,
+            "tottime_s": 0.017319,
+            "cumtime_s": 11.003094
+          },
+          {
+            "func": "~:0:<built-in method builtins.next>",
+            "calls": 9288,
+            "prim_calls": 7272,
+            "tottime_s": 0.01382,
+            "cumtime_s": 8.578725
+          },
+          {
+            "func": "~:0:<method 'execute' of 'sqlite3.Connection' objects>",
+            "calls": 11358,
+            "prim_calls": 11358,
+            "tottime_s": 8.490908,
+            "cumtime_s": 8.490908
+          },
+          {
+            "func": "storage.py:100:transaction",
+            "calls": 4068,
+            "prim_calls": 4068,
+            "tottime_s": 0.020975,
+            "cumtime_s": 8.207095
+          },
+          {
+            "func": "contextlib.py:145:__exit__",
+            "calls": 3078,
+            "prim_calls": 2070,
+            "tottime_s": 0.006751,
+            "cumtime_s": 8.169846
+          },
+          {
+            "func": "grid_execution.py:1000:apply",
+            "calls": 1020,
+            "prim_calls": 1020,
+            "tottime_s": 0.019889,
+            "cumtime_s": 1.562268
+          },
+          {
+            "func": "storage.py:58:dumps",
+            "calls": 9021,
+            "prim_calls": 9021,
+            "tottime_s": 0.029392,
+            "cumtime_s": 1.450051
+          },
+          {
+            "func": "storage.py:24:encode",
+            "calls": 371641,
+            "prim_calls": 9021,
+            "tottime_s": 0.555175,
+            "cumtime_s": 1.115153
+          },
+          {
+            "func": "copy.py:119:deepcopy",
+            "calls": 251192,
+            "prim_calls": 22583,
+            "tottime_s": 0.297901,
+            "cumtime_s": 0.683041
+          },
+          {
+            "func": "grid_execution.py:46:_fingerprint",
+            "calls": 4086,
+            "prim_calls": 4086,
+            "tottime_s": 0.008805,
+            "cumtime_s": 0.640327
+          },
+          {
+            "func": "copy.py:248:_reconstruct",
+            "calls": 18281,
+            "prim_calls": 6118,
+            "tottime_s": 0.052624,
+            "cumtime_s": 0.62276
+          },
+          {
+            "func": "grid_execution.py:108:project_paper_account",
+            "calls": 1008,
+            "prim_calls": 1008,
+            "tottime_s": 0.008508,
+            "cumtime_s": 0.589609
+          }
+        ],
+        "top_tottime": [
+          {
+            "func": "~:0:<method 'execute' of 'sqlite3.Connection' objects>",
+            "calls": 11358,
+            "prim_calls": 11358,
+            "tottime_s": 8.490908,
+            "cumtime_s": 8.490908
+          },
+          {
+            "func": "storage.py:24:encode",
+            "calls": 371641,
+            "prim_calls": 9021,
+            "tottime_s": 0.555175,
+            "cumtime_s": 1.115153
+          },
+          {
+            "func": "~:0:<built-in method builtins.isinstance>",
+            "calls": 2477451,
+            "prim_calls": 2475050,
+            "tottime_s": 0.336995,
+            "cumtime_s": 0.356859
+          },
+          {
+            "func": "copy.py:119:deepcopy",
+            "calls": 251192,
+            "prim_calls": 22583,
+            "tottime_s": 0.297901,
+            "cumtime_s": 0.683041
+          },
+          {
+            "func": "storage.py:40:decode",
+            "calls": 223295,
+            "prim_calls": 3889,
+            "tottime_s": 0.279983,
+            "cumtime_s": 0.454668
+          },
+          {
+            "func": "encoder.py:205:iterencode",
+            "calls": 9057,
+            "prim_calls": 9057,
+            "tottime_s": 0.257052,
+            "cumtime_s": 0.257056
+          },
+          {
+            "func": "storage.py:72:__init__",
+            "calls": 18,
+            "prim_calls": 18,
+            "tottime_s": 0.23883,
+            "cumtime_s": 0.505284
+          },
+          {
+            "func": "~:0:<method 'close' of 'sqlite3.Connection' objects>",
+            "calls": 18,
+            "prim_calls": 18,
+            "tottime_s": 0.206264,
+            "cumtime_s": 0.206264
+          },
+          {
+            "func": "dataclasses.py:1362:_asdict_inner",
+            "calls": 161248,
+            "prim_calls": 12390,
+            "tottime_s": 0.138254,
+            "cumtime_s": 0.333683
+          },
+          {
+            "func": "dataclasses.py:1331:is_dataclass",
+            "calls": 281005,
+            "prim_calls": 281005,
+            "tottime_s": 0.125695,
+            "cumtime_s": 0.191414
+          },
+          {
+            "func": "grid_paper.py:145:close_time",
+            "calls": 1014,
+            "prim_calls": 1014,
+            "tottime_s": 0.124788,
+            "cumtime_s": 0.126075
+          },
+          {
+            "func": "decoder.py:351:raw_decode",
+            "calls": 3925,
+            "prim_calls": 3925,
+            "tottime_s": 0.097829,
+            "cumtime_s": 0.097829
+          },
+          {
+            "func": "~:0:<built-in method builtins.getattr>",
+            "calls": 479541,
+            "prim_calls": 479181,
+            "tottime_s": 0.096386,
+            "cumtime_s": 0.099099
+          },
+          {
+            "func": "dataclasses.py:1308:fields",
+            "calls": 33910,
+            "prim_calls": 33910,
+            "tottime_s": 0.091962,
+            "cumtime_s": 0.15164
+          },
+          {
+            "func": "grid_paper.py:90:run_experiment",
+            "calls": 6,
+            "prim_calls": 6,
+            "tottime_s": 0.088364,
+            "cumtime_s": 13.431189
+          },
+          {
+            "func": "~:0:<method 'get' of 'dict' objects>",
+            "calls": 519561,
+            "prim_calls": 519561,
+            "tottime_s": 0.083804,
+            "cumtime_s": 0.083804
+          },
+          {
+            "func": "copy.py:218:_deepcopy_dict",
+            "calls": 22737,
+            "prim_calls": 1020,
+            "tottime_s": 0.075795,
+            "cumtime_s": 0.57599
+          },
+          {
+            "func": "copy.py:248:_reconstruct",
+            "calls": 18281,
+            "prim_calls": 6118,
+            "tottime_s": 0.052624,
+            "cumtime_s": 0.62276
+          }
+        ]
+      }
+    },
+    "pure_mc_10000x252_plus_summarize": {
+      "wall_s": 0.463872,
+      "profile": {
+        "top_cumtime": [
+          {
+            "func": "reliability.py:117:summarize_paths",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 8.4e-05,
+            "cumtime_s": 0.280729
+          },
+          {
+            "func": "reliability.py:61:tail_statistics",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.148557,
+            "cumtime_s": 0.277725
+          },
+          {
+            "func": "__init__.py:259:run",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.000251,
+            "cumtime_s": 0.183009
+          },
+          {
+            "func": "__init__.py:287:simulate",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.112695,
+            "cumtime_s": 0.179197
+          },
+          {
+            "func": "fromnumeric.py:968:sort",
+            "calls": 47,
+            "prim_calls": 47,
+            "tottime_s": 0.000157,
+            "cumtime_s": 0.1237
+          },
+          {
+            "func": "~:0:<method 'sort' of 'numpy.ndarray' objects>",
+            "calls": 69,
+            "prim_calls": 69,
+            "tottime_s": 0.111572,
+            "cumtime_s": 0.111572
+          },
+          {
+            "func": "~:0:<method 'accumulate' of 'numpy.ufunc' objects>",
+            "calls": 3,
+            "prim_calls": 3,
+            "tottime_s": 0.042311,
+            "cumtime_s": 0.042311
+          },
+          {
+            "func": "fromnumeric.py:51:_wrapfunc",
+            "calls": 33,
+            "prim_calls": 33,
+            "tottime_s": 5.9e-05,
+            "cumtime_s": 0.022105
+          },
+          {
+            "func": "fromnumeric.py:3453:cumprod",
+            "calls": 3,
+            "prim_calls": 3,
+            "tottime_s": 2.2e-05,
+            "cumtime_s": 0.021998
+          },
+          {
+            "func": "~:0:<method 'cumprod' of 'numpy.ndarray' objects>",
+            "calls": 3,
+            "prim_calls": 3,
+            "tottime_s": 0.021944,
+            "cumtime_s": 0.021944
+          },
+          {
+            "func": "~:0:<method 'copy' of 'numpy.ndarray' objects>",
+            "calls": 47,
+            "prim_calls": 47,
+            "tottime_s": 0.012201,
+            "cumtime_s": 0.012201
+          },
+          {
+            "func": "reliability.py:37:quantile_interval",
+            "calls": 5,
+            "prim_calls": 5,
+            "tottime_s": 0.000111,
+            "cumtime_s": 0.004742
+          },
+          {
+            "func": "_function_base_impl.py:4302:quantile",
+            "calls": 20,
+            "prim_calls": 20,
+            "tottime_s": 6.6e-05,
+            "cumtime_s": 0.004361
+          },
+          {
+            "func": "~:0:<method 'reduce' of 'numpy.ufunc' objects>",
+            "calls": 323,
+            "prim_calls": 323,
+            "tottime_s": 0.004178,
+            "cumtime_s": 0.004178
+          },
+          {
+            "func": "_function_base_impl.py:4560:_quantile_unchecked",
+            "calls": 20,
+            "prim_calls": 20,
+            "tottime_s": 4.1e-05,
+            "cumtime_s": 0.004026
+          }
+        ],
+        "top_tottime": [
+          {
+            "func": "reliability.py:61:tail_statistics",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.148557,
+            "cumtime_s": 0.277725
+          },
+          {
+            "func": "__init__.py:287:simulate",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.112695,
+            "cumtime_s": 0.179197
+          },
+          {
+            "func": "~:0:<method 'sort' of 'numpy.ndarray' objects>",
+            "calls": 69,
+            "prim_calls": 69,
+            "tottime_s": 0.111572,
+            "cumtime_s": 0.111572
+          },
+          {
+            "func": "~:0:<method 'accumulate' of 'numpy.ufunc' objects>",
+            "calls": 3,
+            "prim_calls": 3,
+            "tottime_s": 0.042311,
+            "cumtime_s": 0.042311
+          },
+          {
+            "func": "~:0:<method 'cumprod' of 'numpy.ndarray' objects>",
+            "calls": 3,
+            "prim_calls": 3,
+            "tottime_s": 0.021944,
+            "cumtime_s": 0.021944
+          },
+          {
+            "func": "~:0:<method 'copy' of 'numpy.ndarray' objects>",
+            "calls": 47,
+            "prim_calls": 47,
+            "tottime_s": 0.012201,
+            "cumtime_s": 0.012201
+          },
+          {
+            "func": "~:0:<method 'reduce' of 'numpy.ufunc' objects>",
+            "calls": 323,
+            "prim_calls": 323,
+            "tottime_s": 0.004178,
+            "cumtime_s": 0.004178
+          },
+          {
+            "func": "~:0:<method 'partition' of 'numpy.ndarray' objects>",
+            "calls": 20,
+            "prim_calls": 20,
+            "tottime_s": 0.001189,
+            "cumtime_s": 0.001189
+          },
+          {
+            "func": "_function_base_impl.py:4788:_quantile",
+            "calls": 20,
+            "prim_calls": 20,
+            "tottime_s": 0.000444,
+            "cumtime_s": 0.003717
+          },
+          {
+            "func": "fromnumeric.py:69:_wrapreduction",
+            "calls": 44,
+            "prim_calls": 44,
+            "tottime_s": 0.000415,
+            "cumtime_s": 0.003047
+          },
+          {
+            "func": "_distn_infrastructure.py:3569:cdf",
+            "calls": 10,
+            "prim_calls": 10,
+            "tottime_s": 0.0004,
+            "cumtime_s": 0.001417
+          },
+          {
+            "func": "_distn_infrastructure.py:3731:ppf",
+            "calls": 10,
+            "prim_calls": 10,
+            "tottime_s": 0.000399,
+            "cumtime_s": 0.00164
+          },
+          {
+            "func": "_function_base_impl.py:4657:_lerp",
+            "calls": 20,
+            "prim_calls": 20,
+            "tottime_s": 0.000343,
+            "cumtime_s": 0.000354
+          },
+          {
+            "func": "_function_base_impl.py:4753:_get_indexes",
+            "calls": 20,
+            "prim_calls": 20,
+            "tottime_s": 0.000318,
+            "cumtime_s": 0.000795
+          },
+          {
+            "func": "~:0:<built-in method builtins.getattr>",
+            "calls": 197,
+            "prim_calls": 197,
+            "tottime_s": 0.000272,
+            "cumtime_s": 0.000272
+          }
+        ]
+      }
+    },
+    "s02_automatic_6candidates": {
+      "wall_s": 17.853908,
+      "reason": "retain_champion_no_qualified_challenger",
+      "selected": "c-e6b0d748191fb67033994937",
+      "profile": {
+        "top_cumtime": [
+          {
+            "func": "automatic.py:136:run",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.000316,
+            "cumtime_s": 17.853787
+          },
+          {
+            "func": "automatic.py:219:_run",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.004417,
+            "cumtime_s": 17.828082
+          },
+          {
+            "func": "automatic.py:293:evaluate",
+            "calls": 9,
+            "prim_calls": 9,
+            "tottime_s": 0.020396,
+            "cumtime_s": 14.167064
+          },
+          {
+            "func": "custom.py:92:run_custom_strategy",
+            "calls": 9,
+            "prim_calls": 9,
+            "tottime_s": 0.157677,
+            "cumtime_s": 12.235223
+          },
+          {
+            "func": "indexing.py:1177:__getitem__",
+            "calls": 15055,
+            "prim_calls": 15055,
+            "tottime_s": 0.048492,
+            "cumtime_s": 3.788911
+          },
+          {
+            "func": "indexing.py:1398:_getitem_axis",
+            "calls": 9890,
+            "prim_calls": 9890,
+            "tottime_s": 0.033412,
+            "cumtime_s": 3.205637
+          },
+          {
+            "func": "indexing.py:1366:_getitem_tuple",
+            "calls": 3245,
+            "prim_calls": 3245,
+            "tottime_s": 0.023237,
+            "cumtime_s": 3.049588
+          },
+          {
+            "func": "indexing.py:1005:_getitem_tuple_same_dim",
+            "calls": 3245,
+            "prim_calls": 3245,
+            "tottime_s": 0.036789,
+            "cumtime_s": 2.877964
+          },
+          {
+            "func": "integrity.py:146:research_source_sha256",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.003921,
+            "cumtime_s": 2.207826
+          },
+          {
+            "func": "technical_research.py:36:_evaluate_targets",
+            "calls": 9,
+            "prim_calls": 9,
+            "tottime_s": 0.004118,
+            "cumtime_s": 1.978139
+          },
+          {
+            "func": "common.py:62:new_method",
+            "calls": 18769,
+            "prim_calls": 15484,
+            "tottime_s": 0.027154,
+            "cumtime_s": 1.776319
+          },
+          {
+            "func": "integrity.py:53:assert_no_link_components",
+            "calls": 987,
+            "prim_calls": 987,
+            "tottime_s": 0.032866,
+            "cumtime_s": 1.683214
+          },
+          {
+            "func": "indexing.py:1335:_getitem_iterable",
+            "calls": 3245,
+            "prim_calls": 3245,
+            "tottime_s": 0.008501,
+            "cumtime_s": 1.67208
+          },
+          {
+            "func": "frame.py:4073:__getitem__",
+            "calls": 15454,
+            "prim_calls": 15454,
+            "tottime_s": 0.07114,
+            "cumtime_s": 1.549393
+          },
+          {
+            "func": "base.py:6198:_get_indexer_strict",
+            "calls": 4919,
+            "prim_calls": 4919,
+            "tottime_s": 0.039803,
+            "cumtime_s": 1.54328
+          }
+        ],
+        "top_tottime": [
+          {
+            "func": "~:0:<built-in method nt.lstat>",
+            "calls": 9416,
+            "prim_calls": 9416,
+            "tottime_s": 0.821734,
+            "cumtime_s": 0.821734
+          },
+          {
+            "func": "~:0:<built-in method nt._path_lexists>",
+            "calls": 8148,
+            "prim_calls": 8148,
+            "tottime_s": 0.729899,
+            "cumtime_s": 0.729899
+          },
+          {
+            "func": "~:0:<built-in method builtins.isinstance>",
+            "calls": 3312661,
+            "prim_calls": 3269741,
+            "tottime_s": 0.699819,
+            "cumtime_s": 1.138738
+          },
+          {
+            "func": "~:0:<built-in method nt.fsync>",
+            "calls": 61,
+            "prim_calls": 61,
+            "tottime_s": 0.693599,
+            "cumtime_s": 0.693599
+          },
+          {
+            "func": "~:0:<method '__exit__' of 'sqlite3.Connection' objects>",
+            "calls": 19,
+            "prim_calls": 19,
+            "tottime_s": 0.5008,
+            "cumtime_s": 0.5008
+          },
+          {
+            "func": "~:0:<method 'read' of '_io.BufferedReader' objects>",
+            "calls": 694,
+            "prim_calls": 691,
+            "tottime_s": 0.416322,
+            "cumtime_s": 0.203591
+          },
+          {
+            "func": "~:0:<built-in method _io.open>",
+            "calls": 727,
+            "prim_calls": 727,
+            "tottime_s": 0.358161,
+            "cumtime_s": 0.3669
+          },
+          {
+            "func": "~:0:<method 'reduce' of 'numpy.ufunc' objects>",
+            "calls": 85801,
+            "prim_calls": 85801,
+            "tottime_s": 0.357268,
+            "cumtime_s": 0.357268
+          },
+          {
+            "func": "take.py:120:_take_nd_ndarray",
+            "calls": 28233,
+            "prim_calls": 28233,
+            "tottime_s": 0.217314,
+            "cumtime_s": 0.461512
+          },
+          {
+            "func": "generic.py:6258:__finalize__",
+            "calls": 52750,
+            "prim_calls": 52750,
+            "tottime_s": 0.211597,
+            "cumtime_s": 0.29265
+          },
+          {
+            "func": "series.py:392:__init__",
+            "calls": 22256,
+            "prim_calls": 22238,
+            "tottime_s": 0.208471,
+            "cumtime_s": 1.432442
+          },
+          {
+            "func": "~:0:<built-in method builtins.len>",
+            "calls": 840786,
+            "prim_calls": 581754,
+            "tottime_s": 0.201458,
+            "cumtime_s": 0.275613
+          },
+          {
+            "func": "construction.py:517:sanitize_array",
+            "calls": 40166,
+            "prim_calls": 40166,
+            "tottime_s": 0.195031,
+            "cumtime_s": 0.760485
+          },
+          {
+            "func": "~:0:<built-in method builtins.getattr>",
+            "calls": 898519,
+            "prim_calls": 887889,
+            "tottime_s": 0.172366,
+            "cumtime_s": 0.19553
+          },
+          {
+            "func": "generic.py:6323:__setattr__",
+            "calls": 105857,
+            "prim_calls": 105856,
+            "tottime_s": 0.167229,
+            "cumtime_s": 0.371893
+          }
+        ]
+      }
+    },
+    "s01_isolated_grid_6bars": {
+      "metrics": {
+        "n_bars": 6,
+        "load_strategy_s": 1.791306,
+        "replay_s": 24.925969,
+        "total_s": 26.717275,
+        "decide_events": 12,
+        "ms_per_decide_event": 2077.16,
+        "final_state_json_bytes": 9469,
+        "max_state_json_bytes": 9469,
+        "sqlite_transactions": 67,
+        "orders_created": 1
+      },
+      "profile": {
+        "top_cumtime": [
+          {
+            "func": "benchmark_p8_perf01.py:547:_run_s01_replay_once",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.000547,
+            "cumtime_s": 26.803442
+          },
+          {
+            "func": "~:0:<method 'close' of '_io.TextIOWrapper' objects>",
+            "calls": 120,
+            "prim_calls": 110,
+            "tottime_s": 9.934062,
+            "cumtime_s": 26.269279
+          },
+          {
+            "func": "control.py:74:_atomic",
+            "calls": 63,
+            "prim_calls": 63,
+            "tottime_s": 0.000936,
+            "cumtime_s": 24.883312
+          },
+          {
+            "func": "loader.py:70:_call",
+            "calls": 15,
+            "prim_calls": 15,
+            "tottime_s": 0.00109,
+            "cumtime_s": 24.636893
+          },
+          {
+            "func": "subprocess.py:512:run",
+            "calls": 15,
+            "prim_calls": 15,
+            "tottime_s": 0.000284,
+            "cumtime_s": 24.579105
+          },
+          {
+            "func": "decision_runtime.py:288:_event",
+            "calls": 14,
+            "prim_calls": 14,
+            "tottime_s": 0.000196,
+            "cumtime_s": 24.565993
+          },
+          {
+            "func": "decision_runtime.py:75:decide",
+            "calls": 14,
+            "prim_calls": 14,
+            "tottime_s": 0.000358,
+            "cumtime_s": 24.553005
+          },
+          {
+            "func": "loader.py:98:decide",
+            "calls": 14,
+            "prim_calls": 14,
+            "tottime_s": 0.00039,
+            "cumtime_s": 24.53744
+          },
+          {
+            "func": "subprocess.py:1178:communicate",
+            "calls": 15,
+            "prim_calls": 15,
+            "tottime_s": 0.000101,
+            "cumtime_s": 24.450515
+          },
+          {
+            "func": "subprocess.py:1619:_communicate",
+            "calls": 15,
+            "prim_calls": 15,
+            "tottime_s": 0.00025,
+            "cumtime_s": 24.450205
+          },
+          {
+            "func": "threading.py:1058:join",
+            "calls": 30,
+            "prim_calls": 30,
+            "tottime_s": 0.000191,
+            "cumtime_s": 24.449265
+          },
+          {
+            "func": "~:0:<method 'join' of '_thread._ThreadHandle' objects>",
+            "calls": 30,
+            "prim_calls": 30,
+            "tottime_s": 0.006503,
+            "cumtime_s": 24.448011
+          },
+          {
+            "func": "threading.py:1000:_bootstrap",
+            "calls": 30,
+            "prim_calls": 15,
+            "tottime_s": 0.000101,
+            "cumtime_s": 24.441488
+          },
+          {
+            "func": "threading.py:1027:_bootstrap_inner",
+            "calls": 30,
+            "prim_calls": 15,
+            "tottime_s": 0.009371,
+            "cumtime_s": 24.441402
+          },
+          {
+            "func": "threading.py:983:run",
+            "calls": 30,
+            "prim_calls": 15,
+            "tottime_s": 0.000391,
+            "cumtime_s": 24.434427
+          }
+        ],
+        "top_tottime": [
+          {
+            "func": "~:0:<method 'close' of '_io.TextIOWrapper' objects>",
+            "calls": 120,
+            "prim_calls": 110,
+            "tottime_s": 9.934062,
+            "cumtime_s": 26.269279
+          },
+          {
+            "func": "~:0:<method 'read' of '_io.TextIOWrapper' objects>",
+            "calls": 32,
+            "prim_calls": 17,
+            "tottime_s": 8.85477,
+            "cumtime_s": 8.096431
+          },
+          {
+            "func": "~:0:<method 'write' of '_io.TextIOWrapper' objects>",
+            "calls": 32,
+            "prim_calls": 32,
+            "tottime_s": 5.638942,
+            "cumtime_s": 5.638942
+          },
+          {
+            "func": "~:0:<built-in method _io.open>",
+            "calls": 6394,
+            "prim_calls": 6394,
+            "tottime_s": 0.790057,
+            "cumtime_s": 0.795758
+          },
+          {
+            "func": "~:0:<method 'execute' of 'sqlite3.Connection' objects>",
+            "calls": 913,
+            "prim_calls": 913,
+            "tottime_s": 0.285349,
+            "cumtime_s": 0.285349
+          },
+          {
+            "func": "~:0:<method 'read' of '_io.BufferedReader' objects>",
+            "calls": 6330,
+            "prim_calls": 6330,
+            "tottime_s": 0.259538,
+            "cumtime_s": 0.259538
+          },
+          {
+            "func": "~:0:<built-in method nt.scandir>",
+            "calls": 2417,
+            "prim_calls": 2417,
+            "tottime_s": 0.247717,
+            "cumtime_s": 0.247717
+          },
+          {
+            "func": "~:0:<built-in method _winapi.CreateProcess>",
+            "calls": 15,
+            "prim_calls": 15,
+            "tottime_s": 0.122014,
+            "cumtime_s": 0.122014
+          },
+          {
+            "func": "~:0:<method '__exit__' of '_io._IOBase' objects>",
+            "calls": 6349,
+            "prim_calls": 6349,
+            "tottime_s": 0.075568,
+            "cumtime_s": 0.075568
+          },
+          {
+            "func": "glob.py:480:select_recursive_step",
+            "calls": 7425,
+            "prim_calls": 7425,
+            "tottime_s": 0.057179,
+            "cumtime_s": 0.363987
+          },
+          {
+            "func": "glob.py:424:select_wildcard",
+            "calls": 7530,
+            "prim_calls": 7530,
+            "tottime_s": 0.056783,
+            "cumtime_s": 0.191428
+          },
+          {
+            "func": "~:0:<built-in method _hashlib.openssl_sha256>",
+            "calls": 6433,
+            "prim_calls": 6433,
+            "tottime_s": 0.051271,
+            "cumtime_s": 0.051271
+          },
+          {
+            "func": "storage.py:72:__init__",
+            "calls": 1,
+            "prim_calls": 1,
+            "tottime_s": 0.026938,
+            "cumtime_s": 0.057097
+          },
+          {
+            "func": "loader.py:19:<genexpr>",
+            "calls": 6345,
+            "prim_calls": 6345,
+            "tottime_s": 0.022921,
+            "cumtime_s": 1.218881
+          },
+          {
+            "func": "_local.py:207:__lt__",
+            "calls": 31125,
+            "prim_calls": 31125,
+            "tottime_s": 0.019457,
+            "cumtime_s": 0.051773
+          }
+        ]
+      }
+    },
+    "ipc_pickle_bytes": {
+      "r09_path_payload_bytes": 2957,
+      "r09_1000_tasks_mb": 2.82,
+      "r10_window_payload_bytes_with_all_funding": 58780,
+      "r10_1000_tasks_mb": 56.057,
+      "all_funding_list_bytes": 33503,
+      "window_bars_168_bytes": 16622,
+      "provenance_bytes": 648
+    }
+  },
+  "total_benchmark_wall_s": 77.21
+}

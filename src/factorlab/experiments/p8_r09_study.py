@@ -27,7 +27,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from factorlab.compute import ComputeConfig
+from factorlab.compute import ComputeConfig, chunksize_for_tasks, create_process_pool
 from factorlab.experiments.demo_grid_performance import _load_r04b_funding_events
 from factorlab.experiments.grid_empirical import load_hourly
 from factorlab.experiments.grid_f11_f08_offline import (
@@ -545,61 +545,61 @@ def run_p8_r09_study(
                     )
                 )
 
-    with ProcessPoolExecutor(max_workers=workers) as executor:
-        historical_rows = list(executor.map(_eval_hist_window_worker, hist_work))
-    print(f"[P8-R09] Historical 11-window paired runs: {len(historical_rows)} ({perf_counter() - t_hist:.1f}s)", flush=True)
+    with create_process_pool(workers) as executor:
+        hist_chunk = chunksize_for_tasks(len(hist_work), workers)
+        historical_rows = list(executor.map(_eval_hist_window_worker, hist_work, chunksize=hist_chunk))
+        print(f"[P8-R09] Historical 11-window paired runs: {len(historical_rows)} ({perf_counter() - t_hist:.1f}s)", flush=True)
 
-    # Summarize historical paired comparison by (funding_label, model_label, execution_profile)
-    hist_df = pd.DataFrame(historical_rows)
-    hist_summary: list[dict[str, Any]] = []
-    for (flab, mlab, eprof), grp in hist_df.groupby(["funding_label", "model_label", "execution_profile"], sort=False):
-        tot_bo = int(grp["breakout_events"].sum())
-        tot_rot = int(grp["rotations_completed"].sum())
-        hist_summary.append(
-            {
-                "funding_label": flab,
-                "model_label": mlab,
-                "execution_profile": eprof,
-                "windows": int(len(grp)),
-                "positive_windows": int((grp["net_pnl_usdt"] > 0).sum()),
-                "mean_net_pnl_usdt": round(float(grp["net_pnl_usdt"].mean()), 6),
-                "mean_net_return_pct": round(float(grp["net_return_pct"].mean()), 4),
-                "worst_window_return_pct": round(float(grp["net_return_pct"].min()), 4),
-                "mean_max_drawdown_pct": round(float(grp["max_drawdown_pct"].mean()), 4),
-                "worst_max_drawdown_pct": round(float(grp["max_drawdown_pct"].max()), 4),
-                "mean_holding_hours": round(float(grp["holding_hours"].mean()), 2),
-                "mean_exit_delay_hours": round(float(grp["mean_exit_delay_hours"].mean()), 2),
-                "mean_residual_inventory": round(float(grp["residual_inventory"].mean()), 4),
-                "stranded_windows": int(grp["stranded_at_end"].sum()),
-                "mean_funding_usdt": round(float(grp["realized_funding_usdt"].mean()), 6),
-                "total_breakouts": tot_bo,
-                "total_rotations": tot_rot,
-                "rotation_success_rate": round(tot_rot / tot_bo, 4) if tot_bo > 0 else None,
-                "halted_windows": int(grp["halted"].sum()),
-                "all_zero_fifo_residual": bool(grp["reconciled_zero_residual"].all()),
-            }
+        # Summarize historical paired comparison by (funding_label, model_label, execution_profile)
+        hist_df = pd.DataFrame(historical_rows)
+        hist_summary: list[dict[str, Any]] = []
+        for (flab, mlab, eprof), grp in hist_df.groupby(["funding_label", "model_label", "execution_profile"], sort=False):
+            tot_bo = int(grp["breakout_events"].sum())
+            tot_rot = int(grp["rotations_completed"].sum())
+            hist_summary.append(
+                {
+                    "funding_label": flab,
+                    "model_label": mlab,
+                    "execution_profile": eprof,
+                    "windows": int(len(grp)),
+                    "positive_windows": int((grp["net_pnl_usdt"] > 0).sum()),
+                    "mean_net_pnl_usdt": round(float(grp["net_pnl_usdt"].mean()), 6),
+                    "mean_net_return_pct": round(float(grp["net_return_pct"].mean()), 4),
+                    "worst_window_return_pct": round(float(grp["net_return_pct"].min()), 4),
+                    "mean_max_drawdown_pct": round(float(grp["max_drawdown_pct"].mean()), 4),
+                    "worst_max_drawdown_pct": round(float(grp["max_drawdown_pct"].max()), 4),
+                    "mean_holding_hours": round(float(grp["holding_hours"].mean()), 2),
+                    "mean_exit_delay_hours": round(float(grp["mean_exit_delay_hours"].mean()), 2),
+                    "mean_residual_inventory": round(float(grp["residual_inventory"].mean()), 4),
+                    "stranded_windows": int(grp["stranded_at_end"].sum()),
+                    "mean_funding_usdt": round(float(grp["realized_funding_usdt"].mean()), 6),
+                    "total_breakouts": tot_bo,
+                    "total_rotations": tot_rot,
+                    "rotation_success_rate": round(tot_rot / tot_bo, 4) if tot_bo > 0 else None,
+                    "halted_windows": int(grp["halted"].sum()),
+                    "all_zero_fifo_residual": bool(grp["reconciled_zero_residual"].all()),
+                }
+            )
+
+        # 3. Stochastic Scenarios — Paired Model A vs Model B (and F11-only ablation)
+        t_mc = perf_counter()
+        scenarios, calib_receipt, start_iso = _generate_stochastic_scenarios(
+            r04b_snapshot,
+            anchor_price=anchor_price,
+            n_paths=n_paths,
+            n_steps=n_steps,
+            seed=seed,
         )
+        cap_7 = DEFAULT_STRATEGY_CAP
+        stochastic_paired_rows: list[dict[str, Any]] = []
+        sensitivity_rows: list[dict[str, Any]] = []
+        convergence_rows: list[dict[str, Any]] = []
 
-    # 3. Stochastic Scenarios — Paired Model A vs Model B (and F11-only ablation)
-    t_mc = perf_counter()
-    scenarios, calib_receipt, start_iso = _generate_stochastic_scenarios(
-        r04b_snapshot,
-        anchor_price=anchor_price,
-        n_paths=n_paths,
-        n_steps=n_steps,
-        seed=seed,
-    )
-    cap_7 = DEFAULT_STRATEGY_CAP
-    stochastic_paired_rows: list[dict[str, Any]] = []
-    sensitivity_rows: list[dict[str, Any]] = []
-    convergence_rows: list[dict[str, Any]] = []
-
-    funding_primary = [
-        FundingSchedule("zero", 0.0, label="EX_FUNDING"),
-        FundingSchedule("constant_hourly_bps", OBSERVED_DEMO_FUNDING_BPS, label="DEMO_STRESS_22.97BPS"),
-    ]
-
-    with ProcessPoolExecutor(max_workers=workers) as executor:
+        funding_primary = [
+            FundingSchedule("zero", 0.0, label="EX_FUNDING"),
+            FundingSchedule("constant_hourly_bps", OBSERVED_DEMO_FUNDING_BPS, label="DEMO_STRESS_22.97BPS"),
+        ]
+        mc_chunk = chunksize_for_tasks(n_paths, workers)
         # 3a. Primary paired matrix: all 6 stochastic generators x 2 funding regimes x (A, B0_F11_only, B_IDEAL, B_DELAYED)
         for scen_key, scen_desc, paths in scenarios:
             for fs in funding_primary:
@@ -616,7 +616,7 @@ def run_p8_r09_study(
                     )
                     for i in range(len(paths))
                 ]
-                res_a = list(executor.map(_eval_path_worker, work_a))
+                res_a = list(executor.map(_eval_path_worker, work_a, chunksize=mc_chunk))
                 stochastic_paired_rows.append(
                     _aggregate_path_metrics(
                         res_a,
@@ -644,7 +644,7 @@ def run_p8_r09_study(
                     )
                     for i in range(len(paths))
                 ]
-                res_b0 = list(executor.map(_eval_path_worker, work_b0))
+                res_b0 = list(executor.map(_eval_path_worker, work_b0, chunksize=mc_chunk))
                 stochastic_paired_rows.append(
                     _aggregate_path_metrics(
                         res_b0,
@@ -675,7 +675,7 @@ def run_p8_r09_study(
                         )
                         for i in range(len(paths))
                     ]
-                    res_b = list(executor.map(_eval_path_worker, work_b))
+                    res_b = list(executor.map(_eval_path_worker, work_b, chunksize=mc_chunk))
                     stochastic_paired_rows.append(
                         _aggregate_path_metrics(
                             res_b,

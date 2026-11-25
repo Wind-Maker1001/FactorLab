@@ -113,10 +113,16 @@ class MonteCarloResult:
 def _loss_tail(losses, confidence):
     """Linear VaR and fractional-boundary worst-tail mean, including negative losses."""
     var = float(np.quantile(losses, confidence))
-    tail_mass = (1 - confidence) * len(losses)
-    descending = np.sort(losses)[::-1]
+    n = len(losses)
+    tail_mass = (1 - confidence) * n
     whole = int(np.floor(tail_mass))
     fraction = tail_mass - whole
+    needed = whole + (1 if fraction else 0)
+    if needed < n:
+        kth = n - needed
+        descending = np.sort(np.partition(losses, kth)[kth:])[::-1]
+    else:
+        descending = np.sort(losses)[::-1]
     tail_sum = descending[:whole].sum()
     if fraction:
         tail_sum += fraction * descending[whole]
