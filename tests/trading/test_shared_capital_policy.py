@@ -65,6 +65,22 @@ def test_shared_claim_rejects_unbound_owner_and_identity_reuse(tmp_path):
     store.close()
 
 
+def test_allocation_identity_cannot_fund_two_instances(tmp_path):
+    store = PortfolioStore(tmp_path / 'allocation-identity.sqlite3')
+    executor = PortfolioExecutor(Broker(), store, clock=lambda: NOW)
+    policy = executor.capital_policy
+    share(policy)
+    executor.allocate(account_id='paper', strategy_id='one', allocation_id='stable-allocation',
+        capital=D(40), initial_cash=D(40), official_equity=D(100))
+    policy.bind(account_id='paper', strategy_id='one', instance_id='one', allocation_id='stable-allocation')
+    with pytest.raises(sqlite3.IntegrityError, match='UNIQUE'):
+        executor.allocate(account_id='paper', strategy_id='two', allocation_id='stable-allocation',
+            capital=D(40), initial_cash=D(40), official_equity=D(100))
+    assert store.allocation('paper', 'two') is None
+    assert policy.snapshot('paper', 'one').capital == D(40)
+    store.close()
+
+
 def legacy_schema(store):
     with store.transaction():
         store.db.execute('ALTER TABLE capital_accounts DROP COLUMN mode')
