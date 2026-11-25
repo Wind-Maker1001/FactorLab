@@ -38,8 +38,9 @@ class DeploymentAdapter(Protocol):
     def reduce(self, switch_id: int, version: str) -> None: ...
     def prepare(self, version: str) -> None: ...
     def activated(self, version: str) -> None:
-        """Idempotently resume the bound instance; delivery may repeat concurrently.
+        """Idempotently resume the bound instance; delivery may repeat after a crash.
 
+        Controller steps serialize host side effects per database/instance.
         Failure retains a durable callback receipt for a later controller step.
         """
         ...

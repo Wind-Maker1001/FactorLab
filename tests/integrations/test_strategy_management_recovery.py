@@ -1,6 +1,12 @@
 """Deterministic transaction interleavings and callback failure recovery."""
 from contextlib import closing
 from decimal import Decimal
+from hashlib import sha256
+import subprocess
+import sys
+
+from factorlab.trading.storage import dumps
+from factorlab.strategies.controller_lock import controller_lock
 
 import pytest
 
@@ -12,6 +18,94 @@ from factorlab.integrations.binance_futures_trading.strategy_deployment import D
 from factorlab.strategies.protocol import decision_payload, DecisionV2
 from factorlab.strategies.decision_runtime import InstanceDecisionRuntime
 from test_strategy_management_v2 import package, binding, candidate, event, activate, Execution
+
+
+@pytest.mark.parametrize('acknowledged', [False, True])
+def test_upgrade_reidentifies_existing_v2_receipts(tmp_path, acknowledged):
+    manifest, release = package(tmp_path)
+    path = tmp_path / 'upgrade.db'
+    original = event('one')
+    with closing(DeploymentStore(path)) as root:
+        view, strategy, _, _ = activate(root, manifest, release, 'one')
+        with closing(view):
+            execution = Execution()
+            runtime = InstanceDecisionRuntime(strategy, view, execution, allocation={'currency': 'USD'})
+            saved = runtime.decide(original)
+            legacy_hash = sha256(dumps(original).encode()).hexdigest()
+            assert legacy_hash != content_identity(original)
+            saved['input_identity'] = legacy_hash
+            with view.atomic():
+                view.db.execute('UPDATE instance_decisions SET input_identity=?,result=?', (legacy_hash, dumps(saved)))
+                view.db.execute('DELETE FROM strategy_management_schema WHERE version=3')
+                if not acknowledged:
+                    view.db.execute('DELETE FROM instance_dispatches')
+    with closing(DeploymentStore(path, instance_id='one')) as reopened:
+        execution = Execution()
+        runtime = InstanceDecisionRuntime(strategy, reopened, execution, allocation={'currency': 'USD'})
+        reordered = dict(reversed(list(original.items())))
+        receipt = runtime.decide(reordered)
+        assert receipt['input_identity'] == content_identity(original)
+        assert execution.calls == (0 if acknowledged else 1)
+        with pytest.raises(ValueError, match='identity conflict'):
+            runtime.decide(event('one', changed=True))
+
+
+def test_controller_lock_is_instance_scoped_and_released_on_error(tmp_path):
+    path = tmp_path / 'locks.db'
+    with pytest.raises(RuntimeError):
+        with controller_lock(path, 'one') as acquired:
+            assert acquired
+            with controller_lock(path, 'one') as competitor:
+                assert not competitor
+            with controller_lock(path, 'two') as independent:
+                assert independent
+            raise RuntimeError('interrupted')
+    with controller_lock(path, 'one') as acquired:
+        assert acquired
+
+
+def test_controller_lock_releases_after_process_exit(tmp_path):
+    path = tmp_path / 'process.db'
+    script = '''import os, sys
+sys.path[:] = __PATH__
+from factorlab.strategies.controller_lock import controller_lock
+with controller_lock(sys.argv[1], 'one') as acquired:
+    assert acquired
+    os._exit(0)
+'''
+    subprocess.run([sys.executable, '-c', script.replace('__PATH__', repr(sys.path)), str(path)],
+                   check=True, timeout=20)
+    with controller_lock(path, 'one') as acquired:
+        assert acquired
+
+
+def test_competing_controller_cannot_quiesce_or_deliver_callback(tmp_path):
+    manifest, release = package(tmp_path)
+    with closing(DeploymentStore(tmp_path / 'state.db')) as root:
+        owner, strategy, adapter, _ = activate(root, manifest, release, 'one')
+        with closing(owner), closing(root.for_instance('one')) as other:
+            newer, new_release = package(tmp_path, '3', from_versions=('2',))
+            new_strategy = LoadedStrategy.from_strategy_package(new_release, trusted=True)
+            owner.request(newer, candidate(newer, 'one', manifest['package_id'], 'next'))
+            competitor_adapter = OfflineAdapter()
+            competitor = DeploymentController(other, competitor_adapter, load_strategy=lambda _: new_strategy)
+            original_quiesce = adapter.quiesce
+            original_activated = adapter.activated
+            def quiesce():
+                competitor.step()
+                assert competitor_adapter.actions == []
+                original_quiesce()
+            def activated(version):
+                competitor.step()
+                assert competitor_adapter.actions == []
+                original_activated(version)
+            adapter.quiesce = quiesce
+            adapter.activated = activated
+            DeploymentController(owner, adapter, load_strategy=lambda _: new_strategy).step()
+            competitor.step()
+            assert competitor_adapter.actions == []
+            assert owner.snapshot()['active'] == newer['package_id']
+            assert owner.activation_callback() is None
 
 
 def test_event_identity_is_order_independent_and_type_preserving():
