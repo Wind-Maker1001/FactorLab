@@ -1,6 +1,7 @@
 """Durable, cash-funded portfolio execution over an authoritative trading adapter."""
 from __future__ import annotations
 
+from contextlib import nullcontext
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D, ROUND_CEILING, ROUND_FLOOR
@@ -15,6 +16,11 @@ from .state import OrderRecord, advance
 from .storage import PaperStore, decode, dumps
 
 ZERO = D(0)
+
+
+def plan_identity(account_id, strategy_id, trading_session, rebalance_id):
+    """Stable execution identity, independent of changing account projections."""
+    return sha256(dumps([account_id, strategy_id, trading_session, rebalance_id]).encode()).hexdigest()[:32]
 
 
 class OrderAbsent(LookupError):
@@ -143,6 +149,9 @@ class PortfolioStore(PaperStore):
                 self.db.execute('INSERT INTO ' + table + ' SELECT * FROM ' + table + '_legacy ORDER BY rowid')
                 self.db.execute('DROP TABLE ' + table + '_legacy')
 
+        from .capital import CapitalPolicy
+        self.capital_policy = CapitalPolicy(self)
+
     def holdings(self, account_id, strategy_id=None):
         query = 'SELECT symbol,quantity FROM portfolio_claims WHERE account=?'
         params = (account_id,)
@@ -163,6 +172,9 @@ class PortfolioStore(PaperStore):
         """Allocated cash after confirmed fills, actions and all local buy reservations."""
         allocation = self.allocation(account_id, strategy_id)
         cash = allocation['initial_cash']
+        fee_row = self.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
+                                  (account_id,)).fetchone()
+        fee_rate = ZERO if fee_row is None else D(fee_row[0])
         for payload, in self.db.execute(
                 'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
                 'WHERE p.account=? AND p.strategy=?', (account_id, strategy_id)):
@@ -173,7 +185,8 @@ class PortfolioStore(PaperStore):
             cash += (amount if intent.side == Side.SELL else -amount) - snapshot.cumulative_fee
             if (reserve and intent.side == Side.BUY and snapshot.status not in TERMINAL
                     and intent.client_order_id != exclude_id):
-                cash -= (intent.quantity - snapshot.cumulative_filled_quantity) * order.get('reservation_price', intent.limit_price)
+                cash -= ((intent.quantity - snapshot.cumulative_filled_quantity)
+                         * order.get('reservation_price', intent.limit_price) * (1 + fee_rate))
         for payload, in self.db.execute(
                 'SELECT payload FROM portfolio_corporate_actions WHERE account=? AND strategy=?',
                 (account_id, strategy_id)):
@@ -217,6 +230,22 @@ class PortfolioExecutor:
             raise ValueError('positive quote age required')
         self.adapter, self.store = adapter, store
         self.quote_currency, self.max_quote_age, self.clock = quote_currency, max_quote_age, clock
+        self.capital_policy = store.capital_policy
+
+    def _capital_admission(self, account_id, strategy_id):
+        policy = self.store.db.execute(
+            'SELECT currency FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
+        if policy is None:
+            return
+        if policy[0] != self.quote_currency:
+            raise ValueError('capital policy currency differs from executor')
+        binding = self.store.db.execute(
+            'SELECT paused FROM capital_instances WHERE account=? AND strategy=?',
+            (account_id, strategy_id)).fetchone()
+        if binding is None:
+            raise ValueError('explicit strategy capital binding required')
+        if binding[0]:
+            raise ValueError('strategy capital allocation is paused')
 
     def allocate(self, *, account_id, strategy_id, allocation_id, capital, initial_cash,
                  official_equity):
@@ -258,6 +287,10 @@ class PortfolioExecutor:
                 raise ValueError('allocations exceed official account cash')
             committed = sum((D(amount) for amount, in self.store.db.execute(
                 'SELECT capital FROM portfolio_allocations WHERE account=?', (account_id,))), ZERO)
+            policy = self.store.db.execute(
+                'SELECT budget FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
+            if policy is not None and committed + capital > D(policy[0]):
+                raise ValueError('allocations exceed static account capital budget')
             if committed + capital > official_equity:
                 raise ValueError('allocations exceed official account equity')
             self.store.db.execute('INSERT INTO portfolio_allocations VALUES (?,?,?,?,?)',
@@ -318,7 +351,7 @@ class PortfolioExecutor:
         signal_id = rebalance_id if rebalance_id is not None else trading_session
         if not signal_id:
             raise ValueError('nonempty rebalance identity required')
-        identity = sha256(dumps([account_id, strategy_id, trading_session, signal_id]).encode()).hexdigest()[:32]
+        identity = plan_identity(account_id, strategy_id, trading_session, signal_id)
         request = dict(account=account_id, strategy=strategy_id, version=strategy_version,
                        session=trading_session, rebalance_id=signal_id, weights=dict(weights),
                        owned=sorted(owned_symbols), initial=initial, multipliers=multipliers,
@@ -343,18 +376,23 @@ class PortfolioExecutor:
                 if previous['request'] != decode(json.loads(dumps(request))):
                     raise ValueError('rebalance identity already has different targets or ownership')
                 return identity
+            self._capital_admission(account_id, strategy_id)
             self._recover_account(account_id)
+            exclusive = self.store.db.execute(
+                'SELECT 1 FROM capital_accounts WHERE account=?', (account_id,)).fetchone() is not None
             active = self.store.db.execute(
                 'SELECT id,payload FROM portfolio_plans WHERE account=? AND strategy=?',
                 (account_id, strategy_id)).fetchall()
             if any(decode(json.loads(payload))['phase'] != 'COMPLETE' for _, payload in active):
                 raise ValueError('previous rebalance must complete before new targets')
             for symbol in sorted(owned_symbols):
+                if exclusive:
+                    self.capital_policy.claim(account_id, strategy_id, symbol)
                 claims = self.store.db.execute(
                     'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
                     (account_id, symbol)).fetchall()
                 if any(owner != strategy_id and (
-                        self.store.allocation(account_id, owner) is None
+                        exclusive or self.store.allocation(account_id, owner) is None
                         or self.store.allocation(account_id, strategy_id) is None) for owner, in claims):
                     raise ValueError(f'position ownership conflict: {symbol}')
                 if not any(owner == strategy_id for owner, in claims):
@@ -384,6 +422,26 @@ class PortfolioExecutor:
                                  attempted=False, uncertain=False)
                     self.store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
                                           (intent.client_order_id, identity, dumps(order)))
+                allocation = self.store.allocation(account_id, strategy_id)
+                if allocation is not None and self.store.cash(account_id, strategy_id) < ZERO:
+                    raise ValueError('direct orders exceed allocated cash')
+                account = self.adapter.read_account()
+                balance = next(a for a in account.assets if a.currency == self.quote_currency)
+                broker_ids = {o.intent.client_order_id for o in account.open_orders}
+                pending = ZERO
+                for payload, in self.store.db.execute(
+                        'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
+                        'WHERE p.account=?', (account_id,)):
+                    order = decode(json.loads(payload))
+                    snapshot = order['record'].snapshot
+                    if (snapshot.intent.side == Side.BUY and snapshot.status not in TERMINAL
+                            and snapshot.intent.client_order_id not in broker_ids):
+                        pending += (snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * order['reservation_price']
+                fee_row = self.store.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
+                                                (account_id,)).fetchone()
+                fee_factor = 1 + (ZERO if fee_row is None else D(fee_row[0]))
+                if pending * fee_factor > balance.available:
+                    raise ValueError('direct orders exceed available account cash')
         return identity
 
     def transfer_flat_ownership(self, *, account_id, from_strategy, to_strategy, symbols):
@@ -410,8 +468,22 @@ class PortfolioExecutor:
                 if any(o.intent.instrument_id == symbol and o.status not in TERMINAL for o in account.open_orders):
                     raise ValueError('ownership transfer cannot include open broker orders')
             for symbol in symbols:
+                predecessor = self.store.db.execute(
+                    'SELECT initial_quantity,entry_price FROM portfolio_claims '
+                    'WHERE account=? AND symbol=? AND strategy=?',
+                    (account_id, symbol, from_strategy)).fetchone()
+                if predecessor is None:
+                    continue
                 self.store.db.execute(
-                    'UPDATE portfolio_claims SET strategy=? WHERE account=? AND symbol=? AND strategy=?',
+                    'INSERT OR IGNORE INTO portfolio_claim_history VALUES (?,?,?,?,?)',
+                    (account_id, symbol, from_strategy, *predecessor))
+                self.store.db.execute(
+                    'DELETE FROM portfolio_claims WHERE account=? AND symbol=? AND strategy=?',
+                    (account_id, symbol, from_strategy))
+                self.store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                    (account_id, symbol, to_strategy, '0', '0', '0'))
+                self.store.db.execute(
+                    'UPDATE capital_symbols SET strategy=? WHERE account=? AND symbol=? AND strategy=?',
                     (to_strategy, account_id, symbol, from_strategy))
             identity = 'flat-ownership:' + sha256(dumps(
                 [account_id, from_strategy, to_strategy, sorted(symbols)]).encode()).hexdigest()
@@ -714,6 +786,10 @@ class PortfolioExecutor:
         if self.store.allocation(request['account'], request['strategy']) is not None:
             cash = min(cash, max(ZERO, self.store.cash(request['account'], request['strategy'],
                                                      exclude_id=exclude_id)))
+        fee_row = self.store.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
+                                        (request['account'],)).fetchone()
+        if fee_row is not None:
+            cash /= 1 + D(fee_row[0])
         return cash, ''
 
     def _quote_reason(self, symbol, quote, request, now, not_before):
@@ -924,6 +1000,7 @@ class PortfolioExecutor:
                 return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
                     dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
                                                 for o in self.store.orders(identity)))
+            self._capital_admission(plan['request']['account'], plan['request']['strategy'])
             account = self.adapter.read_account()
             if self._account_uncertain(plan['request']['account']):
                 plan['phase'] = 'WAITING'
@@ -944,6 +1021,7 @@ class PortfolioExecutor:
             send = False
             with self.store.transaction():
                 plan = self.store.plan(identity)
+                self._capital_admission(plan['request']['account'], plan['request']['strategy'])
                 if plan.get('corporate_action_blocks') or self._account_uncertain(plan['request']['account']):
                     break
                 order = next(o for o in self.store.orders(identity)
@@ -1001,6 +1079,7 @@ class PortfolioExecutor:
                 # submission marker if the process dies inside the network call.
                 with self.store.transaction():
                     plan = self.store.plan(identity)
+                    self._capital_admission(plan['request']['account'], plan['request']['strategy'])
                     order = next(o for o in self.store.orders(identity)
                                  if o['record'].snapshot.intent.client_order_id == client_id)
                     if self._account_uncertain(plan['request']['account']):
@@ -1123,7 +1202,7 @@ class PortfolioExecutor:
                 return
             self._accept(plan, order, event)
 
-    def report(self, identity, *, official_equity, adjustments=()):
+    def report(self, identity, *, official_equity, adjustments=(), readonly=False, account=None):
         """Persist a strategy-lifetime report against current official holdings.
 
         Official mark prices value inventory; execution quotes are not substituted
@@ -1131,18 +1210,23 @@ class PortfolioExecutor:
         """
         from .portfolio_accounting import OwnedPosition, build_portfolio_report
 
-        with self.store.transaction():
+        context = nullcontext() if readonly and self.store.db.in_transaction else self.store.transaction()
+        with context:
             plan = self.store.plan(identity)
-            self._recover_account(plan['request']['account'])
-            plan = self.store.plan(identity)
-            account = self.adapter.read_account()
+            if not readonly:
+                self._recover_account(plan['request']['account'])
+                plan = self.store.plan(identity)
+            if account is None:
+                account = self.adapter.read_account()
             request = plan['request']
             if account.account_id != request['account'] or not account.reconciled:
                 raise ValueError('matching reconciled official account required')
             starting = {symbol: OwnedPosition(D(quantity), D(quantity) * D(basis))
                 for symbol, quantity, basis in self.store.db.execute(
-                    'SELECT symbol,initial_quantity,entry_price FROM portfolio_claims WHERE account=? AND strategy=?',
-                    (request['account'], request['strategy']))}
+                    'SELECT symbol,initial_quantity,entry_price FROM portfolio_claims WHERE account=? AND strategy=? '
+                    'UNION ALL SELECT symbol,initial_quantity,entry_price FROM portfolio_claim_history '
+                    'WHERE account=? AND strategy=?',
+                    (request['account'], request['strategy'], request['account'], request['strategy']))}
             orders = [decode(json.loads(payload)) for (payload,) in self.store.db.execute(
                 'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
                 'WHERE p.account=? AND p.strategy=? ORDER BY o.rowid',
@@ -1172,6 +1256,7 @@ class PortfolioExecutor:
                 corporate_actions=[decode(json.loads(payload)) for payload, in self.store.db.execute(
                     'SELECT payload FROM portfolio_corporate_actions WHERE account=? AND strategy=? ORDER BY rowid',
                     (request['account'], request['strategy']))])
-            plan['report'] = asdict(result)
-            self.store.save_plan(plan)
+            if not readonly:
+                plan['report'] = asdict(result)
+                self.store.save_plan(plan)
             return result
