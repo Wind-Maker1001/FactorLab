@@ -446,7 +446,6 @@ class PortfolioExecutor:
             self._capital_admission(account_id, strategy_id)
             self._recover_account(account_id)
             configured = self.capital_policy.is_configured(account_id)
-            exclusive = configured and not self._shared_policy(account_id)
             active = self.store.db.execute(
                 'SELECT id,payload FROM portfolio_plans WHERE account=? AND strategy=?',
                 (account_id, strategy_id)).fetchall()
@@ -461,8 +460,8 @@ class PortfolioExecutor:
                 claims = self.store.db.execute(
                     'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
                     (account_id, symbol)).fetchall()
-                if any(owner != strategy_id and (
-                        exclusive or self.store.allocation(account_id, owner) is None
+                if not configured and any(owner != strategy_id and (
+                        self.store.allocation(account_id, owner) is None
                         or self.store.allocation(account_id, strategy_id) is None) for owner, in claims):
                     raise ValueError(f'position ownership conflict: {symbol}')
                 if not any(owner == strategy_id for owner, in claims):
@@ -716,15 +715,14 @@ class PortfolioExecutor:
                 break
             remaining = unrelated
         configured = self.capital_policy.is_configured(account_id)
-        exclusive = configured and not self._shared_policy(account_id)
         for symbol in children:
             if configured:
                 self.capital_policy.claim(account_id, strategy_id, symbol)
             claims = self.store.db.execute(
                 'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
                 (account_id, symbol)).fetchall()
-            if any(owner != strategy_id and (
-                    exclusive or self.store.allocation(account_id, owner) is None
+            if not configured and any(owner != strategy_id and (
+                    self.store.allocation(account_id, owner) is None
                     or self.store.allocation(account_id, strategy_id) is None) for owner, in claims):
                 raise ValueError('corporate allocation conflicts with inventory ownership')
             if not any(owner == strategy_id for owner, in claims):
