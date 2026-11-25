@@ -105,9 +105,9 @@ def test_partial_fill_cancel_and_late_full_fill(market):
     assert account.reconciled and not account.open_orders
     assert account.positions[0].quantity == D("2")
     assert c.broker.state.orders["one"].snapshot.cumulative_fee == D("0.2")
-    expected_cash = D("9799.8") if market == Market.BINANCE_EQUITY else D("9999.8")
-    assert account.assets[0].total == expected_cash
-    assert account.assets[0].reserved == (D("0") if market == Market.BINANCE_EQUITY else D("200"))
+    futures = market == Market.BINANCE_USDM
+    assert account.assets[0].total == (D('9999.8') if futures else D('9799.8'))
+    assert account.assets[0].reserved == (D('200') if futures else D('0'))
 
 
 def test_conflicting_order_and_event_ids_are_rejected():
@@ -434,7 +434,7 @@ def test_decimal_and_utc_contract_validation():
         replace(intent(), quantity=2.0)
     with pytest.raises(ValueError, match="UTC"):
         Quote("TEST", D("100"), NOW.replace(tzinfo=None))
-    with pytest.raises(ValueError, match="GTC"):
+    with pytest.raises(ValueError, match='time in force'):
         replace(intent(), time_in_force="IOC")
     with pytest.raises(ValueError, match="LIMIT"):
         replace(intent(), limit_price=D("100"))
