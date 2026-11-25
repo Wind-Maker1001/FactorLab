@@ -1,0 +1,299 @@
+{
+  "observed_at": "2026-11-25T11:21:34Z",
+  "binance": {
+    "pid": 521536,
+    "status": "RUNNING",
+    "reason": "FRESH_CLOSED_BAR_REQUIRED",
+    "account_recovered": true,
+    "unknown_count": 0,
+    "global_budget": {
+      "consumed": {
+        "posts": 116,
+        "submitted_notional": "728.9148000"
+      },
+      "max_loss": "250",
+      "opening_equity": "5000.00000000",
+      "remaining_notional": "499271.0852000",
+      "remaining_posts": 99884,
+      "state": "RUNNING",
+      "total_notional": "500000",
+      "total_orders": 100000
+    },
+    "grid": {
+      "breakout_exit": null,
+      "deployment_id": "fl-d7345f8795464a65-g-00037",
+      "effective": "PAUSED",
+      "grid_reason": null,
+      "inventory": "0",
+      "last_bar": "2026-11-25 11:21:00+00:00",
+      "live_bar": false,
+      "reason": "FRESH_CLOSED_BAR_REQUIRED",
+      "reservations_count": 0,
+      "running": true,
+      "state": "RUNNING"
+    },
+    "positions": [],
+    "open_orders": [
+      {
+        "client_order_id": "fl-d7345f8795464a65-g-00037-00000001",
+        "filled_quantity": "0",
+        "order_id": "195680090",
+        "side": "BUY",
+        "status": "NEW",
+        "symbol": "NVDAUSDT"
+      }
+    ],
+    "heartbeat_at": 1795605702.5336678,
+    "market_batch_age_seconds": 2.07096004486084,
+    "equity": {
+      "availableBalance": "4993.47965687",
+      "initialMargin": "5.84360000",
+      "maintMargin": "0E-8",
+      "marginBalance": "4999.32325687",
+      "openOrderInitialMargin": "5.84360000",
+      "positionInitialMargin": "0E-8",
+      "unrealizedProfit": "0E-8",
+      "walletBalance": "4999.32325687"
+    },
+    "recent_orders": [
+      {
+        "client_order_id": "fl-d7345f8795464a65-g-00035-00000013",
+        "exchange_updated_at": "2026-11-24 15:50:00.439000+00:00",
+        "filled_quantity": "0.04",
+        "limit_price": "151.87000",
+        "order_id": "195421988",
+        "quantity": "0.04",
+        "reconcile_required": false,
+        "reduce_only": true,
+        "side": "SELL",
+        "status": "FILLED"
+      },
+      {
+        "client_order_id": "pf5c4abdc5b7e285f667904fac814106",
+        "exchange_updated_at": "2026-11-24 15:50:52.115000+00:00",
+        "filled_quantity": "0.01",
+        "limit_price": "631.03000",
+        "order_id": "65896503",
+        "quantity": "0.01",
+        "reconcile_required": false,
+        "reduce_only": true,
+        "side": "SELL",
+        "status": "FILLED"
+      },
+      {
+        "client_order_id": "pf4125dd63f464552d4f8d6d2540251c",
+        "exchange_updated_at": "2026-11-24 15:51:00.143000+00:00",
+        "filled_quantity": "0.01",
+        "limit_price": "711.03000",
+        "order_id": "65796666",
+        "quantity": "0.01",
+        "reconcile_required": false,
+        "reduce_only": true,
+        "side": "SELL",
+        "status": "FILLED"
+      },
+      {
+        "client_order_id": "fl-d7345f8795464a65-g-00036-00000001",
+        "exchange_updated_at": "2026-11-24 16:24:59.081000+00:00",
+        "filled_quantity": "0.00",
+        "limit_price": "151.01000",
+        "order_id": "195422478",
+        "quantity": "0.04",
+        "reconcile_required": false,
+        "reduce_only": false,
+        "side": "BUY",
+        "status": "CANCELED"
+      },
+      {
+        "client_order_id": "pfc3c7eb670091b34cb65b827cc95560",
+        "exchange_updated_at": "2026-11-24 15:53:13.279000+00:00",
+        "filled_quantity": "0.01",
+        "limit_price": "638.71000",
+        "order_id": "65897174",
+        "quantity": "0.01",
+        "reconcile_required": false,
+        "reduce_only": false,
+        "side": "BUY",
+        "status": "FILLED"
+      },
+      {
+        "client_order_id": "pf3f334626f754b5cac7957d3436cf88",
+        "exchange_updated_at": "2026-11-24 15:53:21.031000+00:00",
+        "filled_quantity": "0.01",
+        "limit_price": "719.99000",
+        "order_id": "65797009",
+        "quantity": "0.01",
+        "reconcile_required": false,
+        "reduce_only": false,
+        "side": "BUY",
+        "status": "FILLED"
+      },
+      {
+        "client_order_id": "pf1520f690c471157f48f4779187bf8a",
+        "exchange_updated_at": "2026-11-24 15:55:04.039000+00:00",
+        "filled_quantity": "0.01",
+        "limit_price": "633.06000",
+        "order_id": "65897750",
+        "quantity": "0.01",
+        "reconcile_required": false,
+        "reduce_only": true,
+        "side": "SELL",
+        "status": "FILLED"
+      },
+      {
+        "client_order_id": "pff63984af94cf589d3236ac66959fc4",
+        "exchange_updated_at": "2026-11-24 15:55:12.467000+00:00",
+        "filled_quantity": "0.01",
+        "limit_price": "712.90000",
+        "order_id": "65797260",
+        "quantity": "0.01",
+        "reconcile_required": false,
+        "reduce_only": true,
+        "side": "SELL",
+        "status": "FILLED"
+      },
+      {
+        "client_order_id": "fl-d7345f8795464a65-sa46d8-entry",
+        "exchange_updated_at": "2026-11-24 16:37:10.599000+00:00",
+        "filled_quantity": "0.00",
+        "limit_price": "149.42",
+        "order_id": "195433064",
+        "quantity": "0.04",
+        "reconcile_required": false,
+        "reduce_only": false,
+        "side": "BUY",
+        "status": "CANCELED"
+      },
+      {
+        "client_order_id": "fl-d7345f8795464a65-g-00037-00000001",
+        "exchange_updated_at": "2026-11-25 10:24:03.247000+00:00",
+        "filled_quantity": "0.00",
+        "limit_price": "146.09000",
+        "order_id": "195680090",
+        "quantity": "0.04",
+        "reconcile_required": false,
+        "reduce_only": false,
+        "side": "BUY",
+        "status": "SUBMITTED"
+      }
+    ]
+  },
+  "backup": {
+    "status": "SUCCEEDED",
+    "backup_path": "/var/backups/factorlab-demo/backup-20261125T112048Z",
+    "verified": true,
+    "error_category": null,
+    "maintenance_window": {
+      "auxiliary_units": [
+        "factorlab-demo-strategy-deploy.timer",
+        "factorlab-demo-tradfi-observer.service"
+      ],
+      "downtime_seconds": 6.046,
+      "interrupted_unit": "factorlab-demo-execute.service",
+      "post_health": {
+        "account_recovered": true,
+        "alive": true,
+        "consumed_posts": 116,
+        "consumed_submitted_notional": "728.9148000",
+        "deployment_id": "fl-d7345f8795464a65-g-00037",
+        "desired": "RUNNING",
+        "execute_healthy": true,
+        "get_only_healthy": false,
+        "grid_state": "RUNNING",
+        "market_fresh": true,
+        "mode": "EXECUTE",
+        "open_orders_count": 1,
+        "pid": 521536,
+        "positions_count": 0,
+        "ready": true,
+        "remaining_notional": "499271.0852000",
+        "remaining_posts": 99884,
+        "status": "RUNNING",
+        "systemd_active_state": "active",
+        "systemd_main_pid": 521536,
+        "systemd_n_restarts": 0,
+        "systemd_sub_state": "running",
+        "unknown_count": 0
+      },
+      "pre_health": {
+        "account_recovered": true,
+        "alive": true,
+        "consumed_posts": 116,
+        "consumed_submitted_notional": "728.9148000",
+        "deployment_id": "fl-d7345f8795464a65-g-00037",
+        "desired": "RUNNING",
+        "execute_healthy": true,
+        "get_only_healthy": false,
+        "grid_state": "RUNNING",
+        "market_fresh": true,
+        "mode": "EXECUTE",
+        "open_orders_count": 1,
+        "pid": 521125,
+        "positions_count": 0,
+        "ready": true,
+        "remaining_notional": "499271.0852000",
+        "remaining_posts": 99884,
+        "status": "RUNNING",
+        "systemd_active_state": "active",
+        "systemd_main_pid": 521125,
+        "systemd_n_restarts": 0,
+        "systemd_sub_state": "running",
+        "unknown_count": 0
+      },
+      "reconcile_reason": null,
+      "reconcile_verified": true,
+      "restart_succeeded": true,
+      "restarted_at": "2026-11-25T11:21:05.121537+00:00",
+      "service_control_enabled": true,
+      "stopped_at": "2026-11-25T11:20:59.074700+00:00"
+    }
+  },
+  "alpaca": {
+    "account_recovered": true,
+    "error": null,
+    "execution": {
+      "enabled": true,
+      "state": "IDLE",
+      "task": null
+    },
+    "healthy": true,
+    "heartbeat": "2026-11-25T11:21:34.030185+00:00",
+    "last_recovery_at": "2026-11-25T11:21:19.002150+00:00",
+    "market": {
+      "error": null,
+      "last_event_at": null,
+      "last_rest_at": "2026-11-25T11:21:09.125649+00:00",
+      "recoveries": 2,
+      "state": "CONNECTED"
+    },
+    "market_available": true,
+    "market_rest": {
+      "clock_open": false,
+      "feed": "iex",
+      "fresh_quotes": false,
+      "missing_symbols": [],
+      "received_at": "2026-11-25T11:21:25.123786+00:00"
+    },
+    "mode": "EXECUTE",
+    "pid": 521249,
+    "revision": "ea9cbbdd7519e5400df097e5661b0d6c47b6c4da",
+    "schedule": {
+      "due": false,
+      "execution_session": "2026-11-23",
+      "market_open": false,
+      "next_open": "2026-11-25T14:30:00+00:00",
+      "signal_cutoff": "2026-11-20",
+      "week": "2026-11-23"
+    },
+    "started_at": "2026-11-25T11:20:34.389951+00:00",
+    "starts": 20,
+    "strategy": {
+      "frequency": "natural-week",
+      "name": "v69-original",
+      "reason": null,
+      "state": "WAITING_NEXT_WEEK"
+    },
+    "trade_stream": "CONNECTED",
+    "heartbeat_age_seconds": 12.518207
+  }
+}
