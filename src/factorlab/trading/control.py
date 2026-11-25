@@ -27,6 +27,17 @@ class RiskLimits:
             raise ValueError("max_quote_age_seconds must be a positive integer")
 
 
+def exposure_limit_reason(limits, *, order_notional, instrument_exposure, account_exposure):
+    """Apply the shared gross limits to an already-reserved exposure projection."""
+    if order_notional > limits.max_order_notional:
+        return 'ORDER_NOTIONAL_LIMIT'
+    if instrument_exposure > limits.max_instrument_exposure:
+        return 'INSTRUMENT_EXPOSURE_LIMIT'
+    if account_exposure > limits.account_budget:
+        return 'ACCOUNT_BUDGET_LIMIT'
+    return 'APPROVED'
+
+
 class RiskRejected(ValueError):
     def __init__(self, decision):
         self.decision = decision
@@ -128,7 +139,7 @@ class TradingController:
         currency = state.instruments[intent.instrument_id].quote_currency
         account = b.read_account()
         asset = next(a for a in account.assets if a.currency == currency)
-        if state.market == Market.BINANCE_EQUITY and intent.side == Side.SELL and not reduction:
+        if state.market in {Market.BINANCE_EQUITY, Market.ALPACA_US_EQUITY} and intent.side == Side.SELL and not reduction:
             return result("INSUFFICIENT_INVENTORY")
         required = ZERO if reduction else amount * (1 + state.fee_rate)
         if required > asset.available:
@@ -139,8 +150,6 @@ class TradingController:
             if any(not timedelta(0) <= now - state.quotes[symbol].observed_at <= timedelta(seconds=self.limits.max_quote_age_seconds)
                    for symbol in relevant):
                 return result("STALE_QUOTE")
-            if amount > self.limits.max_order_notional:
-                return result("ORDER_NOTIONAL_LIMIT")
             # Gross position + all outstanding orders: opposing orders never net
             # away risk before a confirmed execution.
             exposures = {p.instrument_id: abs(p.quantity) * p.mark_price for p in account.positions}
@@ -151,11 +160,12 @@ class TradingController:
                     mark = state.quotes[symbol].price
                     pending = (o.intent.quantity - o.cumulative_filled_quantity) * max(mark, record.reservation_price)
                     exposures[symbol] = exposures.get(symbol, ZERO) + pending
-            if exposures.get(intent.instrument_id, ZERO) + amount > self.limits.max_instrument_exposure:
-                return result("INSTRUMENT_EXPOSURE_LIMIT")
             budget = sum((v for symbol, v in exposures.items() if state.instruments[symbol].quote_currency == currency), ZERO)
-            if budget + amount > self.limits.account_budget:
-                return result("ACCOUNT_BUDGET_LIMIT")
+            reason = exposure_limit_reason(self.limits, order_notional=amount,
+                instrument_exposure=exposures.get(intent.instrument_id, ZERO) + amount,
+                account_exposure=budget + amount)
+            if reason != 'APPROVED':
+                return result(reason)
         return result("APPROVED")
 
     def submit(self, intent):

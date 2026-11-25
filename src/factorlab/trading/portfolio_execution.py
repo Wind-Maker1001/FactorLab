@@ -171,7 +171,12 @@ class PortfolioStore(PaperStore):
     def cash(self, account_id, strategy_id, *, exclude_id=None, reserve=True):
         """Allocated cash after confirmed fills, actions and all local buy reservations."""
         allocation = self.allocation(account_id, strategy_id)
-        cash = allocation['initial_cash']
+        return allocation['initial_cash'] + self.cash_flow(account_id, strategy_id,
+                                                          exclude_id=exclude_id, reserve=reserve)
+
+    def cash_flow(self, account_id, strategy_id, *, exclude_id=None, reserve=False):
+        """Net economic postings, excluding any initial capital contribution."""
+        cash = ZERO
         fee_row = self.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
                                   (account_id,)).fetchone()
         fee_rate = ZERO if fee_row is None else D(fee_row[0])
@@ -247,6 +252,36 @@ class PortfolioExecutor:
         if binding[0]:
             raise ValueError('strategy capital allocation is paused')
 
+    def _funding_adjustment(self, account, strategy_id):
+        from .contracts import Market
+        if account.market != Market.BINANCE_USDM or self.store.db.execute(
+                'SELECT 1 FROM capital_accounts WHERE account=?', (account.account_id,)).fetchone() is None:
+            return ZERO
+        from .capital_funding import attribute_funding
+        facts = self.adapter.margin_facts()
+        if facts.account_id != account.account_id:
+            raise ValueError('margin facts must match the account')
+        attribution = attribute_funding(self.store, account.account_id, self.adapter.funding_events(),
+            self.adapter.funding_coverage(), facts.observed_at)
+        if not facts.source_complete or not attribution.complete:
+            raise ValueError('FUNDING_RECONCILIATION_REQUIRED')
+        # Funding receipts are reported in NAV but cannot enlarge static capital.
+        return min(ZERO, dict(attribution.amounts)[strategy_id])
+
+    def adopt_allocation(self, *, account_id, strategy_id, allocation_id, capital,
+                         current_cash, official_equity, receipt_id):
+        """Bind an existing journal using confirmed current cash, without double posting."""
+        from .capital_adoption import adopt_allocation
+        return adopt_allocation(self, account_id=account_id, strategy_id=strategy_id,
+            allocation_id=allocation_id, capital=capital, current_cash=current_cash,
+            official_equity=official_equity, receipt_id=receipt_id)
+
+    def adopt_existing(self, *, receipt_id, account_id, sleeves, official_equity):
+        """Atomically adopt explicitly attributed original execution journals."""
+        from .capital_migration import adopt_existing
+        return adopt_existing(self, receipt_id=receipt_id, account_id=account_id,
+                              sleeves=sleeves, official_equity=official_equity)
+
     def allocate(self, *, account_id, strategy_id, allocation_id, capital, initial_cash,
                  official_equity):
         """Bind existing owned inventory and an explicit cash sleeve without minting capital.
@@ -276,6 +311,8 @@ class PortfolioExecutor:
             account = self.adapter.read_account()
             if account.account_id != account_id or not account.reconciled or self._account_uncertain(account_id):
                 raise ValueError('allocation requires a matching reconciled account')
+            if self.store.cash_flow(account_id, strategy_id) != ZERO:
+                raise ValueError('existing economic postings require adopt_allocation with confirmed current cash')
             holdings = self.store.holdings(account_id, strategy_id)
             value = sum((p.mark_price * holdings.get(p.instrument_id, ZERO) for p in account.positions), ZERO)
             if initial_cash + value != capital:
@@ -426,6 +463,12 @@ class PortfolioExecutor:
                 if allocation is not None and self.store.cash(account_id, strategy_id) < ZERO:
                     raise ValueError('direct orders exceed allocated cash')
                 account = self.adapter.read_account()
+                if account.account_id != account_id or not account.reconciled or self._account_uncertain(account_id):
+                    raise ValueError('direct reservation requires a matching reconciled account')
+                if (allocation is not None and any(intent.side == Side.BUY for intent, _ in direct_orders)
+                        and (self.store.cash(account_id, strategy_id)
+                             + self._funding_adjustment(account, strategy_id)) < ZERO):
+                    raise ValueError('direct orders exceed capital after funding')
                 balance = next(a for a in account.assets if a.currency == self.quote_currency)
                 broker_ids = {o.intent.client_order_id for o in account.open_orders}
                 pending = ZERO
@@ -442,6 +485,7 @@ class PortfolioExecutor:
                 fee_factor = 1 + (ZERO if fee_row is None else D(fee_row[0]))
                 if pending * fee_factor > balance.available:
                     raise ValueError('direct orders exceed available account cash')
+                self.capital_policy.validate_orders(account, strategy_id)
         return identity
 
     def transfer_flat_ownership(self, *, account_id, from_strategy, to_strategy, symbols):
@@ -782,14 +826,18 @@ class PortfolioExecutor:
                 saved = decode(json.loads(payload))
                 committed += ((intent.quantity - snapshot.cumulative_filled_quantity)
                               * saved.get('reservation_price', intent.limit_price))
-        cash = max(ZERO, balance.total - max(balance.reserved, committed))
-        if self.store.allocation(request['account'], request['strategy']) is not None:
-            cash = min(cash, max(ZERO, self.store.cash(request['account'], request['strategy'],
-                                                     exclude_id=exclude_id)))
         fee_row = self.store.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
                                         (request['account'],)).fetchone()
-        if fee_row is not None:
-            cash /= 1 + D(fee_row[0])
+        fee_factor = 1 + (ZERO if fee_row is None else D(fee_row[0]))
+        cash = max(ZERO, balance.total - max(balance.reserved, committed * fee_factor))
+        if self.store.allocation(request['account'], request['strategy']) is not None:
+            try:
+                funding = self._funding_adjustment(account, request['strategy'])
+            except ValueError as error:
+                return ZERO, str(error)
+            cash = min(cash, max(ZERO, self.store.cash(request['account'], request['strategy'],
+                                                     exclude_id=exclude_id) + funding))
+        cash /= fee_factor
         return cash, ''
 
     def _quote_reason(self, symbol, quote, request, now, not_before):
@@ -1013,6 +1061,7 @@ class PortfolioExecutor:
                     for o in self.store.orders(identity)) else 'WAITING'
             else:
                 self._prepare(plan, account, equity, quotes, rules, now, not_before)
+            self.capital_policy.validate_orders(account, plan['request']['strategy'])
             self.store.save_plan(plan)
         # Commit SUBMITTING before POST: a crash or an eventually-consistent 404
         # can never turn an attempted order back into an unattempted outbox entry.
@@ -1079,7 +1128,6 @@ class PortfolioExecutor:
                 # submission marker if the process dies inside the network call.
                 with self.store.transaction():
                     plan = self.store.plan(identity)
-                    self._capital_admission(plan['request']['account'], plan['request']['strategy'])
                     order = next(o for o in self.store.orders(identity)
                                  if o['record'].snapshot.intent.client_order_id == client_id)
                     if self._account_uncertain(plan['request']['account']):
@@ -1091,6 +1139,15 @@ class PortfolioExecutor:
                     except OrderAbsent:
                         account = self.adapter.read_account()
                         request = plan['request']
+                        try:
+                            self._capital_admission(request['account'], request['strategy'])
+                            self.capital_policy.validate_orders(account, request['strategy'], include_id=client_id)
+                        except ValueError as error:
+                            order['attempted'] = False
+                            plan['reasons'][intent.instrument_id] = str(error)
+                            self.store.save_order(order)
+                            self.store.save_plan(plan)
+                            continue
                         actual = next((p.quantity for p in account.positions
                                        if p.instrument_id == intent.instrument_id), ZERO)
                         owned = D(self.store.db.execute(
@@ -1253,7 +1310,7 @@ class PortfolioExecutor:
                 account=account, prices={p.instrument_id: p.mark_price for p in account.positions},
                 official_equity=official_equity, target_weights=request['weights'],
                 adjustments=adjustments, economic_multipliers=request['multipliers'], initial_capital=capital,
-                corporate_actions=[decode(json.loads(payload)) for payload, in self.store.db.execute(
+                quote_currency=self.quote_currency, corporate_actions=[decode(json.loads(payload)) for payload, in self.store.db.execute(
                     'SELECT payload FROM portfolio_corporate_actions WHERE account=? AND strategy=? ORDER BY rowid',
                     (request['account'], request['strategy']))])
             if not readonly:
