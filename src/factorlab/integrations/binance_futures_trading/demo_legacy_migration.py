@@ -5,6 +5,43 @@ from factorlab.trading.storage import decode, dumps
 from .protocol import SafetyBlocked
 
 
+SOURCE_KEY = 'demo:capital-migration:source'
+
+
+def register_account_history_source(session, *, receipt_id, manifest, sleeves, fee_rate):
+    """Persist independently supplied complete original allocation evidence for startup."""
+    from decimal import Decimal
+    if manifest['account_id'] != session.adapter.account_id or manifest.get('history_complete') is not True:
+        raise SafetyBlocked('complete original account allocation manifest required')
+    amounts = {sleeve['kind']: sleeve['capital'] for sleeve in sleeves}
+    if len(sleeves) != 2 or amounts != {'grid': Decimal(7), 'portfolio': Decimal(20)}:
+        raise SafetyBlocked('initial migration requires original 7/20 USDT allocations')
+    if not receipt_id or not isinstance(fee_rate, Decimal) or not fee_rate.is_finite() or fee_rate < 0:
+        raise SafetyBlocked('original migration identity and explicit fee allowance required')
+    if set(manifest['allocations']) != {sleeve['allocation_id'] for sleeve in sleeves}:
+        raise SafetyBlocked('complete original account allocation manifest required')
+    _export_account_sleeves(session, manifest['allocations'], sleeves)
+    session.controller.store.record_metadata(SOURCE_KEY, dict(receipt_id=receipt_id,
+        manifest=manifest, sleeves=sleeves, fee_rate=fee_rate))
+
+
+def account_history_source(session):
+    raw = session.controller.store.event_payload(SOURCE_KEY)
+    return None if raw is None else decode(json.loads(raw))
+
+
+def start_account_history(session, executor):
+    """Initialize only the attested original capital, then resume the frozen adoption."""
+    from decimal import Decimal
+    source = account_history_source(session)
+    if source is not None:
+        executor.capital_policy.configure(account_id=session.adapter.account_id,
+            currency='USDT', budget=Decimal(27), fee_rate=source['fee_rate'])
+        adopt_account_history(session, executor, receipt_id=source['receipt_id'],
+            manifest=source['manifest'], sleeves=source['sleeves'])
+    resume_account_history(session, executor, exclude=() if source is None else (source['receipt_id'],))
+
+
 def adopt_account_history(session, executor, *, receipt_id, manifest, sleeves):
     """Export every original sleeve before the shared executor's atomic adoption."""
     if (executor.adapter.session is not session
@@ -34,12 +71,26 @@ def adopt_account_history(session, executor, *, receipt_id, manifest, sleeves):
                                       (receipt_id,)).fetchone()
             if frozen != (source, dumps(exports)):
                 raise SafetyBlocked('concurrent original migration snapshot differs')
+    from .demo_allocations import DemoAllocations
+    owners = DemoAllocations(session.controller)
+    for sleeve in exports:
+        for order in sleeve['orders']:
+            intent = order['record'].snapshot.intent
+            previous = owners.owner(intent.client_order_id)
+            if previous is not None and previous != (sleeve['instance_id'], sleeve['allocation_id'], intent.instrument_id):
+                raise SafetyBlocked('original migration order belongs to another instance')
     funds = session.adapter.read_facts().usdt()
-    return executor.adopt_existing(receipt_id=receipt_id, account_id=session.adapter.account_id,
+    result = executor.adopt_existing(receipt_id=receipt_id, account_id=session.adapter.account_id,
         sleeves=exports, official_equity=funds['walletBalance'] + funds['unrealizedProfit'])
+    with store.transaction():
+        for sleeve in exports:
+            for order in sleeve['orders']:
+                owners.claim_in_transaction(order['record'].snapshot.intent,
+                    instance_id=sleeve['instance_id'], allocation_id=sleeve['allocation_id'])
+    return result
 
 
-def resume_account_history(session, executor):
+def resume_account_history(session, executor, *, exclude=()):
     """Resume frozen account migrations before qualifying restored strategy instances."""
     store = session.controller.store
     if store.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' "
@@ -47,6 +98,8 @@ def resume_account_history(session, executor):
         return
     for receipt_id, raw in store.db.execute(
             'SELECT id,source FROM demo_capital_migration_exports ORDER BY rowid').fetchall():
+        if receipt_id in exclude:
+            continue
         source = decode(json.loads(raw))
         adopt_account_history(session, executor, receipt_id=receipt_id,
                               manifest=source['manifest'], sleeves=source['sleeves'])

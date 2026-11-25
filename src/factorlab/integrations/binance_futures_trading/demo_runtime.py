@@ -1012,25 +1012,7 @@ def saved_grid_deployment(store):
 
 def restore_grid(deployment):
     """Reconstruct the exact journaled economic deployment, before command replay."""
-    from factorlab.backtest.fees import FeeRule, FeeSchedule
-    from factorlab.strategies.grid import GridConfig
-    from factorlab.strategies.grid_execution import GridExecution, GridRules
-
-    values = dict(deployment)
-    values['config'] = GridConfig(**values['config'])
-    values['rules'] = GridRules(**values['rules'])
-    values['fees'] = FeeSchedule([FeeRule(**rule) for rule in values['fees']])
-    kind = values.pop('r10_strategy', None)
-    if kind is None:
-        return GridExecution(**values)
-    from factorlab.experiments.grid_funding_adaptive import (
-        FundingSensitiveGrid, FundingPolicy, VolatilityAdaptiveGrid, VolatilityPolicy,
-    )
-    if kind == 'B_FUNDING_SENSITIVE_GRID':
-        values['funding_policy'] = FundingPolicy(**values['funding_policy'])
-        values['funding_events'] = [tuple(event) for event in values['funding_events']]
-        return FundingSensitiveGrid(**values)
-    if kind == 'C_VOL_ADAPTIVE_GRID':
-        values['vol_policy'] = VolatilityPolicy(**values['vol_policy'])
-        return VolatilityAdaptiveGrid(**values)
-    raise SafetyBlocked('unknown persisted Grid strategy')
+    from factorlab.strategies.grid_restore import restore_grid as restore
+    if deployment.get('r10_strategy') not in {None, 'B_FUNDING_SENSITIVE_GRID', 'C_VOL_ADAPTIVE_GRID'}:
+        raise SafetyBlocked('unknown persisted Grid strategy')
+    return restore(deployment)

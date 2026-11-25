@@ -203,7 +203,7 @@ def test_host_waits_for_matching_portfolio_bars_and_preserves_history(tmp_path):
                 controller=controller, _now=lambda: NOW, instance_owner=None, status=lambda: {}),
                 runtime, SimpleNamespace(instances=lambda: []), tmp_path / 'releases', tmp_path,
                 stack, SimpleNamespace(desired=lambda: 'RUNNING'))
-            spec = SimpleNamespace(symbols=['BTCUSDT', 'ETHUSDT'],
+            spec = SimpleNamespace(symbols=['BTCUSDT', 'ETHUSDT'], decision_kind='target_weights',
                 data=dict(data_types=['closed_bar', 'funding_settlement'], history_limit=3),
                 schedule=dict(kind='interval', interval_seconds=60))
             binding = dict(account_id=adapter.account_id, instance_id='portfolio')
@@ -276,7 +276,7 @@ def test_host_routes_original_confirmations_and_resumes_blocked_delivery(tmp_pat
             for name in ('one', 'two'):
                 binding = dict(account_id=adapter.account_id, instance_id=name, allocation_id=name)
                 host.owner.instances[name] = (SimpleNamespace(package_id='package',
-                    strategy=SimpleNamespace(spec=SimpleNamespace(data={'data_types': ['order_event']})),
+                    strategy=SimpleNamespace(spec=SimpleNamespace(decision_kind='target_quantities', data={'data_types': ['order_event']})),
                     store=SimpleNamespace(binding=lambda binding=binding: binding)), None)
                 order = intent('original-' + name)
                 host.owner.execution.owners.claim(order, instance_id=name, allocation_id=name)
@@ -305,7 +305,8 @@ def test_host_routes_original_confirmations_and_resumes_blocked_delivery(tmp_pat
 
 
 def test_host_does_not_create_missing_capital_journal(tmp_path):
-    session = SimpleNamespace(adapter=SimpleNamespace(account_id='account'))
+    session = SimpleNamespace(adapter=SimpleNamespace(account_id='account'),
+        controller=SimpleNamespace(store=SimpleNamespace(event_payload=lambda key: None)))
     with ExitStack() as stack:
         with pytest.raises(SafetyBlocked, match='existing account portfolio'):
             DemoInstanceHost(session, None, None, tmp_path / 'releases', tmp_path, stack, None)

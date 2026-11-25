@@ -60,7 +60,8 @@ class DemoInstanceExecutionAdapter:
             strategy_version=receipt['package_id'], trading_session=receipt['event_id'],
             weights={}, owned_symbols=configured['symbols'], now=now,
             rebalance_id=decision_id, signal_inputs=dict(input_identity=receipt['input_identity']),
-            direct_orders=[(intent, intent.limit_price) for intent in accepted['intents']])
+            direct_orders=[(intent, intent.limit_price) for intent in accepted['intents']],
+            concurrent_direct_orders=receipt['decision']['kind'] == 'orders')
 
     def advance(self, decision_id, *, equity, quotes, rules, now):
         """Advance one accepted decision on the account owner's execution turn."""
@@ -106,12 +107,18 @@ class DemoInstanceExecutionAdapter:
                 raise SafetyBlocked('decision identity has conflicting content')
             return
         for pending, in self.store.db.execute('SELECT payload FROM demo_instance_outbox WHERE completed=0'):
-            if decode(json.loads(pending))['receipt']['binding']['instance_id'] == instance:
+            previous = decode(json.loads(pending))['receipt']
+            if (previous['binding']['instance_id'] == instance
+                    and (decision['kind'] != 'orders' or previous['decision']['kind'] != 'orders')):
                 raise SafetyBlocked('instance must reconcile its previous decision before accepting another')
         symbols = set(configured['symbols'])
         intents = []
         if decision['kind'] == 'orders':
+            from .demo_grid_context import native_orders
+            existing_native = native_orders(self.store, binding, receipt['package_id'])
             for index, offered in enumerate(decision['orders']):
+                if offered.client_order_id in existing_native:
+                    raise SafetyBlocked('native order was already accepted by this instance package')
                 if offered.instrument_id not in symbols or offered.market is not Market.BINANCE_USDM:
                     raise SafetyBlocked('order outside instance symbol declaration')
                 if not configured['shorting'] and offered.side is Side.SELL and not offered.reduce_only:

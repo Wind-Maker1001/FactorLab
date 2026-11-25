@@ -42,6 +42,31 @@ read-only network transport still rejects POST/DELETE/PUT, including in Demo.
 Production requests cannot pass the Demo transport, and production credentials
 cannot construct its client. The authorization is never a production capability.
 
+## Original capital history import
+
+Use `capital-history-import --source <local-file>` with the existing Demo CLI
+account arguments to initialize the original 7 USDT grid and 20 USDT portfolio
+allocations. The source file uses `factorlab.trading.storage.dumps` encoding so
+Decimal amounts and original timestamps retain their types. Its top-level fields
+are `receipt_id`, `manifest`, `sleeves`, and the explicit Decimal `fee_rate`.
+
+The manifest identifies the original account, declares `history_complete: true`,
+and maps every original allocation ID to its economic identity. Each sleeve
+supplies its original instance, logical strategy, allocation, capital, initial
+cash/inventory, owned symbols, creation time and trading session. Grid evidence
+includes the complete deployment journal IDs and order IDs; portfolio evidence
+includes the complete task journal IDs. Both require independently supplied
+complete order/event ID lists in `source_receipt`, plus `history_complete: true`.
+Current journal scans alone are not evidence that the source history is complete.
+
+Import reconciles through official reads and does not authorize network writes.
+All sleeves must export successfully before adoption. The first complete export
+is frozen under the original receipt; interrupted startup reuses it rather than
+reconstructing economic history from current balances. Existing order ownership
+must agree with the imported instance and allocation. Startup resumes the same
+receipt and original order IDs; official account equity is a risk input, not a
+source of additional allocation cash.
+
 ## Dynamic symbol discovery
 
 第一阶段以离线及官方只读能力验证为主，正式云端执行交由最终集成部署任务，不制造不必要的验收交易。

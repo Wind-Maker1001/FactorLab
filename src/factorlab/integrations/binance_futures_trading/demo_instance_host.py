@@ -25,13 +25,13 @@ class DemoInstanceHost:
         self.boot_id = uuid4().hex
         self.controllers, self.adapters = {}, {}
         path = Path(directory) / 'portfolio.sqlite3'
-        if not path.is_file():
+        from .demo_legacy_migration import account_history_source, start_account_history
+        if not path.is_file() and account_history_source(session) is None:
             raise SafetyBlocked('existing account portfolio capital journal required')
         capital = stack.enter_context(closing(PortfolioStore(path)))
         self.owner = DemoInstanceOwner.open(session, capital,
             capability=DemoInstanceCapability(session, runtime, dispatch_gate=self.dispatch_gate))
-        from .demo_legacy_migration import resume_account_history
-        resume_account_history(session, self.owner.execution.executor)
+        start_account_history(session, self.owner.execution.executor)
         from .demo_strategy_context import DemoStrategyContext
         self.context = DemoStrategyContext(self.owner.execution.store)
         self.owner.execution.store.db.execute('CREATE TABLE IF NOT EXISTS demo_instance_inputs ('
@@ -117,6 +117,12 @@ class DemoInstanceHost:
                 event_id=event_id,
                 event_time=bar.closed_at, data_type='closed_bar', symbols=symbols,
                 account=self.session.status(), allocation=allocation)
+            if spec.decision_kind == 'orders':
+                from .demo_grid_context import grid_context
+                context = grid_context(self, runtime)
+                if context is None:
+                    continue
+                event['context'] = context
             results[instance_id] = self.deliver(instance_id, event)
         return results
 
@@ -150,7 +156,8 @@ class DemoInstanceHost:
         for raw, in store.db.execute('SELECT payload FROM demo_instance_outbox WHERE completed=0'):
             receipt = decode(json.loads(raw))['receipt']
             if (receipt['binding']['instance_id'] == instance_id
-                    and (receipt['package_id'], receipt['event_id']) != (runtime.package_id, event['event_id'])):
+                    and (receipt['package_id'], receipt['event_id']) != (runtime.package_id, event['event_id'])
+                    and (runtime.strategy.spec.decision_kind != 'orders' or receipt['decision']['kind'] != 'orders')):
                 from factorlab.strategies.identity import content_identity
                 return runtime.store.decision(runtime.package_id, event['event_id'], content_identity(event))
         return runtime.decide(event)
@@ -220,13 +227,18 @@ class DemoInstanceHost:
             saved = store.db.execute('SELECT cursor FROM demo_instance_order_cursors '
                 'WHERE instance_id=? AND package_id=?', key).fetchone()
             cursor = 0 if saved is None else saved[0]
+            native_clients = None
+            if runtime.strategy.spec.decision_kind == 'orders':
+                from .demo_grid_context import native_orders
+                native_clients = set(native_orders(store, binding, runtime.package_id).values())
             rows = store.db.execute('SELECT rowid,payload FROM events WHERE rowid>? ORDER BY rowid',
                                     (cursor,)).fetchall()
             for position, raw in rows:
                 report = decode(json.loads(raw))
                 if isinstance(report, OrderEvent):
                     owner = self.owner.execution.owners.owner(report.client_order_id)
-                    if owner is not None and owner[:2] == (instance_id, binding['allocation_id']):
+                    if (owner is not None and owner[:2] == (instance_id, binding['allocation_id'])
+                            and (native_clients is None or report.client_order_id in native_clients)):
                         symbol = owner[2]
                         event_id = 'order:' + identity(report.event_id)
                         frozen = store.db.execute('SELECT payload FROM demo_instance_inputs '
@@ -241,6 +253,12 @@ class DemoInstanceHost:
                                     observations={'order_event': observation}, history={})},
                                 account=self.session.status(), allocation=self.owner.execution.executor.store.allocation(
                                     binding['account_id'], instance_id))
+                            if runtime.strategy.spec.decision_kind == 'orders':
+                                from .demo_grid_context import grid_context
+                                context = grid_context(self, runtime)
+                                if context is None:
+                                    break
+                                event['context'] = context
                         else:
                             event = decode(json.loads(frozen[0]))
                         if self.deliver(instance_id, event) is None:

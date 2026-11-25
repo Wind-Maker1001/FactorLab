@@ -30,8 +30,8 @@ import urllib.request
 import numpy as np
 import pandas as pd
 
-from factorlab.experiments.grid_empirical import load_hourly
 from factorlab.experiments.grid_fifo import (
+    D,
     attribute_events as paper_fifo_attribute_events,
     attribution as paper_fifo_attribution,
 )
@@ -39,8 +39,6 @@ from factorlab.experiments.grid_funding import (
     cashflow as funding_cashflow,
     position_settlements,
 )
-from factorlab.experiments.grid_lifecycle import lifecycle_metrics
-from factorlab.experiments.grid_paper import D, run_experiment
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, GridRules
 from factorlab.trading.contracts import Market, Side, ZERO
@@ -855,6 +853,7 @@ def load_and_audit_r10_dataset(
     allow_network_supplement: bool = True,
 ) -> tuple[list[dict[str, Any]], list[tuple[datetime, Decimal, Decimal, str]], dict[str, Any]]:
     """Load certified R04B + corroborated R07 + post-R07 continuous 1h dataset and audit it."""
+    from factorlab.experiments.grid_empirical import load_hourly
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1285,6 +1284,8 @@ def run_paired_window(
     cleanup_dir: bool = False,
 ) -> dict[str, Any]:
     """Run one strategy arm on one window using the authoritative Paper engine and compute full metrics."""
+    from factorlab.experiments.grid_paper import run_experiment
+    from factorlab.experiments.grid_lifecycle import lifecycle_metrics
     anchor = float(bars[0]["close"])
     rules = demo_grid_rules()
     fee_bps = float(fee_rate * 10_000)
@@ -1543,6 +1544,8 @@ def run_paired_window_multi_overlay(
     cleanup_dir: bool = True,
 ) -> dict[str, dict[str, Any]]:
     """Run one funding-independent arm (Strategy A or C) once and evaluate multiple funding overlays identically."""
+    from factorlab.experiments.grid_paper import run_experiment
+    from factorlab.experiments.grid_lifecycle import lifecycle_metrics
     if strategy_id.startswith("B"):
         raise ValueError("Funding-sensitive Strategy B depends on funding rates and cannot reuse one ledger across regimes")
     anchor = float(bars[0]["close"])

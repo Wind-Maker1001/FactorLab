@@ -15,21 +15,21 @@ def test_account_migration_exports_all_sleeves_before_atomic_adoption(monkeypatc
         read_facts=lambda: SimpleNamespace(usdt=lambda: dict(walletBalance=D(5000), unrealizedProfit=D(-2)))))
     from factorlab.trading.storage import PaperStore
     journal = PaperStore(tmp_path / 'migration.sqlite3')
-    session.controller = SimpleNamespace(store=journal)
+    session.controller = SimpleNamespace(store=journal, broker=SimpleNamespace())
     executor = SimpleNamespace(adapter=SimpleNamespace(session=session), adopt_existing=Mock())
     sleeves = [dict(kind=kind, instance_id=kind, logical_strategy=kind, allocation_id=kind,
         capital=D(amount), initial_cash=D(amount), initial_inventory={})
         for kind, amount in [('grid', 7), ('portfolio', 20)]]
     manifest = dict(account_id='original-account', history_complete=True, allocations={sleeve['allocation_id']: dict(sleeve)
                                                      for sleeve in sleeves})
-    monkeypatch.setattr(migration, 'export_grid_sleeve', lambda session, **values: values)
+    monkeypatch.setattr(migration, 'export_grid_sleeve', lambda session, **values: dict(values, orders=[]))
     def missing(session, **values):
         raise SafetyBlocked('missing original portfolio history')
     monkeypatch.setattr(migration, 'export_portfolio_sleeve', missing)
     with pytest.raises(SafetyBlocked, match='missing original portfolio'):
         migration.adopt_account_history(session, executor, receipt_id='original', manifest=manifest, sleeves=sleeves)
     executor.adopt_existing.assert_not_called()
-    monkeypatch.setattr(migration, 'export_portfolio_sleeve', lambda session, **values: values)
+    monkeypatch.setattr(migration, 'export_portfolio_sleeve', lambda session, **values: dict(values, orders=[]))
     migration.adopt_account_history(session, executor, receipt_id='original', manifest=manifest, sleeves=sleeves)
     call = executor.adopt_existing.call_args.kwargs
     assert call['official_equity'] == D(4998)
@@ -58,6 +58,77 @@ def test_account_migration_exports_all_sleeves_before_atomic_adoption(monkeypatc
             manifest=dict(manifest, account_id='foreign-account'), sleeves=sleeves)
     executor.adopt_existing.assert_not_called()
     session.controller.store.close()
+
+
+def test_complete_original_source_starts_initial_migration_and_reuses_it(monkeypatch, tmp_path):
+    from unittest.mock import Mock
+    from contextlib import closing
+    from factorlab.trading.storage import PaperStore
+    from factorlab.integrations.binance_futures_trading import demo_legacy_migration as migration
+    with closing(PaperStore(tmp_path / 'source.sqlite3')) as journal:
+        session = SimpleNamespace(adapter=SimpleNamespace(account_id='original-account',
+            read_facts=lambda: SimpleNamespace(usdt=lambda: dict(walletBalance=D(5000), unrealizedProfit=D(0)))),
+            controller=SimpleNamespace(store=journal, broker=SimpleNamespace()))
+        sleeves = [dict(kind=kind, instance_id=kind, logical_strategy=kind, allocation_id=kind,
+            capital=D(amount), initial_cash=D(amount), initial_inventory={})
+            for kind, amount in [('grid', 7), ('portfolio', 20)]]
+        manifest = dict(account_id='original-account', history_complete=True,
+            allocations={value['allocation_id']: dict(value) for value in sleeves})
+        monkeypatch.setattr(migration, 'export_grid_sleeve', lambda session, **values: dict(values, orders=[]))
+        monkeypatch.setattr(migration, 'export_portfolio_sleeve', lambda session, **values: dict(values, orders=[]))
+        migration.register_account_history_source(session, receipt_id='original', manifest=manifest,
+            sleeves=sleeves, fee_rate=D('.0003'))
+        executor = SimpleNamespace(adapter=SimpleNamespace(session=session), capital_policy=Mock(), adopt_existing=Mock())
+        migration.start_account_history(session, executor)
+        executor.capital_policy.configure.assert_called_once_with(account_id='original-account',
+            currency='USDT', budget=D(27), fee_rate=D('.0003'))
+        assert [value['capital'] for value in executor.adopt_existing.call_args.kwargs['sleeves']] == [D(7), D(20)]
+        frozen = executor.adopt_existing.call_args.kwargs['sleeves']
+        monkeypatch.setattr(migration, 'export_grid_sleeve', Mock(side_effect=AssertionError('frozen')))
+        migration.start_account_history(session, executor)
+        assert executor.adopt_existing.call_args.kwargs['sleeves'] == frozen
+        with pytest.raises(SafetyBlocked, match='original 7/20'):
+            migration.register_account_history_source(session, receipt_id='larger', manifest=manifest,
+                sleeves=[dict(sleeves[0], capital=D(8)), sleeves[1]], fee_rate=D('.0003'))
+
+
+def test_history_import_cli_reconciles_without_authorizing_writes(monkeypatch, tmp_path, request):
+    from contextlib import contextmanager
+    from unittest.mock import Mock
+    from factorlab.trading.storage import dumps
+    from factorlab.integrations.binance_futures_trading import demo_cli, demo_legacy_migration as migration
+    from factorlab.trading import portfolio_execution
+    from factorlab.trading.storage import PaperStore
+    journal = PaperStore(tmp_path / 'original.sqlite3')
+    request.addfinalizer(journal.close)
+    session = SimpleNamespace(adapter=SimpleNamespace(account_id='original-account'), _now=lambda: NOW,
+        controller=SimpleNamespace(store=journal, broker=SimpleNamespace()))
+    @contextmanager
+    def opened(*args):
+        yield session, None
+    monkeypatch.setattr(demo_cli, 'open_session', opened)
+    recovered = Mock()
+    registered = Mock()
+    monkeypatch.setattr(demo_cli, 'recover', recovered)
+    monkeypatch.setattr(migration, 'register_account_history_source', registered)
+    def executor(adapter, store, **kwargs):
+        with pytest.raises(SafetyBlocked, match='official reads only'):
+            adapter.capability(None)
+        return SimpleNamespace(adapter=adapter)
+    monkeypatch.setattr(portfolio_execution, 'PortfolioExecutor', executor)
+    started = Mock()
+    monkeypatch.setattr(migration, 'start_account_history', started)
+    source = dict(receipt_id='original-history', fee_rate=D('.0003'))
+    path = tmp_path / 'source.json'
+    path.write_text(dumps(source), encoding='utf-8')
+    directory = tmp_path / demo_cli.journal_id('original-account')
+    directory.mkdir()
+    result = demo_cli.run_command(SimpleNamespace(command='capital-history-import', source=str(path)),
+        root=tmp_path, store=None, runtime=None, requests=None, smoke_id=None)
+    assert result == dict(status='DEMO_CAPITAL_HISTORY_ADOPTED', receipt_id='original-history')
+    recovered.assert_called_once_with(session)
+    registered.assert_called_once_with(session, **source)
+    started.assert_called_once()
 
 
 def test_export_preserves_original_events_and_actual_notional_without_cash_plug():
@@ -129,6 +200,8 @@ def test_export_preserves_original_events_and_actual_notional_without_cash_plug(
                                   manifest=account_manifest, sleeves=[sleeve])
             assert destination.allocation(adapter.account_id, 'legacy')['initial_cash'] == D(7)
             assert destination.db.execute('SELECT id FROM portfolio_orders').fetchall() == [('legacy-original',)]
+            from factorlab.integrations.binance_futures_trading.demo_allocations import DemoAllocations
+            assert DemoAllocations(controller).owner('legacy-original') == ('legacy', 'grid-seven', 'NVDAUSDT')
             assert destination.holdings(adapter.account_id) == {
                 'NVDAUSDT': gateway.state.positions.get('NVDAUSDT').quantity
                 if 'NVDAUSDT' in gateway.state.positions else D(0)}
