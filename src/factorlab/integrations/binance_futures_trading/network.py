@@ -130,6 +130,7 @@ class DemoNetworkTransport:
         default=None, repr=False, compare=False)
     observe_response: Callable[[SignedRequest, Response | None], None] | None = field(
         default=None, repr=False, compare=False)
+    authorizations: dict = field(default_factory=dict, repr=False, compare=False)
     environment: Environment = field(default=Environment.DEMO, init=False)
     _admission: dict = field(default_factory=dict, init=False, repr=False, compare=False)
 
@@ -141,8 +142,17 @@ class DemoNetworkTransport:
     def host(self):
         return 'https://demo-fapi.binance.com'
 
+    def authorization_for(self, symbol, client_id):
+        key = client_id if client_id is not None else ('configuration', symbol)
+        authorization = self.authorizations.get(key, self.authorization)
+        if (type(authorization) is not DemoNetworkAuthorization
+                or authorization.plan.symbol != symbol or not authorization.active()):
+            raise SafetyBlocked('active symbol-bound Demo authorization required')
+        return authorization
+
     def permitted(self):
-        return type(self.authorization) is DemoNetworkAuthorization and self.authorization.active()
+        return ((type(self.authorization) is DemoNetworkAuthorization and self.authorization.active())
+                or any(type(a) is DemoNetworkAuthorization and a.active() for a in self.authorizations.values()))
 
     def __call__(self, request, timeout):
         if request.environment is not Environment.DEMO:
@@ -169,14 +179,18 @@ class DemoNetworkTransport:
             if admission is None:
                 raise SafetyBlocked('shared risk and durable order admission required')
             method, params, account_id = admission
+            client_id = params.get('newClientOrderId', params.get('origClientOrderId'))
+            authorization = self.authorization_for(params['symbol'], client_id)
+            if credential_account_id(Environment.DEMO, request.headers.get('X-MBX-APIKEY', '')) != authorization.plan.account_id:
+                raise SafetyBlocked('Demo credential account mismatch')
             actual = parse_qs(request.query, keep_blank_values=True, strict_parsing=True)
             for key in ('timestamp', 'recvWindow', 'signature'):
                 if len(actual.pop(key, ())) != 1:
                     raise SafetyBlocked('signed request required')
-            if (method != request.method or account_id != self.authorization.plan.account_id
+            if (method != request.method or account_id != authorization.plan.account_id
                     or actual != {k: [str(v)] for k, v in params.items()}):
                 raise SafetyBlocked('approved order request mismatch')
-            policy = self.authorization.plan.quote_policy
+            policy = authorization.plan.quote_policy
             if policy is not None:
                 if policy.expires_at <= datetime.now(timezone.utc):
                     raise SafetyBlocked('bounded policy expired at dispatch')
@@ -192,7 +206,7 @@ class DemoNetworkTransport:
                     raise SafetyBlocked('Demo authorization expired at dispatch')
             if self.write_guard is not None:
                 try:
-                    self.write_guard(method, dict(params), self.authorization.plan)
+                    self.write_guard(method, dict(params), authorization.plan)
                 except SafetyBlocked as error:
                     raise DemoWriteRefused(str(error)) from None
                 if not self.permitted():

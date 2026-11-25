@@ -36,7 +36,11 @@ class FuturesPaperGateway(PaperBroker):
         from .network import demo_network_permitted
         return demo_network_permitted(client)
 
+    def execution_rules(self, symbol):
+        return self.rules, self.leverage, self.max_leverage
+
     def submit_order(self, intent):
+        rules, leverage, max_leverage = self.execution_rules(intent.instrument_id)
         if not self.adapter.reconciled or self.adapter.facts is None:
             raise SafetyBlocked('futures account must be reconciled')
         remote_ids = {row[0] for row in self.adapter.db.execute('SELECT id FROM futures_orders')}
@@ -48,7 +52,7 @@ class FuturesPaperGateway(PaperBroker):
         if facts.hedge_mode is not False:
             raise SafetyBlocked('shared v1 supports only confirmed one-way mode')
         config = next((c for c in facts.symbol_config if c.get('symbol') == intent.instrument_id), {})
-        if config.get('leverage') != self.leverage or config.get('marginType') not in {'CROSSED', 'ISOLATED'}:
+        if config.get('leverage') != leverage or config.get('marginType') not in {'CROSSED', 'ISOLATED'}:
             raise SafetyBlocked('UNKNOWN or mismatched leverage/margin mode')
         available = facts.usdt()['availableBalance']
         positions = facts.position_details()
@@ -65,10 +69,10 @@ class FuturesPaperGateway(PaperBroker):
         # spend the same reported available margin twice.
         paper_available = next(a.available for a in self.read_account().assets if a.currency == 'USDT')
         margin = None if available is None else min(available, paper_available)
-        decision = self.rules.validate(intent, mark_price=self.state.quotes[intent.instrument_id].price,
-            leverage=self.leverage, available_margin=margin,
+        decision = rules.validate(intent, mark_price=self.state.quotes[intent.instrument_id].price,
+            leverage=leverage, available_margin=margin,
             current_notional=None if current is None else current + pending,
-            now=self.clock(), max_leverage=self.max_leverage)
+            now=self.clock(), max_leverage=max_leverage)
         if not decision.approved:
             raise RiskRejected(decision)
         event = self.adapter.submit_order(intent)

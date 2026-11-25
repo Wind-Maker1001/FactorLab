@@ -170,6 +170,8 @@ def _observation(event):
         raise ValueError('invalid reseed_withdrawn')
     if reseed_withdrawn:
         observation['reseed_withdrawn'] = True
+    if 'source_bar' in event:
+        observation['source_bar'] = dict(event['source_bar'])
     if action == 'cancel':
         observation['order_id'] = event['order_id']
         validate_identity(observation['order_id'])

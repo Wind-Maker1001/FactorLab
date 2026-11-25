@@ -29,10 +29,15 @@ class PortfolioTask:
     def payload(self):
         if self.task_type not in {'SCHEDULED', 'ACCEPTANCE'}:
             raise ValueError('explicit scheduled or acceptance task type required')
-        if not self.task_id or self.allocation_id != TEST_ALLOCATION:
-            raise ValueError('explicit test allocation and stable task identity required')
-        if set(self.weights) != TEST_SYMBOLS:
-            raise ValueError('complete static QQQ/SPY allocation required; NVDA belongs to Grid')
+        if not self.task_id or not self.allocation_id:
+            raise ValueError('explicit allocation and stable task identity required')
+        if self.allocation_id == TEST_ALLOCATION:
+            if set(self.weights) != TEST_SYMBOLS:
+                raise ValueError('complete legacy QQQ/SPY allocation required')
+        else:
+            from factorlab.integrations.binance.market import symbol_name
+            if not self.weights or any(symbol_name(symbol) != symbol for symbol in self.weights):
+                raise ValueError('explicit Demo USDT symbol targets required')
         values = [self.equity_usdt, *self.weights.values()]
         if any(not isinstance(v, Decimal) or not v.is_finite() or v < 0 for v in values):
             raise ValueError('finite nonnegative Decimal allocation values required')

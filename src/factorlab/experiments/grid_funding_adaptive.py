@@ -392,6 +392,7 @@ class FundingSensitiveGrid(GridExecution):
         extra: dict[str, Any] = {
             "r10_strategy": "B_FUNDING_SENSITIVE_GRID",
             "funding_policy": asdict(self.funding_policy),
+            "funding_events": list(self._all_funding_events),
         }
         if self.use_f11_limit_exit:
             extra["use_f11_limit_exit"] = True
@@ -450,7 +451,10 @@ class FundingSensitiveGrid(GridExecution):
     def _observe(self, event, account):
         # Compute causal observation time strictly BEFORE super()._observe so initial
         # sequence==1 seeding obeys the causal funding gate.
-        obs_utc = parse_utc(event["time"]) + timedelta(hours=1, microseconds=-1)
+        # Demo source bars timestamp the close; research bars timestamp the open.
+        obs_utc = parse_utc(event["time"])
+        if 'source_bar' not in event:
+            obs_utc += timedelta(hours=1, microseconds=-1)
         blocked, est_bps_h, net_margin_bps, block_reason = self._evaluate_entry_block(obs_utc)
         prev_blocked = self.buy_blocked
         self.buy_blocked = blocked
@@ -627,7 +631,8 @@ class VolatilityAdaptiveGrid(GridExecution):
         self.vol_policy = vol_policy
         # Keep only the necessary trailing warmup closes (strictly pre-window).
         keep = max(vol_policy.vol_window_hours + 2, 10)
-        self.close_history: list[float] = [float(x) for x in warmup_closes[-keep:]]
+        self._warmup_closes = tuple(float(x) for x in warmup_closes[-keep:])
+        self.close_history: list[float] = list(self._warmup_closes)
         self.current_vol_1h = causal_realized_vol_1h(
             self.close_history, vol_policy.vol_window_hours, vol_policy.reference_vol_1h
         )
@@ -637,6 +642,22 @@ class VolatilityAdaptiveGrid(GridExecution):
         self.total_observed_hours = 0
         self.adaptive_rebuilds = 0
         self.vol_events: list[dict[str, Any]] = []
+
+    _checkpoint_fields = ('close_history', 'current_vol_1h', 'current_half_width',
+                          'buy_blocked', 'blocked_hours', 'total_observed_hours',
+                          'adaptive_rebuilds', 'vol_events')
+
+    def _subclass_checkpoint(self) -> dict[str, Any]:
+        checkpoint = {name: getattr(self, name) for name in self._checkpoint_fields}
+        checkpoint['close_history'] = self.close_history.copy()
+        checkpoint['vol_events'] = self.vol_events.copy()
+        return checkpoint
+
+    def _restore_subclass_checkpoint(self, state, payload, broker, store) -> None:
+        checkpoint = payload['subclass_state']
+        for name in self._checkpoint_fields:
+            value = checkpoint[name]
+            setattr(self, name, list(value) if isinstance(value, list) else value)
 
     def _stage(self) -> VolatilityAdaptiveGrid:
         staged = super()._stage()
@@ -648,6 +669,7 @@ class VolatilityAdaptiveGrid(GridExecution):
         return super().deployment() | {
             "r10_strategy": "C_VOL_ADAPTIVE_GRID",
             "vol_policy": asdict(self.vol_policy),
+            "warmup_closes": list(self._warmup_closes),
         }
 
     def _propose(self, side, target, quantity, level=-1, market=False):

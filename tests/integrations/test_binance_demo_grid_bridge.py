@@ -34,6 +34,48 @@ def observe(b):
     return b.observe(dict(id='quote-1', time='2026-11-11T12:00:00', price='150', volume=1))
 
 
+@pytest.mark.parametrize('kind', ['funding', 'volatility'])
+def test_adaptive_strategy_replays_original_bridge_commands_without_post(tmp_path, kind):
+    from dataclasses import asdict
+    from datetime import timedelta
+    from factorlab.experiments.grid_funding_adaptive import FundingPolicy, VolatilityPolicy
+    from factorlab.integrations.binance_futures_trading.demo_runtime import restore_grid
+    protocol, paper = tmp_path / 'protocol.db', tmp_path / 'controller.db'
+    fake = None
+    deployment = None
+    expected = None
+    for _ in range(2):
+        adapter, gateway, controller, fake = setup(protocol, paper, fake)
+        try:
+            controller.quote(Quote('NVDAUSDT', D(150), NOW))
+            if deployment is None:
+                deployment = grid(adapter.account_id).deployment()
+                if kind == 'funding':
+                    deployment.update(r10_strategy='B_FUNDING_SENSITIVE_GRID',
+                        funding_policy=asdict(FundingPolicy()), funding_events=[
+                            (NOW+timedelta(minutes=30), D(150), D('.01'), 'future')])
+                else:
+                    deployment.update(r10_strategy='C_VOL_ADAPTIVE_GRID',
+                        vol_policy=asdict(VolatilityPolicy()), warmup_closes=[149, 150, 151, 150])
+            runtime = DemoGridBridge(restore_grid(deployment), controller)
+            runtime.recover()
+            event = dict(id='adaptive-bar', time=NOW.replace(tzinfo=None).isoformat(), price='150',
+                high='150', low='150', close='150', volume=0, completed_bar=True,
+                source_bar=dict(opened_at=(NOW-timedelta(hours=1)).isoformat()))
+            runtime.observe(event, dispatch=False, source_id='original-adaptive-bar')
+            state = runtime.grid._subclass_checkpoint()
+            if expected is None:
+                expected = state
+            else:
+                assert state == expected
+            if kind == 'funding':
+                assert runtime.grid.last_funding_bps_h == 0
+            assert not any(method == 'POST' for method, _, _ in fake.calls)
+        finally:
+            controller.store.close()
+            adapter.store.close()
+
+
 def test_round_trip_restart_and_duplicate(tmp_path):
     protocol, paper = tmp_path / 'protocol.db', tmp_path / 'controller.db'
     b, fake = bridge(protocol, paper)

@@ -44,8 +44,21 @@ def test_receipt_recovery_does_not_hide_expired_inflight_task(tmp_path):
     recovered.close()
 
 
+def test_dynamic_symbols_survive_mailbox_restart(tmp_path):
+    path = tmp_path / 'dynamic.sqlite3'
+    offered = replace(task(), allocation_id='configured-multi-symbol',
+                      weights={'BTCUSDT': D('.3'), 'ETHUSDT': D('.4')})
+    mailbox = TaskMailbox(path)
+    assert mailbox.submit(offered) == 'QUEUED'
+    mailbox.close()
+    recovered = TaskMailbox(path)
+    assert recovered.outstanding() == [dict(task=offered.payload(), status='QUEUED')]
+    assert recovered.submit(offered) == 'QUEUED'
+    recovered.close()
+
+
 @pytest.mark.parametrize('changes', [
-    {'allocation_id': 'nvda-grid'},
+    {'allocation_id': ''},
     {'weights': {'NVDAUSDT': D('.1'), 'QQQUSDT': D('.2')}},
     {'weights': {'QQQUSDT': D('.6'), 'SPYUSDT': D('.6')}},
     {'equity_usdt': D('NaN')},

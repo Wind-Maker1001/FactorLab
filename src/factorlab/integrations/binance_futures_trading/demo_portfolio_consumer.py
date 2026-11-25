@@ -19,8 +19,7 @@ from factorlab.trading.storage import dumps
 from .demo_cloud_storage import atomic_json
 from .demo_runtime import durable_control_state
 from .demo_session import demo_account_configuration
-from .execution import observe_demo_rules
-from .network import DemoExecutionPlan, DemoNetworkAuthorization, DemoNetworkTransport
+from .network import DemoExecutionPlan, DemoNetworkAuthorization
 from .protocol import SafetyBlocked
 
 SYMBOLS = frozenset({'QQQUSDT', 'SPYUSDT'})
@@ -73,6 +72,13 @@ class DemoPortfolioConsumer:
                 weights={k:D(v) for k,v in task_payload['weights'].items()},
                 task_type=task_payload['task_type']).payload()
             self.active_mailbox_task = task_payload
+            from .tradfi_tasks import TEST_ALLOCATION
+            if task_payload['allocation_id'] != TEST_ALLOCATION:
+                if self.session.instance_owner is None:
+                    raise SafetyBlocked('dynamic task requires the shared instance execution owner')
+                status, detail = self.session.instance_owner.accept_task(task_payload)
+                self.receipt(status, detail)
+                return
             from .tradfi_schedule import utc_instant
             from factorlab.trading.contracts import TERMINAL
             from factorlab.trading.storage import decode
@@ -96,11 +102,13 @@ class DemoPortfolioConsumer:
                     for order in portfolio.batch_status(task_payload['task_id']):
                         record = self.session.gateway.state.orders.get(order['client_order_id'])
                         if record is not None and record.snapshot.status not in TERMINAL:
-                            with self.scope(task_payload['task_id'], order['symbol']):
+                            with self.scope(task_payload['task_id'], order['symbol'], client_id=order['client_order_id']):
                                 self.session.cancel(order['client_order_id'])
                     recovered = self.session.gateway.recover(self.session.controller)
+                batch_ids = {order['client_order_id'] for order in
+                    portfolio.batch_status(task_payload['task_id'])} if started and recovered.reconciled else set()
                 if recovered.reconciled and not any(r.snapshot.status not in TERMINAL
-                        for k,r in self.session.gateway.state.orders.items() if k.startswith('pf')):
+                        for k,r in self.session.gateway.state.orders.items() if k in batch_ids):
                     self.receipt('REJECTED',dict(reason='EXPIRED',recovered_inflight=started))
                 else:
                     self.receipt('RECONCILING',dict(reason='EXPIRED_INFLIGHT'))
@@ -133,6 +141,12 @@ class DemoPortfolioConsumer:
             if self.active_mailbox_task is not None else 'tradfi-demo-acceptance'),
             owned_symbols=SYMBOLS, recover=lambda:self.session.gateway.recover(self.session.controller))
         portfolio.begin(task, weights=weights, equity=budget)
+        from .demo_allocations import DemoAllocations
+        owners = DemoAllocations(self.session.controller)
+        instance_id = 'legacy-portfolio:' + portfolio.allocation_id
+        owners.adopt_portfolio_history(instance_id=instance_id, allocation_id=portfolio.allocation_id)
+        self.session.controller.limits = replace(self.session.controller.limits,
+            max_order_notional=BUDGET, max_instrument_exposure=BUDGET, account_budget=ACCOUNT_BUDGET)
         if self.active_mailbox_task is not None and outstanding[0]['status'] == 'QUEUED':
             self.receipt('ACCEPTED',dict(owner_budget_usdt=str(budget)))
         self.session.shared_account = True
@@ -144,20 +158,20 @@ class DemoPortfolioConsumer:
         if not account.reconciled:
             return
         for symbol in SYMBOLS:
-            owned_quantity = sum(((r.snapshot.cumulative_filled_quantity if r.snapshot.intent.side is Side.BUY else -r.snapshot.cumulative_filled_quantity)
-                for k,r in self.session.gateway.state.orders.items()
-                if k.startswith('pf') and r.snapshot.intent.instrument_id == symbol),D(0))
+            owned_quantity = owners.inventory(instance_id, symbol)
             actual = sum((p.quantity for p in account.positions if p.instrument_id == symbol),D(0))
             if owned_quantity != actual:
                 raise SafetyBlocked('unowned portfolio symbol position')
-        if any(o['symbol'] in SYMBOLS and not o['clientOrderId'].startswith('pf')
+        if any(o['symbol'] in SYMBOLS and owners.owner(o['clientOrderId']) !=
+               (instance_id, portfolio.allocation_id, o['symbol'])
                for o in self.session.adapter.facts.open_orders):
             raise SafetyBlocked('unowned portfolio symbol order')
         if request.get('action') == 'cancel_pending':
             from factorlab.trading.contracts import TERMINAL
             for key,record in tuple(self.session.gateway.state.orders.items()):
-                if key.startswith('pf') and record.snapshot.intent.instrument_id in SYMBOLS and record.snapshot.status not in TERMINAL:
-                    with self.scope(task,record.snapshot.intent.instrument_id):
+                if (owners.owner(key) == (instance_id, portfolio.allocation_id, record.snapshot.intent.instrument_id)
+                        and record.snapshot.status not in TERMINAL):
+                    with self.scope(task,record.snapshot.intent.instrument_id, client_id=key):
                         self.session.cancel(key)
             recovered = self.session.gateway.recover(self.session.controller)
             if recovered.reconciled:
@@ -167,31 +181,35 @@ class DemoPortfolioConsumer:
         for symbol in sorted(SYMBOLS):
             with self.scope(task, symbol):
                 self.configure_leverage(symbol)
-                self.session.refresh_rules()
-                book = self.session._fresh_book()
+                context = self.session.symbol_context(symbol)
+                book = self.session._fresh_book(symbol=symbol)
                 current = next((p.quantity for p in account.positions if p.instrument_id == symbol),D(0))
                 side = Side.SELL if current * book['bidPrice'] > budget * weights.get(symbol,D(0)) else Side.BUY
                 # Bounded marketable LIMIT cushion; account and allocation caps still apply.
                 executable = dict(book)
                 executable['askPrice'] *= D('1.005')
                 executable['bidPrice'] *= D('0.995')
-                price = self.session.limit_price(self.session.gateway.rules, side, executable)
+                price = self.session.limit_price(context.rules, side, executable)
                 prices[symbol] = price
-                steps[symbol] = D(self.session.gateway.rules.filters['LOT_SIZE']['stepSize'])
+                steps[symbol] = D(context.rules.filters['LOT_SIZE']['stepSize'])
                 self.session.controller.quote(Quote(symbol, price, book['time_utc']))
         def submit(intent):
             if self.active_mailbox_task is not None:
                 from .tradfi_schedule import utc_instant
                 if utc_instant(self.active_mailbox_task['valid_until']) <= self.session._now():
                     raise SafetyBlocked('task expired before dispatch; recover original identities')
-            with self.scope(task, intent.instrument_id):
-                self.session.submit_intent(intent)
+            with self.scope(task, intent.instrument_id, client_id=intent.client_order_id) as (authorization, guard):
+                self.session.submit_instance_intent(intent, instance_id=instance_id,
+                    allocation_id=portfolio.allocation_id, authorization=authorization, guard=guard)
         outcome = portfolio.advance(task, prices=prices, steps=steps, submit=submit)
         status = self.session.status()
-        status['orders'] = {k:v for k,v in status['orders'].items() if k.startswith('pf')}
+        owned_ids = {key for key, in store.db.execute(
+            'SELECT client_id FROM demo_order_owners WHERE instance_id=? AND allocation_id=?',
+            (instance_id, portfolio.allocation_id))}
+        status['orders'] = {k:v for k,v in status['orders'].items() if k in owned_ids}
         from .demo_fill_acceptance import receipt_mapping
         mapping = [m for m in receipt_mapping(self.session.adapter)
-                   if m['client_order_id'].startswith('pf')]
+                   if m['client_order_id'] in owned_ids]
         actual_fees = sum((m['actual_fee'] for m in mapping),D(0))
         realized = sum((D(t['realizedPnl']) for m in mapping for t in m['trades']),D(0))
         funding = sum((e.amount for e in self.session.adapter.funding_events() if e.symbol in SYMBOLS),D(0))
@@ -214,13 +232,8 @@ class DemoPortfolioConsumer:
                 dict(outcome=outcome,orders=report['orders'],accounting={k:str(v) for k,v in accounting.items()}))
 
     @contextmanager
-    def scope(self, task, symbol):
+    def scope(self, task, symbol, *, client_id=None):
         s = self.session
-        original = (s.symbol,s.configuration,s.gateway.rules,s.client.transport,
-                    s._write_guard,s._receipt_sink,s.controller.limits,
-                    getattr(s.adapter,'_rule_observation',None))
-        original_gateway = (s.gateway.leverage, s.gateway.max_leverage)
-        original_flags = (getattr(s,'write_uncertain',False),getattr(s,'receipt_error',False))
         campaign_key = 'portfolio-campaign:' + identity(task)
         raw = self.runtime._get(campaign_key)
         campaign = json.loads(raw) if raw else None
@@ -277,6 +290,8 @@ class DemoPortfolioConsumer:
                     raise SafetyBlocked('portfolio shared allocation budget exhausted')
             with self.runtime.db:
                 self.runtime.db.execute('BEGIN IMMEDIATE')
+                if method == 'POST':
+                    self.runtime.check_account_budget(params, s.adapter.facts)
                 if self.runtime.db.execute('SELECT count(*) FROM dispatches WHERE campaign=?',
                                            (campaign_key,)).fetchone()[0] >= 16:
                     raise SafetyBlocked('portfolio persistent campaign exhausted')
@@ -284,39 +299,12 @@ class DemoPortfolioConsumer:
                     (campaign_key,method,key,json.dumps(params))).rowcount
                 if not inserted:
                     raise SafetyBlocked('portfolio dispatch already consumed; GET recovery required')
-        def observe(request,response):
-            if request.path != '/fapi/v1/leverage':
-                s._observe_response(request,response)
-                return
-            receipt = dict(method='POST',client_order_id='pf-leverage-'+symbol,
-                http_status=response.status if response else None,
-                outcome_unknown=response is None, symbol=symbol, leverage=1)
-            with self.runtime.db:
-                self.runtime.db.execute('UPDATE dispatches SET receipt=? WHERE campaign=? AND client_id=?',
-                    (json.dumps(receipt),campaign_key,receipt['client_order_id']))
-        try:
-            s.symbol = symbol
-            s.configuration = demo_account_configuration(s.adapter.read_facts(),symbol)
-            s.gateway.leverage = 1
-            s.gateway.max_leverage = 1
-            observation = observe_demo_rules(s.adapter,symbol,source_version='OFFICIAL_DEMO')
-            s.gateway.rules = observation.rules
-            s._write_guard = guard
-            s._receipt_sink = lambda receipt: self.record_receipt(campaign_key,receipt)
-            s.client.transport = DemoNetworkTransport(authorization=DemoNetworkAuthorization(plan),
-                write_guard=s._admit_write,observe_response=observe)
-            s.controller.limits = replace(original[6], max_order_notional=BUDGET,
-                max_instrument_exposure=BUDGET,account_budget=ACCOUNT_BUDGET)
-            yield
-        finally:
-            (s.symbol,s.configuration,s.gateway.rules,s.client.transport,s._write_guard,
-             s._receipt_sink,s.controller.limits,s.adapter._rule_observation) = original
-            s.gateway.leverage, s.gateway.max_leverage = original_gateway
-            s.controller.limits = replace(s.controller.limits,account_budget=ACCOUNT_BUDGET)
-            # Portfolio uncertainty remains authoritative in the original adapter
-            # journal. Do not poison Grid's transport flags; unresolved protocol
-            # identities still prevent controller risk admission until GET recovery.
-            s.write_uncertain,s.receipt_error = original_flags
+        authorization = DemoNetworkAuthorization(plan)
+        key = client_id if client_id is not None else ('configuration', symbol)
+        s.client.transport.authorizations[key] = authorization
+        s._instance_guards[key] = guard
+        s._instance_receipt_sinks[key] = lambda receipt: self.record_receipt(campaign_key, receipt)
+        yield authorization, guard
 
     def record_receipt(self,campaign,receipt):
         with self.runtime.db:
@@ -328,7 +316,6 @@ class DemoPortfolioConsumer:
         facts = s.adapter.read_facts()
         config = demo_account_configuration(facts,symbol)
         if config['leverage'] == 1:
-            s.configuration = config
             return
         if (any(p.instrument_id == symbol and p.quantity for p in facts.shared().positions)
                 or any(o['symbol'] == symbol for o in facts.open_orders)):
@@ -339,7 +326,7 @@ class DemoPortfolioConsumer:
         verified = demo_account_configuration(s.adapter.read_facts(),symbol)
         if verified['leverage'] != 1:
             raise SafetyBlocked('Demo leverage configuration not confirmed')
-        s.configuration = verified
+        s.symbols.observe(symbol)
 
     def receipt(self,status,detail):
         from .tradfi_tasks import TaskMailbox

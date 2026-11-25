@@ -85,6 +85,27 @@ def bars(runner):
     return bar
 
 
+def test_restart_restores_only_explicitly_registered_dynamic_instruments(deployment):
+    from factorlab.trading.paper import Instrument
+    root, store, campaign, _ = deployment
+    counts = dict(GET=0, POST=0, DELETE=0)
+    with closing(DemoRuntime(root)) as runtime:
+        with open_session(root, store, runtime, counts, campaign=campaign) as (session, _):
+            session.controller.store.record_metadata('demo:instance:btc', dict(
+                binding=dict(account_id=session.adapter.account_id), symbols=['BTCUSDT']))
+            session.controller._atomic(lambda: session.gateway.state.instruments.update(
+                BTCUSDT=Instrument('BTCUSDT', 'USDT')))
+        with open_session(root, store, runtime, counts, campaign=campaign) as (session, _):
+            assert set(session.gateway.state.instruments) == {'NVDAUSDT', 'BTCUSDT'}
+            assert session.shared_account
+            session.controller._atomic(lambda: session.gateway.state.instruments.update(
+                ETHUSDT=Instrument('ETHUSDT', 'USDT')))
+        with pytest.raises(SafetyBlocked, match='unexpected shared account instrument'):
+            with open_session(root, store, runtime, counts, campaign=campaign):
+                pass
+    assert counts['POST'] == counts['DELETE'] == 0
+
+
 def test_rest_book_quote_redelivery_preserves_pending_and_restart(deployment, monkeypatch):
     root, store, campaign, fake = deployment
     counts = dict(GET=0, POST=0, DELETE=0)

@@ -21,7 +21,8 @@ class CollectionRequests(RequestCounts):
         self.clocks = deque()
 
     def before_request(self, source, method, path):
-        if method != 'GET' or path not in {'/fapi/v1/ticker/bookTicker', '/fapi/v1/time'}:
+        if method != 'GET' or path not in {'/fapi/v1/ticker/bookTicker', '/fapi/v1/time', '/fapi/v1/klines',
+                                             '/fapi/v1/fundingRate', '/fapi/v1/premiumIndex'}:
             raise FeedPaused('INVALID_COLLECTION_REQUEST')
         if len(self.pending) >= 1500:
             raise FeedPaused('MARKET_TELEMETRY_OVERFLOW')
@@ -39,7 +40,7 @@ class CollectionRequests(RequestCounts):
         with self.admission_lock:
             if len(self.books) >= 1500:
                 raise FeedPaused('MARKET_TELEMETRY_OVERFLOW')
-            self.books.append(dict(sequence=receipt.sequence,
+            self.books.append(dict(symbol=receipt.payload['symbol'], sequence=receipt.sequence,
                 market_ms=receipt.payload['time'], received_monotonic=receipt.received_monotonic,
                 received_gap_seconds=(receipt.received_monotonic - previous.received_monotonic
                     if previous is not None else None),
@@ -82,7 +83,9 @@ class DemoBookCollection:
     The reader must be a dedicated unsigned client, never the session client.
     """
     def __init__(self, reader, *, poll_seconds, clock=monotonic, on_acquired=None,
-                 exchange_time=None):
+                 exchange_time=None, symbol=SYMBOL):
+        from factorlab.integrations.binance.market import symbol_name
+        self.symbol = symbol_name(symbol)
         if poll_seconds <= 0:
             raise ValueError('positive collection interval required')
         self.reader, self.poll_seconds, self.clock = reader, poll_seconds, clock
@@ -113,10 +116,10 @@ class DemoBookCollection:
                 if self.exchange_time is not None:
                     self.exchange_time(min_valid_seconds=5)
                 payload = self.reader.request('GET', '/fapi/v1/ticker/bookTicker',
-                    {'symbol': SYMBOL}, signed=False)
+                    {'symbol': self.symbol}, signed=False)
                 received = self.clock()
                 if (not isinstance(payload, dict) or type(payload.get('time')) is not int
-                        or payload.get('symbol') != SYMBOL):
+                        or payload.get('symbol') != self.symbol):
                     raise FeedPaused('INVALID_BOOK')
                 try:
                     bid, ask = Decimal(payload['bidPrice']), Decimal(payload['askPrice'])
@@ -173,6 +176,21 @@ class DemoBookCollection:
                 raise FeedPaused('MARKET_COLLECTION_UNAVAILABLE')
             return self._receipt
 
+    def peek_recent(self, at):
+        """Return without waiting so another symbol's reader cannot stall the owner."""
+        self._demand.set()
+        with self._condition:
+            if self._failure is not None:
+                error, self._failure = self._failure, None
+                self._condition.notify_all()
+                raise error
+            receipt = self._receipt
+            if (self._stop.is_set() or receipt is None
+                    or at - receipt.received_monotonic > min(self.poll_seconds, 2)):
+                raise FeedPaused('MARKET_COLLECTION_UNAVAILABLE')
+            self._validate_time(receipt.payload['time'])
+            return receipt
+
     def receive_recent(self, at, *, market_after=0):
         return self.receive(after=at - min(self.poll_seconds, 2), market_after=market_after)
 
@@ -185,3 +203,122 @@ class DemoBookCollection:
             self._thread.join(timeout=self.reader.timeout + self.poll_seconds)
             if self._thread.is_alive():
                 raise FeedPaused('MARKET_COLLECTION_SHUTDOWN_TIMEOUT')
+
+
+class DemoSymbolCollections:
+    """Dedicated unsigned readers; only the Execute owner drains their receipts."""
+    def __init__(self, session_client, requests, factory, *, poll_seconds):
+        from contextlib import ExitStack
+        self.session_client, self.requests, self.factory = session_client, requests, factory
+        self.poll_seconds = poll_seconds
+        self.collections = {}
+        self.telemetry = {}
+        self.bar_readers, self.bar_jobs = {}, {}
+        self.stack = ExitStack()
+
+    def require(self, symbols):
+        from factorlab.integrations.binance.market import symbol_name
+        for offered in sorted(symbols):
+            symbol = symbol_name(offered)
+            if symbol in self.collections:
+                continue
+            reader, telemetry = collection_client(self.requests, self.factory)
+            reader.share_demo_clock(self.session_client)
+            collection = DemoBookCollection(reader, poll_seconds=self.poll_seconds,
+                clock=reader.monotonic, on_acquired=telemetry.acquired,
+                exchange_time=reader.demo_time, symbol=symbol)
+            self.stack.callback(collection.close)
+            self.collections[symbol], self.telemetry[symbol] = collection, telemetry
+            collection.start()
+
+    def bars(self, symbol, interval, *, after, history_limit):
+        """Schedule or collect one page without waiting on another symbol's GET."""
+        return self._collect((symbol, interval), self._read_bars, symbol, interval, after, history_limit)
+
+    def funding(self, symbol, *, after):
+        return self._collect((symbol, 'funding'), self._read_funding, symbol, after)
+
+    def _collect(self, key, read, *args):
+        from concurrent.futures import ThreadPoolExecutor
+        if key not in self.bar_readers:
+            reader, telemetry = collection_client(self.requests, self.factory)
+            reader.share_demo_clock(self.session_client)
+            executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='demo-market-' + key[0])
+            self.stack.callback(executor.shutdown)
+            self.bar_readers[key] = reader, telemetry, executor
+        reader, telemetry, executor = self.bar_readers[key]
+        telemetry.drain()
+        job = self.bar_jobs.get(key)
+        if job is None:
+            self.bar_jobs[key] = executor.submit(read, reader, *args)
+            return None
+        if not job.done():
+            return None
+        del self.bar_jobs[key]
+        return job.result()
+
+    @staticmethod
+    def _read_funding(reader, symbol, after):
+        from .demo_market_feed import timestamp
+        params = dict(symbol=symbol, limit=1000)
+        if after is not None:
+            params['startTime'] = after
+        rows = reader.request('GET', '/fapi/v1/fundingRate', params, signed=False)
+        forecast = reader.request('GET', '/fapi/v1/premiumIndex', dict(symbol=symbol), signed=False)
+        reading = reader.demo_time(min_valid_seconds=5)
+        observed_at = timestamp(reading.upper_ms)
+        if not isinstance(rows, list) or len(rows) > 1000 or not isinstance(forecast, dict):
+            raise FeedPaused('INVALID_FUNDING_OBSERVATION')
+        observations = []
+        previous = None
+        for row in rows:
+            if row['symbol'] != symbol or type(row['fundingTime']) is not int:
+                raise FeedPaused('INVALID_FUNDING_IDENTITY')
+            effective_at = timestamp(row['fundingTime'])
+            rate, mark = Decimal(row['fundingRate']), Decimal(row['markPrice'])
+            if (not rate.is_finite() or not mark.is_finite() or mark <= 0
+                    or effective_at > observed_at
+                    or previous is not None and effective_at <= previous):
+                raise FeedPaused('INVALID_FUNDING_SETTLEMENT')
+            previous = effective_at
+            event_id = symbol + ':' + str(row['fundingTime'])
+            observations.append(dict(kind='funding_settlement', event_id=event_id,
+                observed_at=observed_at, effective_at=effective_at, source='BINANCE_USDM_DEMO_REST',
+                payload=dict(event_id=event_id, funding_rate=rate, mark_price=mark)))
+        if forecast['symbol'] != symbol or type(forecast['time']) is not int:
+            raise FeedPaused('INVALID_FUNDING_FORECAST')
+        rate, mark = Decimal(forecast['lastFundingRate']), Decimal(forecast['markPrice'])
+        if (not rate.is_finite() or not mark.is_finite() or mark <= 0
+                or timestamp(forecast['time']) > observed_at):
+            raise FeedPaused('INVALID_FUNDING_FORECAST')
+        observations.append(dict(kind='funding_forecast',
+            event_id=symbol + ':' + str(forecast['time']), observed_at=observed_at,
+            effective_at=timestamp(forecast['nextFundingTime']), source='BINANCE_USDM_DEMO_REST',
+            payload=dict(funding_rate=rate, mark_price=mark)))
+        return observations
+
+    @staticmethod
+    def _read_bars(reader, symbol, interval, after, history_limit):
+        from .demo_market_feed import INTERVALS, read_closed_bars, timestamp
+        width = INTERVALS[interval] * 1000
+        reading = reader.demo_time(min_valid_seconds=5)
+        server = reading.lower_ms
+        boundary = server // width * width
+        start = boundary - min(history_limit, 1000) * width if after is None else after
+        page_boundary = min(boundary, start + 1000 * width)
+        bars, _, _ = read_closed_bars(reader, symbol=symbol, interval=interval,
+            start=start, page_boundary=page_boundary, server=server,
+            receipt_clock=lambda: timestamp(server))
+        return bars
+
+    def book(self, symbol):
+        collection = self.collections[symbol]
+        self.telemetry[symbol].drain()
+        return dict(collection.peek_recent(collection.clock()).payload)
+
+    def close(self):
+        self.stack.close()
+        for telemetry in self.telemetry.values():
+            telemetry.drain()
+        for _, telemetry, _ in self.bar_readers.values():
+            telemetry.drain()

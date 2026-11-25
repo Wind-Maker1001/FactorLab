@@ -176,20 +176,130 @@ class DemoRuntime:
                 and not campaign['smoke']]
 
     def consumption(self, authorization):
-        campaigns = {campaign['id'] for campaign in self._continuous_campaigns(authorization)}
+        """The bound account's history includes smoke, portfolio and configuration POSTs."""
         count, notional = 0, Decimal(0)
-        for campaign, payload in self.db.execute("SELECT campaign, parameters FROM dispatches WHERE method='POST'"):
-            if campaign in campaigns:
-                params = json.loads(payload)
-                count += 1
+        for payload, in self.db.execute("SELECT parameters FROM dispatches WHERE method='POST'"):
+            params = json.loads(payload)
+            count += 1
+            if 'leverage' not in params:
                 notional += Decimal(params['quantity']) * Decimal(params['price'])
         return dict(posts=count, submitted_notional=str(notional))
+
+    def check_account_budget(self, params, facts, *, reserve_posts=0, reserve_notional=Decimal(0),
+                             consume_exit=None, released_exit_posts=0,
+                             released_exit_notional=Decimal(0)):
+        """Called inside the owner's dispatch transaction, including portfolio dispatches."""
+        authorization = self.continuous_authorization()
+        if authorization is None or authorization['state'] != 'RUNNING':
+            raise SafetyBlocked('running cumulative Demo authorization required')
+        funds = facts.usdt()
+        if Decimal(authorization['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit']) >= Decimal(authorization['max_loss']):
+            raise SafetyBlocked('global Demo loss budget exhausted')
+        consumed = self.consumption(authorization)
+        held = self.db.execute('SELECT notional FROM exit_budget_reservations WHERE authorization=? '
+                              'AND (? IS NULL OR exit_id<>?)',
+                              (authorization['id'], consume_exit, consume_exit)).fetchall()
+        notional = Decimal(0) if 'leverage' in params else Decimal(params['quantity']) * Decimal(params['price'])
+        if (consumed['posts'] + len(held) - released_exit_posts + 1 + reserve_posts > min(100000, authorization['total_orders'])
+                or Decimal(consumed['submitted_notional']) + sum((Decimal(row[0]) for row in held), Decimal(0))
+                    - released_exit_notional + notional + reserve_notional
+                    > min(Decimal('500000'), Decimal(authorization['total_notional']))):
+            raise SafetyBlocked('global Demo trading budget exhausted or reserved for exit')
+
+    def reserve_instance(self, binding, method, params, plan, *, intent, facts,
+                         exit_reservation=None, exit_consumption=()):
+        """The existing Execute owner consumes every instance's dispatch before IO."""
+        client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
+        if (binding['account_id'] != plan.account_id or params['symbol'] != intent.instrument_id
+                or client_id != intent.client_order_id or intent.instrument_id != plan.symbol):
+            raise SafetyBlocked('instance dispatch identity mismatch')
+        campaign = 'instance:' + binding['instance_id']
+        with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            authorization = self.continuous_authorization()
+            if (authorization is None or authorization['state'] != 'RUNNING'
+                    or authorization['account_id'] != binding['account_id']
+                    or authorization['stop_epoch'] != self.stop_epoch()
+                    or now() >= plan.expires_at):
+                raise SafetyBlocked('account execution stopped or expired')
+            if method == 'POST':
+                from .rules import order_parameters
+                if params != order_parameters(intent):
+                    raise SafetyBlocked('instance dispatch differs from persisted intent')
+                if self.db.execute("SELECT 1 FROM dispatches WHERE method='POST' AND client_id=?", (client_id,)).fetchone():
+                    raise SafetyBlocked('instance order already attempted; GET recovery required')
+                reserved = self.db.execute(
+                    'SELECT entry_id,notional FROM exit_budget_reservations WHERE authorization=? AND exit_id=?',
+                    (authorization['id'], client_id)).fetchone()
+                notional = Decimal(params['quantity']) * Decimal(params['price'])
+                if reserved is not None:
+                    if (not intent.reduce_only or notional > Decimal(reserved[1])
+                            or not self.db.execute(
+                                "SELECT 1 FROM dispatches WHERE campaign=? AND method='POST' AND client_id=?",
+                                (campaign, reserved[0])).fetchone()):
+                        raise SafetyBlocked('reserved instance exit must reduce its owned entry within budget')
+                if not intent.reduce_only:
+                    if exit_reservation is None:
+                        raise SafetyBlocked('instance opening order requires a funded exit reservation')
+                    exit_id, exit_notional = exit_reservation
+                    if (not exit_id or exit_id == client_id or not exit_notional.is_finite()
+                            or exit_notional < notional):
+                        raise SafetyBlocked('invalid instance exit reservation')
+                    if self.db.execute("SELECT 1 FROM dispatches WHERE method='POST' AND client_id=?",
+                                       (exit_id,)).fetchone():
+                        raise SafetyBlocked('reserved instance exit identity was already consumed')
+                elif exit_reservation is not None:
+                    raise SafetyBlocked('reduction cannot reserve another opening exit')
+                consumed_reservations = []
+                if exit_consumption:
+                    if not intent.reduce_only or reserved is not None:
+                        raise SafetyBlocked('exit consumption requires a distinct owned reduction')
+                    for entry_id, amount in exit_consumption:
+                        row = self.db.execute(
+                            'SELECT notional FROM exit_budget_reservations WHERE authorization=? AND entry_id=?',
+                            (authorization['id'], entry_id)).fetchone()
+                        entry_dispatch = self.db.execute(
+                            "SELECT parameters FROM dispatches WHERE campaign=? AND method='POST' AND client_id=?",
+                            (campaign, entry_id)).fetchone()
+                        if (row is None or not amount.is_finite() or amount <= 0 or amount > Decimal(row[0])
+                                or entry_dispatch is None
+                                or json.loads(entry_dispatch[0])['symbol'] != intent.instrument_id):
+                            raise SafetyBlocked('exit consumption exceeds owned entry reservation')
+                        consumed_reservations.append((entry_id, amount, Decimal(row[0])))
+                    if len({entry_id for entry_id, _, _ in consumed_reservations}) != len(consumed_reservations):
+                        raise SafetyBlocked('entry reservation cannot be consumed twice')
+                self.check_account_budget(params, facts,
+                    released_exit_posts=sum(amount == held for _, amount, held in consumed_reservations),
+                    released_exit_notional=sum((amount for _, amount, _ in consumed_reservations), Decimal(0)),
+                    reserve_posts=int(exit_reservation is not None),
+                    reserve_notional=exit_reservation[1] if exit_reservation is not None else Decimal(0),
+                    consume_exit=client_id if reserved is not None else None)
+                for entry_id, amount, held in consumed_reservations:
+                    if amount == held:
+                        self.db.execute('DELETE FROM exit_budget_reservations WHERE entry_id=?', (entry_id,))
+                    else:
+                        self.db.execute('UPDATE exit_budget_reservations SET notional=? WHERE entry_id=?',
+                                        (str(held - amount), entry_id))
+                if exit_reservation is not None:
+                    self.db.execute('INSERT INTO exit_budget_reservations VALUES(?,?,?,?)',
+                        (authorization['id'], client_id, exit_reservation[0], str(exit_reservation[1])))
+                if reserved is not None:
+                    self.db.execute('DELETE FROM exit_budget_reservations WHERE authorization=? AND exit_id=?',
+                        (authorization['id'], client_id))
+            elif not self.db.execute("SELECT 1 FROM dispatches WHERE campaign=? AND method='POST' AND client_id=?",
+                                     (campaign, client_id)).fetchone():
+                raise SafetyBlocked('instance cancellation has no owned dispatch')
+            inserted = self.db.execute('INSERT OR IGNORE INTO dispatches VALUES(?,?,?,?,NULL)',
+                (campaign, method, client_id, json.dumps(params))).rowcount
+            if not inserted:
+                raise SafetyBlocked('instance dispatch already attempted; GET recovery required')
 
     def start_continuous(self, binding, *, opening_equity, stop_epoch, total_orders=100,
                          total_notional=Decimal('700'), seconds=10800, orders=4,
                          max_loss=Decimal('1'), prefix=None):
         """Record continuous permission once; subsequent starts never reset it."""
-        if (type(total_orders) is not int or total_orders <= 0 or total_notional <= 0
+        if (type(total_orders) is not int or not 0 < total_orders <= 100000
+                or not total_notional.is_finite() or not 0 < total_notional <= Decimal('500000')
                 or seconds <= 0 or not 1 <= orders <= 1000 or not 0 < max_loss <= Decimal('250')):
             raise SafetyBlocked('invalid continuous Demo risk budget')
         with self.db:
@@ -206,8 +316,12 @@ class DemoRuntime:
                     raise SafetyBlocked('continuous Demo policy is frozen')
                 return saved
             history = self._continuous_campaigns(dict(journal_id=journal_id(binding['account_id'])))
+            origin = next((campaign for (payload,) in self.db.execute(
+                'SELECT payload FROM campaigns ORDER BY rowid')
+                if (campaign := json.loads(payload))['journal_id'] == journal_id(binding['account_id'])), None)
+            if origin is not None:
+                opening_equity = Decimal(origin['opening_equity'])
             if history:
-                opening_equity = Decimal(history[-1]['opening_equity'])
                 prefix = prefix or history[-1]['prefix']
             authorization = dict(version=1, id='continuous-' + uuid4().hex, state='RUNNING',
                 journal_id=journal_id(binding['account_id']), account_id=binding['account_id'],
@@ -227,8 +341,8 @@ class DemoRuntime:
         """Atomically migrate the cumulative budget without resuming or resetting the account."""
         if (binding['environment'] != DEMO.name or binding['host'] != DEMO.host):
             raise SafetyBlocked('official Demo account binding required')
-        if (type(total_orders) is not int or total_orders <= 0
-                or not total_notional.is_finite() or total_notional <= 0
+        if (type(total_orders) is not int or not 0 < total_orders <= 100000
+                or not total_notional.is_finite() or not 0 < total_notional <= Decimal('500000')
                 or not max_loss.is_finite() or not 0 < max_loss <= Decimal('250')):
             raise SafetyBlocked('invalid continuous Demo risk budget')
         with self.db:
@@ -555,7 +669,7 @@ class DemoRuntime:
             if Decimal(campaign['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit']) >= plan.max_loss:
                 self.halt('global Demo loss budget exhausted')
                 raise SafetyBlocked('global Demo loss budget exhausted')
-        if params['symbol'] != SYMBOL or (method == 'POST' and not client_id.startswith(campaign['prefix'] + '-')):
+        if params['symbol'] != plan.symbol or (method == 'POST' and not client_id.startswith(campaign['prefix'] + '-')):
             raise SafetyBlocked('order is outside the active Demo campaign')
         with self.db:
             self.db.execute('BEGIN IMMEDIATE')
@@ -603,9 +717,9 @@ class DemoRuntime:
                                 or exit_id == client_id or not extra_notional.is_finite() or extra_notional <= 0):
                             raise SafetyBlocked('invalid conformance exit reservation')
                         extra_posts = 1
-                    if (consumed['posts'] + len(held) + 1 + extra_posts > authorization['total_orders']
+                    if (consumed['posts'] + len(held) + 1 + extra_posts > min(100000, authorization['total_orders'])
                             or Decimal(consumed['submitted_notional']) + sum((amount for _, amount in held), Decimal(0))
-                                + notional + extra_notional > Decimal(authorization['total_notional'])
+                                + notional + extra_notional > min(Decimal('500000'), Decimal(authorization['total_notional']))
                             or count + 1 + extra_posts > campaign['orders']):
                         raise SafetyBlocked('global Demo trading budget exhausted or reserved for exit')
                     if exit_reservation is not None:
@@ -617,7 +731,8 @@ class DemoRuntime:
                 if Decimal(campaign['opening_equity']) - (funds['walletBalance'] + funds['unrealizedProfit']) >= plan.max_loss:
                     raise SafetyBlocked('persistent Demo loss budget exhausted')
                 quantity = Decimal(params['quantity'])
-                position = sum((p.quantity for p in facts.shared().positions), Decimal(0))
+                position = sum((p.quantity for p in facts.shared().positions
+                                if p.instrument_id == plan.symbol), Decimal(0))
                 if ((params['side'] == 'BUY' and not 0 <= position <= MAX_QUANTITY - quantity)
                     or (params['side'] == 'SELL' and not 0 < quantity <= position)):
                     raise SafetyBlocked('Demo position exceeds the authorized net quantity or reduction')
@@ -635,7 +750,7 @@ class DemoRuntime:
                     attempted_at = self._get('cancel-attempt:' + client_id)
                     if attempted_at is None and receipt is not None:
                         attempted_at = receipt.get('observed_at')
-                    active_order = any(row['symbol'] == SYMBOL and row['clientOrderId'] == client_id
+                    active_order = any(row['symbol'] == plan.symbol and row['clientOrderId'] == client_id
                         and row.get('status') in {'NEW', 'PARTIALLY_FILLED'} for row in facts.open_orders)
                     if (plan.quote_policy is not None or cancel_recovered_at is None
                             or attempted_at is not None and cancel_recovered_at <= datetime.fromisoformat(attempted_at)
@@ -905,4 +1020,17 @@ def restore_grid(deployment):
     values['config'] = GridConfig(**values['config'])
     values['rules'] = GridRules(**values['rules'])
     values['fees'] = FeeSchedule([FeeRule(**rule) for rule in values['fees']])
-    return GridExecution(**values)
+    kind = values.pop('r10_strategy', None)
+    if kind is None:
+        return GridExecution(**values)
+    from factorlab.experiments.grid_funding_adaptive import (
+        FundingSensitiveGrid, FundingPolicy, VolatilityAdaptiveGrid, VolatilityPolicy,
+    )
+    if kind == 'B_FUNDING_SENSITIVE_GRID':
+        values['funding_policy'] = FundingPolicy(**values['funding_policy'])
+        values['funding_events'] = [tuple(event) for event in values['funding_events']]
+        return FundingSensitiveGrid(**values)
+    if kind == 'C_VOL_ADAPTIVE_GRID':
+        values['vol_policy'] = VolatilityPolicy(**values['vol_policy'])
+        return VolatilityAdaptiveGrid(**values)
+    raise SafetyBlocked('unknown persisted Grid strategy')
