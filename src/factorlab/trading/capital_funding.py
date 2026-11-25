@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from decimal import Decimal
 import json
 
-from .contracts import Side
+from .capital_apportionment import apportion
+from .contracts import Side, funding_identity_key
 from .storage import decode
 
 ZERO = Decimal(0)
@@ -17,7 +18,7 @@ class FundingAttribution:
 
 
 def attribute_funding(store, account_id, events, coverage, observed_at):
-    """Assign payments only to a uniquely confirmed historical inventory owner.
+    """Allocate official settlements against confirmed same-direction historical inventory.
 
     A fill and funding with the same timestamp need exchange sequence evidence;
     without it the payment remains unattributed rather than guessing their order.
@@ -53,7 +54,8 @@ def attribute_funding(store, account_id, events, coverage, observed_at):
     payments = {}
     for event in events:
         if event.account_id == account_id and event.event_time <= observed_at:
-            if event.event_id in payments and payments[event.event_id] != event:
+            if (event.event_id in payments
+                    and funding_identity_key(payments[event.event_id]) != funding_identity_key(event)):
                 raise ValueError('conflicting funding event identity')
             payments[event.event_id] = event
     amounts, fills, unattributed, index = dict.fromkeys(owners, ZERO), {}, [], 0
@@ -71,11 +73,14 @@ def attribute_funding(store, account_id, events, coverage, observed_at):
         quantities = {owner: (inventory.get(event.symbol, ZERO)
             if starts[owner] is not None and starts[owner] < event.event_time else ZERO)
             + fills.get((owner, event.symbol), ZERO) for owner, inventory in initial.items()}
-        candidates = [owner for owner, quantity in quantities.items() if quantity > ZERO]
-        if event.asset != 'USDT' or ambiguous or len(candidates) != 1:
+        candidates = {owner: abs(quantity) for owner, quantity in quantities.items() if quantity}
+        same_direction = (all(quantity >= ZERO for quantity in quantities.values())
+                          or all(quantity <= ZERO for quantity in quantities.values()))
+        if event.asset != 'USDT' or ambiguous or not candidates or not same_direction:
             unattributed.append(event.event_id)
         else:
-            amounts[candidates[0]] += event.amount
+            for owner, payment in apportion(event.amount, candidates):
+                amounts[owner] += payment
     observed_ms = int(observed_at.timestamp() * 1000)
     earliest = min((int(start.timestamp() * 1000) for start in starts.values() if start is not None),
                    default=observed_ms)

@@ -129,9 +129,12 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
             raise ValueError('legacy journals exceed official cash')
         if account.market == Market.BINANCE_USDM:
             from .capital_funding import attribute_funding
+            from .capital_margin import attribute_margin
             facts = executor.adapter.margin_facts()
             attribution = attribute_funding(store, account_id, executor.adapter.funding_events(),
                 executor.adapter.funding_coverage(), facts.observed_at)
             if not facts.source_complete or not attribution.complete:
                 raise ValueError('legacy funding history requires reconciliation')
+            if not attribute_margin(store, account_id, facts).complete:
+                raise ValueError('legacy margin ownership requires reconciliation')
         store.db.execute('INSERT INTO capital_migrations VALUES (?,?)', (receipt_id, payload))
