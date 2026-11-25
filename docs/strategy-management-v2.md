@@ -272,7 +272,10 @@ same receipt and stable child IDs. An unfinished dispatch must recover before a 
 rollback is requested. The commit transaction rejects a new event while an earlier
 receipt remains unacknowledged. Runtime commits bind both the checkpoint's typed
 content and its watermark, including decisions that leave state unchanged. Event
-identities ignore mapping insertion order while retaining value types.
+identities ignore mapping insertion order while retaining value types. Schema 3
+transactionally upgrades existing V2 receipt identities from their retained typed
+events, updating both the identity column and receipt payload without changing
+decision keys or dispatch acknowledgements. V1 identities remain unchanged.
 `record_order` rejects a client ID already attributed to another registered
 instance in the same market/account; different accounts have separate namespaces.
 `load_strategy(package_id)` is required for nonlegacy deployment controllers and
@@ -304,7 +307,12 @@ net positions, reservations and risk stay with the existing account execution
 owner. Quiescing an instance cannot pause the account or another instance.
 
 Activation commits the active version and a durable `activated(version)` callback
-receipt together. The callback must be idempotent, including concurrent delivery.
+receipt together. The callback must be idempotent across retries and crashes.
+Controller steps acquire a nonblocking OS lock per database/instance before reading
+switch or callback state, holding it through host side effects and acknowledgement.
+A competing step returns the current snapshot without invoking the adapter; other
+instances remain independent. Process exit releases the lock. Host callbacks must
+not synchronously wait for a competing controller step to make progress.
 A failed callback retains its exception class in `activation_callback()['reason']`;
 the next controller step retries it, including after restart. Until acknowledgement,
 new decisions, switches and rollbacks are blocked. The switch's terminal status
