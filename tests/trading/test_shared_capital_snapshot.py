@@ -7,7 +7,6 @@ from factorlab.trading.capital import CapitalPolicyMode
 from factorlab.trading.contracts import Market
 from factorlab.trading.portfolio_execution import PortfolioExecutor, PortfolioStore
 from test_capital_funding import coverage
-from test_portfolio_allocations import allocate, plan
 from test_portfolio_execution import Broker, NOW
 
 

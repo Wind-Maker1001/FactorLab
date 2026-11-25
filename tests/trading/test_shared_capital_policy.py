@@ -250,6 +250,11 @@ def test_appreciated_inventory_can_be_reduced_above_entry_risk_limits(tmp_path, 
     executor.create(account_id='paper', strategy_id='one', strategy_version='1',
         trading_session='2026-11-24', rebalance_id='exit', weights={}, owned_symbols=['AAPL'], now=NOW,
         direct_orders=[(intent, D(20))])
+    from dataclasses import replace
+    account = broker.read_account()
+    appreciated = replace(account, positions=tuple(replace(p, mark_price=D(20)) for p in account.positions))
+    with store.transaction():
+        executor.capital_policy.validate_orders(appreciated, 'one', include_id='exit')
     store.close()
 
 
