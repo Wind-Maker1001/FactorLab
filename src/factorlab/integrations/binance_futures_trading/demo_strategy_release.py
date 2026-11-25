@@ -359,6 +359,8 @@ class ReleaseConsumer:
             self.bridge.controller.quote(Quote('NVDAUSDT', mid, book['time_utc']))
 
     def gate(self):
+        if self.store.activation_callback() is not None:
+            raise SafetyBlocked('strategy activation recovery prohibits execution')
         if self.maintenance:
             if self.base.control.desired() != 'RUNNING' or not self.base.authority():
                 raise SafetyBlocked('existing authorization required for switch maintenance')
@@ -368,6 +370,8 @@ class ReleaseConsumer:
         self.base.gate()
 
     def write_guard(self, method, params, plan, campaign, expected, runtime, facts):
+        if self.store.activation_callback() is not None:
+            raise SafetyBlocked('strategy activation recovery prohibits execution')
         key = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
         row = self.store.db.execute('SELECT * FROM strategy_orders WHERE client_id=?', (key,)).fetchone()
         if row is None:
@@ -435,7 +439,7 @@ class ReleaseConsumer:
 
     def _before_poll(self):
         state = self.store.snapshot()
-        if self.store.pending() or state['active'] != LEGACY:
+        if self.store.pending() or self.store.activation_callback() is not None or state['active'] != LEGACY:
             if state['active'] == LEGACY:
                 self.bridge.recover(collection=self.base.supervisor.collection if self.base.supervisor else None)
             else:
@@ -450,7 +454,7 @@ class ReleaseConsumer:
                     self._maintain_cancellations(state['active'], runner)
             self.deployer.step()
             state = self.store.snapshot()
-            if self.store.pending():
+            if self.store.pending() or self.store.activation_callback() is not None:
                 self.base.reason = 'STRATEGY_SWITCH_PENDING'
                 return
             if state['active'] != LEGACY and self._is_decision_package(state['active']):
@@ -484,7 +488,8 @@ class ReleaseConsumer:
     def history_watermark(self):
         """Current version's durable input boundary, independent of the feed cursor."""
         state = self.store.snapshot()
-        if self.store.pending() or not self.running or not self._is_decision_package(state['active']):
+        if (self.store.pending() or self.store.activation_callback() is not None
+                or not self.running or not self._is_decision_package(state['active'])):
             return None
         _, loaded, runner = self._load_decision_runner(state['active'])
         if 'closed_bar' not in loaded.spec.data_types:
@@ -498,7 +503,7 @@ class ReleaseConsumer:
 
     def historical_bar(self, bar):
         state = self.store.snapshot()
-        if self.store.pending():
+        if self.store.pending() or self.store.activation_callback() is not None:
             return False
         if state['active'] == LEGACY:
             return self.base.historical_bar(bar)
@@ -515,7 +520,7 @@ class ReleaseConsumer:
 
     def closed_bar(self, bar):
         state = self.store.snapshot()
-        if self.store.pending():
+        if self.store.pending() or self.store.activation_callback() is not None:
             return False
         if state['active'] == LEGACY:
             return self.base.closed_bar(bar)
@@ -598,7 +603,7 @@ class ReleaseConsumer:
             self.maintenance = False
 
     def quote(self, quote):
-        if self.store.pending():
+        if self.store.pending() or self.store.activation_callback() is not None:
             return None
         state = self.store.snapshot()
         if state['active'] == LEGACY:
@@ -660,7 +665,8 @@ class ReleaseConsumer:
 
     def maintain(self, raw):
         self.base.set_latest_book(raw)
-        if not self.store.pending() and self.store.snapshot()['active'] == LEGACY:
+        if (not self.store.pending() and self.store.activation_callback() is None
+                and self.store.snapshot()['active'] == LEGACY):
             return self.base.maintain(raw)
 
     def status(self):
