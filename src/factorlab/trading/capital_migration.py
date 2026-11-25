@@ -86,7 +86,6 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
             policy.bind(account_id=account_id, strategy_id=owner, instance_id=owner,
                         allocation_id=sleeve['allocation_id'], logical_strategy=sleeve['logical_strategy'])
             for symbol in symbols:
-                policy.claim(account_id, owner, symbol)
                 quantity = next((position.owned_quantity for position in report.positions
                                  if position.instrument_id == symbol), ZERO)
                 initial_quantity, price = sleeve['initial_inventory'].get(symbol, (ZERO, ZERO))
@@ -119,6 +118,9 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
                     raise ValueError('conflicting original confirmation identity')
                 store.db.execute('INSERT OR IGNORE INTO portfolio_confirmations VALUES (?,?,?)',
                                   (account_id, event.event_id, dumps(event)))
+        for sleeve in sleeves:
+            for symbol in sleeve['owned_symbols']:
+                policy.claim(account_id, sleeve['instance_id'], symbol)
         owned = store.holdings(account_id)
         actual = {position.instrument_id: position.quantity for position in account.positions}
         if any(actual.get(symbol, ZERO) != quantity for symbol, quantity in owned.items()):
