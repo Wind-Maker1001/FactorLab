@@ -237,7 +237,7 @@ class PortfolioExecutor:
         self.quote_currency, self.max_quote_age, self.clock = quote_currency, max_quote_age, clock
         self.capital_policy = store.capital_policy
 
-    def _capital_admission(self, account_id, strategy_id):
+    def _capital_admission(self, account_id, strategy_id, *, allow_paused=False):
         policy = self.store.db.execute(
             'SELECT currency FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
         if policy is None:
@@ -249,8 +249,9 @@ class PortfolioExecutor:
             (account_id, strategy_id)).fetchone()
         if binding is None:
             raise ValueError('explicit strategy capital binding required')
-        if binding[0]:
+        if binding[0] and not allow_paused:
             raise ValueError('strategy capital allocation is paused')
+        return bool(binding[0])
 
     def _funding_adjustment(self, account, strategy_id):
         from .contracts import Market
@@ -1048,7 +1049,14 @@ class PortfolioExecutor:
                 return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
                     dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
                                                 for o in self.store.orders(identity)))
-            self._capital_admission(plan['request']['account'], plan['request']['strategy'])
+            if self._capital_admission(plan['request']['account'], plan['request']['strategy'],
+                                       allow_paused=True):
+                plan['phase'] = 'WAITING'
+                plan['reasons']['capital'] = 'STRATEGY_PAUSED'
+                self.store.save_plan(plan)
+                return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
+                    dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
+                                                for o in self.store.orders(identity)))
             account = self.adapter.read_account()
             if self._account_uncertain(plan['request']['account']):
                 plan['phase'] = 'WAITING'
