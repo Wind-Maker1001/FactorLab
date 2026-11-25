@@ -1,0 +1,31 @@
+{
+  "all_replay_checks_passed": true,
+  "replay_checks": {
+    "candidate_id_match": true,
+    "code_version_match": true,
+    "decisions_match": true,
+    "promoted_match": true,
+    "reason_match": true,
+    "state_last_promotion_end_match": true,
+    "state_last_test_end_match": true,
+    "state_status_match": true,
+    "state_version_match": true,
+    "verdict_match": true,
+    "version_match": true
+  },
+  "s03_cycle_results": [
+    {
+      "accepted": false,
+      "file": "p8-s02-f01-nvda-real-v2.candidate.json",
+      "reason": "RETAIN_CHAMPION"
+    }
+  ],
+  "s03_envelope": {
+    "envelope_path": "D:\\Code\\p8-s02-f01-real-run-v2\\s03-verify\\inbox\\p8-s02-f01-nvda-real-v2.candidate.json",
+    "package_id": null,
+    "promoted": false,
+    "s03_adapter_result": null,
+    "status": "RETAIN_ENVELOPE_WRITTEN"
+  },
+  "verified_at_utc": "2026-11-25T06:22:24.097130+00:00"
+}

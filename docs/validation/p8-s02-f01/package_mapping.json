@@ -1,0 +1,1081 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "c-7eefa330d4d7fa022db5d1ff",
+      "class_name": "FixedGridCandidate",
+      "code_version": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0",
+      "decision_kind": "orders",
+      "parameters": {
+        "breakout": "pause",
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "order_ttl": 100,
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "LEGACY_DEMO_GRID_BRIDGE",
+      "s03_protocol": null,
+      "s04_requirements": null,
+      "source_filename": "fixed_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "fixed_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "fixed_grid",
+      "strategy_id": "FIXED_GRID"
+    },
+    {
+      "candidate_id": "c-5b931559661f068bf87a7d4b",
+      "class_name": "CashBenchmarkStrategy",
+      "code_version": "b8a64e2ad5bcdc9d6092c971c9e8e3e29453decfb4fce1193ecb88ab3b433a43",
+      "decision_kind": "target",
+      "parameters": {
+        "interval_seconds": 3600,
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "cash_benchmark:CashBenchmarkStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "cash_benchmark.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "cash",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "cash",
+      "strategy_id": "CASH"
+    },
+    {
+      "candidate_id": "c-762ae0eb37ce64c05613d078",
+      "class_name": "FixedGridCandidate",
+      "code_version": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0",
+      "decision_kind": "orders",
+      "parameters": {
+        "breakout": "pause",
+        "half_width_pct": 0.015,
+        "interval_seconds": 3600,
+        "order_ttl": 100,
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "LEGACY_DEMO_GRID_BRIDGE",
+      "s03_protocol": null,
+      "s04_requirements": null,
+      "source_filename": "fixed_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "fixed_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "fixed_grid",
+      "strategy_id": "FIXED_GRID_ALT"
+    },
+    {
+      "candidate_id": "c-e1ffc10e50dc0e960badd5f4",
+      "class_name": "FixedGridCandidate",
+      "code_version": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0",
+      "decision_kind": "orders",
+      "parameters": {
+        "breakout": "pause",
+        "half_width_pct": 0.02,
+        "interval_seconds": 3600,
+        "order_ttl": 100,
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "LEGACY_DEMO_GRID_BRIDGE",
+      "s03_protocol": null,
+      "s04_requirements": null,
+      "source_filename": "fixed_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "fixed_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "fixed_grid",
+      "strategy_id": "FIXED_GRID_ALT"
+    },
+    {
+      "candidate_id": "c-addd4c5db62dc5c17b8ee47b",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "decision_kind": "orders",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.25,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B1",
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B1"
+    },
+    {
+      "candidate_id": "c-a971eb0ffd97e7929f2c0f15",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "decision_kind": "orders",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.5,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B2",
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B2"
+    },
+    {
+      "candidate_id": "c-5e8ac47156266511f10613ef",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "decision_kind": "orders",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 1.0,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 80.0,
+        "profile_id": "B3",
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B3"
+    },
+    {
+      "candidate_id": "c-bb4d3bc30bf015b676d05094",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "decision_kind": "orders",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.25,
+        "exit_bps_h": 0.5,
+        "exit_mode": "funding_bleed",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 72.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B4",
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B4"
+    },
+    {
+      "candidate_id": "c-a0c537525ebdbfcbb5badda3",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "decision_kind": "orders",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.5,
+        "exit_bps_h": 1.0,
+        "exit_mode": "funding_bleed",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 72.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B5",
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B5"
+    },
+    {
+      "candidate_id": "c-370339f905812771b6e5327a",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "decision_kind": "orders",
+      "parameters": {
+        "conservative": false,
+        "entry_max_bps_h": 0.75,
+        "exit_bps_h": 0.75,
+        "exit_mode": "net_margin",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 96.0,
+        "min_net_margin_bps": 120.0,
+        "profile_id": "B6",
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid",
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B6"
+    },
+    {
+      "candidate_id": "c-31d59dd96e73de56f1f3bb82",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "decision_kind": "orders",
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 2.5,
+        "max_half_width": 0.03,
+        "min_half_width": 0.005,
+        "min_rebuild_interval": 24,
+        "profile_id": "C1",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 24
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 25,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C1"
+    },
+    {
+      "candidate_id": "c-2c91272e488c86347e56a302",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "decision_kind": "orders",
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.0,
+        "max_half_width": 0.035,
+        "min_half_width": 0.006,
+        "min_rebuild_interval": 24,
+        "profile_id": "C2",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 48
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 49,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C2"
+    },
+    {
+      "candidate_id": "c-067d512ab9be65c4eb31c9ba",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "decision_kind": "orders",
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.5,
+        "max_half_width": 0.04,
+        "min_half_width": 0.008,
+        "min_rebuild_interval": 24,
+        "profile_id": "C3",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 72
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 73,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C3"
+    },
+    {
+      "candidate_id": "c-1cfa7d01cf86fbe0e0b398ee",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "decision_kind": "orders",
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 2.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 2.5,
+        "max_half_width": 0.03,
+        "min_half_width": 0.005,
+        "min_rebuild_interval": 24,
+        "profile_id": "C4",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 24
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 25,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C4"
+    },
+    {
+      "candidate_id": "c-d0493419c46d1646635bbc13",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "decision_kind": "orders",
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 2.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.0,
+        "max_half_width": 0.035,
+        "min_half_width": 0.006,
+        "min_rebuild_interval": 24,
+        "profile_id": "C5",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 48
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 49,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C5"
+    },
+    {
+      "candidate_id": "c-4ea4f10b1885ff06d17b0ed9",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "decision_kind": "orders",
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 1.8,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.5,
+        "max_half_width": 0.04,
+        "min_half_width": 0.008,
+        "min_rebuild_interval": 24,
+        "profile_id": "C6",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 72
+      },
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 73,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid",
+      "strategy_id": "VOL_ADAPTIVE_GRID_C6"
+    },
+    {
+      "candidate_id": "c-4cb7cecb83b21f9b109ec707",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "decision_kind": "target",
+      "parameters": {
+        "fast_window": 5,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 20,
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "dual_ma_usdm:DualMAUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "dual_ma_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 21,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "dual_ma",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "DUAL_MA"
+    },
+    {
+      "candidate_id": "c-771426d69d072db5f561c7b1",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "decision_kind": "target",
+      "parameters": {
+        "fast_window": 5,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 48,
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "dual_ma_usdm:DualMAUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "dual_ma_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 49,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "dual_ma",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "DUAL_MA"
+    },
+    {
+      "candidate_id": "c-6ed738d094a87d5a747c8b69",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "decision_kind": "target",
+      "parameters": {
+        "fast_window": 12,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 20,
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "dual_ma_usdm:DualMAUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "dual_ma_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 21,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "dual_ma",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "DUAL_MA"
+    },
+    {
+      "candidate_id": "c-9c0ab535085df26182c1daa2",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "decision_kind": "target",
+      "parameters": {
+        "fast_window": 12,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 48,
+        "symbol": "NVDAUSDT"
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "dual_ma_usdm:DualMAUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "dual_ma_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 49,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "dual_ma",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "DUAL_MA"
+    },
+    {
+      "candidate_id": "c-ef5d445aa2f93fb3e13cfc27",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "decision_kind": "target",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 1,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 0.0,
+        "weight": 0.9
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 2,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    {
+      "candidate_id": "c-07a02507749524abb8b8d0b5",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "decision_kind": "target",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 1,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 25.0,
+        "weight": 0.9
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 2,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    {
+      "candidate_id": "c-d7149c38e22d7d4e5140697e",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "decision_kind": "target",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 6,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 0.0,
+        "weight": 0.9
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 7,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    {
+      "candidate_id": "c-509a0458079ff7dbf3b1f47b",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "decision_kind": "target",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 6,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 25.0,
+        "weight": 0.9
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 7,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    {
+      "candidate_id": "c-20df95d4a214a89350d911a4",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "decision_kind": "target",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 24,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 0.0,
+        "weight": 0.9
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 25,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    {
+      "candidate_id": "c-bb492e9c5fa95363314426c9",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "decision_kind": "target",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 24,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 25.0,
+        "weight": 0.9
+      },
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 25,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol",
+      "strategy_id": "CLOSE_MOMENTUM"
+    }
+  ],
+  "execution_contract": "binance_usdm_demo_nvda_limit_long_only",
+  "s03_release_schema": "FACTORLAB_CHAMPION_SELECTION_V1",
+  "schema": "FACTORLAB_STRATEGY_PACKAGE_MAPPING_V1",
+  "study_id": "p8-s02-f01-nvda-real-v2"
+}

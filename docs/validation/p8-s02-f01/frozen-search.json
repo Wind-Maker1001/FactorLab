@@ -1,0 +1,132 @@
+{
+  "champion": {
+    "candidate_id": "c-7eefa330d4d7fa022db5d1ff",
+    "class_name": "FixedGridCandidate",
+    "code_version": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0",
+    "parameters": {
+      "breakout": "pause",
+      "half_width_pct": 0.01,
+      "interval_seconds": 3600,
+      "order_ttl": 100,
+      "symbol": "NVDAUSDT"
+    },
+    "strategy": {
+      "class": "FixedGridCandidate",
+      "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\fixed_grid.py",
+      "parameters": {
+        "breakout": "pause",
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "order_ttl": 100,
+        "symbol": "NVDAUSDT"
+      },
+      "sha256": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0"
+    },
+    "strategy_id": "FIXED_GRID"
+  },
+  "code": {
+    "commit": "f4cdb235d191fc3a75eeaf71ea6d45d82668b165",
+    "git_diff_sha256": "b49b41c3b2bd4f1baeeeb1b49cb3beb8666c16e6fbf2c2d2f635229507ede5a2",
+    "git_dirty": true,
+    "source_sha256": "6f37c335f35f6271514d79fb7063af9c3ca5820cb5e7dc80b7d06f40c4048e7e",
+    "tree": "a65965486534814252972e742a96842af1e53066"
+  },
+  "config_sha256": "e076c85c06c7e33f2ea783791808718bb1da60305d57baca08b843b8dd217afc",
+  "dataset_sha256": "d06277bebc1062bef514d27dfbad5fb1382c66f0be6201b9556069575a1ab0d5",
+  "family_size": 25,
+  "finalists": [
+    {
+      "candidate_id": "c-ef5d445aa2f93fb3e13cfc27",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 1,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 0.0,
+        "weight": 0.9
+      },
+      "strategy": {
+        "class": "CloseMomentumUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\close_momentum_usdm.py",
+        "parameters": {
+          "interval_seconds": 3600,
+          "lookback": 1,
+          "symbol": "NVDAUSDT",
+          "threshold_bps": 0.0,
+          "weight": 0.9
+        },
+        "sha256": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852"
+      },
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    {
+      "candidate_id": "c-771426d69d072db5f561c7b1",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "parameters": {
+        "fast_window": 5,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 48,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "DualMAUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\dual_ma_usdm.py",
+        "parameters": {
+          "fast_window": 5,
+          "interval_seconds": 3600,
+          "max_weight": 0.9,
+          "slow_window": 48,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9"
+      },
+      "strategy_id": "DUAL_MA"
+    }
+  ],
+  "funding_sha256": "25824ca08ba3faf3a7f3253c49f0e45a96fb4523f262bcd70c47df639d21f55c",
+  "oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS",
+  "oos_freshness_audit": {
+    "audit_mode": false,
+    "blocked_reasons": [
+      "overlaps_known_consumed_history_through_2026-11-22"
+    ],
+    "declared_oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS",
+    "downgraded": false,
+    "effective_oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS",
+    "known_consumed_through": "2026-11-22",
+    "overlapping_registry_entries": [],
+    "registry_path": "D:\\Code\\p8-s02-f01-real-run-v2\\oos-consumption-registry.json",
+    "registry_recorded": true
+  },
+  "policy": {
+    "block_days": 5,
+    "confidence": 0.95,
+    "cooldown_days": 30,
+    "cvar_confidence": 0.95,
+    "max_candidates": 32,
+    "max_daily_cvar": 0.05,
+    "max_drawdown": 0.2,
+    "max_exit_failure_ratio": 0.5,
+    "max_finalists": 6,
+    "min_annual_net_improvement": 0.01,
+    "min_capacity_cny": 100000.0,
+    "min_capacity_usdt": 10.0,
+    "min_net_return": 0.0,
+    "min_oos_days": 60,
+    "min_positive_blocks": 0.6,
+    "min_score_improvement": 0.02,
+    "min_tail_observations": 3,
+    "min_trade_count": 2,
+    "objective": "risk_adjusted_net_return",
+    "participation_limit": 0.01,
+    "periods_per_year": 365,
+    "resamples": 6000,
+    "risk_aversion": 1.0,
+    "seed": 42,
+    "volume_lookback": 20
+  },
+  "pre_run_state_sha256": "b3824a0e6de2fb9da83a1ea38dff9c623ba701715daa62a808a1da4a1c423542"
+}

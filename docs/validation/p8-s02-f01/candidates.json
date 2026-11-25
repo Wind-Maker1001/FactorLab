@@ -1,0 +1,3570 @@
+[
+  {
+    "candidate": {
+      "candidate_id": "c-7eefa330d4d7fa022db5d1ff",
+      "class_name": "FixedGridCandidate",
+      "code_version": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0",
+      "parameters": {
+        "breakout": "pause",
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "order_ttl": 100,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FixedGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\fixed_grid.py",
+        "parameters": {
+          "breakout": "pause",
+          "half_width_pct": 0.01,
+          "interval_seconds": 3600,
+          "order_ttl": 100,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0"
+      },
+      "strategy_id": "FIXED_GRID"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": true,
+      "s03_entrypoint": "LEGACY_DEMO_GRID_BRIDGE",
+      "s03_protocol": null,
+      "s04_requirements": null,
+      "source_filename": "fixed_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "fixed_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "fixed_grid"
+    },
+    "stages": {
+      "test": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -2.347668426661379,
+          "annual_volatility": 0.41935118575120994,
+          "canceled_orders": 95,
+          "capacity_usdt": 12838.845000000016,
+          "capital_utilization": 0.22418011574074076,
+          "cvar_95": 0.07403340889061633,
+          "daily_cvar": 0.07403340889061633,
+          "daily_loss_probability": 0.4166666666666667,
+          "days": 72,
+          "equity_reconciliation_residual": 0.0,
+          "excess_return_vs_cash": -0.3827222722168,
+          "excess_return_vs_incumbent": 0.0,
+          "exit_attempts": 33,
+          "exit_failure_ratio": 0.030303030303030304,
+          "exit_failures": 1,
+          "exit_lifecycle_count": 33,
+          "exit_order_attempt_count": 97,
+          "exit_order_failure_ratio": 0.6701030927835051,
+          "exit_status_poll_checks": 378,
+          "failed_exit_lifecycle_count": 1,
+          "failed_exit_order_attempt_count": 65,
+          "fees_usdt": 0.166943922168,
+          "fill_rate": 0.40625,
+          "filled_orders": 65,
+          "final_equity_usdt": 6.172777277832,
+          "funding_erosion_pct": 0.005093824,
+          "funding_pnl_usdt": -0.05093824,
+          "funding_reconciliation_residual": 1.419893634e-08,
+          "gross_trade_pnl_usdt": -2.0148,
+          "halted_flag": 1.0,
+          "holding_hours": 538,
+          "holding_time_fraction": 0.3113425925925926,
+          "hours": 1728,
+          "max_committed_ratio": 0.970731132,
+          "max_drawdown": 0.42189813940731946,
+          "max_holding_hours": 301.0,
+          "max_participation": 7.788862627440388e-06,
+          "mean_holding_hours": 16.272727272727273,
+          "net_return": -0.3827222722168,
+          "net_trade_pnl_usdt": -3.776284482168,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.04,
+          "residual_mtm_pnl_usdt": -1.75823728,
+          "residual_notional_usdt": 5.4296,
+          "score": -2.767019612412589,
+          "sharpe": -5.598335014734379,
+          "slippage_usdt": 1.59454056,
+          "sortino": -5.800340183869774,
+          "submitted_orders": 160,
+          "tail_observations": 3.600000000000003,
+          "trade_count": 65,
+          "traded_notional_usdt": 556.47974056,
+          "transaction_cost": 1.761484482168,
+          "turnover_ratio": 55.647974055999995,
+          "unfilled_orders": 95,
+          "var_95": 0.05171073664503414
+        },
+        "record_sha256": "ea5aa05a99201398524855b0acaf2b7d7a6e2d0678f6a3aeea2dbd62a73f0608",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-7eefa330d4d7fa022db5d1ff-test",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "INCUMBENT_EVALUATED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-5b931559661f068bf87a7d4b",
+      "class_name": "CashBenchmarkStrategy",
+      "code_version": "b8a64e2ad5bcdc9d6092c971c9e8e3e29453decfb4fce1193ecb88ab3b433a43",
+      "parameters": {
+        "interval_seconds": 3600,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "CashBenchmarkStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\cash_benchmark.py",
+        "parameters": {
+          "interval_seconds": 3600,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "b8a64e2ad5bcdc9d6092c971c9e8e3e29453decfb4fce1193ecb88ab3b433a43"
+      },
+      "strategy_id": "CASH"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "cash_benchmark:CashBenchmarkStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "cash_benchmark.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "cash",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "cash"
+    },
+    "reasons": [
+      "capacity_insufficient_or_unknown",
+      "net_return_below_floor",
+      "insufficient_trade_activity"
+    ],
+    "stages": {
+      "test": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": 0.0,
+          "annual_volatility": 0.0,
+          "canceled_orders": 0,
+          "capacity_usdt": null,
+          "capital_utilization": 0.0,
+          "cvar_95": 0.0,
+          "daily_cvar": 0.0,
+          "daily_loss_probability": 0.0,
+          "days": 72,
+          "equity_reconciliation_residual": 0.0,
+          "excess_return_vs_cash": 0.0,
+          "excess_return_vs_incumbent": 0.3827222722168,
+          "exit_attempts": 0,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 0,
+          "exit_order_attempt_count": 0,
+          "exit_order_failure_ratio": 0.0,
+          "exit_status_poll_checks": 0,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 0,
+          "fees_usdt": 0.0,
+          "fill_rate": 0.0,
+          "filled_orders": 0,
+          "final_equity_usdt": 10.0,
+          "funding_erosion_pct": -0.0,
+          "funding_pnl_usdt": 0.0,
+          "funding_reconciliation_residual": 0.0,
+          "gross_trade_pnl_usdt": 0.0,
+          "halted_flag": 0.0,
+          "holding_hours": 0,
+          "holding_time_fraction": 0.0,
+          "hours": 1728,
+          "max_committed_ratio": 0.0,
+          "max_drawdown": 0.0,
+          "max_holding_hours": 0.0,
+          "max_participation": 0.0,
+          "mean_holding_hours": 0.0,
+          "net_return": 0.0,
+          "net_trade_pnl_usdt": 0.0,
+          "partial_fill_events": 0,
+          "period_net_loss": 0.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": 0.0,
+          "sharpe": null,
+          "slippage_usdt": 0.0,
+          "sortino": null,
+          "submitted_orders": 0,
+          "tail_observations": 3.600000000000003,
+          "trade_count": 0,
+          "traded_notional_usdt": 0.0,
+          "transaction_cost": 0.0,
+          "turnover_ratio": 0.0,
+          "unfilled_orders": 0,
+          "var_95": 0.0
+        },
+        "record_sha256": "4bae14c078cb4fec747b6a3f249e85db2afb4b635661c0aee402ab6a80a74aeb",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-5b931559661f068bf87a7d4b-test",
+        "status": "SUCCEEDED"
+      },
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": 0.0,
+          "annual_volatility": 0.0,
+          "canceled_orders": 0,
+          "capacity_usdt": null,
+          "capital_utilization": 0.0,
+          "cvar_95": 0.0,
+          "daily_cvar": 0.0,
+          "daily_loss_probability": 0.0,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 0,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 0,
+          "exit_order_attempt_count": 0,
+          "exit_order_failure_ratio": 0.0,
+          "exit_status_poll_checks": 0,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 0,
+          "fees_usdt": 0.0,
+          "fill_rate": 0.0,
+          "filled_orders": 0,
+          "final_equity_usdt": 10.0,
+          "funding_erosion_pct": -0.0,
+          "funding_pnl_usdt": 0.0,
+          "funding_reconciliation_residual": 0.0,
+          "gross_trade_pnl_usdt": 0.0,
+          "halted_flag": 0.0,
+          "holding_hours": 0,
+          "holding_time_fraction": 0.0,
+          "hours": 1440,
+          "max_committed_ratio": 0.0,
+          "max_drawdown": 0.0,
+          "max_holding_hours": 0.0,
+          "max_participation": 0.0,
+          "mean_holding_hours": 0.0,
+          "net_return": 0.0,
+          "net_trade_pnl_usdt": 0.0,
+          "partial_fill_events": 0,
+          "period_net_loss": 0.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": 0.0,
+          "sharpe": null,
+          "slippage_usdt": 0.0,
+          "sortino": null,
+          "submitted_orders": 0,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 0,
+          "traded_notional_usdt": 0.0,
+          "transaction_cost": 0.0,
+          "turnover_ratio": 0.0,
+          "unfilled_orders": 0,
+          "var_95": 0.0
+        },
+        "record_sha256": "aa8ec9539713598608ff983006c1afc1d91d6400212e893d794cc39eac3048fc",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-5b931559661f068bf87a7d4b-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "BENCHMARK_CASH_EVALUATED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-762ae0eb37ce64c05613d078",
+      "class_name": "FixedGridCandidate",
+      "code_version": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0",
+      "parameters": {
+        "breakout": "pause",
+        "half_width_pct": 0.015,
+        "interval_seconds": 3600,
+        "order_ttl": 100,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FixedGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\fixed_grid.py",
+        "parameters": {
+          "breakout": "pause",
+          "half_width_pct": 0.015,
+          "interval_seconds": 3600,
+          "order_ttl": 100,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0"
+      },
+      "strategy_id": "FIXED_GRID_ALT"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": true,
+      "s03_entrypoint": "LEGACY_DEMO_GRID_BRIDGE",
+      "s03_protocol": null,
+      "s04_requirements": null,
+      "source_filename": "fixed_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "fixed_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "fixed_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.6982155768690932,
+          "annual_volatility": 0.113371136705013,
+          "canceled_orders": 54,
+          "capacity_usdt": 4753.74125,
+          "capital_utilization": 0.08271733333333334,
+          "cvar_95": 0.021632299860804463,
+          "daily_cvar": 0.021632299860804463,
+          "daily_loss_probability": 0.2833333333333333,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 21,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 21,
+          "exit_order_attempt_count": 49,
+          "exit_order_failure_ratio": 0.5714285714285714,
+          "exit_status_poll_checks": 63,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 28,
+          "fees_usdt": 0.107476414968,
+          "fill_rate": 0.4329896907216495,
+          "filled_orders": 42,
+          "final_equity_usdt": 8.905305625032,
+          "funding_erosion_pct": 0.00045014,
+          "funding_pnl_usdt": -0.0045014,
+          "funding_reconciliation_residual": 1.7757678356e-08,
+          "gross_trade_pnl_usdt": -0.23080000000000023,
+          "halted_flag": 0.0,
+          "holding_hours": 140,
+          "holding_time_fraction": 0.09722222222222222,
+          "hours": 1440,
+          "max_committed_ratio": 0.91287378,
+          "max_drawdown": 0.11475717077168801,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.1036062911501546e-05,
+          "mean_holding_hours": 6.666666666666668,
+          "net_return": -0.10946943749680005,
+          "net_trade_pnl_usdt": -1.0901929749680002,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.8115867135741062,
+          "sharpe": -6.158671396987235,
+          "slippage_usdt": 0.75191656,
+          "sortino": -6.033631107423786,
+          "submitted_orders": 97,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 42,
+          "traded_notional_usdt": 358.25471656,
+          "transaction_cost": 0.8593929749679999,
+          "turnover_ratio": 35.825471656000005,
+          "unfilled_orders": 55,
+          "var_95": 0.017517097886138283
+        },
+        "record_sha256": "7e813743bc5128aab9996d9acf44d13d4d80655888cb642aa68d16351a5476b0",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-762ae0eb37ce64c05613d078-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-e1ffc10e50dc0e960badd5f4",
+      "class_name": "FixedGridCandidate",
+      "code_version": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0",
+      "parameters": {
+        "breakout": "pause",
+        "half_width_pct": 0.02,
+        "interval_seconds": 3600,
+        "order_ttl": 100,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FixedGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\fixed_grid.py",
+        "parameters": {
+          "breakout": "pause",
+          "half_width_pct": 0.02,
+          "interval_seconds": 3600,
+          "order_ttl": 100,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "1522380fa327de1d7271e8b560cbfb26864a482252dfac5b7c32583bda173da0"
+      },
+      "strategy_id": "FIXED_GRID_ALT"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": true,
+      "s03_entrypoint": "LEGACY_DEMO_GRID_BRIDGE",
+      "s03_protocol": null,
+      "s04_requirements": null,
+      "source_filename": "fixed_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "fixed_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "fixed_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.45810786544346116,
+          "annual_volatility": 0.08211315914008627,
+          "canceled_orders": 33,
+          "capacity_usdt": 3395.10375,
+          "capital_utilization": 0.03848513888888888,
+          "cvar_95": 0.01826930116409412,
+          "daily_cvar": 0.01826930116409412,
+          "daily_loss_probability": 0.21666666666666667,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 10,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 10,
+          "exit_order_attempt_count": 25,
+          "exit_order_failure_ratio": 0.6,
+          "exit_status_poll_checks": 27,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 15,
+          "fees_usdt": 0.051016160808,
+          "fill_rate": 0.37037037037037035,
+          "filled_orders": 20,
+          "final_equity_usdt": 9.269043009192,
+          "funding_erosion_pct": 0.0006071469999999999,
+          "funding_pnl_usdt": -0.00607147,
+          "funding_reconciliation_residual": 1.95836976e-10,
+          "gross_trade_pnl_usdt": -0.2320000000000001,
+          "halted_flag": 0.0,
+          "holding_hours": 67,
+          "holding_time_fraction": 0.04652777777777778,
+          "hours": 1440,
+          "max_committed_ratio": 0.929958904,
+          "max_drawdown": 0.07579770708080003,
+          "max_holding_hours": 25.0,
+          "max_participation": 2.9454180892115593e-05,
+          "mean_holding_hours": 6.7,
+          "net_return": -0.07309569908080005,
+          "net_trade_pnl_usdt": -0.7248855208080001,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.5402210245835475,
+          "sharpe": -5.578982348759988,
+          "slippage_usdt": 0.44186936,
+          "sortino": -5.403830880943981,
+          "submitted_orders": 54,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 20,
+          "traded_notional_usdt": 170.05386936,
+          "transaction_cost": 0.49288552080799997,
+          "turnover_ratio": 17.005386936,
+          "unfilled_orders": 34,
+          "var_95": 0.009828721515165745
+        },
+        "record_sha256": "1431790f023b88e71318d407a81e65353e0150b186cd8971b1c935eb6cc56593",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-e1ffc10e50dc0e960badd5f4-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-addd4c5db62dc5c17b8ee47b",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.25,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B1",
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FundingSensitiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\funding_sensitive_grid.py",
+        "parameters": {
+          "conservative": true,
+          "entry_max_bps_h": 0.25,
+          "exit_bps_h": -1.0,
+          "exit_mode": "none",
+          "expected_hold_hours": 48.0,
+          "half_width_pct": 0.01,
+          "interval_seconds": 3600,
+          "lookback_hours": 24,
+          "max_hold_hours": 0.0,
+          "min_net_margin_bps": 100.0,
+          "profile_id": "B1",
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05"
+      },
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B1"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7527735125965956,
+          "annual_volatility": 0.10454271645534444,
+          "canceled_orders": 70,
+          "capacity_usdt": 3981.49,
+          "capital_utilization": 0.08560013888888889,
+          "cvar_95": 0.019962895020917228,
+          "daily_cvar": 0.019962895020917228,
+          "daily_loss_probability": 0.31666666666666665,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 21,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 21,
+          "exit_order_attempt_count": 51,
+          "exit_order_failure_ratio": 0.5882352941176471,
+          "exit_status_poll_checks": 66,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 30,
+          "fees_usdt": 0.105065136432,
+          "fill_rate": 0.375,
+          "filled_orders": 42,
+          "final_equity_usdt": 8.827032583568,
+          "funding_erosion_pct": 3.8084e-05,
+          "funding_pnl_usdt": -0.00038084,
+          "funding_reconciliation_residual": 3.424e-09,
+          "gross_trade_pnl_usdt": -0.1267999999999997,
+          "halted_flag": 0.0,
+          "holding_hours": 147,
+          "holding_time_fraction": 0.10208333333333333,
+          "hours": 1440,
+          "max_committed_ratio": 0.90247066,
+          "max_drawdown": 0.11729674164320003,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.5116225332727197e-05,
+          "mean_holding_hours": 7.0,
+          "net_return": -0.11729674164320003,
+          "net_trade_pnl_usdt": -1.1725865764319998,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.85731622905194,
+          "sharpe": -7.200630882000698,
+          "slippage_usdt": 0.94072144,
+          "sortino": -6.886561656592529,
+          "submitted_orders": 112,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 42,
+          "traded_notional_usdt": 350.21712144,
+          "transaction_cost": 1.045786576432,
+          "turnover_ratio": 35.021712144000006,
+          "unfilled_orders": 70,
+          "var_95": 0.016606443186762628
+        },
+        "record_sha256": "a16964921ec311891f7ec854000dfbd990362bc0f15b4e53583f8594d7902f5e",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-addd4c5db62dc5c17b8ee47b-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-a971eb0ffd97e7929f2c0f15",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.5,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B2",
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FundingSensitiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\funding_sensitive_grid.py",
+        "parameters": {
+          "conservative": true,
+          "entry_max_bps_h": 0.5,
+          "exit_bps_h": -1.0,
+          "exit_mode": "none",
+          "expected_hold_hours": 48.0,
+          "half_width_pct": 0.01,
+          "interval_seconds": 3600,
+          "lookback_hours": 24,
+          "max_hold_hours": 0.0,
+          "min_net_margin_bps": 100.0,
+          "profile_id": "B2",
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05"
+      },
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B2"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7304852200692373,
+          "annual_volatility": 0.10488572547971269,
+          "canceled_orders": 69,
+          "capacity_usdt": 3981.49,
+          "capital_utilization": 0.08792255555555556,
+          "cvar_95": 0.01989381783265383,
+          "daily_cvar": 0.01989381783265383,
+          "daily_loss_probability": 0.31666666666666665,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 22,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 22,
+          "exit_order_attempt_count": 53,
+          "exit_order_failure_ratio": 0.5849056603773585,
+          "exit_status_poll_checks": 67,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 31,
+          "fees_usdt": 0.110086317312,
+          "fill_rate": 0.38596491228070173,
+          "filled_orders": 44,
+          "final_equity_usdt": 8.859448312688,
+          "funding_erosion_pct": 8.7433e-05,
+          "funding_pnl_usdt": -0.00087433,
+          "funding_reconciliation_residual": 8.391986336e-09,
+          "gross_trade_pnl_usdt": 0.025200000000000333,
+          "halted_flag": 0.0,
+          "holding_hours": 151,
+          "holding_time_fraction": 0.10486111111111111,
+          "hours": 1440,
+          "max_committed_ratio": 0.90247066,
+          "max_drawdown": 0.11931567315549163,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.5116225332727197e-05,
+          "mean_holding_hours": 6.863636363636363,
+          "net_return": -0.11405516873119992,
+          "net_trade_pnl_usdt": -1.1396773573119996,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.83537094554895,
+          "sharpe": -6.964581850659268,
+          "slippage_usdt": 1.05479104,
+          "sortino": -6.705522984064179,
+          "submitted_orders": 114,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 44,
+          "traded_notional_usdt": 366.95439104,
+          "transaction_cost": 1.164877357312,
+          "turnover_ratio": 36.695439104,
+          "unfilled_orders": 70,
+          "var_95": 0.016551756288470904
+        },
+        "record_sha256": "067b90c68b9b13dfa558ee088f00b53cf1ffb0d348de86191b2c05567aa4b8e6",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-a971eb0ffd97e7929f2c0f15-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-5e8ac47156266511f10613ef",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 1.0,
+        "exit_bps_h": -1.0,
+        "exit_mode": "none",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 0.0,
+        "min_net_margin_bps": 80.0,
+        "profile_id": "B3",
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FundingSensitiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\funding_sensitive_grid.py",
+        "parameters": {
+          "conservative": true,
+          "entry_max_bps_h": 1.0,
+          "exit_bps_h": -1.0,
+          "exit_mode": "none",
+          "expected_hold_hours": 48.0,
+          "half_width_pct": 0.01,
+          "interval_seconds": 3600,
+          "lookback_hours": 24,
+          "max_hold_hours": 0.0,
+          "min_net_margin_bps": 80.0,
+          "profile_id": "B3",
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05"
+      },
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B3"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7304852200692373,
+          "annual_volatility": 0.10488572547971269,
+          "canceled_orders": 69,
+          "capacity_usdt": 3981.49,
+          "capital_utilization": 0.08792255555555556,
+          "cvar_95": 0.01989381783265383,
+          "daily_cvar": 0.01989381783265383,
+          "daily_loss_probability": 0.31666666666666665,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 22,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 22,
+          "exit_order_attempt_count": 53,
+          "exit_order_failure_ratio": 0.5849056603773585,
+          "exit_status_poll_checks": 67,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 31,
+          "fees_usdt": 0.110086317312,
+          "fill_rate": 0.38596491228070173,
+          "filled_orders": 44,
+          "final_equity_usdt": 8.859448312688,
+          "funding_erosion_pct": 8.7433e-05,
+          "funding_pnl_usdt": -0.00087433,
+          "funding_reconciliation_residual": 8.391986336e-09,
+          "gross_trade_pnl_usdt": 0.025200000000000333,
+          "halted_flag": 0.0,
+          "holding_hours": 151,
+          "holding_time_fraction": 0.10486111111111111,
+          "hours": 1440,
+          "max_committed_ratio": 0.90247066,
+          "max_drawdown": 0.11931567315549163,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.5116225332727197e-05,
+          "mean_holding_hours": 6.863636363636363,
+          "net_return": -0.11405516873119992,
+          "net_trade_pnl_usdt": -1.1396773573119996,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.83537094554895,
+          "sharpe": -6.964581850659268,
+          "slippage_usdt": 1.05479104,
+          "sortino": -6.705522984064179,
+          "submitted_orders": 114,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 44,
+          "traded_notional_usdt": 366.95439104,
+          "transaction_cost": 1.164877357312,
+          "turnover_ratio": 36.695439104,
+          "unfilled_orders": 70,
+          "var_95": 0.016551756288470904
+        },
+        "record_sha256": "54d599f05731793c615a1ed236855ec95041fcadf18bc38d39ed16dabf805039",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-5e8ac47156266511f10613ef-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-bb4d3bc30bf015b676d05094",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.25,
+        "exit_bps_h": 0.5,
+        "exit_mode": "funding_bleed",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 72.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B4",
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FundingSensitiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\funding_sensitive_grid.py",
+        "parameters": {
+          "conservative": true,
+          "entry_max_bps_h": 0.25,
+          "exit_bps_h": 0.5,
+          "exit_mode": "funding_bleed",
+          "expected_hold_hours": 48.0,
+          "half_width_pct": 0.01,
+          "interval_seconds": 3600,
+          "lookback_hours": 24,
+          "max_hold_hours": 72.0,
+          "min_net_margin_bps": 100.0,
+          "profile_id": "B4",
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05"
+      },
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B4"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7527735125965956,
+          "annual_volatility": 0.10454271645534444,
+          "canceled_orders": 70,
+          "capacity_usdt": 3981.49,
+          "capital_utilization": 0.08560013888888889,
+          "cvar_95": 0.019962895020917228,
+          "daily_cvar": 0.019962895020917228,
+          "daily_loss_probability": 0.31666666666666665,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 21,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 21,
+          "exit_order_attempt_count": 51,
+          "exit_order_failure_ratio": 0.5882352941176471,
+          "exit_status_poll_checks": 66,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 30,
+          "fees_usdt": 0.105065136432,
+          "fill_rate": 0.375,
+          "filled_orders": 42,
+          "final_equity_usdt": 8.827032583568,
+          "funding_erosion_pct": 3.8084e-05,
+          "funding_pnl_usdt": -0.00038084,
+          "funding_reconciliation_residual": 3.424e-09,
+          "gross_trade_pnl_usdt": -0.1267999999999997,
+          "halted_flag": 0.0,
+          "holding_hours": 147,
+          "holding_time_fraction": 0.10208333333333333,
+          "hours": 1440,
+          "max_committed_ratio": 0.90247066,
+          "max_drawdown": 0.11729674164320003,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.5116225332727197e-05,
+          "mean_holding_hours": 7.0,
+          "net_return": -0.11729674164320003,
+          "net_trade_pnl_usdt": -1.1725865764319998,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.85731622905194,
+          "sharpe": -7.200630882000698,
+          "slippage_usdt": 0.94072144,
+          "sortino": -6.886561656592529,
+          "submitted_orders": 112,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 42,
+          "traded_notional_usdt": 350.21712144,
+          "transaction_cost": 1.045786576432,
+          "turnover_ratio": 35.021712144000006,
+          "unfilled_orders": 70,
+          "var_95": 0.016606443186762628
+        },
+        "record_sha256": "ed47bfba4003a25c817a2d9c83f57f71dd100cf0d3413794296e2faf7dae5c5e",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-bb4d3bc30bf015b676d05094-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-a0c537525ebdbfcbb5badda3",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "parameters": {
+        "conservative": true,
+        "entry_max_bps_h": 0.5,
+        "exit_bps_h": 1.0,
+        "exit_mode": "funding_bleed",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 72.0,
+        "min_net_margin_bps": 100.0,
+        "profile_id": "B5",
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FundingSensitiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\funding_sensitive_grid.py",
+        "parameters": {
+          "conservative": true,
+          "entry_max_bps_h": 0.5,
+          "exit_bps_h": 1.0,
+          "exit_mode": "funding_bleed",
+          "expected_hold_hours": 48.0,
+          "half_width_pct": 0.01,
+          "interval_seconds": 3600,
+          "lookback_hours": 24,
+          "max_hold_hours": 72.0,
+          "min_net_margin_bps": 100.0,
+          "profile_id": "B5",
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05"
+      },
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B5"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7304852200692373,
+          "annual_volatility": 0.10488572547971269,
+          "canceled_orders": 69,
+          "capacity_usdt": 3981.49,
+          "capital_utilization": 0.08792255555555556,
+          "cvar_95": 0.01989381783265383,
+          "daily_cvar": 0.01989381783265383,
+          "daily_loss_probability": 0.31666666666666665,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 22,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 22,
+          "exit_order_attempt_count": 53,
+          "exit_order_failure_ratio": 0.5849056603773585,
+          "exit_status_poll_checks": 67,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 31,
+          "fees_usdt": 0.110086317312,
+          "fill_rate": 0.38596491228070173,
+          "filled_orders": 44,
+          "final_equity_usdt": 8.859448312688,
+          "funding_erosion_pct": 8.7433e-05,
+          "funding_pnl_usdt": -0.00087433,
+          "funding_reconciliation_residual": 8.391986336e-09,
+          "gross_trade_pnl_usdt": 0.025200000000000333,
+          "halted_flag": 0.0,
+          "holding_hours": 151,
+          "holding_time_fraction": 0.10486111111111111,
+          "hours": 1440,
+          "max_committed_ratio": 0.90247066,
+          "max_drawdown": 0.11931567315549163,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.5116225332727197e-05,
+          "mean_holding_hours": 6.863636363636363,
+          "net_return": -0.11405516873119992,
+          "net_trade_pnl_usdt": -1.1396773573119996,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.83537094554895,
+          "sharpe": -6.964581850659268,
+          "slippage_usdt": 1.05479104,
+          "sortino": -6.705522984064179,
+          "submitted_orders": 114,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 44,
+          "traded_notional_usdt": 366.95439104,
+          "transaction_cost": 1.164877357312,
+          "turnover_ratio": 36.695439104,
+          "unfilled_orders": 70,
+          "var_95": 0.016551756288470904
+        },
+        "record_sha256": "f8414e7a3167f59261d8b865fcfee426b0285a0176b9fdcb59c3c8a44380967e",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-a0c537525ebdbfcbb5badda3-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-370339f905812771b6e5327a",
+      "class_name": "FundingSensitiveGridCandidate",
+      "code_version": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05",
+      "parameters": {
+        "conservative": false,
+        "entry_max_bps_h": 0.75,
+        "exit_bps_h": 0.75,
+        "exit_mode": "net_margin",
+        "expected_hold_hours": 48.0,
+        "half_width_pct": 0.01,
+        "interval_seconds": 3600,
+        "lookback_hours": 24,
+        "max_hold_hours": 96.0,
+        "min_net_margin_bps": 120.0,
+        "profile_id": "B6",
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "FundingSensitiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\funding_sensitive_grid.py",
+        "parameters": {
+          "conservative": false,
+          "entry_max_bps_h": 0.75,
+          "exit_bps_h": 0.75,
+          "exit_mode": "net_margin",
+          "expected_hold_hours": 48.0,
+          "half_width_pct": 0.01,
+          "interval_seconds": 3600,
+          "lookback_hours": 24,
+          "max_hold_hours": 96.0,
+          "min_net_margin_bps": 120.0,
+          "profile_id": "B6",
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "f76836b01f7dac1b9dcab6d1903f19043ec726c4bfd94e7949bde0aa25e79c05"
+      },
+      "strategy_id": "FUNDING_SENSITIVE_GRID_B6"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal settled funding event feed in Demo runtime context and GridExecution multi-order bridge wiring (owned by S04).",
+      "source_filename": "funding_sensitive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 1,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "funding_sensitive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "funding_sensitive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7304852200692373,
+          "annual_volatility": 0.10488572547971269,
+          "canceled_orders": 69,
+          "capacity_usdt": 3981.49,
+          "capital_utilization": 0.08792255555555556,
+          "cvar_95": 0.01989381783265383,
+          "daily_cvar": 0.01989381783265383,
+          "daily_loss_probability": 0.31666666666666665,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 22,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 22,
+          "exit_order_attempt_count": 53,
+          "exit_order_failure_ratio": 0.5849056603773585,
+          "exit_status_poll_checks": 67,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 31,
+          "fees_usdt": 0.110086317312,
+          "fill_rate": 0.38596491228070173,
+          "filled_orders": 44,
+          "final_equity_usdt": 8.859448312688,
+          "funding_erosion_pct": 8.7433e-05,
+          "funding_pnl_usdt": -0.00087433,
+          "funding_reconciliation_residual": 8.391986336e-09,
+          "gross_trade_pnl_usdt": 0.025200000000000333,
+          "halted_flag": 0.0,
+          "holding_hours": 151,
+          "holding_time_fraction": 0.10486111111111111,
+          "hours": 1440,
+          "max_committed_ratio": 0.90247066,
+          "max_drawdown": 0.11931567315549163,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.5116225332727197e-05,
+          "mean_holding_hours": 6.863636363636363,
+          "net_return": -0.11405516873119992,
+          "net_trade_pnl_usdt": -1.1396773573119996,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.83537094554895,
+          "sharpe": -6.964581850659268,
+          "slippage_usdt": 1.05479104,
+          "sortino": -6.705522984064179,
+          "submitted_orders": 114,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 44,
+          "traded_notional_usdt": 366.95439104,
+          "transaction_cost": 1.164877357312,
+          "turnover_ratio": 36.695439104,
+          "unfilled_orders": 70,
+          "var_95": 0.016551756288470904
+        },
+        "record_sha256": "d439a4572ce5dc02f3ac79d0092f6eedc5bd544399ab0520b6be1aeed7481c9a",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-370339f905812771b6e5327a-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-31d59dd96e73de56f1f3bb82",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 2.5,
+        "max_half_width": 0.03,
+        "min_half_width": 0.005,
+        "min_rebuild_interval": 24,
+        "profile_id": "C1",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 24
+      },
+      "strategy": {
+        "class": "VolAdaptiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\vol_adaptive_grid.py",
+        "parameters": {
+          "allow_flat_rebuild": false,
+          "extreme_vol_mult": 0.0,
+          "horizon_hours": 1.0,
+          "interval_seconds": 3600,
+          "k_mult": 2.5,
+          "max_half_width": 0.03,
+          "min_half_width": 0.005,
+          "min_rebuild_interval": 24,
+          "profile_id": "C1",
+          "rebuild_width_delta": 0.25,
+          "symbol": "NVDAUSDT",
+          "vol_window_hours": 24
+        },
+        "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519"
+      },
+      "strategy_id": "VOL_ADAPTIVE_GRID_C1"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 25,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7570517023445678,
+          "annual_volatility": 0.1119197615105943,
+          "canceled_orders": 63,
+          "capacity_usdt": 4408.25875,
+          "capital_utilization": 0.08973566666666667,
+          "cvar_95": 0.022985133569790032,
+          "daily_cvar": 0.022985133569790032,
+          "daily_loss_probability": 0.31666666666666665,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 19,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 19,
+          "exit_order_attempt_count": 52,
+          "exit_order_failure_ratio": 0.6346153846153846,
+          "exit_status_poll_checks": 69,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 33,
+          "fees_usdt": 0.09560267088,
+          "fill_rate": 0.37254901960784315,
+          "filled_orders": 38,
+          "final_equity_usdt": 8.81964688912,
+          "funding_erosion_pct": 3.8084e-05,
+          "funding_pnl_usdt": -0.00038084,
+          "funding_reconciliation_residual": 3.424e-09,
+          "gross_trade_pnl_usdt": -0.06640000000000046,
+          "halted_flag": 0.0,
+          "holding_hours": 154,
+          "holding_time_fraction": 0.10694444444444444,
+          "hours": 1440,
+          "max_committed_ratio": 0.9063918360000001,
+          "max_drawdown": 0.12759664226076317,
+          "max_holding_hours": 35.0,
+          "max_participation": 2.268469381476303e-05,
+          "mean_holding_hours": 8.105263157894736,
+          "net_return": -0.11803531108800003,
+          "net_trade_pnl_usdt": -1.1799722708800005,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.868971463855162,
+          "sharpe": -6.7642362003506005,
+          "slippage_usdt": 1.0179696,
+          "sortino": -6.508234999368577,
+          "submitted_orders": 102,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 38,
+          "traded_notional_usdt": 318.6755696,
+          "transaction_cost": 1.11357227088,
+          "turnover_ratio": 31.86755696,
+          "unfilled_orders": 64,
+          "var_95": 0.016749168144427222
+        },
+        "record_sha256": "4c09e6d336af718b5bcf5866f2ab5751a124fae2453678fadb058c76c112139d",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-31d59dd96e73de56f1f3bb82-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-2c91272e488c86347e56a302",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.0,
+        "max_half_width": 0.035,
+        "min_half_width": 0.006,
+        "min_rebuild_interval": 24,
+        "profile_id": "C2",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 48
+      },
+      "strategy": {
+        "class": "VolAdaptiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\vol_adaptive_grid.py",
+        "parameters": {
+          "allow_flat_rebuild": false,
+          "extreme_vol_mult": 0.0,
+          "horizon_hours": 1.0,
+          "interval_seconds": 3600,
+          "k_mult": 3.0,
+          "max_half_width": 0.035,
+          "min_half_width": 0.006,
+          "min_rebuild_interval": 24,
+          "profile_id": "C2",
+          "rebuild_width_delta": 0.25,
+          "symbol": "NVDAUSDT",
+          "vol_window_hours": 48
+        },
+        "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519"
+      },
+      "strategy_id": "VOL_ADAPTIVE_GRID_C2"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 49,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7213497099527567,
+          "annual_volatility": 0.10762296574487704,
+          "canceled_orders": 54,
+          "capacity_usdt": 3741.07375,
+          "capital_utilization": 0.07796958333333334,
+          "cvar_95": 0.020821596003768723,
+          "daily_cvar": 0.020821596003768723,
+          "daily_loss_probability": 0.3,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 16,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 16,
+          "exit_order_attempt_count": 44,
+          "exit_order_failure_ratio": 0.6363636363636364,
+          "exit_status_poll_checks": 61,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 28,
+          "fees_usdt": 0.08066981676,
+          "fill_rate": 0.367816091954023,
+          "filled_orders": 32,
+          "final_equity_usdt": 8.87236014324,
+          "funding_erosion_pct": 3.8084e-05,
+          "funding_pnl_usdt": -0.00038084,
+          "funding_reconciliation_residual": 3.424e-09,
+          "gross_trade_pnl_usdt": -0.3984000000000001,
+          "halted_flag": 0.0,
+          "holding_hours": 133,
+          "holding_time_fraction": 0.09236111111111112,
+          "hours": 1440,
+          "max_committed_ratio": 0.9095927959999999,
+          "max_drawdown": 0.12121332628684423,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.6730293675712756e-05,
+          "mean_holding_hours": 8.3125,
+          "net_return": -0.11276398567599999,
+          "net_trade_pnl_usdt": -1.12725901676,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.8289726756976338,
+          "sharpe": -6.702563016733198,
+          "slippage_usdt": 0.6481892,
+          "sortino": -6.458798427549184,
+          "submitted_orders": 87,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 32,
+          "traded_notional_usdt": 268.89938920000003,
+          "transaction_cost": 0.72885901676,
+          "turnover_ratio": 26.889938920000002,
+          "unfilled_orders": 55,
+          "var_95": 0.017283963561573582
+        },
+        "record_sha256": "7b181a1b05b48e332aceac05106489f7a4cea8474687788874e688d4adb35ebd",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-2c91272e488c86347e56a302-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-067d512ab9be65c4eb31c9ba",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "parameters": {
+        "allow_flat_rebuild": false,
+        "extreme_vol_mult": 0.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.5,
+        "max_half_width": 0.04,
+        "min_half_width": 0.008,
+        "min_rebuild_interval": 24,
+        "profile_id": "C3",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 72
+      },
+      "strategy": {
+        "class": "VolAdaptiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\vol_adaptive_grid.py",
+        "parameters": {
+          "allow_flat_rebuild": false,
+          "extreme_vol_mult": 0.0,
+          "horizon_hours": 1.0,
+          "interval_seconds": 3600,
+          "k_mult": 3.5,
+          "max_half_width": 0.04,
+          "min_half_width": 0.008,
+          "min_rebuild_interval": 24,
+          "profile_id": "C3",
+          "rebuild_width_delta": 0.25,
+          "symbol": "NVDAUSDT",
+          "vol_window_hours": 72
+        },
+        "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519"
+      },
+      "strategy_id": "VOL_ADAPTIVE_GRID_C3"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 73,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7119732373750745,
+          "annual_volatility": 0.10319796539715936,
+          "canceled_orders": 55,
+          "capacity_usdt": 3626.82375,
+          "capital_utilization": 0.08230858333333332,
+          "cvar_95": 0.02066953937554723,
+          "daily_cvar": 0.02066953937554723,
+          "daily_loss_probability": 0.3333333333333333,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 19,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 19,
+          "exit_order_attempt_count": 46,
+          "exit_order_failure_ratio": 0.5869565217391305,
+          "exit_status_poll_checks": 67,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 27,
+          "fees_usdt": 0.096372546072,
+          "fill_rate": 0.40425531914893614,
+          "filled_orders": 38,
+          "final_equity_usdt": 8.886755963928,
+          "funding_erosion_pct": -0.000814875,
+          "funding_pnl_usdt": 0.00814875,
+          "funding_reconciliation_residual": 3.677383472e-09,
+          "gross_trade_pnl_usdt": -0.3088000000000004,
+          "halted_flag": 0.0,
+          "holding_hours": 140,
+          "holding_time_fraction": 0.09722222222222222,
+          "hours": 1440,
+          "max_committed_ratio": 0.9045512840000001,
+          "max_drawdown": 0.12111856386206188,
+          "max_holding_hours": 34.0,
+          "max_participation": 2.7572335159655884e-05,
+          "mean_holding_hours": 7.36842105263158,
+          "net_return": -0.11132440360720008,
+          "net_trade_pnl_usdt": -1.1213927860720003,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.8151712027722338,
+          "sharpe": -6.899101495218745,
+          "slippage_usdt": 0.71622024,
+          "sortino": -6.631612472203112,
+          "submitted_orders": 94,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 38,
+          "traded_notional_usdt": 321.24182024,
+          "transaction_cost": 0.8125927860719999,
+          "turnover_ratio": 32.124182024,
+          "unfilled_orders": 56,
+          "var_95": 0.013399923098450199
+        },
+        "record_sha256": "b45a2d3241dc8846c8ba0b2c879ac09307271a740c13f2abda8be0ed53145378",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-067d512ab9be65c4eb31c9ba-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-1cfa7d01cf86fbe0e0b398ee",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 2.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 2.5,
+        "max_half_width": 0.03,
+        "min_half_width": 0.005,
+        "min_rebuild_interval": 24,
+        "profile_id": "C4",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 24
+      },
+      "strategy": {
+        "class": "VolAdaptiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\vol_adaptive_grid.py",
+        "parameters": {
+          "allow_flat_rebuild": true,
+          "extreme_vol_mult": 2.0,
+          "horizon_hours": 1.0,
+          "interval_seconds": 3600,
+          "k_mult": 2.5,
+          "max_half_width": 0.03,
+          "min_half_width": 0.005,
+          "min_rebuild_interval": 24,
+          "profile_id": "C4",
+          "rebuild_width_delta": 0.25,
+          "symbol": "NVDAUSDT",
+          "vol_window_hours": 24
+        },
+        "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519"
+      },
+      "strategy_id": "VOL_ADAPTIVE_GRID_C4"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 25,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7708488533337721,
+          "annual_volatility": 0.11178911350139158,
+          "canceled_orders": 85,
+          "capacity_usdt": 2291.51,
+          "capital_utilization": 0.09803230555555556,
+          "cvar_95": 0.023006009073845306,
+          "daily_cvar": 0.023006009073845306,
+          "daily_loss_probability": 0.36666666666666664,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 23,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 23,
+          "exit_order_attempt_count": 58,
+          "exit_order_failure_ratio": 0.603448275862069,
+          "exit_status_poll_checks": 75,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 35,
+          "fees_usdt": 0.1157314434,
+          "fill_rate": 0.3484848484848485,
+          "filled_orders": 46,
+          "final_equity_usdt": 8.7996451066,
+          "funding_erosion_pct": -0.00012545499999999998,
+          "funding_pnl_usdt": 0.00125455,
+          "funding_reconciliation_residual": 2.68898614e-09,
+          "gross_trade_pnl_usdt": 0.24759999999999982,
+          "halted_flag": 0.0,
+          "holding_hours": 168,
+          "holding_time_fraction": 0.11666666666666667,
+          "hours": 1440,
+          "max_committed_ratio": 0.9045512840000001,
+          "max_drawdown": 0.13117996937655452,
+          "max_holding_hours": 35.0,
+          "max_participation": 4.363934698081178e-05,
+          "mean_holding_hours": 7.304347826086957,
+          "net_return": -0.12003548933999997,
+          "net_trade_pnl_usdt": -1.2016094434000002,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.8826379668351636,
+          "sharpe": -6.8955628074121575,
+          "slippage_usdt": 1.333478,
+          "sortino": -6.620003464924277,
+          "submitted_orders": 132,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 46,
+          "traded_notional_usdt": 385.771478,
+          "transaction_cost": 1.4492094434,
+          "turnover_ratio": 38.5771478,
+          "unfilled_orders": 86,
+          "var_95": 0.016750645804673413
+        },
+        "record_sha256": "61a131f7193e68eaf83a68a6100c6ae0f0ea9ce2a0adf648984bbeb879b608ee",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-1cfa7d01cf86fbe0e0b398ee-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-d0493419c46d1646635bbc13",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 2.0,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.0,
+        "max_half_width": 0.035,
+        "min_half_width": 0.006,
+        "min_rebuild_interval": 24,
+        "profile_id": "C5",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 48
+      },
+      "strategy": {
+        "class": "VolAdaptiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\vol_adaptive_grid.py",
+        "parameters": {
+          "allow_flat_rebuild": true,
+          "extreme_vol_mult": 2.0,
+          "horizon_hours": 1.0,
+          "interval_seconds": 3600,
+          "k_mult": 3.0,
+          "max_half_width": 0.035,
+          "min_half_width": 0.006,
+          "min_rebuild_interval": 24,
+          "profile_id": "C5",
+          "rebuild_width_delta": 0.25,
+          "symbol": "NVDAUSDT",
+          "vol_window_hours": 48
+        },
+        "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519"
+      },
+      "strategy_id": "VOL_ADAPTIVE_GRID_C5"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 49,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.7708884814537258,
+          "annual_volatility": 0.10929075821790069,
+          "canceled_orders": 78,
+          "capacity_usdt": 2212.37125,
+          "capital_utilization": 0.08362177777777778,
+          "cvar_95": 0.020912357189314237,
+          "daily_cvar": 0.020912357189314237,
+          "daily_loss_probability": 0.31666666666666665,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 18,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 18,
+          "exit_order_attempt_count": 49,
+          "exit_order_failure_ratio": 0.6326530612244898,
+          "exit_status_poll_checks": 63,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 31,
+          "fees_usdt": 0.090565528056,
+          "fill_rate": 0.3130434782608696,
+          "filled_orders": 36,
+          "final_equity_usdt": 8.799995501944,
+          "funding_erosion_pct": -0.00012545499999999998,
+          "funding_pnl_usdt": 0.00125455,
+          "funding_reconciliation_residual": 2.68898614e-09,
+          "gross_trade_pnl_usdt": -0.11799999999999988,
+          "halted_flag": 0.0,
+          "holding_hours": 143,
+          "holding_time_fraction": 0.09930555555555555,
+          "hours": 1440,
+          "max_committed_ratio": 0.9095927959999999,
+          "max_drawdown": 0.12773327767667608,
+          "max_holding_hours": 34.0,
+          "max_participation": 4.520037041703557e-05,
+          "mean_holding_hours": 7.944444444444445,
+          "net_return": -0.12000044980559998,
+          "net_trade_pnl_usdt": -1.201259048056,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.8801792396716265,
+          "sharpe": -7.053555982444107,
+          "slippage_usdt": 0.99269352,
+          "sortino": -6.754350691724569,
+          "submitted_orders": 115,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 36,
+          "traded_notional_usdt": 301.88509352,
+          "transaction_cost": 1.083259048056,
+          "turnover_ratio": 30.188509352,
+          "unfilled_orders": 79,
+          "var_95": 0.017400916882230638
+        },
+        "record_sha256": "c292206bad76cdf60108774013672fa1022d73ade01800773cdedaa9eef62712",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-d0493419c46d1646635bbc13-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-4ea4f10b1885ff06d17b0ed9",
+      "class_name": "VolAdaptiveGridCandidate",
+      "code_version": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519",
+      "parameters": {
+        "allow_flat_rebuild": true,
+        "extreme_vol_mult": 1.8,
+        "horizon_hours": 1.0,
+        "interval_seconds": 3600,
+        "k_mult": 3.5,
+        "max_half_width": 0.04,
+        "min_half_width": 0.008,
+        "min_rebuild_interval": 24,
+        "profile_id": "C6",
+        "rebuild_width_delta": 0.25,
+        "symbol": "NVDAUSDT",
+        "vol_window_hours": 72
+      },
+      "strategy": {
+        "class": "VolAdaptiveGridCandidate",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\vol_adaptive_grid.py",
+        "parameters": {
+          "allow_flat_rebuild": true,
+          "extreme_vol_mult": 1.8,
+          "horizon_hours": 1.0,
+          "interval_seconds": 3600,
+          "k_mult": 3.5,
+          "max_half_width": 0.04,
+          "min_half_width": 0.008,
+          "min_rebuild_interval": 24,
+          "profile_id": "C6",
+          "rebuild_width_delta": 0.25,
+          "symbol": "NVDAUSDT",
+          "vol_window_hours": 72
+        },
+        "sha256": "1f226f3270c1fe1e2ad42c10032283999eb0e9b2a0547d60dee0b74665b61519"
+      },
+      "strategy_id": "VOL_ADAPTIVE_GRID_C6"
+    },
+    "compatibility": {
+      "decision_kind": "orders",
+      "s03_compatible": false,
+      "s03_entrypoint": null,
+      "s03_protocol": null,
+      "s04_requirements": "Requires causal rolling volatility state + frozen training sigma_ref in Demo runtime context and GridExecution bridge wiring (owned by S04).",
+      "source_filename": "vol_adaptive_grid.py",
+      "spec": {
+        "data_types": [
+          "closed_bar",
+          "quote",
+          "order_event"
+        ],
+        "decision_kind": "orders",
+        "historical_observations": false,
+        "history_limit": 73,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "vol_adaptive_grid",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "vol_adaptive_grid"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.6511797940529228,
+          "annual_volatility": 0.09740474366222036,
+          "canceled_orders": 79,
+          "capacity_usdt": 1998.5937500000005,
+          "capital_utilization": 0.0857648888888889,
+          "cvar_95": 0.020754176160048,
+          "daily_cvar": 0.020754176160048,
+          "daily_loss_probability": 0.35,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 21,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 21,
+          "exit_order_attempt_count": 50,
+          "exit_order_failure_ratio": 0.58,
+          "exit_status_poll_checks": 67,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 29,
+          "fees_usdt": 0.106578243168,
+          "fill_rate": 0.3442622950819672,
+          "filled_orders": 42,
+          "final_equity_usdt": 8.977030356832,
+          "funding_erosion_pct": 3.8084e-05,
+          "funding_pnl_usdt": -0.00038084,
+          "funding_reconciliation_residual": 3.424e-09,
+          "gross_trade_pnl_usdt": 0.04159999999999964,
+          "halted_flag": 0.0,
+          "holding_hours": 146,
+          "holding_time_fraction": 0.10138888888888889,
+          "hours": 1440,
+          "max_committed_ratio": 0.9181953760000001,
+          "max_drawdown": 0.110185358183305,
+          "max_holding_hours": 34.0,
+          "max_participation": 5.003518098663122e-05,
+          "mean_holding_hours": 6.9523809523809526,
+          "net_return": -0.10229696431680002,
+          "net_trade_pnl_usdt": -1.0225888031680004,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.7485845377151432,
+          "sharpe": -6.685298575509633,
+          "slippage_usdt": 0.95761056,
+          "sortino": -6.457019323513349,
+          "submitted_orders": 122,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 42,
+          "traded_notional_usdt": 355.26081056,
+          "transaction_cost": 1.064188803168,
+          "turnover_ratio": 35.526081055999995,
+          "unfilled_orders": 80,
+          "var_95": 0.011532950652419436
+        },
+        "record_sha256": "3535711b40bb20ec90b0e1b11c9fc815fe3ed5be25b86ae4fb607a1776a00c55",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-4ea4f10b1885ff06d17b0ed9-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-4cb7cecb83b21f9b109ec707",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "parameters": {
+        "fast_window": 5,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 20,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "DualMAUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\dual_ma_usdm.py",
+        "parameters": {
+          "fast_window": 5,
+          "interval_seconds": 3600,
+          "max_weight": 0.9,
+          "slow_window": 20,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9"
+      },
+      "strategy_id": "DUAL_MA"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "dual_ma_usdm:DualMAUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "dual_ma_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 21,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "dual_ma",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": 0.007640511876265095,
+          "annual_volatility": 0.25157819488317334,
+          "canceled_orders": 12,
+          "capacity_usdt": 2225.2625,
+          "capital_utilization": 0.4679664375,
+          "cvar_95": 0.03855118987133316,
+          "daily_cvar": 0.03855118987133316,
+          "daily_loss_probability": 0.38333333333333336,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 35,
+          "exit_failure_ratio": 0.02857142857142857,
+          "exit_failures": 1,
+          "exit_lifecycle_count": 35,
+          "exit_order_attempt_count": 35,
+          "exit_order_failure_ratio": 0.2,
+          "exit_status_poll_checks": 0,
+          "failed_exit_lifecycle_count": 1,
+          "failed_exit_order_attempt_count": 7,
+          "fees_usdt": 0.140874541266,
+          "fill_rate": 0.8142857142857143,
+          "filled_orders": 57,
+          "final_equity_usdt": 9.961142138734,
+          "funding_erosion_pct": 0.00229673,
+          "funding_pnl_usdt": -0.0229673,
+          "funding_reconciliation_residual": 2.5894972154e-08,
+          "gross_trade_pnl_usdt": 0.2188999999999991,
+          "halted_flag": 0.0,
+          "holding_hours": 807,
+          "holding_time_fraction": 0.5604166666666667,
+          "hours": 1440,
+          "max_committed_ratio": 0.905031428,
+          "max_drawdown": 0.09260479418984935,
+          "max_holding_hours": 157.0,
+          "max_participation": 4.493851848939171e-05,
+          "mean_holding_hours": 28.171171171171167,
+          "net_return": -0.003885786126600066,
+          "net_trade_pnl_usdt": -0.015890561266000882,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.04,
+          "residual_mtm_pnl_usdt": -0.05855936,
+          "residual_notional_usdt": 8.74,
+          "score": -0.24393768300690824,
+          "sharpe": 0.030370326330599353,
+          "slippage_usdt": 0.09391602,
+          "sortino": 0.041357247360640344,
+          "submitted_orders": 70,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 57,
+          "traded_notional_usdt": 469.58180422,
+          "transaction_cost": 0.234790561266,
+          "turnover_ratio": 46.958180422,
+          "unfilled_orders": 13,
+          "var_95": 0.014353971676855396
+        },
+        "record_sha256": "e76e5489998922e14693b59451f96049ef74e8cbc99bad3731ba35b85470ebc2",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-4cb7cecb83b21f9b109ec707-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-771426d69d072db5f561c7b1",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "parameters": {
+        "fast_window": 5,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 48,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "DualMAUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\dual_ma_usdm.py",
+        "parameters": {
+          "fast_window": 5,
+          "interval_seconds": 3600,
+          "max_weight": 0.9,
+          "slow_window": 48,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9"
+      },
+      "strategy_id": "DUAL_MA"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "dual_ma_usdm:DualMAUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "dual_ma_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 49,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "dual_ma",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor",
+      "oos_window_not_fresh_unconsumed",
+      "oos_advantage_statistically_uncertain",
+      "risk_adjusted_advantage_statistically_uncertain"
+    ],
+    "stages": {
+      "test": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.6524381429216937,
+          "annual_volatility": 0.22530745217820627,
+          "canceled_orders": 7,
+          "capacity_usdt": 4193.4575,
+          "capital_utilization": 0.3715776678240741,
+          "cvar_95": 0.038201414927825965,
+          "daily_cvar": 0.038201414927825965,
+          "daily_loss_probability": 0.4027777777777778,
+          "days": 72,
+          "equity_reconciliation_residual": 0.0,
+          "excess_return_vs_cash": -0.1252544958638,
+          "excess_return_vs_incumbent": 0.257467776353,
+          "exit_attempts": 24,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 24,
+          "exit_order_attempt_count": 24,
+          "exit_order_failure_ratio": 0.20833333333333334,
+          "exit_status_poll_checks": 0,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 5,
+          "fees_usdt": 0.090748198638,
+          "fill_rate": 0.8478260869565217,
+          "filled_orders": 39,
+          "final_equity_usdt": 8.747455041362,
+          "funding_erosion_pct": 0.005359822,
+          "funding_pnl_usdt": -0.05359822,
+          "funding_reconciliation_residual": 1.1554277196e-08,
+          "gross_trade_pnl_usdt": -1.0476999999999994,
+          "halted_flag": 0.0,
+          "holding_hours": 802,
+          "holding_time_fraction": 0.46412037037037035,
+          "hours": 1728,
+          "max_committed_ratio": 0.925317512,
+          "max_drawdown": 0.17869871248890512,
+          "max_holding_hours": 153.0,
+          "max_participation": 2.3846670676881783e-05,
+          "mean_holding_hours": 39.467532467532465,
+          "net_return": -0.1252544958638,
+          "net_trade_pnl_usdt": -1.1989467386379995,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.04,
+          "residual_mtm_pnl_usdt": 0.1165376,
+          "residual_notional_usdt": 5.4296,
+          "score": -0.8777455950998999,
+          "sharpe": -2.8957681453237045,
+          "slippage_usdt": 0.06049854,
+          "sortino": -3.3376710640027416,
+          "submitted_orders": 46,
+          "tail_observations": 3.600000000000003,
+          "trade_count": 39,
+          "traded_notional_usdt": 302.49399546,
+          "transaction_cost": 0.151246738638,
+          "turnover_ratio": 30.249399546,
+          "unfilled_orders": 7,
+          "var_95": 0.027350230143047095
+        },
+        "record_sha256": "2b41fb7049c8126a58edef526f98d144e5c8a2f431c35b8ccedee6af15847cb2",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-771426d69d072db5f561c7b1-test",
+        "status": "SUCCEEDED"
+      },
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": 0.1411414654467997,
+          "annual_volatility": 0.2570174372661604,
+          "canceled_orders": 6,
+          "capacity_usdt": 2511.85375,
+          "capital_utilization": 0.42601869444444446,
+          "cvar_95": 0.04036012096101066,
+          "daily_cvar": 0.04036012096101066,
+          "daily_loss_probability": 0.3,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 15,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 15,
+          "exit_order_attempt_count": 15,
+          "exit_order_failure_ratio": 0.2,
+          "exit_status_poll_checks": 0,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 3,
+          "fees_usdt": 0.060648671994,
+          "fill_rate": 0.8,
+          "filled_orders": 24,
+          "final_equity_usdt": 10.179770818006,
+          "funding_erosion_pct": 0.001924805,
+          "funding_pnl_usdt": -0.01924805,
+          "funding_reconciliation_residual": 1.6685898754e-08,
+          "gross_trade_pnl_usdt": 0.30010000000000026,
+          "halted_flag": 0.0,
+          "holding_hours": 741,
+          "holding_time_fraction": 0.5145833333333333,
+          "hours": 1440,
+          "max_committed_ratio": 0.9027107320000001,
+          "max_drawdown": 0.08060949342097101,
+          "max_holding_hours": 134.0,
+          "max_participation": 3.981123502910948e-05,
+          "mean_holding_hours": 60.212765957446805,
+          "net_return": 0.01797708180059998,
+          "net_trade_pnl_usdt": 0.19901886800600024,
+          "partial_fill_events": 0,
+          "period_net_loss": 0.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.11587597181936068,
+          "sharpe": 0.5491513219806848,
+          "slippage_usdt": 0.04043246,
+          "sortino": 0.7346709199405435,
+          "submitted_orders": 30,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 24,
+          "traded_notional_usdt": 202.16223998,
+          "transaction_cost": 0.10108113199400001,
+          "turnover_ratio": 20.216223998,
+          "unfilled_orders": 6,
+          "var_95": 0.021979797062966523
+        },
+        "record_sha256": "9d5083cfed4b98b841270cc61684b971e8f9847bad1e62657440915ee5189db5",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-771426d69d072db5f561c7b1-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "OOS_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-6ed738d094a87d5a747c8b69",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "parameters": {
+        "fast_window": 12,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 20,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "DualMAUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\dual_ma_usdm.py",
+        "parameters": {
+          "fast_window": 12,
+          "interval_seconds": 3600,
+          "max_weight": 0.9,
+          "slow_window": 20,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9"
+      },
+      "strategy_id": "DUAL_MA"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "dual_ma_usdm:DualMAUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "dual_ma_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 21,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "dual_ma",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.046255032234784214,
+          "annual_volatility": 0.25900431398634727,
+          "canceled_orders": 12,
+          "capacity_usdt": 2513.2575,
+          "capital_utilization": 0.5305960902777778,
+          "cvar_95": 0.03861034776639684,
+          "daily_cvar": 0.03861034776639684,
+          "daily_loss_probability": 0.43333333333333335,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 33,
+          "exit_failure_ratio": 0.030303030303030304,
+          "exit_failures": 1,
+          "exit_lifecycle_count": 33,
+          "exit_order_attempt_count": 33,
+          "exit_order_failure_ratio": 0.30303030303030304,
+          "exit_status_poll_checks": 0,
+          "failed_exit_lifecycle_count": 1,
+          "failed_exit_order_attempt_count": 10,
+          "fees_usdt": 0.1165326288,
+          "fill_rate": 0.7833333333333333,
+          "filled_orders": 47,
+          "final_equity_usdt": 9.8700795112,
+          "funding_erosion_pct": 0.00106997,
+          "funding_pnl_usdt": -0.0106997,
+          "funding_reconciliation_residual": 1.6908080597e-08,
+          "gross_trade_pnl_usdt": 0.07500000000000016,
+          "halted_flag": 0.0,
+          "holding_hours": 923,
+          "holding_time_fraction": 0.6409722222222223,
+          "hours": 1440,
+          "max_committed_ratio": 0.9020705400000001,
+          "max_drawdown": 0.11067055275920001,
+          "max_holding_hours": 98.0,
+          "max_participation": 3.978899893862845e-05,
+          "mean_holding_hours": 38.89010989010989,
+          "net_return": -0.01299204887999994,
+          "net_trade_pnl_usdt": -0.11922078879999984,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.03,
+          "residual_mtm_pnl_usdt": -0.34217916,
+          "residual_notional_usdt": 6.555,
+          "score": -0.3052593462211315,
+          "sharpe": -0.17858788343279267,
+          "slippage_usdt": 0.07768816,
+          "sortino": -0.23468095152635202,
+          "submitted_orders": 60,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 47,
+          "traded_notional_usdt": 388.442096,
+          "transaction_cost": 0.1942207888,
+          "turnover_ratio": 38.8442096,
+          "unfilled_orders": 13,
+          "var_95": 0.017367195413327405
+        },
+        "record_sha256": "d81a41170a7d575af923648e912804e5f4e2d9ab360bbd7652a600695d2aa40e",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-6ed738d094a87d5a747c8b69-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-9c0ab535085df26182c1daa2",
+      "class_name": "DualMAUsdmStrategy",
+      "code_version": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9",
+      "parameters": {
+        "fast_window": 12,
+        "interval_seconds": 3600,
+        "max_weight": 0.9,
+        "slow_window": 48,
+        "symbol": "NVDAUSDT"
+      },
+      "strategy": {
+        "class": "DualMAUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\dual_ma_usdm.py",
+        "parameters": {
+          "fast_window": 12,
+          "interval_seconds": 3600,
+          "max_weight": 0.9,
+          "slow_window": 48,
+          "symbol": "NVDAUSDT"
+        },
+        "sha256": "84ed8dd36203af6ada2ff88d4b5709cfb848d06176da4401575474ad288fd0e9"
+      },
+      "strategy_id": "DUAL_MA"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "dual_ma_usdm:DualMAUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "dual_ma_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 49,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "dual_ma",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.022158049343371667,
+          "annual_volatility": 0.2857527327425833,
+          "canceled_orders": 5,
+          "capacity_usdt": 2261.3975,
+          "capital_utilization": 0.6503324722222221,
+          "cvar_95": 0.03671574681075051,
+          "daily_cvar": 0.03671574681075051,
+          "daily_loss_probability": 0.48333333333333334,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 15,
+          "exit_failure_ratio": 0.06666666666666667,
+          "exit_failures": 1,
+          "exit_lifecycle_count": 15,
+          "exit_order_attempt_count": 15,
+          "exit_order_failure_ratio": 0.4,
+          "exit_status_poll_checks": 0,
+          "failed_exit_lifecycle_count": 1,
+          "failed_exit_order_attempt_count": 6,
+          "fees_usdt": 0.04918384452,
+          "fill_rate": 0.76,
+          "filled_orders": 19,
+          "final_equity_usdt": 9.89768031548,
+          "funding_erosion_pct": 0.0018346959999999998,
+          "funding_pnl_usdt": -0.01834696,
+          "funding_reconciliation_residual": 6.492633184e-09,
+          "gross_trade_pnl_usdt": -0.001999999999999405,
+          "halted_flag": 0.0,
+          "holding_hours": 1085,
+          "holding_time_fraction": 0.7534722222222222,
+          "hours": 1440,
+          "max_committed_ratio": 0.9114333480000001,
+          "max_drawdown": 0.08633681912098612,
+          "max_holding_hours": 230.0,
+          "max_participation": 4.422044333205463e-05,
+          "mean_holding_hours": 108.39999999999999,
+          "net_return": -0.010231968451999918,
+          "net_trade_pnl_usdt": -0.0839727245199994,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.04,
+          "residual_mtm_pnl_usdt": -0.29500664,
+          "residual_notional_usdt": 8.74,
+          "score": -0.30791078208595496,
+          "sharpe": -0.07754273819432714,
+          "slippage_usdt": 0.03278888,
+          "sortino": -0.10403613714311996,
+          "submitted_orders": 25,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 19,
+          "traded_notional_usdt": 163.9461484,
+          "transaction_cost": 0.08197272452,
+          "turnover_ratio": 16.39461484,
+          "unfilled_orders": 6,
+          "var_95": 0.02436384240423545
+        },
+        "record_sha256": "47b04f4ca5db7507415654813a1f133c125129537397e7a0a0331e2f95f7952a",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-9c0ab535085df26182c1daa2-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-ef5d445aa2f93fb3e13cfc27",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 1,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 0.0,
+        "weight": 0.9
+      },
+      "strategy": {
+        "class": "CloseMomentumUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\close_momentum_usdm.py",
+        "parameters": {
+          "interval_seconds": 3600,
+          "lookback": 1,
+          "symbol": "NVDAUSDT",
+          "threshold_bps": 0.0,
+          "weight": 0.9
+        },
+        "sha256": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852"
+      },
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 2,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "max_drawdown_breach_or_unknown",
+      "daily_cvar_breach_or_unknown",
+      "net_return_below_floor",
+      "oos_window_not_fresh_unconsumed",
+      "oos_advantage_statistically_uncertain",
+      "risk_adjusted_advantage_statistically_uncertain"
+    ],
+    "stages": {
+      "test": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -1.456757834470173,
+          "annual_volatility": 0.3431652789729427,
+          "canceled_orders": 687,
+          "capacity_usdt": 3809.07125,
+          "capital_utilization": 0.6869083159722221,
+          "cvar_95": 0.051464212517017376,
+          "daily_cvar": 0.051464212517017376,
+          "daily_loss_probability": 0.5416666666666666,
+          "days": 72,
+          "equity_reconciliation_residual": 0.0,
+          "excess_return_vs_cash": -0.2589223198284001,
+          "excess_return_vs_incumbent": 0.12379995238839991,
+          "exit_attempts": 427,
+          "exit_failure_ratio": 0.18266978922716628,
+          "exit_failures": 78,
+          "exit_lifecycle_count": 427,
+          "exit_order_attempt_count": 771,
+          "exit_order_failure_ratio": 0.9896238651102465,
+          "exit_status_poll_checks": 167,
+          "failed_exit_lifecycle_count": 78,
+          "failed_exit_order_attempt_count": 763,
+          "fees_usdt": 0.043622668284,
+          "fill_rate": 0.024147727272727272,
+          "filled_orders": 17,
+          "final_equity_usdt": 7.410776801716,
+          "funding_erosion_pct": 0.011731901,
+          "funding_pnl_usdt": -0.11731901,
+          "funding_reconciliation_residual": 2.03386141e-08,
+          "gross_trade_pnl_usdt": -2.3992,
+          "halted_flag": 1.0,
+          "holding_hours": 1710,
+          "holding_time_fraction": 0.9895833333333334,
+          "hours": 1728,
+          "max_committed_ratio": 0.952565684,
+          "max_drawdown": 0.33466515162844723,
+          "max_holding_hours": 1104.0,
+          "max_participation": 2.6253118788471075e-05,
+          "mean_holding_hours": 172.36363636363635,
+          "net_return": -0.2589223198284001,
+          "net_trade_pnl_usdt": -2.4719041882840003,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.03,
+          "residual_mtm_pnl_usdt": -3.06982812,
+          "residual_notional_usdt": 4.0722,
+          "score": -1.7999231134431157,
+          "sharpe": -4.245061851333255,
+          "slippage_usdt": 0.02908152,
+          "sortino": -4.670408621593801,
+          "submitted_orders": 704,
+          "tail_observations": 3.600000000000003,
+          "trade_count": 17,
+          "traded_notional_usdt": 145.40889428,
+          "transaction_cost": 0.072704188284,
+          "turnover_ratio": 14.540889428,
+          "unfilled_orders": 687,
+          "var_95": 0.03441108839011577
+        },
+        "record_sha256": "6fb3fa93c7ddbb1c956459f9493ee0bcf295074ae8d1671c0c62bff2ab8ad013",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-ef5d445aa2f93fb3e13cfc27-test",
+        "status": "SUCCEEDED"
+      },
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": 0.3266156332685022,
+          "annual_volatility": 0.3253840158359199,
+          "canceled_orders": 672,
+          "capacity_usdt": 2023.6937500000004,
+          "capital_utilization": 0.8546986666666667,
+          "cvar_95": 0.038931432396200734,
+          "daily_cvar": 0.038931432396200734,
+          "daily_loss_probability": 0.48333333333333334,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 371,
+          "exit_failure_ratio": 0.016172506738544475,
+          "exit_failures": 6,
+          "exit_lifecycle_count": 371,
+          "exit_order_attempt_count": 681,
+          "exit_order_failure_ratio": 0.9926578560939795,
+          "exit_status_poll_checks": 19,
+          "failed_exit_lifecycle_count": 6,
+          "failed_exit_order_attempt_count": 676,
+          "fees_usdt": 0.02803525188,
+          "fill_rate": 0.016105417276720352,
+          "filled_orders": 11,
+          "final_equity_usdt": 10.46111591812,
+          "funding_erosion_pct": 0.003415899,
+          "funding_pnl_usdt": -0.03415899,
+          "funding_reconciliation_residual": 1.875647352e-08,
+          "gross_trade_pnl_usdt": 0.5420000000000008,
+          "halted_flag": 0.0,
+          "holding_hours": 1428,
+          "holding_time_fraction": 0.9916666666666667,
+          "hours": 1440,
+          "max_committed_ratio": 0.927798256,
+          "max_drawdown": 0.09771127189010842,
+          "max_holding_hours": 628.0,
+          "max_participation": 4.9414591511190857e-05,
+          "mean_holding_hours": 237.83333333333334,
+          "net_return": 0.046111591812000086,
+          "net_trade_pnl_usdt": 0.49527490812000086,
+          "partial_fill_events": 0,
+          "period_net_loss": 0.0,
+          "residual_inventory": 0.04,
+          "residual_mtm_pnl_usdt": -0.5338544,
+          "residual_notional_usdt": 8.74,
+          "score": 0.001231617432582266,
+          "sharpe": 1.00378511965137,
+          "slippage_usdt": 0.01868984,
+          "sortino": 1.415593572590518,
+          "submitted_orders": 683,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 11,
+          "traded_notional_usdt": 93.4508396,
+          "transaction_cost": 0.04672509188,
+          "turnover_ratio": 9.34508396,
+          "unfilled_orders": 672,
+          "var_95": 0.026505449774876073
+        },
+        "record_sha256": "2c1e4c7bbb6fd69924c09178878d443d4941af9a65a17afc0d743b5f0c0a6339",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-ef5d445aa2f93fb3e13cfc27-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "OOS_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-07a02507749524abb8b8d0b5",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 1,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 25.0,
+        "weight": 0.9
+      },
+      "strategy": {
+        "class": "CloseMomentumUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\close_momentum_usdm.py",
+        "parameters": {
+          "interval_seconds": 3600,
+          "lookback": 1,
+          "symbol": "NVDAUSDT",
+          "threshold_bps": 25.0,
+          "weight": 0.9
+        },
+        "sha256": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852"
+      },
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 2,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.19234475456985575,
+          "annual_volatility": 0.161512123603311,
+          "canceled_orders": 236,
+          "capacity_usdt": 3548.5500000000006,
+          "capital_utilization": 0.2720812083333333,
+          "cvar_95": 0.01969119156685313,
+          "daily_cvar": 0.01969119156685313,
+          "daily_loss_probability": 0.4666666666666667,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 122,
+          "exit_failure_ratio": 0.04918032786885246,
+          "exit_failures": 6,
+          "exit_lifecycle_count": 122,
+          "exit_order_attempt_count": 263,
+          "exit_order_failure_ratio": 0.7870722433460076,
+          "exit_status_poll_checks": 143,
+          "failed_exit_lifecycle_count": 6,
+          "failed_exit_order_attempt_count": 207,
+          "fees_usdt": 0.272177092056,
+          "fill_rate": 0.3218390804597701,
+          "filled_orders": 112,
+          "final_equity_usdt": 9.668291127944,
+          "funding_erosion_pct": 0.0010480379999999998,
+          "funding_pnl_usdt": -0.01048038,
+          "funding_reconciliation_residual": 6.130676649e-09,
+          "gross_trade_pnl_usdt": 0.13240000000000027,
+          "halted_flag": 0.0,
+          "holding_hours": 484,
+          "holding_time_fraction": 0.33611111111111114,
+          "hours": 1440,
+          "max_committed_ratio": 0.913233888,
+          "max_drawdown": 0.05471258977926974,
+          "max_holding_hours": 69.0,
+          "max_participation": 2.8180524439559818e-05,
+          "mean_holding_hours": 8.704225352112676,
+          "net_return": -0.03317088720560002,
+          "net_trade_pnl_usdt": -0.32122849205599974,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.35385687817316674,
+          "sharpe": -1.1908997930227987,
+          "slippage_usdt": 0.1814514,
+          "sortino": -1.6662837047468964,
+          "submitted_orders": 348,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 112,
+          "traded_notional_usdt": 907.25697352,
+          "transaction_cost": 0.453628492056,
+          "turnover_ratio": 90.725697352,
+          "unfilled_orders": 236,
+          "var_95": 0.015462933098606683
+        },
+        "record_sha256": "265355f2b3f61ca27620e1154ccf0845e60830c173c7a13bdec40a4a12540a2d",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-07a02507749524abb8b8d0b5-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-d7149c38e22d7d4e5140697e",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 6,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 0.0,
+        "weight": 0.9
+      },
+      "strategy": {
+        "class": "CloseMomentumUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\close_momentum_usdm.py",
+        "parameters": {
+          "interval_seconds": 3600,
+          "lookback": 6,
+          "symbol": "NVDAUSDT",
+          "threshold_bps": 0.0,
+          "weight": 0.9
+        },
+        "sha256": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852"
+      },
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 7,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.19363655097284294,
+          "annual_volatility": 0.2834163277112819,
+          "canceled_orders": 208,
+          "capacity_usdt": 2452.3862500000005,
+          "capital_utilization": 0.5785955694444445,
+          "cvar_95": 0.0392327173997942,
+          "daily_cvar": 0.0392327173997942,
+          "daily_loss_probability": 0.55,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 142,
+          "exit_failure_ratio": 0.028169014084507043,
+          "exit_failures": 4,
+          "exit_lifecycle_count": 142,
+          "exit_order_attempt_count": 266,
+          "exit_order_failure_ratio": 0.7218045112781954,
+          "exit_status_poll_checks": 124,
+          "failed_exit_lifecycle_count": 4,
+          "failed_exit_order_attempt_count": 192,
+          "fees_usdt": 0.342684196914,
+          "fill_rate": 0.4157303370786517,
+          "filled_orders": 148,
+          "final_equity_usdt": 9.623524593086,
+          "funding_erosion_pct": 0.002343507,
+          "funding_pnl_usdt": -0.02343507,
+          "funding_reconciliation_residual": 1.9683633482e-08,
+          "gross_trade_pnl_usdt": 0.2180999999999996,
+          "halted_flag": 0.0,
+          "holding_hours": 1076,
+          "holding_time_fraction": 0.7472222222222222,
+          "hours": 1440,
+          "max_committed_ratio": 0.895788656,
+          "max_drawdown": 0.11796149968987568,
+          "max_holding_hours": 49.0,
+          "max_participation": 4.0776610943728784e-05,
+          "mean_holding_hours": 14.601503759398497,
+          "net_return": -0.03764754069140008,
+          "net_trade_pnl_usdt": -0.3530403369140004,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.4770528786841248,
+          "sharpe": -0.6832229904908718,
+          "slippage_usdt": 0.22845614,
+          "sortino": -0.9125580143715167,
+          "submitted_orders": 356,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 148,
+          "traded_notional_usdt": 1142.28065638,
+          "transaction_cost": 0.571140336914,
+          "turnover_ratio": 114.228065638,
+          "unfilled_orders": 208,
+          "var_95": 0.027404089928739446
+        },
+        "record_sha256": "87e2ca1a58827a4c77831bc2edc56621050eae1c99a41e2375918ad681299f7b",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-d7149c38e22d7d4e5140697e-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-509a0458079ff7dbf3b1f47b",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 6,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 25.0,
+        "weight": 0.9
+      },
+      "strategy": {
+        "class": "CloseMomentumUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\close_momentum_usdm.py",
+        "parameters": {
+          "interval_seconds": 3600,
+          "lookback": 6,
+          "symbol": "NVDAUSDT",
+          "threshold_bps": 25.0,
+          "weight": 0.9
+        },
+        "sha256": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852"
+      },
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 7,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.005382577825234575,
+          "annual_volatility": 0.2629214365137442,
+          "canceled_orders": 167,
+          "capacity_usdt": 2261.3975,
+          "capital_utilization": 0.35614047916666663,
+          "cvar_95": 0.04013901605313262,
+          "daily_cvar": 0.04013901605313262,
+          "daily_loss_probability": 0.5166666666666667,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 109,
+          "exit_failure_ratio": 0.03669724770642202,
+          "exit_failures": 4,
+          "exit_lifecycle_count": 109,
+          "exit_order_attempt_count": 206,
+          "exit_order_failure_ratio": 0.6359223300970874,
+          "exit_status_poll_checks": 140,
+          "failed_exit_lifecycle_count": 4,
+          "failed_exit_order_attempt_count": 131,
+          "fees_usdt": 0.376945944648,
+          "fill_rate": 0.47318611987381703,
+          "filled_orders": 150,
+          "final_equity_usdt": 9.935096435352,
+          "funding_erosion_pct": 0.00258603,
+          "funding_pnl_usdt": -0.0258603,
+          "funding_reconciliation_residual": 2.2342074287e-08,
+          "gross_trade_pnl_usdt": 0.5891999999999995,
+          "halted_flag": 0.0,
+          "holding_hours": 619,
+          "holding_time_fraction": 0.42986111111111114,
+          "hours": 1440,
+          "max_committed_ratio": 0.913233888,
+          "max_drawdown": 0.10414336360955778,
+          "max_holding_hours": 44.0,
+          "max_participation": 4.422044333205463e-05,
+          "mean_holding_hours": 8.222602739726028,
+          "net_return": -0.006490356464800007,
+          "net_trade_pnl_usdt": -0.03904326464800051,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.26830401433897877,
+          "sharpe": -0.020472190843796794,
+          "slippage_usdt": 0.25129732,
+          "sortino": -0.027856295562522018,
+          "submitted_orders": 317,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 150,
+          "traded_notional_usdt": 1256.48648216,
+          "transaction_cost": 0.6282432646480001,
+          "turnover_ratio": 125.648648216,
+          "unfilled_orders": 167,
+          "var_95": 0.019757063771146315
+        },
+        "record_sha256": "91a3c11b8bc34952d65568aca50f30c007f09cb2926f72cd8d1cbbe994422ad6",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-509a0458079ff7dbf3b1f47b-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-20df95d4a214a89350d911a4",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 24,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 0.0,
+        "weight": 0.9
+      },
+      "strategy": {
+        "class": "CloseMomentumUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\close_momentum_usdm.py",
+        "parameters": {
+          "interval_seconds": 3600,
+          "lookback": 24,
+          "symbol": "NVDAUSDT",
+          "threshold_bps": 0.0,
+          "weight": 0.9
+        },
+        "sha256": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852"
+      },
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 25,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.36638656320116525,
+          "annual_volatility": 0.24466602525709702,
+          "canceled_orders": 81,
+          "capacity_usdt": 2511.85375,
+          "capital_utilization": 0.5134234305555555,
+          "cvar_95": 0.03505290035738445,
+          "daily_cvar": 0.03505290035738445,
+          "daily_loss_probability": 0.5333333333333333,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 59,
+          "exit_failure_ratio": 0.01694915254237288,
+          "exit_failures": 1,
+          "exit_lifecycle_count": 59,
+          "exit_order_attempt_count": 104,
+          "exit_order_failure_ratio": 0.6634615384615384,
+          "exit_status_poll_checks": 105,
+          "failed_exit_lifecycle_count": 1,
+          "failed_exit_order_attempt_count": 69,
+          "fees_usdt": 0.163941800484,
+          "fill_rate": 0.4605263157894737,
+          "filled_orders": 70,
+          "final_equity_usdt": 9.369445449516,
+          "funding_erosion_pct": 0.0015918229999999998,
+          "funding_pnl_usdt": -0.01591823,
+          "funding_reconciliation_residual": 1.1434730898e-08,
+          "gross_trade_pnl_usdt": -0.34139999999999976,
+          "halted_flag": 0.0,
+          "holding_hours": 970,
+          "holding_time_fraction": 0.6736111111111112,
+          "hours": 1440,
+          "max_committed_ratio": 0.891427348,
+          "max_drawdown": 0.09995882139109402,
+          "max_holding_hours": 80.0,
+          "max_participation": 3.981123502910948e-05,
+          "mean_holding_hours": 26.773437500000004,
+          "net_return": -0.06305545504839993,
+          "net_trade_pnl_usdt": -0.6146363204839997,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.6110525884582623,
+          "sharpe": -1.4974966909122887,
+          "slippage_usdt": 0.10929452,
+          "sortino": -1.921916391152186,
+          "submitted_orders": 152,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 70,
+          "traded_notional_usdt": 546.47266828,
+          "transaction_cost": 0.27323632048400004,
+          "turnover_ratio": 54.647266828,
+          "unfilled_orders": 82,
+          "var_95": 0.017777545705524818
+        },
+        "record_sha256": "961b595a1ef91a9fd211c425313448c4a4064f68b95b53a7433d7fe9733e0475",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-20df95d4a214a89350d911a4-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  },
+  {
+    "candidate": {
+      "candidate_id": "c-bb492e9c5fa95363314426c9",
+      "class_name": "CloseMomentumUsdmStrategy",
+      "code_version": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852",
+      "parameters": {
+        "interval_seconds": 3600,
+        "lookback": 24,
+        "symbol": "NVDAUSDT",
+        "threshold_bps": 25.0,
+        "weight": 0.9
+      },
+      "strategy": {
+        "class": "CloseMomentumUsdmStrategy",
+        "file": "D:\\Code\\FactorLab-worktrees\\p8-s02-f01-binance-champion\\src\\factorlab\\strategies\\binance_usdm\\close_momentum_usdm.py",
+        "parameters": {
+          "interval_seconds": 3600,
+          "lookback": 24,
+          "symbol": "NVDAUSDT",
+          "threshold_bps": 25.0,
+          "weight": 0.9
+        },
+        "sha256": "3101753d6a4fd4f3ccc8da32be607a24606f0076f6f4bf5daf2623abcdbe2852"
+      },
+      "strategy_id": "CLOSE_MOMENTUM"
+    },
+    "compatibility": {
+      "decision_kind": "target",
+      "s03_compatible": true,
+      "s03_entrypoint": "close_momentum_usdm:CloseMomentumUsdmStrategy",
+      "s03_protocol": "FACTORLAB_DECISION_V1",
+      "s04_requirements": null,
+      "source_filename": "close_momentum_usdm.py",
+      "spec": {
+        "data_types": [
+          "closed_bar"
+        ],
+        "decision_kind": "target",
+        "historical_observations": false,
+        "history_limit": 25,
+        "intervals": [
+          3600
+        ],
+        "state_version": "1",
+        "strategy_id": "close_momentum",
+        "symbols": [
+          "NVDAUSDT"
+        ],
+        "version": "1.0.0"
+      },
+      "strategy_family": "target_protocol"
+    },
+    "reasons": [
+      "net_return_below_floor"
+    ],
+    "stages": {
+      "validation": {
+        "failure": null,
+        "metrics": {
+          "annual_mean_net_return": -0.12316147468867587,
+          "annual_volatility": 0.22839113391557653,
+          "canceled_orders": 100,
+          "capacity_usdt": 2511.85375,
+          "capital_utilization": 0.41994756944444445,
+          "cvar_95": 0.033431280388181134,
+          "daily_cvar": 0.033431280388181134,
+          "daily_loss_probability": 0.45,
+          "days": 60,
+          "equity_reconciliation_residual": 0.0,
+          "exit_attempts": 65,
+          "exit_failure_ratio": 0.0,
+          "exit_failures": 0,
+          "exit_lifecycle_count": 65,
+          "exit_order_attempt_count": 118,
+          "exit_order_failure_ratio": 0.6949152542372882,
+          "exit_status_poll_checks": 41,
+          "failed_exit_lifecycle_count": 0,
+          "failed_exit_order_attempt_count": 82,
+          "fees_usdt": 0.172121876316,
+          "fill_rate": 0.4186046511627907,
+          "filled_orders": 72,
+          "final_equity_usdt": 9.758089653684,
+          "funding_erosion_pct": 0.0016440550000000002,
+          "funding_pnl_usdt": -0.01644055,
+          "funding_reconciliation_residual": 8.256022946e-09,
+          "gross_trade_pnl_usdt": 0.0613999999999994,
+          "halted_flag": 0.0,
+          "holding_hours": 752,
+          "holding_time_fraction": 0.5222222222222223,
+          "hours": 1440,
+          "max_committed_ratio": 0.8962688,
+          "max_drawdown": 0.1049359822052095,
+          "max_holding_hours": 73.0,
+          "max_participation": 3.981123502910948e-05,
+          "mean_holding_hours": 21.007462686567163,
+          "net_return": -0.024191034631600106,
+          "net_trade_pnl_usdt": -0.22546979631600061,
+          "partial_fill_events": 0,
+          "period_net_loss": 1.0,
+          "residual_inventory": 0.0,
+          "residual_mtm_pnl_usdt": 0.0,
+          "residual_notional_usdt": 0.0,
+          "score": -0.3515526086042524,
+          "sharpe": -0.5392568116685379,
+          "slippage_usdt": 0.11474792,
+          "sortino": -0.7172061548871158,
+          "submitted_orders": 172,
+          "tail_observations": 3.0000000000000027,
+          "trade_count": 72,
+          "traded_notional_usdt": 573.73958772,
+          "transaction_cost": 0.286869796316,
+          "turnover_ratio": 57.373958772,
+          "unfilled_orders": 100,
+          "var_95": 0.018988373737683927
+        },
+        "record_sha256": "e79c14b9c06b8899427542ce54d4c1e987612672a8cf9fc3add46aad681fc983",
+        "run_id": "p8-s02-f01-nvda-real-v2-c-bb492e9c5fa95363314426c9-validation",
+        "status": "SUCCEEDED"
+      }
+    },
+    "status": "VALIDATION_REJECTED"
+  }
+]

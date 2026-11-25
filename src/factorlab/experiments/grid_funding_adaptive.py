@@ -900,11 +900,13 @@ def load_and_audit_r10_dataset(
                 {
                     "id": f"hour-{len(r04b_bars) + idx}",
                     "time": pd.Timestamp(row.open_time).tz_convert("UTC").isoformat(),
+                    "open": o,
                     "price": c,
                     "high": h,
                     "low": l,
                     "close": c,
                     "volume": int(D(str(row.volume))),
+                    "raw_volume": v,
                     "completed_bar": True,
                 }
             )
