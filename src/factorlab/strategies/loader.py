@@ -9,7 +9,7 @@ import sys
 import tempfile
 
 from factorlab.trading.storage import dumps, decode
-from .protocol import Decision, StrategySpec, json_value
+from .protocol import (StrategySpecV2, V1, V2, json_value, read_spec, read_decision, spec_payload)
 
 WORKER = Path(__file__).with_name('worker.py')
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
@@ -21,6 +21,8 @@ def runtime_identity():
 
 
 def _binding_spec(spec):
+    if isinstance(spec, StrategySpecV2):
+        return spec_payload(spec)
     payload = asdict(spec)
     if not spec.historical_observations:
         del payload['historical_observations']
@@ -66,30 +68,28 @@ class LoadedStrategy:
         self.code_sha256 = sha256(json.dumps(self.sources, sort_keys=True).encode()).hexdigest()
         if manifest.get('sha256', self.code_sha256) != self.code_sha256:
             raise ValueError('strategy code identity changed')
-        self.spec = StrategySpec(**self._call('describe'))
+        self.spec = read_spec(self._call('describe'))
         if self.spec.version != manifest['version']:
             raise ValueError('strategy version differs from manifest')
-        self.binding = dict(protocol='FACTORLAB_DECISION_V1', spec=_binding_spec(self.spec),
+        self.binding = dict(protocol=V2 if isinstance(self.spec, StrategySpecV2) else V1, spec=_binding_spec(self.spec),
             configuration=manifest['parameters'], code_sha256=self.code_sha256,
             entrypoint=manifest['file'] + ':' + manifest['class'],
             runtime_sha256=runtime_identity())
 
     @classmethod
-    def from_strategy_package(cls, release_dir, manifest=None, *, trusted=False, timeout=15):
+    def from_strategy_package(cls, release_dir, manifest=None, *, trusted=False, timeout=15, qualify=None):
         """Load a verified S03 StrategyPackage using the S01 isolated worker process."""
         if trusted is not True:
             raise ValueError('explicit trusted=True is required for Python strategy code')
-        from factorlab.integrations.binance_futures_trading.strategy_package import (
-            DECISION_INTERFACE, digest, load_package, package_entrypoint_file, validate_manifest,
-        )
+        from .package import digest, load_package, package_entrypoint_file, validate_manifest, manifest_spec
         root = Path(release_dir).resolve()
-        installed = load_package(root)
+        installed = load_package(root, qualify=qualify)
         if manifest is not None:
-            validate_manifest(manifest)
+            validate_manifest(manifest, qualify=qualify)
             if manifest != installed:
                 raise ValueError('strategy package manifest differs from installed release')
-        if installed['interface'] != DECISION_INTERFACE:
-            raise ValueError('FACTORLAB_DECISION_V1 StrategyPackage required')
+        if installed['interface'] not in {V1, V2}:
+            raise ValueError('decision StrategyPackage required')
         entry_file, class_name = package_entrypoint_file(installed)
         paths = [root / name for name in sorted(installed['files'])]
         if any(p.is_symlink() or not p.resolve().is_relative_to(root) or not p.is_file() for p in paths):
@@ -108,22 +108,28 @@ class LoadedStrategy:
         ))
         instance.sources = {name: (root / name).read_text(encoding='utf-8') for name in sorted(installed['files'])}
         instance.code_sha256 = sha256(json.dumps(instance.sources, sort_keys=True).encode()).hexdigest()
-        instance.spec = StrategySpec(**instance._call('describe'))
+        instance.spec = read_spec(instance._call('describe'))
+        if isinstance(instance.spec, StrategySpecV2) != (installed['interface'] == V2):
+            raise ValueError('strategy/package protocol mismatch')
         if instance.spec.strategy_id != installed['strategy_id']:
             raise ValueError('strategy_id differs from StrategyPackage manifest')
         if instance.spec.version != installed['strategy_version']:
             raise ValueError('strategy_version differs from StrategyPackage manifest')
-        if instance.spec.state_version != str(installed['state_version']):
-            raise ValueError('state_version differs from StrategyPackage manifest')
-        if installed.get('execution_mode') is not None and instance.spec.decision_kind != installed['execution_mode']:
-            raise ValueError('execution_mode differs from StrategySpec decision_kind')
-        if installed['symbol'] not in instance.spec.symbols:
-            raise ValueError('strategy package symbol unsupported by StrategySpec')
-        interval_seconds = installed.get('interval_seconds', 60)
-        if interval_seconds not in instance.spec.intervals:
-            raise ValueError('strategy package interval unsupported by StrategySpec')
+        if installed['interface'] == V2:
+            if instance.spec != manifest_spec(installed):
+                raise ValueError('strategy requirements differ from StrategyPackage manifest')
+        else:
+            if instance.spec.state_version != str(installed['state_version']):
+                raise ValueError('state_version differs from StrategyPackage manifest')
+            if installed.get('execution_mode') is not None and instance.spec.decision_kind != installed['execution_mode']:
+                raise ValueError('execution_mode differs from StrategySpec decision_kind')
+            if installed['symbol'] not in instance.spec.symbols:
+                raise ValueError('strategy package symbol unsupported by StrategySpec')
+            interval_seconds = installed.get('interval_seconds', 60)
+            if interval_seconds not in instance.spec.intervals:
+                raise ValueError('strategy package interval unsupported by StrategySpec')
         instance.binding = dict(
-            protocol=DECISION_INTERFACE,
+            protocol=installed['interface'],
             package_id=installed['package_id'],
             code_commit=installed['code_commit'],
             spec=_binding_spec(instance.spec),
@@ -166,5 +172,28 @@ class LoadedStrategy:
     def decide(self, event, state):
         if runtime_identity() != self.binding['runtime_sha256']:
             raise StrategyWorkerError('strategy runtime code identity changed')
+        if isinstance(self.spec, StrategySpecV2):
+            from .events import validate_event
+            validate_event(event, self.spec)
         result = self._call('decide', event, json_value(state))
-        return Decision(**result).validate(self.spec, event['symbol'])
+        return read_decision(result).validate(self.spec,
+            None if isinstance(self.spec, StrategySpecV2) else event['symbol'])
+
+    def migrate_state(self, state, from_version):
+        if runtime_identity() != self.binding['runtime_sha256']:
+            raise StrategyWorkerError('strategy runtime code identity changed')
+        if not isinstance(self.spec, StrategySpecV2):
+            raise ValueError('state migration requires V2')
+        policy = self.spec.state
+        if policy['migration'] == 'reset':
+            return {}
+        if policy['migration'] == 'preserve':
+            if from_version != policy['version']:
+                raise ValueError('preserve requires the same state schema')
+            return json_value(state)
+        if from_version not in policy['from_versions']:
+            raise ValueError('source state schema not declared for migration')
+        result = self._call('migrate', dict(from_version=from_version), json_value(state))
+        if not isinstance(result, dict):
+            raise ValueError('migrated state must be a JSON object')
+        return json_value(result)
