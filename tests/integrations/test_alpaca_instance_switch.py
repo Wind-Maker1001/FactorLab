@@ -13,10 +13,10 @@ from test_alpaca_portfolio import NOW
 from test_alpaca_scheduling import calendar
 
 
-def package(tmp_path, version):
+def package(tmp_path, version, symbols=('SPY', 'IWM')):
     source = tmp_path / ('source-' + version)
     source.mkdir()
-    spec = replace(BalancedPortfolio('paper', capital='40').describe(), version=version,
+    spec = replace(BalancedPortfolio('paper', capital='40').describe(), version=version, symbols=symbols,
                    decision_kind='quantity_deltas', data=dict(data_types=['order_event'],
                        history_limit=1, historical_observations=False))
     (source / 'strategy.py').write_text('''from decimal import Decimal
@@ -45,6 +45,41 @@ def request(view, manifest, selection):
         selection_id=selection, decision='PROMOTE', qualified=True, strictly_better=True,
         expected_active=view.snapshot()['active'], package_id=manifest['package_id'],
         evidence=manifest['evidence']))
+
+
+def test_conflicting_capital_promotion_does_not_activate_candidate(tmp_path):
+    old = package(tmp_path, '1', symbols=('SPY',))
+    new = package(tmp_path, '2', symbols=('IWM',))
+    binding = dict(market='ALPACA_US_EQUITY', account_id='paper',
+        strategy_id='alpaca-balanced', instance_id='one', allocation_id='one-usd')
+    store = DeploymentStore(tmp_path / 'deployments.sqlite3')
+    store.register_instance(binding)
+    view = store.for_instance('one')
+    request(view, old, 'initial')
+    view.close()
+    store.close()
+    account = Account()
+    account.http = SimpleNamespace(request=lambda *args, **kwargs: [])
+    account.read_corporate_activities = lambda **kwargs: []
+    configuration = dict(releases=str(tmp_path / 'releases'), trusted_python=True,
+        capital_policy=dict(currency='USD', budget='100', fee_rate='0'),
+        instances=[dict(binding=binding, funding=dict(capital='40', initial_cash='40'))])
+    service = SimpleNamespace(calendar=calendar(), client=SimpleNamespace(feed='iex'))
+    host = StrategyInstances(tmp_path, account, configuration, clock=lambda: NOW)
+    host.tick(service, {}, NOW, account.read_account_details())
+    with host.store.transaction():
+        host.store.capital_policy.claim('paper', 'other', 'IWM')
+    request(host.views['one'], new, 'conflicting')
+    host.tick(service, {}, NOW, account.read_account_details())
+    assert host.views['one'].snapshot()['active'] == old['package_id']
+    assert host.views['one'].pending()['phase'] == 'ROLLBACK'
+    host.close()
+    host = StrategyInstances(tmp_path, account, configuration, clock=lambda: NOW)
+    host.tick(service, {}, NOW, account.read_account_details())
+    assert host.views['one'].snapshot()['active'] == old['package_id']
+    assert host.views['one'].pending() is None
+    assert not account.posts
+    host.close()
 
 
 @pytest.mark.parametrize('failed_activation', [False, True])

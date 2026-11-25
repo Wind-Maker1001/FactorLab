@@ -61,10 +61,14 @@ class AlpacaInstance:
         return result
 
     def recover(self, service, session):
-        self.runtime.recover()
+        plans = self.plans()
+        if plans:
+            self.runner.report(plans[-1]['id'])
         for plan in self.plans():
             if plan['phase'] in {'COMPLETE', 'ABANDONED'}:
                 continue
+            if session is None:
+                return False
             if plan['request']['session'] != str(session.date()):
                 self.runner.report(plan['id'])
                 for child in self.runner.store.orders(plan['id']):
@@ -77,14 +81,21 @@ class AlpacaInstance:
                 self.runner.executor.abandon(plan['id'])
                 continue
             symbols = plan['request']['owned']
+            quotes = self.data.quotes(service, symbols, session=session, decision_at=self.clock())
+            rules = self.data.assets.rules(symbols,
+                prices={symbol: quote.ask for symbol, quote in quotes.items() if quote.valid},
+                fractional_quantities=self.spec.execution['fractional_quantities'])
             self.runner.run_once(plan['id'], quotes=lambda: self.data.quotes(service, symbols,
-                session=session, decision_at=self.clock()), rules=self.data.assets.rules(symbols))
+                session=session, decision_at=self.clock()), rules=rules)
+            if self.runner.store.plan(plan['id'])['phase'] not in {'COMPLETE', 'ABANDONED'}:
+                return False
+        self.runtime.recover()
         return True
 
     def tick(self, service, at, account):
         session = service.calendar.regular_session(at)
         if session is None:
-            self.runtime.recover()
+            self.recover(service, session)
             self.state.update(state='WAITING_SESSION')
             return
         if not self.recover(service, session):

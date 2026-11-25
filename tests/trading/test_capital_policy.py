@@ -104,6 +104,35 @@ def test_flat_transfer_keeps_predecessor_cost_history_and_symbol_reservation(tmp
     store.close()
 
 
+@pytest.mark.parametrize('reserved_owner', [None, 'one', 'two'])
+def test_spinoff_child_obeys_exclusive_symbol_admission(tmp_path, reserved_owner):
+    broker, store, executor = setup(tmp_path)
+    identity = plan(executor, 'one')
+    run(executor, identity)
+    run(executor, identity)
+    if reserved_owner is not None:
+        with store.transaction():
+            executor.capital_policy.claim('paper', reserved_owner, 'CHILD')
+    broker.positions['CHILD'] = D(1)
+    action = dict(id='spin', symbol='AAPL', quantity_ratio=D(1),
+        basis_ratio=D('.8'), cash_flow=D(0),
+        allocations=[dict(symbol='CHILD', quantity=D(1), basis_fraction=D('.2'))],
+        evidence={'activity': 'official-spinoff'})
+    if reserved_owner == 'two':
+        with pytest.raises(ValueError, match='ownership conflict'):
+            executor.record_corporate_actions(account_id='paper', strategy_id='one', actions=[action])
+        assert 'CHILD' not in store.holdings('paper', 'one')
+        assert store.db.execute('SELECT count(*) FROM portfolio_corporate_actions').fetchone()[0] == 0
+    else:
+        executor.record_corporate_actions(account_id='paper', strategy_id='one', actions=[action])
+        executor.record_corporate_actions(account_id='paper', strategy_id='one', actions=[action])
+        assert store.holdings('paper', 'one')['CHILD'] == D(1)
+        with pytest.raises(ValueError, match='ownership conflict'):
+            with store.transaction():
+                executor.capital_policy.claim('paper', 'two', 'CHILD')
+    store.close()
+
+
 def test_pause_preserves_capital_and_other_strategy_admission(tmp_path):
     _, store, executor = setup(tmp_path)
     executor.capital_policy.pause('paper', 'one')

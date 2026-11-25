@@ -52,12 +52,13 @@ class StrategyAssets:
         at = self.clock() if at is None else at
         return tuple(Instrument(self.assets[symbol]['id'], symbol, at) for symbol in symbols)
 
-    def rules(self, symbols, *, prices=None, legacy_v69=False):
+    def rules(self, symbols, *, prices=None, legacy_v69=False, fractional_quantities=True):
         rules = {}
         for symbol in symbols:
             asset = self.resolve(symbol)
-            tick = D('.01') if legacy_v69 or prices is None or prices[symbol] >= 1 else D('.0001')
-            rules[symbol] = InstrumentRules(D('.000000001') if asset['fractionable'] else D(1),
+            tick = D('.01') if legacy_v69 or prices is None or prices.get(symbol, D(1)) >= 1 else D('.0001')
+            rules[symbol] = InstrumentRules(
+                D('.000000001') if fractional_quantities and asset['fractionable'] else D(1),
                 D(1), tradable=asset['tradable'], time_in_force='DAY', price_tick=tick,
                 limit_price_tolerance=D('.001'))
         return rules

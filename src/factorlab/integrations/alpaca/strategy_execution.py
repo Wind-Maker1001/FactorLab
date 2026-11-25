@@ -3,14 +3,41 @@ from decimal import Decimal as D
 
 from factorlab.strategies.protocol import read_decision, validate_binding
 from factorlab.trading.contracts import TERMINAL
-from factorlab.trading.storage import decode
+from factorlab.trading.storage import decode, dumps
+from hashlib import sha256
+from dataclasses import asdict
 import json
 
 
 class AlpacaDecisionExecution:
-    def __init__(self, executor, assets, spec, binding, allocation, *, clock):
+    def __init__(self, executor, assets, spec, binding, allocation, *, clock, quote_provider=None):
         self.executor, self.assets, self.spec = executor, assets, spec
         self.binding, self.allocation, self.clock = binding, allocation, clock
+        self.quote_provider = quote_provider
+
+    def bind_market(self, service, data):
+        def quotes(symbols):
+            at = self.clock()
+            session = service.calendar.regular_session(at)
+            if session is None:
+                raise TimeoutError('market-order reservation requires an open session')
+            return data.quotes(service, symbols, session=session, decision_at=at)
+        self.quote_provider = quotes
+
+    def reservation_quote(self, receipt, symbol):
+        store = self.executor.store
+        identity = 'alpaca-reservation-quote:' + sha256(dumps([
+            self.binding, receipt['package_id'], receipt['event_id'], symbol]).encode()).hexdigest()
+        saved = store.event_payload(identity)
+        if saved is not None:
+            return decode(json.loads(saved))['ask']
+        quotes = self.quote_provider((symbol,))
+        quote = quotes.get(symbol)
+        if quote is None or not quote.valid:
+            raise TimeoutError('market-order reservation requires a valid execution quote: ' + symbol)
+        with store.transaction():
+            store.record_metadata(identity, asdict(quote))
+        return quote.ask
 
     def qualify(self, spec, binding, allocation):
         self.assets.qualify(spec, binding, allocation)
@@ -62,8 +89,7 @@ class AlpacaDecisionExecution:
             for intent in decision.orders:
                 price = intent.limit_price
                 if price is None:
-                    quote = event['symbols'][intent.instrument_id]['observations']['quote']['payload']
-                    price = D(str(quote['ask']))
+                    price = self.reservation_quote(receipt, intent.instrument_id)
                 direct.append((intent, price))
         self.executor.create(account_id=binding['account_id'], strategy_id=binding['instance_id'],
             strategy_version=self.spec.version, trading_session=event['context']['execution_session'],
