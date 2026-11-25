@@ -512,6 +512,8 @@ class PortfolioExecutor:
                              + self._funding_adjustment(account, strategy_id)) < ZERO):
                     raise ValueError('direct orders exceed capital after funding')
                 balance = next(a for a in account.assets if a.currency == self.quote_currency)
+                registered = {order['record'].snapshot.intent.client_order_id: order
+                              for _, order in self.store.account_orders(account_id)}
                 broker_ids = set()
                 pending = ZERO
                 for snapshot in account.open_orders:
@@ -519,10 +521,13 @@ class PortfolioExecutor:
                         continue
                     broker_ids.add(snapshot.intent.client_order_id)
                     if snapshot.intent.side == Side.BUY:
-                        if snapshot.intent.limit_price is None:
+                        saved = registered.get(snapshot.intent.client_order_id)
+                        price = (saved['reservation_price'] if saved is not None
+                                 and saved['record'].snapshot.intent == snapshot.intent
+                                 else snapshot.intent.limit_price)
+                        if price is None:
                             raise ValueError('unpriced foreign order risk')
-                        pending += ((snapshot.intent.quantity - snapshot.cumulative_filled_quantity)
-                                    * snapshot.intent.limit_price)
+                        pending += ((snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * price)
                 for payload, in self.store.db.execute(
                         'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
                         'WHERE p.account=?', (account_id,)):
@@ -1080,6 +1085,12 @@ class PortfolioExecutor:
                       and s not in attempted]
         if blocked_reductions and not reductions:
             plan['phase'] = 'BLOCKED'
+            return []
+        pending_reductions = any(o['record'].snapshot.intent.side == Side.SELL
+                                 and (o['record'].snapshot.status not in TERMINAL or o['uncertain'])
+                                 for o in orders)
+        if pending_reductions and not reductions:
+            plan['phase'] = 'WAITING'
             return []
         phase = 'REDUCE' if reductions else 'INCREASE'
         plan['phase'] = phase
