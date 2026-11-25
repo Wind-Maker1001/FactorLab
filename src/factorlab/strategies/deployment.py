@@ -3,6 +3,9 @@ from contextlib import contextmanager
 import json
 import sqlite3
 from time import time
+from threading import Lock
+
+from .controller_lock import controller_lock
 
 from factorlab.trading.storage import dumps, decode
 from .package import encoded, validate_manifest, candidate_package, digest
@@ -24,6 +27,7 @@ PENDING = "phase NOT IN ('SUCCEEDED','ROLLED_BACK','FAILED')"
 class DeploymentStore:
     def __init__(self, path, *, instance_id=LEGACY, qualify=None):
         self.path, self.instance_id, self.qualify = path, instance_id, qualify
+        self._controller_lock = Lock()
         self.db = sqlite3.connect(path, timeout=10)
         self.db.row_factory = sqlite3.Row
         self.db.executescript('''
@@ -82,6 +86,15 @@ class DeploymentStore:
           INSERT OR IGNORE INTO strategy_management_schema VALUES(2);
           COMMIT;
         ''')
+        with self.atomic():
+            if not self.db.execute('SELECT 1 FROM strategy_management_schema WHERE version=3').fetchone():
+                for row in self.db.execute('SELECT instance_id,version,watermark,result FROM instance_decisions').fetchall():
+                    receipt = decode(json.loads(row['result']))
+                    receipt['input_identity'] = content_identity(receipt['event'])
+                    self.db.execute('UPDATE instance_decisions SET input_identity=?,result=? '
+                        'WHERE instance_id=? AND version=? AND watermark=?',
+                        (receipt['input_identity'], dumps(receipt), row['instance_id'], row['version'], row['watermark']))
+                self.db.execute('INSERT INTO strategy_management_schema VALUES(3)')
         if not self.db.execute('SELECT 1 FROM strategy_registry WHERE instance_id=?', (instance_id,)).fetchone():
             self.db.close()
             raise ValueError('strategy instance is not registered')
@@ -505,6 +518,20 @@ class DeploymentController:
             self.store.complete_activation_callback(callback)
 
     def step(self):
+        store = self.store
+        if store.path == ':memory:':
+            if not store._controller_lock.acquire(blocking=False):
+                return store.snapshot()
+            try:
+                return self._step()
+            finally:
+                store._controller_lock.release()
+        with controller_lock(store.path, store.instance_id) as acquired:
+            if not acquired:
+                return store.snapshot()
+            return self._step()
+
+    def _step(self):
         if self.store.activation_callback() is not None:
             self._complete_activation()
             return self.store.snapshot()
