@@ -1,0 +1,10 @@
+{
+  "scope": "PR-only legacy budget upgrade protection, not deployed",
+  "tests": [
+    "tests/integrations/test_demo_budget_migration.py",
+    "tests/integrations/test_demo_continuous_campaign.py",
+    "tests/integrations/test_demo_strategy_budget.py",
+    "tests/integrations/test_demo_portfolio_consumer.py"
+  ],
+  "console": "...................................................................      [100%]\n67 passed in 71.75s (0:01:11)\n\n[exited with code 0]\n"
+}

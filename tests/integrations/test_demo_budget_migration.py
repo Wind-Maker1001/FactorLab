@@ -16,6 +16,71 @@ from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocke
 LIMITS = dict(total_orders=100000, total_notional=D('500000'), max_loss=D('250'))
 
 
+def test_account_budget_includes_smoke_portfolio_and_configuration_posts(network_grid):
+    root, store, _, _, _, _ = network_grid
+    with closing(DemoRuntime(root)) as runtime:
+        authorization = runtime.start_continuous(store.config, opening_equity=D('5000'),
+            stop_epoch=runtime.stop_epoch())
+        runtime.db.executemany('INSERT INTO dispatches VALUES (?, ?, ?, ?, ?)', [
+            ('smoke-original', 'POST', 'smoke-order', json.dumps(dict(quantity='.04', price='150')), '{}'),
+            ('portfolio-campaign:original', 'POST', 'portfolio-order',
+             json.dumps(dict(quantity='.01', price='600')), '{}'),
+            ('portfolio-campaign:original', 'POST', 'leverage', json.dumps(dict(symbol='QQQUSDT', leverage=1)), '{}'),
+            ('smoke-original', 'DELETE', 'smoke-order', '{}', '{}')])
+        runtime.db.commit()
+        before = runtime.db.execute('SELECT * FROM dispatches').fetchall()
+        assert runtime.consumption(authorization) == dict(posts=3, submitted_notional='12.00')
+        migrated = runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)
+        assert migrated['consumption'] == dict(posts=3, submitted_notional='12.00')
+        assert runtime.db.execute('SELECT * FROM dispatches').fetchall() == before
+
+
+@pytest.mark.parametrize('limit', [dict(total_orders=100), dict(total_notional=D('12'))])
+@pytest.mark.parametrize('idempotent', [False, True])
+def test_migration_preserves_reserved_exits_under_expanded_history(network_grid, limit, idempotent):
+    root, store, _, _, _, _ = network_grid
+    with closing(DemoRuntime(root)) as runtime:
+        authorization = runtime.start_continuous(store.config, opening_equity=D('5000'),
+            stop_epoch=runtime.stop_epoch())
+        limits = dict(total_orders=101, total_notional=D('14'), max_loss=D('250')) | limit
+        if idempotent:
+            authorization = authorization | limits | dict(total_notional=str(limits['total_notional']), max_loss='250')
+            runtime._set('continuous', json.dumps(authorization))
+        runtime.db.executemany('INSERT INTO dispatches VALUES (?, ?, ?, ?, ?)', [
+            ('smoke-original', 'POST', f'old-{i}', json.dumps(dict(quantity='.001', price='120')), '{}')
+            for i in range(100)])
+        runtime.db.execute('INSERT INTO exit_budget_reservations VALUES (?, ?, ?, ?)',
+            (authorization['id'], 'entry', 'exit', '2'))
+        runtime.db.commit()
+        before = runtime.db.execute('SELECT * FROM exit_budget_reservations').fetchall()
+        with pytest.raises(SafetyBlocked, match='history and reserved exits'):
+            runtime.update_continuous_budget(store.config, current_equity=D('5000'), **limits)
+        assert runtime.continuous_authorization() == authorization
+        assert runtime.db.execute('SELECT * FROM exit_budget_reservations').fetchall() == before
+        result = runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)
+        assert result['consumption']['posts'] == 100
+        assert runtime.db.execute('SELECT * FROM exit_budget_reservations').fetchall() == before
+
+
+def test_window_activation_requires_budget_for_legacy_exit_commitments(network_grid):
+    root, store, factory, _, _, _ = network_grid
+    initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        authorization = bridge.runtime.continuous_authorization()
+        bridge.runtime.db.executemany('INSERT INTO dispatches VALUES (?, ?, ?, ?, ?)', [
+            ('smoke-original', 'POST', f'old-{i}', json.dumps(dict(quantity='.001', price='120')), '{}')
+            for i in range(100)])
+        bridge.runtime.db.execute('INSERT INTO exit_budget_reservations VALUES (?, ?, ?, ?)',
+            (authorization['id'], 'entry', 'exit', '2'))
+        bridge.runtime.db.commit()
+        bridge.recover()
+        with pytest.raises(SafetyBlocked, match='update budget before activation'):
+            bridge.ensure_campaign()
+        bridge.runtime.update_continuous_budget(store.config, current_equity=D('5000'), **LIMITS)
+        bridge.ensure_campaign()
+        assert bridge.runtime.db.execute('SELECT exit_id FROM exit_budget_reservations').fetchall() == [('exit',)]
+
+
 def exhausted(runtime, binding):
     authorization = runtime.start_continuous(binding, opening_equity=D('5000'), stop_epoch=runtime.stop_epoch())
     historical = dict(id='original', journal_id=authorization['journal_id'], opening_equity='5000', smoke=False)
