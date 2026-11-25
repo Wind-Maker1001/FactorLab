@@ -277,6 +277,21 @@ class DemoPortfolioConsumer:
                     raise SafetyBlocked('portfolio shared allocation budget exhausted')
             with self.runtime.db:
                 self.runtime.db.execute('BEGIN IMMEDIATE')
+                authorization = self.runtime.continuous_authorization()
+                if method == 'POST' and authorization is not None:
+                    consumed = self.runtime.consumption(authorization)
+                    notional = D(params['quantity']) * D(params['price']) if 'quantity' in params else D(0)
+                    reservations = self.runtime.db.execute(
+                        'SELECT notional FROM exit_budget_reservations WHERE authorization=?',
+                        (authorization['id'],)).fetchall()
+                    funds = s.adapter.facts.usdt()
+                    if (authorization['state'] != 'RUNNING'
+                            or consumed['posts'] + len(reservations) + 1 > authorization['total_orders']
+                            or D(consumed['submitted_notional']) + notional
+                                + sum((D(row[0]) for row in reservations), D(0)) > D(authorization['total_notional'])
+                            or D(authorization['opening_equity']) - funds['walletBalance']
+                                - funds['unrealizedProfit'] >= D(authorization['max_loss'])):
+                        raise SafetyBlocked('global Demo trading budget exhausted or reserved for exit')
                 if self.runtime.db.execute('SELECT count(*) FROM dispatches WHERE campaign=?',
                                            (campaign_key,)).fetchone()[0] >= 16:
                     raise SafetyBlocked('portfolio persistent campaign exhausted')

@@ -311,8 +311,10 @@ class AlpacaAdapter:
 
     def read_corporate_activities(self, *, after):
         """Official nontrade receipts; dividend qty is eligibility, not new shares."""
-        return self._activity_pages('/v2/account/activities', {
-            'activity_types': 'DIV,DIVNRA,DIVFEE,SSP,SSO,REORG', 'after': after})
+        # Paper rejects SSP as a query filter despite documenting it as a receipt type.
+        rows = self._activity_pages('/v2/account/activities', {'after': after})
+        return tuple(row for row in rows if row['activity_type'] in {
+            'DIV', 'DIVNRA', 'DIVFEE', 'SSP', 'SSO', 'REORG'})
 
     def _activity_pages(self, path, filters):
         rows, token = [], None
