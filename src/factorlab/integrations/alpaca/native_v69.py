@@ -46,8 +46,7 @@ class NativeExecution:
             raise ValueError('native V69 declaration must preserve original execution semantics')
         if binding['instance_id'] != 'V69_CAUSAL' or binding['allocation_id'] != 'v69-original':
             raise ValueError('original V69 execution binding required')
-        if self.owner.store.db.execute('SELECT 1 FROM capital_accounts WHERE account=?',
-                                       (binding['account_id'],)).fetchone() is not None:
+        if self.owner.runner.executor.capital_policy.is_configured(binding['account_id']):
             self.owner.runner.executor.capital_policy.qualify(spec, binding, allocation)
 
     def execute(self, receipt):

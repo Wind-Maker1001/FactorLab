@@ -31,6 +31,56 @@ does not imply permission for internal netting or opposing strategy positions.
 The market adapter resolves account identities and checks execution authority.
 Neither a package nor a strategy decision grants authority or allocates funds.
 
+## Account capital policy
+
+The common `CapitalPolicy` governs both Binance Demo and Alpaca Paper over the
+existing portfolio journal. `configure(..., mode='SHARED_SAME_DIRECTION')` explicitly
+enables funded instances to share same-direction inventory. New accounts and old
+databases default to `EXCLUSIVE`; omitting `mode` on configuration replay preserves
+the persisted mode. Currency, account budget and fee rate remain static. Changing
+to exclusive rejects competing owners and unfinished or uncertain orders; it never
+selects a surviving instance or reallocates inventory.
+
+Use the public policy boundary instead of inferring policy from database tables:
+
+- `is_configured(account_id)` distinguishes unconfigured legacy execution.
+- `mode(account_id)` returns `CapitalPolicyMode`; an unconfigured account raises
+  `KeyError`.
+- `qualify(spec, binding)` atomically binds the funded instance and claims its
+  declared symbols. `ownership(account_id, symbol=None)` returns registered owners
+  with instance, allocation and logical-strategy identities.
+- `validate_shared_symbol(account_id, strategy_id, symbol)` checks funded binding,
+  policy eligibility, current inventory and outstanding opening-order direction.
+  Qualification does not import historical inventory; original-journal adoption
+  requires the existing explicit migration receipt and reconciliation process.
+- `claim(account_id, strategy_id, symbol)`, `release(...)` and
+  `transfer_flat_ownership(account_id, from_strategy, to_strategy, symbols)`
+  participate in the caller's portfolio write transaction. Release requires flat
+  instance inventory and no live or uncertain symbol orders, preserves economic
+  history and allocation identity, and does not require other instances to flatten.
+  Transfer updates policy admission only; the executor owns inventory/history
+  transfer in the same transaction.
+- `limits` / `set_limits` govern an instance; `symbol_limit` /
+  `set_symbol_limit` query or tighten the aggregate symbol ceiling.
+  `validate_orders` checks instance order/position/budget limits, aggregate symbol
+  exposure and account exposure before reservation and submission.
+
+A symbol's default aggregate ceiling is the minimum participating instance
+position limit, not the sum of allocations. It is persistent: joining can tighten
+it, leaving cannot raise it, and an explicit ceiling can only tighten it further.
+Fee-inclusive cash reservations remain separate from gross notional exposure.
+Confirmed inventory and remaining order quantities count once; matching local and
+broker orders are identified by their original client order ID. Pending closing
+orders do not release exposure before confirmation, and sharing permits neither
+opposing instance inventory nor internal netting. Market-specific admission and
+risk guards remain in force.
+
+For derivatives, `risk_snapshot(...).margin_attribution` identifies proportional
+instance allocations of official position initial margin, including the allocation
+basis, estimated status and any unattributed symbols. These are not official
+instance balances. Incomplete margin or funding evidence leaves dependent NAV and
+remaining-budget fields unknown; account availability remains the official fact.
+
 ## Strategy declaration
 
 `factorlab.strategies.protocol` exports `StrategySpecV2` and `DecisionV2` in

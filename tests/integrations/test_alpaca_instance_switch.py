@@ -67,6 +67,10 @@ def test_conflicting_capital_promotion_does_not_activate_candidate(tmp_path):
     service = SimpleNamespace(calendar=calendar(), client=SimpleNamespace(feed='iex'))
     host = StrategyInstances(tmp_path, account, configuration, clock=lambda: NOW)
     host.tick(service, {}, NOW, account.read_account_details())
+    host.runner.executor.allocate(account_id='paper', strategy_id='other',
+        allocation_id='other-usd', capital=D(40), initial_cash=D(40), official_equity=D(100))
+    host.store.capital_policy.bind(account_id='paper', strategy_id='other',
+        instance_id='other', allocation_id='other-usd')
     with host.store.transaction():
         host.store.capital_policy.claim('paper', 'other', 'IWM')
     request(host.views['one'], new, 'conflicting')
