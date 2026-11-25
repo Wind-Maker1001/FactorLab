@@ -240,7 +240,8 @@ view.rollback(reason, *, expected=None, expected_active=None)
 view.record_order(client_id, package_id, event_id, *, reduce_only=False)
 view.order(client_id) -> dict | None
 view.commit_decision(package_id, event_id, input_identity, decision,
-                     *, event, expected_checkpoint) -> dict
+                     *, event, expected_checkpoint, expected_watermark=...) -> dict
+view.activation_callback() -> dict | None
 view.checkpoint() -> dict
 view.deployment_id_for(package_id, prefix) -> str
 
@@ -267,9 +268,15 @@ intent is durably owned by the existing execution core. This acknowledges intent
 acceptance, not order completion or fill confirmation. Uncertain and nonterminal
 orders remain with that core and block deployment through reconciliation. If
 child intent persistence is incomplete, the executor raises; recovery reuses the
-same receipt and stable child IDs. An unfinished dispatch must recover before a switch is
-requested. `load_strategy(package_id)` is required for nonlegacy deployment
-controllers and returns an isolated `LoadedStrategy` for state migration.
+same receipt and stable child IDs. An unfinished dispatch must recover before a switch or
+rollback is requested. The commit transaction rejects a new event while an earlier
+receipt remains unacknowledged. Runtime commits bind both the checkpoint's typed
+content and its watermark, including decisions that leave state unchanged. Event
+identities ignore mapping insertion order while retaining value types.
+`record_order` rejects a client ID already attributed to another registered
+instance in the same market/account; different accounts have separate namespaces.
+`load_strategy(package_id)` is required for nonlegacy deployment controllers and
+returns an isolated `LoadedStrategy` for state migration.
 
 ### Native deployment adoption
 
@@ -295,6 +302,13 @@ orders and owned allocations. An unresolved account-wide inconsistency may
 block execution; it does not reassign order ownership. Shared account funds,
 net positions, reservations and risk stay with the existing account execution
 owner. Quiescing an instance cannot pause the account or another instance.
+
+Activation commits the active version and a durable `activated(version)` callback
+receipt together. The callback must be idempotent, including concurrent delivery.
+A failed callback retains its exception class in `activation_callback()['reason']`;
+the next controller step retries it, including after restart. Until acknowledgement,
+new decisions, switches and rollbacks are blocked. The switch's terminal status
+records the committed version change, not completion of the host callback.
 
 A separate decision execution interface consumes the persisted receipt:
 

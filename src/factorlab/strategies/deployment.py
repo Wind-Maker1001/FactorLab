@@ -7,6 +7,14 @@ from time import time
 from factorlab.trading.storage import dumps, decode
 from .package import encoded, validate_manifest, candidate_package, digest
 from .protocol import V2, validate_binding, json_value
+from .identity import content_identity
+
+
+class SupersededSwitch(Exception):
+    """Another controller already advanced this switch."""
+
+
+_UNSET = object()
 
 LEGACY = 'legacy-grid'
 TERMINAL = {'FILLED', 'CANCELED', 'REJECTED', 'EXPIRED'}
@@ -60,6 +68,8 @@ class DeploymentStore:
             PRIMARY KEY(instance_id,version,watermark));
           CREATE TABLE IF NOT EXISTS instance_dispatches(instance_id TEXT NOT NULL, version TEXT NOT NULL,
             watermark TEXT NOT NULL, PRIMARY KEY(instance_id,version,watermark));
+          CREATE TABLE IF NOT EXISTS activation_callbacks(instance_id TEXT PRIMARY KEY,
+            switch_id INTEGER NOT NULL, package_id TEXT NOT NULL, reason TEXT);
           CREATE TABLE IF NOT EXISTS instance_adoptions(instance_id TEXT PRIMARY KEY,
             identity TEXT NOT NULL, evidence TEXT NOT NULL);
           CREATE TABLE IF NOT EXISTS instance_runtime_bindings(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,
@@ -216,6 +226,15 @@ class DeploymentStore:
     def checkpoint(self):
         return self.snapshot()['checkpoint']
 
+    def activation_callback(self):
+        row = self.db.execute('SELECT * FROM activation_callbacks WHERE instance_id=?', (self.instance_id,)).fetchone()
+        return dict(row) if row else None
+
+    def complete_activation_callback(self, callback):
+        with self.atomic():
+            self.db.execute('DELETE FROM activation_callbacks WHERE instance_id=? AND switch_id=?',
+                            (self.instance_id, callback['switch_id']))
+
     def pending(self):
         row = self._rows('switches', PENDING).fetchone()
         return dict(row) if row else None
@@ -256,6 +275,8 @@ class DeploymentStore:
         if mode not in {'hot', 'restart'}:
             raise ValueError('invalid deployment mode')
         with self.atomic():
+            if self.activation_callback() is not None:
+                raise ValueError('activation callback must complete before switching')
             previous = self._rows('switches', 'selection=?', (selection,)).fetchone()
             if previous:
                 if not self.legacy:
@@ -287,6 +308,10 @@ class DeploymentStore:
             state, current = self.snapshot(), self.pending()
             if expected_active is not None and (state['active'] != expected_active or current is not None):
                 return
+            if self.activation_callback() is not None:
+                raise ValueError('activation callback must complete before rollback')
+            if not self.legacy and state['active'] and self.outstanding(state['active']):
+                raise ValueError('recover outstanding decisions before rollback')
             fallback = self.db.execute('SELECT fallback FROM strategy_registry WHERE instance_id=?', (self.instance_id,)).fetchone()[0]
             target = state['previous'] or fallback
             if current:
@@ -325,6 +350,14 @@ class DeploymentStore:
             raise ValueError('order identity and reduce_only required')
         values = dict(client_id=client_id, version=package_id, watermark=event_id, reduce_only=int(reduce_only))
         with self.atomic():
+            if not self.legacy:
+                bound = self.binding()
+                for owner in self.db.execute('''SELECT r.binding FROM instance_strategy_orders o
+                    JOIN strategy_registry r ON r.instance_id=o.instance_id
+                    WHERE o.client_id=? AND o.instance_id<>?''', (client_id, self.instance_id)):
+                    other = json.loads(owner['binding'])
+                    if (other['market'], other['account_id']) == (bound['market'], bound['account_id']):
+                        raise ValueError('client order ID already owned by another account instance')
             row = self._rows('strategy_orders', 'client_id=?', (client_id,)).fetchone()
             if row is not None:
                 if any(row[k] != v for k, v in values.items()):
@@ -368,7 +401,8 @@ class DeploymentStore:
             self.db.execute('INSERT OR IGNORE INTO instance_dispatches VALUES(?,?,?)',
                             (self.instance_id, receipt['package_id'], receipt['event_id']))
 
-    def commit_decision(self, package_id, event_id, input_identity, decision, *, event, expected_checkpoint):
+    def commit_decision(self, package_id, event_id, input_identity, decision, *, event, expected_checkpoint,
+                        expected_watermark=_UNSET):
         if self.legacy:
             raise ValueError('V2 decision journal requires a registered instance')
         with self.atomic():
@@ -378,7 +412,12 @@ class DeploymentStore:
             state = self.snapshot()
             if self.pending() is not None or state['active'] != package_id:
                 raise ValueError('instance quiesced or decision version is not active')
-            if state['checkpoint'] != expected_checkpoint:
+            if self.activation_callback() is not None:
+                raise ValueError('activation callback is incomplete')
+            if self.outstanding(package_id):
+                raise ValueError('recover outstanding decisions before committing another event')
+            if (content_identity(state['checkpoint']) != content_identity(expected_checkpoint)
+                    or expected_watermark is not _UNSET and state['watermark'] != expected_watermark):
                 raise ValueError('concurrent strategy state update')
             receipt = dict(binding=self.binding(), package_id=package_id, event_id=event_id,
                            input_identity=input_identity, event=event, decision=decision)
@@ -390,6 +429,8 @@ class DeploymentStore:
         if self.legacy:
             return {}
         state = self.snapshot()
+        if not self.is_current(switch):
+            raise SupersededSwitch()
         if switch['phase'] == 'ROLLBACK':
             if state['active'] == switch['new']:
                 return state['checkpoint']
@@ -408,7 +449,15 @@ class DeploymentStore:
             return json.loads(row['checkpoint'])
         migrated = strategy.migrate_state(state['checkpoint'], source_version) if old else {}
         with self.atomic():
-            if not self.is_current(switch) or self.checkpoint() != state['checkpoint']:
+            if not self.is_current(switch):
+                raise SupersededSwitch()
+            row = self.db.execute('SELECT * FROM instance_migrations WHERE instance_id=? AND switch_id=?',
+                                  (self.instance_id, switch['id'])).fetchone()
+            if row:
+                if row['identity'] != identity:
+                    raise ValueError('state migration input identity conflict')
+                return json.loads(row['checkpoint'])
+            if content_identity(self.checkpoint()) != content_identity(state['checkpoint']):
                 raise ValueError('state changed during migration')
             self.db.execute('INSERT INTO instance_migrations VALUES(?,?,?,?)',
                             (self.instance_id, switch['id'], identity, encoded(migrated).decode()))
@@ -431,6 +480,8 @@ class DeploymentStore:
             phase = 'ROLLED_BACK' if switch['phase'] == 'ROLLBACK' else 'SUCCEEDED'
             self._update('switches', dict(phase=phase, reason=None, updated=time()), 'id=?', (switch['id'],))
             self.event(switch['id'], phase, old=switch['old'], new=switch['new'], watermark=watermark, facts=facts, boot=str(boot))
+            self.db.execute('INSERT INTO activation_callbacks VALUES(?,?,?,NULL)',
+                            (self.instance_id, switch['id'], switch['new']))
             return True
 
 
@@ -440,7 +491,23 @@ class DeploymentController:
             raise ValueError('V2 deployment requires an isolated strategy loader')
         self.store, self.adapter, self.load_strategy = store, adapter, load_strategy
 
+    def _complete_activation(self):
+        callback = self.store.activation_callback()
+        if callback is None:
+            return
+        try:
+            self.adapter.activated(callback['package_id'])
+        except Exception as error:
+            with self.store.atomic():
+                self.store.db.execute('UPDATE activation_callbacks SET reason=? WHERE instance_id=? AND switch_id=?',
+                    (type(error).__name__, self.store.instance_id, callback['switch_id']))
+        else:
+            self.store.complete_activation_callback(callback)
+
     def step(self):
+        if self.store.activation_callback() is not None:
+            self._complete_activation()
+            return self.store.snapshot()
         switch = self.store.pending()
         if switch is None:
             return self.store.snapshot()
@@ -486,14 +553,14 @@ class DeploymentController:
                 strategy.spec.require_binding(s.binding())
             checkpoint = s.migrated_checkpoint(switch, strategy)
             if s.activate(switch, checkpoint, a.watermark(), facts, a.boot_id):
-                a.activated(switch['new'])
+                self._complete_activation()
+        except SupersededSwitch:
+            pass
         except (OSError, TimeoutError) as error:
             s.transition(switch, switch['phase'], reason=type(error).__name__)
         except Exception as error:
             if switch['phase'] == 'ROLLBACK':
                 s.transition(switch, 'ROLLBACK', reason='ROLLBACK_FAILED:' + type(error).__name__)
-            elif s.pending() is None and s.snapshot()['active'] == switch['new']:
-                s.rollback('ACTIVATION_FAILED:' + type(error).__name__)
             else:
                 s.rollback('ACTIVATION_FAILED:' + type(error).__name__, expected=switch)
         return s.snapshot()

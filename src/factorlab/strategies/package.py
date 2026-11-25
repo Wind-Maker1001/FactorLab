@@ -65,6 +65,12 @@ def validate_manifest(m, *, qualify=None):
     interface = m.get('interface')
     if ((m.get('schema_version'), interface) not in {(1, INTERFACE), (1, V1), (2, V2)}):
         raise ValueError('unsupported StrategyPackage/interface version')
+    if interface != V2:
+        if m.get('environment') != 'BINANCE_USDM_DEMO' or m.get('symbol') != 'NVDAUSDT':
+            raise ValueError('package outside existing Demo authority')
+        if interface == V1 and m.get('interval_seconds', 60) not in {
+                60, 180, 300, 900, 1800, 3600, 7200, 14400, 21600, 28800, 43200, 86400}:
+            raise ValueError('interval_seconds unavailable from legacy Demo contract')
     if not re.fullmatch(r'[0-9a-f]{40}', m['code_commit']):
         raise ValueError('full source commit required')
     if interface == V2:
