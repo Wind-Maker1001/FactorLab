@@ -17,7 +17,8 @@ from factorlab.trading.storage import dumps, decode
 from .account import AccountFacts, instant
 from .protocol import (
     Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport,
-    AccountReadExpired, AccountReadWindow, ReadOnlyNetworkTransport, credential_account_id,
+    AccountReadExpired, AccountReadWindow, ReadOnlyNetworkTransport, TimeCalibrationError,
+    credential_account_id,
 )
 from .recovery import (
     INCOME_MAX_PAGES, INCOME_PAGE_LIMIT, MAX_QUERY_WINDOW_MS, OrderRecoveryClass, OrderRecoveryConfig,
@@ -240,8 +241,7 @@ class FuturesAdapter:
             return self.query_order(intent.client_order_id)
         try:
             row = self.client.request('POST', '/fapi/v1/order', params)
-            return self._confirm_write(row, intent.client_order_id)
-        except DemoWriteRefused:
+        except (DemoWriteRefused, SafetyBlocked, TimeCalibrationError, AccountReadExpired):
             # Only this call's placeholder exists, and the transport never attempted HTTP.
             with self.store.transaction():
                 self.db.execute('DELETE FROM futures_orders WHERE id=?', (intent.client_order_id,))
@@ -267,8 +267,14 @@ class FuturesAdapter:
         except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
             self._uncertain(intent.client_order_id)
             raise OutcomeUnknown('order response unconfirmed; reconcile without resubmitting') from None
+        try:
+            return self._confirm_write(row, intent.client_order_id)
+        except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
+            self._uncertain(intent.client_order_id)
+            raise OutcomeUnknown('order response unconfirmed; reconcile without resubmitting') from None
 
     def cancel_order(self, client_order_id):
+        from .network import DemoWriteRefused
         if not isinstance(self.client.transport, OfflineTransport):
             from .network import demo_network_permitted
             if not demo_network_permitted(self.client) or not self.client.transport._admission:
@@ -281,6 +287,12 @@ class FuturesAdapter:
         try:
             row = self.client.request('DELETE', '/fapi/v1/order',
                                       dict(symbol=order.intent.instrument_id, origClientOrderId=client_order_id))
+        except (DemoWriteRefused, SafetyBlocked, TimeCalibrationError, AccountReadExpired):
+            raise
+        except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
+            self._uncertain(client_order_id)
+            raise OutcomeUnknown('cancel unconfirmed; reconcile fills before releasing risk') from None
+        try:
             return self._confirm_write(row, client_order_id)
         except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
             self._uncertain(client_order_id)
