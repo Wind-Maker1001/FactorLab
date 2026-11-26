@@ -72,6 +72,8 @@ taskset -c 0,1 python tools/ci/disaster_recovery_portability.py restore \
 
 独立计时的官方 HTTP 夹具追赶，Binance 单次发出 20 至 21 个 GET，耗时 6.2 至 8.7 ms，POST 和 DELETE 均为零。Alpaca 单次发出 10 至 11 个 GET，耗时 0.9 至 1.7 ms。该请求数量对应上述单订单及短资金费窗口，耗时只计本机回执与账本重放。
 
+在同一 Linux 环境运行真实 systemd 维护演练。Alpaca 调度器停止和重启隔离测试 unit，捕获 16,826,850 字节。停机窗口为 1.973 s，包含后续校验的全流程为 3.593 s，结束时测试 unit 为 active。新 systemd 定时与失败告警单位通过本机 `systemd-analyze verify`，用现有测试 Python 路径代替部署前尚不存在的路径。
+
 RPO 按故障发生时距日本最新**已校验**快照水位的差记录。每日捕获加每小时拉取是配置周期，备份或传输失败会拉长实际窗口。RTO 从故障发现到唯一执行者恢复服务，包含外部隔离、必要的末次状态提取、传输、对账与服务启动。本次没有跨区维护窗口的时间样本，阶段测量可用于排查开销，云端 RPO、RTO、实际停机、官方 API 限流和双市场持续 RSS 待 P10-01/P10-02 协调场景实测。实际切换沿用 [运行手册](RUNBOOK.md)。
 
 Binance 未成交的撤销或过期订单有较短的官方历史保留窗口。历史超界、发现无归属 ID 或与原现金基线有差异时继续隔离。Alpaca 的订单查询按提交时间过滤，活动按创建时间过滤，追赶同时复核旧挂单及期间成交，晚到的未归属费用或资金活动阻止接管。[Binance USD-M 交易 API](https://developers.binance.com/en/docs/catalog/core-trading-derivatives-trading-usd-s-m-futures/api/rest-api/trade) [Binance USD-M 账户 API](https://developers.binance.com/en/docs/catalog/core-trading-derivatives-trading-usd-s-m-futures/api/rest-api/account) [Alpaca Paper 订单](https://docs.alpaca.markets/us/reference/getallorders-1) [Alpaca Paper 账户活动](https://docs.alpaca.markets/us/reference/getaccountactivities-2)

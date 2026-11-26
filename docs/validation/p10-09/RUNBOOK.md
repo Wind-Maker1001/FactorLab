@@ -6,7 +6,7 @@
 
 1. 按 P10-01/P10-02 的版本安装方式部署同一份已审查的 Git 提交。记录实际安装版本和有效启动配置，包括执行模式、服务单位、两端状态路径、实例或包目录、外部 TaskMailbox 路径以及私有配置文件的摘要。把这些信息保存为一份按市场管理、两端内容完全一致的 launch contract 文件。密钥通过 systemd 凭证单独配置。
 2. Binance 沿用 C07 的备份 unit、timer 和 TaskMailbox drop-in。给备份 unit 增加 `Environment=FACTORLAB_DR_REVISION=<已部署的完整 Git SHA>`。P10-01 更新实际部署时应一并更新此值。Alpaca 安装 `factorlab-alpaca-backup.service` 和对应 timer，把 `/var/backups/factorlab-alpaca-paper` 建成 `factorlab-alpaca` 所有、权限 0700 的目录。Alpaca 从 `current` 指向的发布目录读取版本。两端安排不同时间的巡检和验证，避免同时耗尽 VM 的余量。
-3. 为日本接收节点的 `factorlab-backup` 用户创建独立 SSH 密钥，按市场保存在 root 所有的 `/etc/factorlab-dr/binance.ssh-key` 和 `alpaca.ssh-key` 中。主节点的 root 管理 sshd 授权文件，把每把密钥映射到对应备份所有者的账户，并限制为 `restrict,command="/usr/bin/rrsync -ro /var/backups/<该市场的快照目录>"`。固定主节点 SSH 主机公钥，并通过控制台或原可信连接核实。只把已发布的快照目录交给 rrsync。
+3. 为日本接收节点的 `factorlab-backup` 用户创建独立 SSH 密钥，按市场保存在 root 所有的 `/etc/factorlab-dr/binance.ssh-key` 和 `alpaca.ssh-key` 中。主节点创建仅用于拉取的 `factorlab-backup-reader`，具有 `/bin/sh`、锁定的密码和 root 管理的专用 authorized keys 文件。两个市场的服务用户继续使用 `nologin`。固定主节点 SSH 主机公钥，并通过控制台或原可信连接核实。
 4. 在日本准备 `/var/backups/factorlab-offsite/binance` 和 `/var/backups/factorlab-offsite/alpaca`，所有者均为 `factorlab-backup`，权限 0700。确认实际承载该目录的现有 Azure 托管磁盘使用静态加密，将磁盘资源 ID 和控制面返回的加密类型记入维护证据。SSH 加密传输，静态加密由该磁盘提供。无需新资源。
 5. 安装 offsite service/timer 和失败告警 unit。在 `/etc/factorlab-dr/<市场>.env` 填写下面三项，配置 `/etc/factorlab-dr/ssh_config` 中相应 Host。首次拉取成功后验证两个市场的独立副本，再启用两个 timer。失败 unit 输出 `SYSLOG_IDENTIFIER=factorlab-dr`、优先级 error 的事件，由已有告警接收器消费。
 
@@ -19,13 +19,28 @@ FACTORLAB_OFFSITE_MAX_BYTES=268435456
 ```sshconfig
 Host dr-binance
     HostName <primary-host>
-    User factorlab-demo
+    User factorlab-backup-reader
     IdentitiesOnly yes
     IdentityFile ${CREDENTIALS_DIRECTORY}/ssh-key
     UserKnownHostsFile /etc/factorlab-dr/known_hosts
 ```
 
-另一个 Host 使用 `factorlab-alpaca`。先用一次手动 systemd oneshot 验证主机公钥、只读授权及失败告警，再启用定时运行。拉取保留两份发布副本和至多一个当前暂存目录。rsync 先估算字节数，再使用上一个副本和未完成文件做差量。SHA-256、包内容和 SQLite 校验后才发布。操作员需为保留副本和单次传输新增空间同时预留空间。初始上限 256 MiB 是部署配置示例，应依据监测到的状态增长和磁盘空间调整。
+另一个 Host 使用同一读取账户及 Alpaca 专用密钥。源端以 `Match User factorlab-backup-reader` 配置公钥登录及 root 管理的专用 `AuthorizedKeysFile`，关闭密码、键盘交互、TTY 和转发。两把公钥分别使用以下受限命令，后接对应公钥。
+
+```text
+restrict,command="/usr/bin/sudo -n -u factorlab-demo /usr/bin/rrsync -ro /var/backups/factorlab-demo" <Binance public key>
+restrict,command="/usr/bin/sudo -n -u factorlab-alpaca /usr/bin/rrsync -ro /var/backups/factorlab-alpaca-paper" <Alpaca public key>
+```
+
+在主节点用 `visudo` 仅授权这两个确切命令。保留 `SSH_ORIGINAL_COMMAND` 供 rrsync 解析受限请求，工作进程以各自的快照所有者身份只读运行。快照可保持原有的 0700/0600 权限。
+
+```sudoers
+Defaults:factorlab-backup-reader env_keep += "SSH_ORIGINAL_COMMAND"
+factorlab-backup-reader ALL=(factorlab-demo) NOPASSWD: /usr/bin/rrsync -ro /var/backups/factorlab-demo
+factorlab-backup-reader ALL=(factorlab-alpaca) NOPASSWD: /usr/bin/rrsync -ro /var/backups/factorlab-alpaca-paper
+```
+
+先用一次手动 systemd oneshot 验证主机公钥、只读授权及失败告警，再启用定时运行。拉取保留两份发布副本和至多一个当前暂存目录。rsync 先估算字节数，再使用上一个副本和未完成文件做差量。SHA-256、包内容和 SQLite 校验后才发布。操作员需为保留副本和单次传输新增空间同时预留空间。初始上限 256 MiB 是部署配置示例，应依据监测到的状态增长和磁盘空间调整。
 
 发生中断时重新执行同一 `pull`，相同名称使用相同的暂存路径。目标机的旧有效副本在新副本通过验证前保持可用。源端捕获和接收端拉取的时间可分别从 C07 状态文件、Alpaca unit 日志及 receiver JSON 查看。捕获过期触发告警，需要检查源端备份 unit。
 
