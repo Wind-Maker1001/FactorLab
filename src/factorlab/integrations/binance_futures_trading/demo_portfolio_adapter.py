@@ -30,7 +30,15 @@ class DemoPortfolioAdapter:
         return self.session.adapter.funding_coverage()
 
     def margin_facts(self):
-        return self.session.adapter.read_facts()
+        return self.session.adapter.read_facts(sync_funding=True)
+
+    def capital_facts(self):
+        session = self.session
+        initial = None
+        if not session._protocol_ids():
+            initial = session.adapter.read_facts()
+        account = session.gateway.recover(session.controller, initial_facts=initial)
+        return account, session.adapter.facts
 
     def _confirmed(self, client_id):
         record, notional = self.session.adapter._load(client_id)

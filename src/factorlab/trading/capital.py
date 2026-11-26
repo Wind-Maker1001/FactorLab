@@ -53,6 +53,8 @@ class StrategyRiskSnapshot:
     remaining_budget: Decimal | None
     positions: tuple | None
     complete: bool = True
+    wallet: Decimal | None = None
+    corporate_cash_flow: Decimal | None = None
 
 
 @dataclass(frozen=True)
@@ -72,6 +74,7 @@ class CapitalPolicy:
     """Policy metadata shares the execution transaction, never a second cash ledger."""
 
     def __init__(self, store):
+        from .capital_management import SCHEMA
         self.store = store
         schema = '''
             CREATE TABLE IF NOT EXISTS capital_accounts (
@@ -105,6 +108,8 @@ class CapitalPolicy:
             for statement in schema.split(';'):
                 if statement.strip():
                     store.db.execute(statement)
+            for statement in SCHEMA:
+                store.db.execute(statement)
             if 'mode' not in {row[1] for row in store.db.execute('PRAGMA table_info(capital_accounts)')}:
                 store.db.execute("ALTER TABLE capital_accounts ADD COLUMN mode TEXT NOT NULL DEFAULT 'EXCLUSIVE'")
             primary = [row[1] for row in sorted(store.db.execute('PRAGMA table_info(capital_symbols)'),
@@ -117,7 +122,7 @@ class CapitalPolicy:
                                  'FROM capital_symbols_exclusive')
                 store.db.execute('DROP TABLE capital_symbols_exclusive')
             for account, symbol, owner in store.db.execute('SELECT account,symbol,strategy FROM capital_symbols').fetchall():
-                self._tighten_symbol_limit(account, symbol, self.limits(account, owner).max_instrument_exposure)
+                self._tighten_symbol_limit(account, symbol, self.limits(account, owner, original=True).max_instrument_exposure)
 
     def is_configured(self, account_id):
         return self.store.db.execute('SELECT 1 FROM capital_accounts WHERE account=?',
@@ -144,8 +149,7 @@ class CapitalPolicy:
             if previous is not None and (previous[0] != currency or
                     tuple(map(Decimal, previous[1:])) != (budget, fee_rate)):
                 raise ValueError('static account capital policy changed')
-            total = sum((Decimal(row[0]) for row in self.store.db.execute(
-                'SELECT capital FROM portfolio_allocations WHERE account=?', (account_id,))), ZERO)
+            total = self.store.allocated_capital(account_id)
             if total > budget:
                 raise ValueError('existing allocations exceed account capital budget')
             if previous is None or selected != self.mode(account_id):
@@ -160,7 +164,7 @@ class CapitalPolicy:
             existing = set(self.store.db.execute('SELECT symbol,strategy FROM portfolio_claims WHERE account=?', (account_id,)))
             existing.update((order['record'].snapshot.intent.instrument_id, owner) for owner, order in self._orders(account_id))
             for symbol, owner in existing:
-                self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, owner).max_instrument_exposure)
+                self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, owner, original=True).max_instrument_exposure)
 
     def _orders(self, account_id):
         for owner, payload in self.store.db.execute(
@@ -254,21 +258,20 @@ class CapitalPolicy:
             self.store.db.execute('INSERT INTO capital_instances VALUES (?,?,?,?,?,0)',
                                   (account_id, strategy_id, instance_id, allocation_id, logical_strategy))
 
-    def limits(self, account_id, strategy_id):
+    def limits(self, account_id, strategy_id, *, original=False):
         from .control import RiskLimits
         row = self.store.db.execute(
             'SELECT max_order,max_symbol,budget FROM capital_limits WHERE account=? AND strategy=?',
             (account_id, strategy_id)).fetchone()
-        if row is None:
-            cap = self.store.allocation(account_id, strategy_id)['capital']
-            return RiskLimits(max_order_notional=cap, max_instrument_exposure=cap, account_budget=cap)
-        return RiskLimits(max_order_notional=Decimal(row[0]),
-                          max_instrument_exposure=Decimal(row[1]), account_budget=Decimal(row[2]))
+        allocation = self.store.allocation_basis if original else self.store.allocation
+        cap = allocation(account_id, strategy_id)['capital']
+        order, symbol, budget = (cap, cap, cap) if row is None else (min(cap, Decimal(value)) for value in row)
+        return RiskLimits(max_order_notional=order, max_instrument_exposure=symbol, account_budget=budget)
 
     def set_limits(self, account_id, strategy_id, limits):
         """Persist an immutable tighter instance projection of existing RiskLimits."""
         with self.store.transaction():
-            capital = self.store.allocation(account_id, strategy_id)['capital']
+            capital = self.store.allocation_basis(account_id, strategy_id)['capital']
             value = (limits.max_order_notional, limits.max_instrument_exposure, limits.account_budget)
             if any(amount > capital for amount in value):
                 raise ValueError('instance risk limits exceed allocated capital')
@@ -374,11 +377,13 @@ class CapitalPolicy:
             self.bind(account_id=account_id, strategy_id=owner,
                       instance_id=binding['instance_id'], allocation_id=binding['allocation_id'],
                       logical_strategy=binding['strategy_id'])
-            configured = self.store.allocation(account_id, owner)
+            configured = self.store.allocation_basis(account_id, owner)
             currency = self.store.db.execute(
                 'SELECT currency FROM capital_accounts WHERE account=?', (account_id,)).fetchone()[0]
             if spec.capital['currency'] != currency or spec.capital['requested'] > configured['capital']:
                 raise ValueError('strategy capital demand exceeds static allocation')
+            if self.store.capital_balance(account_id, owner)[3]:
+                raise ValueError('retired capital allocation')
             for symbol in spec.symbols:
                 self.claim(account_id, owner, symbol)
             return configured
@@ -441,7 +446,7 @@ class CapitalPolicy:
         if not symbol:
             raise ValueError('symbol required')
         self.validate_shared_symbol(account_id, strategy_id, symbol)
-        self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, strategy_id).max_instrument_exposure)
+        self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, strategy_id, original=True).max_instrument_exposure)
         self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
                               (account_id, symbol, strategy_id))
 
@@ -480,7 +485,7 @@ class CapitalPolicy:
             self.store.db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
                                   (account_id, symbol, from_strategy))
             self._tighten_symbol_limit(account_id, symbol,
-                                       self.limits(account_id, to_strategy).max_instrument_exposure)
+                                       self.limits(account_id, to_strategy, original=True).max_instrument_exposure)
             self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
                                   (account_id, symbol, to_strategy))
 
@@ -488,6 +493,8 @@ class CapitalPolicy:
         if type(paused) is not bool:
             raise ValueError('boolean pause state required')
         with self.store.transaction():
+            if not paused and self.store.capital_balance(account_id, strategy_id)[3]:
+                raise ValueError('retired capital allocation')
             cursor = self.store.db.execute(
                 'UPDATE capital_instances SET paused=? WHERE account=? AND strategy=?',
                 (int(paused), account_id, strategy_id))
@@ -508,25 +515,27 @@ class CapitalPolicy:
             previous = pd.Series({owner: float(capital / budget) for owner, capital in owners.items()})
         return optimizer.optimize(replace(data, previous_weights=previous))
 
-    def risk_snapshot(self, executor, account_id, *, official_equity):
+    def risk_snapshot(self, executor, account_id, *, official_equity, account=None, margin=None):
         """Read one official account observation and one coherent journal view."""
-        with self.store.transaction():
+        context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
+        with context:
             row = self.store.db.execute(
                 'SELECT currency,budget FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
             if row is None:
                 raise KeyError(account_id)
             currency, budget = row[0], Decimal(row[1])
-            account = executor.adapter.read_account()
+            if account is None:
+                account = executor.adapter.read_account()
             if account.account_id != account_id:
                 raise ValueError('matching official account required')
             derivatives = account.market == Market.BINANCE_USDM
             funding = None
-            margin = None
             margin_attribution = None
             if derivatives:
                 from .capital_funding import attribute_funding
                 from .capital_margin import attribute_margin
-                margin = executor.adapter.margin_facts()
+                if margin is None:
+                    margin = executor.adapter.margin_facts()
                 if margin.account_id != account_id:
                     raise ValueError('margin facts must match the account')
                 account = margin.shared(account.open_orders, reconciled=account.reconciled)
@@ -557,14 +566,15 @@ class CapitalPolicy:
                                 else None) if derivatives else ZERO
                     strategies.append(StrategyRiskSnapshot(capital, occupied, ZERO, ZERO, ZERO,
                         ZERO, payment, nav, None if nav is None else nav - occupied - capital.reserved, (),
-                        complete))
+                        complete, nav, ZERO))
                     continue
                 report = executor.report(latest[0], official_equity=official_equity,
-                                         readonly=True, account=account)
+                                         readonly=True, account=account, derivatives=derivatives)
                 occupied = sum((p.market_value for p in report.positions), ZERO)
                 basis = sum((p.owned_cost_basis for p in report.positions), ZERO)
                 gross_room = max(ZERO, self.limits(account_id, owner).account_budget - occupied - capital.reserved)
                 payment, nav, remaining, complete = ZERO, report.economic_nav, min(capital.cash - capital.reserved, gross_room), True
+                wallet = capital.cash
                 if derivatives:
                     complete = margin_attribution.complete and funding.complete
                     occupied = dict(margin_attribution.amounts)[owner] if margin_attribution.complete else None
@@ -573,17 +583,17 @@ class CapitalPolicy:
                         'SELECT initial_quantity,entry_price FROM portfolio_claims WHERE account=? AND strategy=? '
                         'UNION ALL SELECT initial_quantity,entry_price FROM portfolio_claim_history WHERE account=? AND strategy=?',
                         (account_id, owner, account_id, owner))), ZERO)
-                    allocation = self.store.allocation(account_id, owner)
-                    initial_unrealized = allocation['capital'] - allocation['initial_cash'] - initial_basis
-                    nav = (capital.capital + report.realized_pnl + report.unrealized_pnl
-                           - initial_unrealized + payment) if complete else None
+                    allocation = self.store.allocation_basis(account_id, owner)
+                    _, cash_in, cash_out, _ = self.store.capital_balance(account_id, owner)
+                    wallet = (allocation['initial_cash'] + initial_basis + cash_in - cash_out
+                              + report.realized_pnl + payment) if complete else None
+                    nav = wallet + report.unrealized_pnl if complete else None
                     remaining = min(gross_room, max(ZERO, nav - occupied - capital.reserved)) if complete else None
                 strategies.append(StrategyRiskSnapshot(capital, occupied, basis,
                     report.realized_pnl, report.unrealized_pnl, report.execution_fees,
-                    payment, nav, remaining, tuple(report.positions), complete))
+                    payment, nav, remaining, tuple(report.positions), complete, wallet, report.corporate_cash_flow))
             balance = next((asset for asset in account.assets if asset.currency == currency), None)
-            allocated = sum((Decimal(amount) for amount, in self.store.db.execute(
-                'SELECT capital FROM portfolio_allocations WHERE account=?', (account_id,))), ZERO)
+            allocated = self.store.allocated_capital(account_id)
             return AccountRiskSnapshot(account_id, currency, account.observed_at,
                 reconciled, None if balance is None else balance.available, budget, allocated,
                 tuple(strategies), margin_attribution)

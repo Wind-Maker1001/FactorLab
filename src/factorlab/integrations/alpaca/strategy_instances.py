@@ -69,6 +69,9 @@ class StrategyInstances:
                 self.store.capital_policy.bind(account_id=facts.account_id, strategy_id=owner,
                     instance_id=owner, allocation_id=binding['allocation_id'],
                     logical_strategy=binding['strategy_id'])
+            if self.store.capital_balance(facts.account_id, owner)[3]:
+                self.state['instances'][owner] = {'state': 'RETIRED'}
+                continue
             if registration.get('native_v69', False):
                 from .native_v69 import NativeWeeklyExecution
                 native = NativeWeeklyExecution(self.root, adapter, clock=clock, revision=revision,
@@ -105,10 +108,15 @@ class StrategyInstances:
         instance = AlpacaInstance(self.root, view.binding(), package_id, strategy.spec,
             None, self.runner, StrategyData(assets, clock=self.clock), clock=self.clock)
         allocation = instance.allocation(account)
+        allocation['capital'] = self.store.allocation_basis(account.account_id, owner)['capital']
         execution = AlpacaDecisionExecution(self.runner.executor, assets, strategy.spec,
                                            view.binding(), allocation, clock=self.clock)
         instance.runtime = InstanceDecisionRuntime(strategy, view, execution, allocation=allocation)
         self.instances[owner] = instance
+
+    @property
+    def capital(self):
+        return self.runner.executor.capital
 
     @property
     def symbols(self):
@@ -134,17 +142,26 @@ class StrategyInstances:
 
     def tick(self, service, window, at, facts):
         from zoneinfo import ZoneInfo
+        from factorlab.trading.capital_cli import process_command
         service.cache = self.cache
         account = self.adapter.recover()
+        blocked = self.corporate_actions(at.astimezone(ZoneInfo('America/New_York')).date().isoformat(),
+                                         facts.account_id)
+        if not blocked:
+            process_command(self.capital, facts.account_id, operating_errors=(AlpacaError,))
+        retired = {owner for owner in self.views if self.store.capital_balance(facts.account_id, owner)[3]}
         for owner, view in self.views.items():
+            if owner in retired:
+                self.state['instances'][owner] = {'state': 'RETIRED'}
+                continue
             if owner not in self.instances and owner not in self.native:
                 pending = view.pending()
                 package = view.snapshot()['active'] or (pending['new'] if pending else None)
                 if package is not None:
                     self.attach(owner, package, account)
-        blocked = self.corporate_actions(at.astimezone(ZoneInfo('America/New_York')).date().isoformat(),
-                                         facts.account_id)
         for owner, native in self.native.items():
+            if owner in retired:
+                continue
             if service.client.feed != 'iex':
                 raise ValueError('original V69 input provenance requires IEX')
             affected = set(native.strategy.spec.symbols) & blocked.keys()
@@ -155,6 +172,8 @@ class StrategyInstances:
                 native.tick(service, window, at, facts)
             self.state['instances'][owner] = dict(native.state)
         for owner, instance in tuple(self.instances.items()):
+            if owner in retired:
+                continue
             affected = set(instance.spec.symbols) & blocked.keys()
             if affected:
                 instance.state.update(state='PREPARATION_INCOMPLETE',

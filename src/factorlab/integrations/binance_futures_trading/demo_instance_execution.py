@@ -54,8 +54,7 @@ class DemoInstanceExecutionAdapter:
         receipt = accepted['receipt']
         binding = receipt['binding']
         funded = self.executor.store.allocation(binding['account_id'], binding['instance_id'])
-        if (funded is None or funded['allocation_id'] != binding['allocation_id']
-                or funded['capital'] != accepted['allocation']['budget_usdt']):
+        if funded is None or funded['allocation_id'] != binding['allocation_id']:
             raise SafetyBlocked('instance requires its existing shared capital allocation')
         configured = decode(json.loads(self.store.event_payload('demo:instance:' + binding['instance_id'])))
         return self.executor.create(
@@ -147,7 +146,11 @@ class DemoInstanceExecutionAdapter:
                 own = self.owners.inventory(instance, symbol)
                 kind = decision['kind']
                 if kind in {'target_weight', 'target_weights'}:
-                    target = configured['allocation']['budget_usdt'] * target / book['askPrice']
+                    if receipt['package_id'] == 'mailbox-target-v1':
+                        capital = D(receipt['event']['task']['equity_usdt'])
+                    else:
+                        capital = self.executor.store.allocation(binding['account_id'], instance)['capital']
+                    target = capital * target / book['askPrice']
                 elif kind == 'quantity_deltas':
                     target += own
                 elif kind != 'target_quantities':

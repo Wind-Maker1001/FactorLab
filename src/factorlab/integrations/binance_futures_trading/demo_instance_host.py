@@ -177,8 +177,10 @@ class DemoInstanceHost:
             manifest=view.manifest(version), trusted=True)
 
     def refresh(self):
-        amounts = [Decimal(amount) for amount, in self.owner.execution.executor.store.db.execute(
-            'SELECT capital FROM portfolio_allocations WHERE account=?', (self.session.adapter.account_id,))]
+        store = self.owner.execution.executor.store
+        account = self.session.adapter.account_id
+        amounts = [store.allocation(account, owner)['capital'] for owner, in store.db.execute(
+            'SELECT strategy FROM portfolio_allocations WHERE account=?', (account,))]
         total = sum(amounts, Decimal(0))
         if total > Decimal(27):
             raise SafetyBlocked('funded instances exceed original 7/20 USDT account capital')
@@ -189,7 +191,7 @@ class DemoInstanceHost:
             self.session.shared_account = True
         for row in self.registered(self.registry, self.session.adapter.account_id):
             instance_id = row['instance_id']
-            if instance_id in self.controllers:
+            if instance_id in self.controllers or store.capital_balance(account, instance_id)[3]:
                 continue
             view = self.stack.enter_context(closing(self.registry.for_instance(instance_id)))
             adapter = DemoInstanceDeployment(self, view)

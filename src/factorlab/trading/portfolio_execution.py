@@ -181,16 +181,36 @@ class PortfolioStore(PaperStore):
                 reserved += intent.quantity - snapshot.cumulative_filled_quantity
         return self.holdings(account_id, strategy_id).get(symbol, ZERO) - reserved
 
+    def capital_balance(self, account_id, strategy_id):
+        row = self.db.execute(
+            'SELECT budget_delta,cash_in,cash_out,retired FROM capital_balances WHERE account=? AND strategy=?',
+            (account_id, strategy_id)).fetchone()
+        return (ZERO, ZERO, ZERO, False) if row is None else (*map(D, row[:3]), bool(row[3]))
+
+    def allocated_capital(self, account_id):
+        from .capital_apportionment import exact_sum
+        return exact_sum(D(value) for value, in self.db.execute(
+            'SELECT capital FROM portfolio_allocations WHERE account=? UNION ALL '
+            'SELECT budget_delta FROM capital_balances WHERE account=?', (account_id, account_id)))
+
     def allocation(self, account_id, strategy_id):
+        basis = self.allocation_basis(account_id, strategy_id)
+        if basis is not None:
+            difference, _, _, _ = self.capital_balance(account_id, strategy_id)
+            basis['capital'] += difference
+        return basis
+
+    def allocation_basis(self, account_id, strategy_id):
         row = self.db.execute('SELECT allocation,capital,initial_cash FROM portfolio_allocations '
                               'WHERE account=? AND strategy=?', (account_id, strategy_id)).fetchone()
         return None if row is None else dict(allocation_id=row[0], capital=D(row[1]), initial_cash=D(row[2]))
 
     def cash(self, account_id, strategy_id, *, exclude_id=None, reserve=True):
         """Allocated cash after confirmed fills, actions and all local buy reservations."""
-        allocation = self.allocation(account_id, strategy_id)
-        return allocation['initial_cash'] + self.cash_flow(account_id, strategy_id,
-                                                          exclude_id=exclude_id, reserve=reserve)
+        allocation = self.allocation_basis(account_id, strategy_id)
+        _, incoming, outgoing, _ = self.capital_balance(account_id, strategy_id)
+        return allocation['initial_cash'] + incoming - outgoing + self.cash_flow(
+            account_id, strategy_id, exclude_id=exclude_id, reserve=reserve)
 
     def cash_flow(self, account_id, strategy_id, *, exclude_id=None, reserve=False):
         """Net economic postings, excluding any initial capital contribution."""
@@ -254,6 +274,8 @@ class PortfolioExecutor:
         self.adapter, self.store = adapter, store
         self.quote_currency, self.max_quote_age, self.clock = quote_currency, max_quote_age, clock
         self.capital_policy = store.capital_policy
+        from .capital_management import CapitalManagement
+        self.capital = CapitalManagement(self)
 
     def _shared_policy(self, account_id):
         from .capital import CapitalPolicyMode
@@ -320,7 +342,7 @@ class PortfolioExecutor:
             raise ValueError('identified cash-funded allocation required')
         value = dict(allocation_id=allocation_id, capital=capital, initial_cash=initial_cash)
         with self.store.transaction():
-            previous = self.store.allocation(account_id, strategy_id)
+            previous = self.store.allocation_basis(account_id, strategy_id)
             if previous is not None:
                 if previous != value:
                     raise ValueError('allocation identity or initial funding changed')
@@ -346,8 +368,12 @@ class PortfolioExecutor:
             official_cash = next(a.total for a in account.assets if a.currency == self.quote_currency)
             if cash_used + initial_cash > official_cash:
                 raise ValueError('allocations exceed official account cash')
-            committed = sum((D(amount) for amount, in self.store.db.execute(
-                'SELECT capital FROM portfolio_allocations WHERE account=?', (account_id,))), ZERO)
+            if self.store.db.execute('SELECT 1 FROM capital_balances WHERE account=? LIMIT 1',
+                                     (account_id,)).fetchone():
+                pool = self.capital._snapshot(account_id)
+                if pool.allocatable is None or initial_cash > pool.allocatable:
+                    raise ValueError('allocation exceeds reconciled public capital')
+            committed = self.store.allocated_capital(account_id)
             policy = self.store.db.execute(
                 'SELECT budget FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
             if policy is not None and committed + capital > D(policy[0]):
@@ -356,6 +382,8 @@ class PortfolioExecutor:
                 raise ValueError('allocations exceed official account equity')
             self.store.db.execute('INSERT INTO portfolio_allocations VALUES (?,?,?,?,?)',
                 (account_id, strategy_id, allocation_id, str(capital), str(initial_cash)))
+            self.store.db.execute('INSERT INTO capital_origins VALUES (?,?,?)',
+                (account_id, strategy_id, account.observed_at.isoformat()))
 
     def projection(self, account, strategy_id):
         """Return a sleeve snapshot; only the aggregate snapshot authorizes execution."""
@@ -502,13 +530,14 @@ class PortfolioExecutor:
                     self.store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
                                           (intent.client_order_id, identity, dumps(order)))
                 allocation = self.store.allocation(account_id, strategy_id)
-                if allocation is not None and self.store.cash(account_id, strategy_id) < ZERO:
+                has_buys = any(intent.side == Side.BUY for intent, _ in direct_orders)
+                if allocation is not None and has_buys and self.store.cash(account_id, strategy_id) < ZERO:
                     raise ValueError('direct orders exceed allocated cash')
                 account = self.adapter.read_account()
                 if (account.account_id != account_id or not account.reconciled
                         or self._account_uncertain(account_id, owned_symbols)):
                     raise ValueError('direct reservation requires a matching reconciled account')
-                if (allocation is not None and any(intent.side == Side.BUY for intent, _ in direct_orders)
+                if (allocation is not None and has_buys
                         and (self.store.cash(account_id, strategy_id)
                              + self._funding_adjustment(account, strategy_id)) < ZERO):
                     raise ValueError('direct orders exceed capital after funding')
@@ -1453,7 +1482,7 @@ class PortfolioExecutor:
                 return
             self._accept(plan, order, event)
 
-    def report(self, identity, *, official_equity, adjustments=(), readonly=False, account=None):
+    def report(self, identity, *, official_equity, adjustments=(), readonly=False, account=None, derivatives=False):
         """Persist a strategy-lifetime report against current official holdings.
 
         Official mark prices value inventory; execution quotes are not substituted
@@ -1487,7 +1516,7 @@ class PortfolioExecutor:
             events = [decode(json.loads(payload)) for (payload,) in self.store.db.execute(
                 'SELECT payload FROM portfolio_confirmations WHERE account=? ORDER BY rowid',
                 (request['account'],))]
-            allocation = self.store.allocation(request['account'], request['strategy'])
+            allocation = self.store.allocation_basis(request['account'], request['strategy'])
             capital = allocation['capital'] if allocation is not None else decode(json.loads(
                 self.store.event_payload('portfolio-initial-capital:' + request['account'])))
             if allocation is not None:
@@ -1495,18 +1524,21 @@ class PortfolioExecutor:
                 if any(p.quantity != total.get(p.instrument_id, ZERO) for p in account.positions):
                     raise ValueError('aggregate inventory does not reconcile to official shares')
                 account = self.projection(account, request['strategy'])
-                official_equity = (self.store.cash(request['account'], request['strategy'], reserve=False)
-                                   + sum((p.quantity * p.mark_price for p in account.positions), ZERO))
-                capital = allocation['capital']
+                sleeve_equity = (self.store.cash(request['account'], request['strategy'], reserve=False)
+                                 + sum((p.quantity * p.mark_price for p in account.positions), ZERO))
+                if sleeve_equity > ZERO:
+                    official_equity = sleeve_equity
             result = build_portfolio_report(starting_inventory=starting, intents=intents,
                 events=[event for event in events if event.client_order_id in ids],
                 reference_prices={o['record'].snapshot.intent.client_order_id: o['reference_price'] for o in orders},
                 account=account, prices={p.instrument_id: p.mark_price for p in account.positions},
                 official_equity=official_equity, target_weights=request['weights'],
                 adjustments=adjustments, economic_multipliers=request['multipliers'], initial_capital=capital,
-                quote_currency=self.quote_currency, corporate_actions=[decode(json.loads(payload)) for payload, in self.store.db.execute(
+                quote_currency=self.quote_currency, fees_in_basis=not derivatives, corporate_actions=[decode(json.loads(payload)) for payload, in self.store.db.execute(
                     'SELECT payload FROM portfolio_corporate_actions WHERE account=? AND strategy=? ORDER BY rowid',
                     (request['account'], request['strategy']))])
+            if allocation is not None and sleeve_equity <= ZERO:
+                result = replace(result, economic_nav=sleeve_equity + result.research_adjustment)
             if not readonly:
                 plan['report'] = asdict(result)
                 self.store.save_plan(plan)

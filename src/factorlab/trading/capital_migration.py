@@ -32,8 +32,7 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
                                   (account_id,)).fetchone()
         if budget is None or budget[1] != executor.quote_currency:
             raise ValueError('matching static account policy required before migration')
-        total = sum((Decimal(amount) for amount, in store.db.execute(
-            'SELECT capital FROM portfolio_allocations WHERE account=?', (account_id,))), ZERO)
+        total = store.allocated_capital(account_id)
         total += sum((sleeve['capital'] for sleeve in sleeves), ZERO)
         if total > Decimal(budget[0]) or total > official_equity:
             raise ValueError('legacy allocations exceed static account or official equity')
@@ -83,6 +82,8 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
                     raise ValueError('legacy confirmations do not reproduce original order totals')
             store.db.execute('INSERT INTO portfolio_allocations VALUES (?,?,?,?,?)',
                 (account_id, owner, sleeve['allocation_id'], str(capital), str(cash)))
+            store.db.execute('INSERT INTO capital_origins VALUES (?,?,?)',
+                (account_id, owner, sleeve['created_at'].isoformat()))
             policy.bind(account_id=account_id, strategy_id=owner, instance_id=owner,
                         allocation_id=sleeve['allocation_id'], logical_strategy=sleeve['logical_strategy'])
             for symbol in symbols:
