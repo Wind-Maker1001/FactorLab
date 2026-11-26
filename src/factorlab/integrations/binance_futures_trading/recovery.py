@@ -697,6 +697,7 @@ def account_baseline(facts):
     return dict(
         wallet=str(wallet),
         positions=[[symbol, side, str(qty)] for (symbol, side), qty in sorted(positions.items())],
+        observed_at=facts.observed_at.isoformat(),
     )
 
 
