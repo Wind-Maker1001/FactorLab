@@ -21,8 +21,22 @@ from .market_data.cache import MarketCache
 
 
 class StrategyInstances:
-    def __init__(self, root, adapter, configuration, *, clock, revision='unknown'):
+    def __init__(self, root, adapter, configuration, *, clock, revision='unknown', benchmark_provider=None):
         self.root, self.adapter, self.clock = Path(root), adapter, clock
+        self.benchmark_provider = benchmark_provider
+        if self.benchmark_provider is None and configuration.get('benchmark_source'):
+            from .benchmark_data import LocalBenchmarkProvider
+            src = configuration['benchmark_source']
+            if isinstance(src, (str, Path)):
+                self.benchmark_provider = LocalBenchmarkProvider(src, clock=clock)
+            elif isinstance(src, dict):
+                self.benchmark_provider = LocalBenchmarkProvider(
+                    src['path'],
+                    series_id=src.get('series_id', '^SP500TR'),
+                    source=src.get('source', 'LOCAL_SNAPSHOT:^SP500TR'),
+                    clock=clock,
+                    expected_sha256=src.get('sha256'),
+                )
         self.store = PortfolioStore(self.root / 'portfolio.sqlite3')
         self.runner = AlpacaPortfolioRunner(adapter, self.store, order_not_found=OrderNotFound,
                                            rejection_error=AlpacaError, clock=clock)
@@ -103,7 +117,8 @@ class StrategyInstances:
         strategy = self.load(package_id)
         assets = StrategyAssets(self.adapter, self.store, clock=self.clock)
         instance = AlpacaInstance(self.root, view.binding(), package_id, strategy.spec,
-            None, self.runner, StrategyData(assets, clock=self.clock), clock=self.clock)
+            None, self.runner, StrategyData(assets, clock=self.clock,
+                benchmark_provider=self.benchmark_provider), clock=self.clock)
         allocation = instance.allocation(account)
         execution = AlpacaDecisionExecution(self.runner.executor, assets, strategy.spec,
                                            view.binding(), allocation, clock=self.clock)

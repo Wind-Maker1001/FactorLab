@@ -90,11 +90,16 @@ class AlpacaDecisionExecution:
                 if price is None:
                     price = self.reservation_quote(receipt, intent.instrument_id)
                 direct.append((intent, price))
+        multipliers = {
+            symbol: D(str(factor))
+            for symbol, factor in self.spec.execution.get('economic_multipliers', {}).items()
+        }
         self.executor.create(account_id=binding['account_id'], strategy_id=binding['instance_id'],
             strategy_version=self.spec.version, trading_session=event['context']['execution_session'],
             rebalance_id=receipt['package_id'] + ':' + receipt['event_id'],
             weights=weights, owned_symbols=(tuple(intent.instrument_id for intent, _ in direct)
                 if direct is not None else tuple(weights if deltas is None else deltas)), now=self.clock(),
+            economic_multipliers=multipliers or None,
             quantity_deltas=deltas, direct_orders=direct,
             signal_inputs=dict(package_id=receipt['package_id'], event_id=receipt['event_id'],
                                input_identity=receipt['input_identity']))

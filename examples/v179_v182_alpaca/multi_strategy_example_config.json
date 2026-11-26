@@ -1,0 +1,57 @@
+{
+  "releases": "/var/lib/factorlab-alpaca-paper/strategy-releases",
+  "trusted_python": true,
+  "benchmark_source": {
+    "path": "/var/lib/factorlab-alpaca-paper/benchmarks/sp500tr.parquet",
+    "series_id": "^SP500TR",
+    "source": "YAHOO:^SP500TR"
+  },
+  "capital_policy": {
+    "currency": "USD",
+    "budget": "35000",
+    "fee_rate": "0",
+    "mode": "SHARED_SAME_DIRECTION"
+  },
+  "instances": [
+    {
+      "native_v69": true,
+      "binding": {
+        "market": "ALPACA_US_EQUITY",
+        "account_id": "REPLACE_WITH_ALPACA_PAPER_ACCOUNT_ID",
+        "strategy_id": "V69_CAUSAL",
+        "instance_id": "V69_CAUSAL",
+        "allocation_id": "v69-original"
+      },
+      "funding": {
+        "capital": "20000",
+        "initial_cash": "20000"
+      }
+    },
+    {
+      "binding": {
+        "market": "ALPACA_US_EQUITY",
+        "account_id": "REPLACE_WITH_ALPACA_PAPER_ACCOUNT_ID",
+        "strategy_id": "V179_TREND_BLEND",
+        "instance_id": "V179_TREND",
+        "allocation_id": "v179-usd"
+      },
+      "funding": {
+        "capital": "10000",
+        "initial_cash": "10000"
+      }
+    },
+    {
+      "binding": {
+        "market": "ALPACA_US_EQUITY",
+        "account_id": "REPLACE_WITH_ALPACA_PAPER_ACCOUNT_ID",
+        "strategy_id": "V182_RECOVERY_BLEND",
+        "instance_id": "V182_RECOVERY",
+        "allocation_id": "v182-usd"
+      },
+      "funding": {
+        "capital": "5000",
+        "initial_cash": "5000"
+      }
+    }
+  ]
+}
