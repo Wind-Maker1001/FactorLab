@@ -423,7 +423,8 @@ class DemoSession:
         self._prepare_submission(intent.client_order_id, intent.side, intent.reduce_only)
         return self._submit_prepared(intent, book)
 
-    def submit_instance_intent(self, intent, *, instance_id, allocation_id, authorization, guard, book=None):
+    def submit_instance_intent(self, intent, *, instance_id, allocation_id, authorization,
+                               guard, book=None, risk_admission=None):
         """Route an instance order without changing the legacy session's symbol or rules."""
         from .demo_allocations import DemoAllocations
         if self._write_guard is None:
@@ -444,16 +445,24 @@ class DemoSession:
         facts = self.adapter.read_facts()
         if demo_account_configuration(facts, intent.instrument_id) != context.configuration:
             raise SafetyBlocked('Demo symbol configuration changed before submission')
-        if not self.gateway.read_account().reconciled:
+        account = self.gateway.read_account()
+        if not account.reconciled:
             raise SafetyBlocked('reconcile Demo account before instance submission')
         if any(row['symbol'] == intent.instrument_id and row['clientOrderId'] not in self.gateway.state.orders
                for row in facts.open_orders):
             raise SafetyBlocked('unowned order conflicts with instance symbol')
         owners.admit(intent, instance_id=instance_id, allocation_id=allocation_id)
         self._require_absent(intent.client_order_id, symbol=intent.instrument_id)
-        self.client.transport.authorizations[intent.client_order_id] = authorization
-        self._instance_guards[intent.client_order_id] = guard
-        return self._submit_prepared(intent, book)
+        def authorize():
+            if risk_admission is not None:
+                risk_admission(account)
+            self.client.transport.authorizations[intent.client_order_id] = authorization
+            self._instance_guards[intent.client_order_id] = guard
+
+        if risk_admission is None:
+            authorize()
+            return self._submit_prepared(intent, book)
+        return self._submit_prepared(intent, book, before_submit=authorize)
 
     def _prepare_submission(self, client_order_id, side, reduce_only):
         if self._write_guard is None or not self.client.transport.permitted():
@@ -482,7 +491,7 @@ class DemoSession:
                             self.receipt_error = True
                 break
 
-    def _submit_prepared(self, intent, book):
+    def _submit_prepared(self, intent, book, *, before_submit=None):
         symbol = intent.instrument_id
         if self.shared_account:
             account = self.gateway.read_account()
@@ -498,6 +507,8 @@ class DemoSession:
             raise SafetyBlocked('STALE_QUOTE: Demo prepared book')
         self._order_quote_at = book['time_utc']
         self.controller.quote(Quote(symbol, book['askPrice'], self._order_quote_at))
+        if before_submit is not None:
+            before_submit()
         receipt_index = len(self.receipts)
         try:
             result = self.controller.submit(intent)

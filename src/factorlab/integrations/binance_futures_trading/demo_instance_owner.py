@@ -147,6 +147,7 @@ class DemoInstanceOwner:
             eligible = {decision_id for decision_id, decision in accepted.items()
                         if ready.get(decision['receipt']['binding']['instance_id'], True)}
         if not eligible:
+            self.execution.executor.enforce_portfolio_risk(self.session.adapter.account_id)
             return {}
         symbols = {intent.instrument_id for decision_id in eligible
                    for intent in accepted[decision_id]['intents']}
@@ -171,6 +172,7 @@ class DemoInstanceOwner:
             quotes[symbol] = ExecutionQuote(symbol, book['bidPrice'], book['askPrice'],
                 book['time_utc'], at, at.date().isoformat(), 'OFFICIAL_DEMO')
         facts = self.session.adapter.read_facts()
+        self.execution.executor.enforce_portfolio_risk(facts.account_id)
         funds = facts.usdt()
         return self.advance(equity=funds['walletBalance'] + funds['unrealizedProfit'],
                             quotes=quotes, rules=rules, now=self.session._now(), decision_ids=eligible)

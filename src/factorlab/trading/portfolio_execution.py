@@ -9,10 +9,11 @@ from hashlib import sha256
 import json
 from typing import Mapping, Protocol
 
-from .contracts import (AccountSnapshot, OrderEvent, OrderIntent, OrderSnapshot,
+from .contracts import (AccountSnapshot, Market, OrderEvent, OrderIntent, OrderSnapshot,
                         OrderStatus, OrderType, Side, TERMINAL, decimal_value, utc)
 from .portfolio_target import plan_targets
 from .state import OrderRecord, advance
+from .portfolio_risk import PortfolioRisk, PortfolioRiskLimits, PortfolioRiskRejected
 from .storage import PaperStore, decode, dumps
 
 ZERO = D(0)
@@ -123,19 +124,41 @@ class PortfolioStore(PaperStore):
                 id TEXT PRIMARY KEY, account TEXT NOT NULL, strategy TEXT NOT NULL,
                 session TEXT NOT NULL, payload TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS portfolio_orders (
-                id TEXT PRIMARY KEY, plan TEXT NOT NULL, payload TEXT NOT NULL);
+                id TEXT PRIMARY KEY, plan TEXT NOT NULL, payload TEXT NOT NULL,
+                active INTEGER NOT NULL DEFAULT 1);
             CREATE TABLE IF NOT EXISTS portfolio_confirmations (
                 account TEXT NOT NULL, event TEXT NOT NULL, payload TEXT NOT NULL,
                 PRIMARY KEY(account, event));
             CREATE TABLE IF NOT EXISTS portfolio_corporate_actions (
                 account TEXT NOT NULL, strategy TEXT NOT NULL, event TEXT NOT NULL,
                 payload TEXT NOT NULL, PRIMARY KEY(account, strategy, event));
+            CREATE TABLE IF NOT EXISTS portfolio_risk_config (
+                account TEXT PRIMARY KEY, payload TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS portfolio_risk_nav (
+                account TEXT PRIMARY KEY, payload TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS portfolio_risk_hour (
+                account TEXT NOT NULL, hour INTEGER NOT NULL, observed TEXT NOT NULL,
+                nav TEXT NOT NULL, PRIMARY KEY(account, hour));
+            CREATE TABLE IF NOT EXISTS portfolio_risk_multipliers (
+                account TEXT NOT NULL, strategy TEXT NOT NULL, payload TEXT NOT NULL,
+                PRIMARY KEY(account, strategy));
             CREATE TABLE IF NOT EXISTS portfolio_allocations (
                 account TEXT NOT NULL, strategy TEXT NOT NULL, allocation TEXT NOT NULL,
                 capital TEXT NOT NULL, initial_cash TEXT NOT NULL,
                 PRIMARY KEY(account, strategy), UNIQUE(account, allocation));
         ''')
         with self.transaction():
+            order_columns = {row[1] for row in self.db.execute('PRAGMA table_info(portfolio_orders)')}
+            if 'active' not in order_columns:
+                self.db.execute('ALTER TABLE portfolio_orders ADD COLUMN active INTEGER NOT NULL DEFAULT 1')
+                for payload, in self.db.execute('SELECT payload FROM portfolio_orders'):
+                    order = decode(json.loads(payload))
+                    if order['record'].snapshot.status in TERMINAL and not order['uncertain']:
+                        self.save_order(order)
+            self.db.execute('CREATE INDEX IF NOT EXISTS portfolio_active_orders '
+                            'ON portfolio_orders(plan) WHERE active=1')
+            self.db.execute('CREATE INDEX IF NOT EXISTS portfolio_account_plans '
+                            'ON portfolio_plans(account)')
             for table, key in (('portfolio_claims', ('account', 'symbol', 'strategy')),
                                ('portfolio_corporate_actions', ('account', 'strategy', 'event'))):
                 columns = self.db.execute('PRAGMA table_info(' + table + ')').fetchall()
@@ -151,6 +174,7 @@ class PortfolioStore(PaperStore):
 
         from .capital import CapitalPolicy
         self.capital_policy = CapitalPolicy(self)
+        self.portfolio_risk = PortfolioRisk(self)
 
     def holdings(self, account_id, strategy_id=None):
         query = 'SELECT symbol,quantity FROM portfolio_claims WHERE account=?'
@@ -168,6 +192,13 @@ class PortfolioStore(PaperStore):
         return [(strategy, decode(json.loads(payload))) for strategy, payload in self.db.execute(
             'SELECT p.strategy,o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
             'WHERE p.account=? ORDER BY o.rowid', (account_id,))]
+
+    def active_orders(self, account_id):
+        for owner, payload in self.db.execute(
+                'SELECT p.strategy,o.payload FROM portfolio_plans p '
+                'JOIN portfolio_orders o ON p.id=o.plan WHERE p.account=? AND o.active=1',
+                (account_id,)):
+            yield owner, decode(json.loads(payload))
 
     def available_inventory(self, account_id, strategy_id, symbol, *, exclude_id=None):
         """Confirmed instance inventory less all unfinished exit reservations."""
@@ -234,8 +265,10 @@ class PortfolioStore(PaperStore):
             'SELECT payload FROM portfolio_orders WHERE plan=? ORDER BY id', (identity,))]
 
     def save_order(self, order):
-        self.db.execute('UPDATE portfolio_orders SET payload=? WHERE id=?',
-                        (dumps(order), order['record'].snapshot.intent.client_order_id))
+        snapshot = order['record'].snapshot
+        active = snapshot.status not in TERMINAL or order['uncertain'] or order.get('cancel_pending', False)
+        self.db.execute('UPDATE portfolio_orders SET payload=?,active=? WHERE id=?',
+                        (dumps(order), int(active), snapshot.intent.client_order_id))
 
 
 class PortfolioExecutor:
@@ -254,6 +287,125 @@ class PortfolioExecutor:
         self.adapter, self.store = adapter, store
         self.quote_currency, self.max_quote_age, self.clock = quote_currency, max_quote_age, clock
         self.capital_policy = store.capital_policy
+
+    def configure_portfolio_risk(self, account_id, limits, *, economic_multipliers=None):
+        """Opt in on a single existing capital account."""
+        self.store.portfolio_risk.configure(account_id, limits, economic_multipliers)
+
+    def portfolio_risk_snapshot(self, account_id, *, official_equity=None):
+        """Report confirmed exposures and outstanding reservations from one observation."""
+        risk = self.store.portfolio_risk
+        with self.store.transaction():
+            account = self.adapter.read_account()
+            if account.account_id != account_id:
+                raise ValueError('matching official account required')
+            config = risk.config(account_id) or (PortfolioRiskLimits(), {})
+            snapshot, _ = risk.observe(account, self.quote_currency, self.clock(), config,
+                                       equity=official_equity)
+            margin = None
+            if account.market is Market.BINANCE_USDM:
+                cached = getattr(self.adapter, 'observed_margin_facts', None)
+                if cached is not None:
+                    margin = cached()
+            official = replace(account, positions=account.official_positions,
+                               observed_at=snapshot.observed_at) if account.official_positions is not None else account
+            capital = self.capital_policy.risk_snapshot(
+                self, account_id, official_equity=snapshot.official_equity,
+                account=official, margin=margin)
+            def total(field):
+                if 'ownership' in snapshot.missing:
+                    return None
+                amounts = [getattr(strategy, field) for strategy in capital.strategies]
+                return sum(amounts, ZERO) if all(amount is not None for amount in amounts) else None
+
+            realized, funding = total('realized_pnl'), total('funding')
+            unrealized = snapshot.unrealized_pnl
+            if unrealized is None:
+                unrealized = total('unrealized_pnl')
+            missing = set(snapshot.missing)
+            for name, value in (('realized_pnl', realized), ('funding', funding),
+                                ('unrealized_pnl', unrealized)):
+                if value is None:
+                    missing.add(name)
+            return replace(snapshot, capital=capital, funding=funding, realized_pnl=realized,
+                           unrealized_pnl=unrealized, missing=tuple(sorted(missing)))
+
+    def enforce_portfolio_risk(self, account_id, *, official_equity=None, account=None):
+        """Observe risk on the existing owner turn and cancel only owned openings."""
+        risk = self.store.portfolio_risk
+        if risk.config(account_id) is None:
+            return None
+        with self.store.transaction():
+            config = risk.config(account_id)
+            account = self.adapter.read_account() if account is None else account
+            if account.account_id != account_id:
+                raise ValueError('matching official account required')
+            limits = config[0]
+            orders = None
+            if limits.cancel_open_on_breach:
+                # Unsubmitted reservations cannot trigger cancellation of
+                # another strategy's accepted order.
+                orders = (item for item in self.store.active_orders(account_id)
+                          if item[1]['attempted'] or item[1]['uncertain'])
+            snapshot, opening = risk.observe(account, self.quote_currency, self.clock(), config,
+                                              orders=orders, equity=official_equity)
+            targets = []
+            if not limits.cancel_open_on_breach:
+                return snapshot
+            for entry in opening.values():
+                if (entry.owner is not None and entry.reflected and not entry.uncertain
+                        and risk.reason(limits, snapshot, entry, current=True)):
+                    plan_id, = self.store.db.execute(
+                        'SELECT plan FROM portfolio_orders WHERE id=?', (entry.client_id,)).fetchone()
+                    targets.append((plan_id, entry.client_id))
+        for plan_id, client_id in targets:
+            self.cancel(plan_id, client_id)
+        return snapshot
+
+    def run_emergency_reduction(self, identity, *, equity, quotes, rules, now, not_before=None):
+        """Execute a preauthorized owner plan if an explicitly armed limit is breached."""
+        risk = self.store.portfolio_risk
+        with self.store.transaction():
+            plan = self.store.plan(identity)
+            request = plan['request']
+            account = self.adapter.read_account()
+            if account.account_id != request['account'] or not account.reconciled:
+                raise ValueError('matching reconciled official account required')
+            config = risk.config(account.account_id)
+            if config is None or not config[0].emergency_reduction_reasons:
+                raise ValueError('emergency reduction is not configured')
+            if not request.get('emergency_only'):
+                raise ValueError('emergency plan must be registered for risk response')
+            if not self._emergency_allowed(account, config, equity):
+                return None
+            remaining = {}
+            for order in self.store.orders(identity):
+                saved = order['record'].snapshot
+                if saved.status in TERMINAL and not order['uncertain']:
+                    continue
+                intent = saved.intent
+                if (intent.side is not Side.SELL
+                        or account.market is Market.BINANCE_USDM and not intent.reduce_only):
+                    raise ValueError('emergency plan requires owned reduction orders')
+                symbol = intent.instrument_id
+                remaining[symbol] = (remaining.get(symbol, ZERO) + intent.quantity
+                                     - saved.cumulative_filled_quantity)
+            owned = self.store.holdings(account.account_id, request['strategy'])
+            if 'direct_orders' not in request or any(
+                    quantity > owned.get(symbol, ZERO) for symbol, quantity in remaining.items()):
+                raise ValueError('emergency plan requires preauthorized instance inventory')
+        return self.run_once(identity, equity=equity, quotes=quotes, rules=rules, now=now,
+                             not_before=not_before, emergency=True)
+
+    def _emergency_allowed(self, account, config, equity):
+        if config is None:
+            return False
+        risk = self.store.portfolio_risk
+        live = (item for item in self.store.active_orders(account.account_id)
+                if item[1]['attempted'] or item[1]['uncertain'])
+        snapshot, _ = risk.observe(account, self.quote_currency, self.clock(), config,
+                                   orders=live, equity=equity)
+        return risk.emergency_active(config[0], snapshot)
 
     def _shared_policy(self, account_id):
         from .capital import CapitalPolicyMode
@@ -372,7 +524,7 @@ class PortfolioExecutor:
                weights, owned_symbols, now, initial_inventory=None,
                economic_multipliers=None, rebalance_id=None, initial_capital=None,
                quantity_deltas=None, signal_inputs=None, direct_orders=None,
-               concurrent_direct_orders=False):
+               concurrent_direct_orders=False, record_risk_rejection=False, emergency_only=False):
         """Persist a complete target vector before any external order side effect.
 
         initial_inventory maps explicitly adopted symbols to (quantity, basis).
@@ -437,6 +589,12 @@ class PortfolioExecutor:
             request['direct_orders'] = direct_orders
         if concurrent_direct_orders:
             request['concurrent_direct_orders'] = True
+        if emergency_only:
+            if not direct_orders or any(intent.side is not Side.SELL or (
+                    intent.market is Market.BINANCE_USDM and not intent.reduce_only)
+                    for intent, _ in direct_orders):
+                raise ValueError('emergency plan requires owned reduction orders')
+            request['emergency_only'] = True
         with self.store.transaction():
             previous = self.store.plan(identity)
             if previous:
@@ -485,6 +643,8 @@ class PortfolioExecutor:
                         targets=targets, reasons={}, equity=None)
             self.store.db.execute('INSERT INTO portfolio_plans VALUES (?,?,?,?,?)',
                 (identity, account_id, strategy_id, trading_session, dumps(plan)))
+            if multipliers:
+                self.store.portfolio_risk.record_multipliers(account_id, strategy_id, multipliers)
             if direct_orders is not None:
                 sells = {}
                 for intent, _ in direct_orders:
@@ -493,58 +653,71 @@ class PortfolioExecutor:
                 if any(quantity > self.store.available_inventory(account_id, strategy_id, symbol)
                        for symbol, quantity in sells.items()):
                     raise ValueError('direct orders exceed owned inventory')
+                account = self.adapter.read_account()
                 for intent, price in direct_orders:
-                    if intent.market != self.adapter.read_account().market:
+                    if intent.market != account.market:
                         raise ValueError('direct order market differs from the account')
                     order = dict(record=OrderRecord(OrderSnapshot(intent), now, price),
                                  reference_price=price, reservation_price=price,
                                  attempted=False, uncertain=False)
-                    self.store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
+                    self.store.db.execute('INSERT INTO portfolio_orders (id,plan,payload) VALUES (?,?,?)',
                                           (intent.client_order_id, identity, dumps(order)))
-                allocation = self.store.allocation(account_id, strategy_id)
-                if allocation is not None and self.store.cash(account_id, strategy_id) < ZERO:
-                    raise ValueError('direct orders exceed allocated cash')
-                account = self.adapter.read_account()
                 if (account.account_id != account_id or not account.reconciled
                         or self._account_uncertain(account_id, owned_symbols)):
                     raise ValueError('direct reservation requires a matching reconciled account')
-                if (allocation is not None and any(intent.side == Side.BUY for intent, _ in direct_orders)
-                        and (self.store.cash(account_id, strategy_id)
-                             + self._funding_adjustment(account, strategy_id)) < ZERO):
-                    raise ValueError('direct orders exceed capital after funding')
-                balance = next(a for a in account.assets if a.currency == self.quote_currency)
-                registered = {order['record'].snapshot.intent.client_order_id: order
-                              for _, order in self.store.account_orders(account_id)}
-                broker_ids = set()
-                pending = ZERO
-                for snapshot in account.open_orders:
-                    if snapshot.status in TERMINAL:
-                        continue
-                    broker_ids.add(snapshot.intent.client_order_id)
-                    if snapshot.intent.side == Side.BUY:
-                        saved = registered.get(snapshot.intent.client_order_id)
-                        price = (saved['reservation_price'] if saved is not None
-                                 and saved['record'].snapshot.intent == snapshot.intent
-                                 else snapshot.intent.limit_price)
-                        if price is None:
-                            raise ValueError('unpriced foreign order risk')
-                        pending += ((snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * price)
-                broker_pending = pending
-                local_pending = ZERO
-                for payload, in self.store.db.execute(
-                        'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
-                        'WHERE p.account=?', (account_id,)):
-                    order = decode(json.loads(payload))
-                    snapshot = order['record'].snapshot
-                    if (snapshot.intent.side == Side.BUY and (snapshot.status not in TERMINAL or order['uncertain'])
-                            and snapshot.intent.client_order_id not in broker_ids):
-                        local_pending += (snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * order['reservation_price']
-                fee_row = self.store.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
-                                                (account_id,)).fetchone()
-                fee_factor = 1 + (ZERO if fee_row is None else D(fee_row[0]))
-                if max(broker_pending * fee_factor, balance.reserved) + local_pending * fee_factor > balance.total:
-                    raise ValueError('direct orders exceed available account cash')
-                self.capital_policy.validate_orders(account, strategy_id)
+                config = self.store.portfolio_risk.config(account_id)
+                if config is None or any(intent.side == Side.BUY for intent, _ in direct_orders):
+                    allocation = self.store.allocation(account_id, strategy_id)
+                    if allocation is not None and self.store.cash(account_id, strategy_id) < ZERO:
+                        raise ValueError('direct orders exceed allocated cash')
+                    if (allocation is not None and any(intent.side == Side.BUY for intent, _ in direct_orders)
+                            and (self.store.cash(account_id, strategy_id)
+                                 + self._funding_adjustment(account, strategy_id)) < ZERO):
+                        raise ValueError('direct orders exceed capital after funding')
+                    balance = next(a for a in account.assets if a.currency == self.quote_currency)
+                    registered = {order['record'].snapshot.intent.client_order_id: order
+                                  for _, order in self.store.account_orders(account_id)}
+                    broker_ids = set()
+                    pending = ZERO
+                    for snapshot in account.open_orders:
+                        if snapshot.status in TERMINAL:
+                            continue
+                        broker_ids.add(snapshot.intent.client_order_id)
+                        if snapshot.intent.side == Side.BUY:
+                            saved = registered.get(snapshot.intent.client_order_id)
+                            price = (saved['reservation_price'] if saved is not None
+                                     and saved['record'].snapshot.intent == snapshot.intent
+                                     else snapshot.intent.limit_price)
+                            if price is None:
+                                raise ValueError('unpriced foreign order risk')
+                            pending += ((snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * price)
+                    broker_pending = pending
+                    local_pending = ZERO
+                    for payload, in self.store.db.execute(
+                            'SELECT o.payload FROM portfolio_orders o JOIN portfolio_plans p ON p.id=o.plan '
+                            'WHERE p.account=?', (account_id,)):
+                        order = decode(json.loads(payload))
+                        snapshot = order['record'].snapshot
+                        if (snapshot.intent.side == Side.BUY and (snapshot.status not in TERMINAL or order['uncertain'])
+                                and snapshot.intent.client_order_id not in broker_ids):
+                            local_pending += (snapshot.intent.quantity - snapshot.cumulative_filled_quantity) * order['reservation_price']
+                    fee_row = self.store.db.execute('SELECT fee_rate FROM capital_accounts WHERE account=?',
+                                                    (account_id,)).fetchone()
+                    fee_factor = 1 + (ZERO if fee_row is None else D(fee_row[0]))
+                    if max(broker_pending * fee_factor, balance.reserved) + local_pending * fee_factor > balance.total:
+                        raise ValueError('direct orders exceed available account cash')
+                risk_ids = ids if len({intent.side for intent, _ in direct_orders}) == 1 else None
+                try:
+                    self.capital_policy.validate_orders(
+                        account, strategy_id, risk_now=self.clock() if config and risk_ids else None,
+                        risk_ids=risk_ids)
+                except PortfolioRiskRejected as error:
+                    if not record_risk_rejection:
+                        raise
+                    for order in self.store.orders(identity):
+                        self._reject_portfolio_risk(plan, order, error)
+                    plan['phase'] = 'COMPLETE'
+                    self.store.save_plan(plan)
         return identity
 
     def transfer_flat_ownership(self, *, account_id, from_strategy, to_strategy, symbols):
@@ -833,6 +1006,8 @@ class PortfolioExecutor:
             self.store.save_order(order)
             return
         updated = advance(record, event)
+        if event.status in TERMINAL:
+            order.pop('cancel_pending', None)
         delta = event.cumulative_filled_quantity - record.snapshot.cumulative_filled_quantity
         intent = updated.snapshot.intent
         if delta:
@@ -1097,8 +1272,9 @@ class PortfolioExecutor:
             return []
         phase = 'REDUCE' if reductions else 'INCREASE'
         plan['phase'] = phase
-        cash, cash_reason = self._available_cash(account, quotes, request, now, not_before)
-        if cash_reason and phase == 'INCREASE':
+        cash, cash_reason = (ZERO, '') if reductions else self._available_cash(
+            account, quotes, request, now, not_before)
+        if cash_reason:
             for symbol in eligible:
                 plan['reasons'][symbol] = cash_reason
             return []
@@ -1142,11 +1318,13 @@ class PortfolioExecutor:
                 continue
             client_id = 'flp-' + sha256(dumps([plan['id'], symbol, side.value]).encode()).hexdigest()[:40]
             intent = OrderIntent(account.market, symbol, side, OrderType.LIMIT,
-                quantity, price, client_id, time_in_force=rules[symbol].time_in_force)
+                quantity, price, client_id, time_in_force=rules[symbol].time_in_force,
+                reduce_only=side is Side.SELL and account.market is Market.BINANCE_USDM
+                and self.store.portfolio_risk.config(account.account_id) is not None)
             order = dict(record=OrderRecord(OrderSnapshot(intent), now, price),
                          reference_price=reference, reservation_price=price,
                          attempted=False, uncertain=False)
-            self.store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
+            self.store.db.execute('INSERT INTO portfolio_orders (id,plan,payload) VALUES (?,?,?)',
                                   (client_id, plan['id'], dumps(order)))
             prepared.append(client_id)
             if side == Side.BUY:
@@ -1160,7 +1338,7 @@ class PortfolioExecutor:
         return prepared
 
     def run_once(self, identity, *, equity, quotes, rules, now, not_before=None,
-                 refresh_quotes=None):
+                 refresh_quotes=None, emergency=False):
         """Reconcile original identities, prepare one phase, then submit its outbox.
 
         equity is the official NAV observed with read_account, never buying power.
@@ -1184,6 +1362,9 @@ class PortfolioExecutor:
                 return RebalanceResult(identity, 'COMPLETE', dict(plan['reasons']),
                     dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id
                                                 for o in self.store.orders(identity)))
+            if plan['request'].get('emergency_only', False) != emergency:
+                return RebalanceResult(identity, 'WAITING', {'plan': 'EMERGENCY_ACTIVATION_REQUIRED'},
+                                       dict(plan['targets']), ())
             if plan.get('stop_reason'):
                 settled = all(o['record'].snapshot.status in TERMINAL and not o['uncertain']
                               for o in self.store.orders(identity))
@@ -1223,9 +1404,11 @@ class PortfolioExecutor:
                 self._prepare(plan, account, equity, quotes, rules, now, not_before)
             self.capital_policy.validate_orders(account, plan['request']['strategy'])
             self.store.save_plan(plan)
+        self.enforce_portfolio_risk(account.account_id, account=account, official_equity=equity)
         # Commit SUBMITTING before POST: a crash or an eventually-consistent 404
         # can never turn an attempted order back into an unattempted outbox entry.
         identities = [o['record'].snapshot.intent.client_order_id for o in self.store.orders(identity)]
+        late_admission = getattr(self.adapter, 'submit_risk_checked', None)
         for client_id in identities:
             send = False
             with self.store.transaction():
@@ -1307,7 +1490,13 @@ class PortfolioExecutor:
                         request = plan['request']
                         try:
                             self._capital_admission(request['account'], request['strategy'])
-                            self.capital_policy.validate_orders(account, request['strategy'], include_id=client_id)
+                            self.capital_policy.validate_orders(
+                                account, request['strategy'], include_id=client_id,
+                                risk_now=self.clock(), official_equity=equity,
+                                apply_portfolio=late_admission is None)
+                        except PortfolioRiskRejected as error:
+                            self._reject_portfolio_risk(plan, order, error)
+                            continue
                         except ValueError as error:
                             order['attempted'] = False
                             plan['reasons'][intent.instrument_id] = str(error)
@@ -1363,7 +1552,30 @@ class PortfolioExecutor:
                         self._accept(plan, order, recovered)
                         continue
                     try:
-                        event = self.adapter.submit_order(intent)
+                        config = self.store.portfolio_risk.config(request['account'])
+                        if late_admission is not None and (config or emergency):
+                            def admit(fresh_account):
+                                try:
+                                    if fresh_account.account_id != request['account'] or not fresh_account.reconciled:
+                                        raise ValueError('ACCOUNT_RECONCILIATION_REQUIRED')
+                                    reason = self._quote_reason(intent.instrument_id, quotes.get(intent.instrument_id),
+                                                                request, self.clock(), not_before)
+                                    if reason:
+                                        raise ValueError(reason)
+                                    if emergency and not self._emergency_allowed(fresh_account, config, equity):
+                                        raise ValueError('EMERGENCY_BREACH_CLEARED')
+                                    self.capital_policy.validate_orders(
+                                        fresh_account, request['strategy'], include_id=client_id,
+                                        risk_now=self.clock())
+                                except ValueError as error:
+                                    raise PortfolioRiskRejected(str(error)) from error
+                            event = late_admission(intent, admit)
+                        else:
+                            if emergency and not self._emergency_allowed(account, config, equity):
+                                raise PortfolioRiskRejected('EMERGENCY_BREACH_CLEARED')
+                            event = self.adapter.submit_order(intent)
+                    except PortfolioRiskRejected as error:
+                        self._reject_portfolio_risk(plan, order, error)
                     except (TimeoutError, ConnectionError):
                         order['uncertain'] = True
                         self.store.save_order(order)
@@ -1378,6 +1590,15 @@ class PortfolioExecutor:
             self.store.save_plan(plan)
             return RebalanceResult(identity, plan['phase'], dict(plan['reasons']),
                 dict(plan['targets']), tuple(o['record'].snapshot.intent.client_order_id for o in orders))
+
+    def _reject_portfolio_risk(self, plan, order, error):
+        intent = order['record'].snapshot.intent
+        client_id = intent.client_order_id
+        event = OrderEvent(client_id, None, OrderStatus.REJECTED, ZERO, None,
+            self.clock(), str(error), 'portfolio-risk-rejection:' + client_id)
+        self._accept(plan, order, event)
+        plan['reasons'][intent.instrument_id] = str(error)
+        self.store.save_plan(plan)
 
     def expire(self, identity, *, reason='EXPIRED_REBALANCE'):
         """Freeze submissions durably, cancel original children and retain unknown reserves.
@@ -1442,6 +1663,7 @@ class PortfolioExecutor:
             if order['record'].snapshot.status in TERMINAL or order['uncertain']:
                 return
             order['uncertain'] = True
+            order['cancel_pending'] = True
             self.store.save_order(order)
         with self.store.transaction():
             plan = self.store.plan(identity)

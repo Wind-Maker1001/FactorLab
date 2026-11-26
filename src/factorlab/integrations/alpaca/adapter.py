@@ -187,14 +187,19 @@ class AlpacaAdapter:
         return rows
 
     def read_account(self):
-        facts = self.read_account_details()
+        return self._snapshot(self.read_account_details())
+
+    def _snapshot(self, facts):
         rows = self._positions()
         orders, reserved = [], Z
+        official_ids = set()
         for _, (intent, row, uncertain, price) in self.store.orders():
             if self.store.get("rejection:" + intent.client_order_id) is not None and row is None:
                 continue
             if row is not None and order_status(row) in TERMINAL and not uncertain:
                 continue
+            if row is not None and order_status(row) not in TERMINAL:
+                official_ids.add(intent.client_order_id)
             quantity = D(row["filled_qty"]) if row else Z
             status = S.UNKNOWN if uncertain else order_status(row)
             orders.append(OrderSnapshot(intent, status, quantity, Z, row["id"] if row else None, uncertain))
@@ -203,10 +208,16 @@ class AlpacaAdapter:
         return AccountSnapshot(Market.ALPACA_US_EQUITY, facts.account_id,
                                (AssetBalance("USD", facts.cash, reserved),),
                                tuple(Position(p["symbol"], D(p["qty"]), D(p["avg_entry_price"]),
-                                              D(p["current_price"]), "USD") for p in rows),
-                               tuple(orders), facts.observed_at, self.reconciled)
+                                              D(p["current_price"]), "USD",
+                                              None if p.get("qty_available") is None else D(p["qty_available"]))
+                                     for p in rows),
+                               tuple(orders), facts.observed_at, self.reconciled,
+                               official_equity=facts.equity, official_cash=facts.cash,
+                               official_available=min(facts.cash, facts.buying_power),
+                               initial_margin=facts.initial_margin,
+                               official_order_ids=tuple(sorted(official_ids)))
 
-    def _admission(self, intent, price, account, facts):
+    def _admission(self, intent, price, account, facts, *, enforce_sellable=False):
         if facts.status != "ACTIVE" or facts.account_blocked or facts.trading_blocked:
             self._reject("ACCOUNT_BLOCKED")
         unresolved = any(uncertain and self.store.get("rejection:" + key) is None
@@ -219,7 +230,11 @@ class AlpacaAdapter:
             owned = sum((p.quantity for p in account.positions if p.instrument_id == intent.instrument_id), Z)
             reserved = sum((o.intent.quantity - o.cumulative_filled_quantity for o in account.open_orders
                             if o.intent.instrument_id == intent.instrument_id and o.intent.side == Side.SELL), Z)
-            if intent.quantity > owned - reserved:
+            available = None
+            if enforce_sellable:
+                available = next((p.available_quantity for p in account.positions
+                                  if p.instrument_id == intent.instrument_id), None)
+            if intent.quantity > owned - reserved or (available is not None and intent.quantity > available):
                 self._reject("INSUFFICIENT_INVENTORY")
             return
         amount = intent.quantity * price
@@ -248,7 +263,7 @@ class AlpacaAdapter:
         if sum(exposures.values(), Z) + amount > min(self.limits.account_budget, facts.equity):
             self._reject("ACCOUNT_BUDGET_LIMIT")
 
-    def submit_order(self, intent, *, reservation_price=None):
+    def submit_order(self, intent, *, reservation_price=None, risk_admission=None):
         old = self.store.order(intent.client_order_id)
         if old:
             if old[0] != intent:
@@ -259,10 +274,11 @@ class AlpacaAdapter:
         if price is None or not isinstance(price, D) or not price.is_finite() or price <= 0:
             raise ValueError("market orders require an explicit positive reservation_price")
         # REST refresh before admission includes orders placed outside this process.
-        self.recover()
-        account, facts = self.read_account(), self.read_account_details()
+        account, facts = self.recover(with_details=True)
         with self.store.transaction():
-            self._admission(intent, price, account, facts)
+            self._admission(intent, price, account, facts, enforce_sellable=risk_admission is not None)
+            if risk_admission is not None:
+                risk_admission(account)
             now = datetime.now(timezone.utc).timestamp()
             recent = [t for t in self.store.get("submissions") or [] if now - t < 60]
             if len(recent) >= self.limits.orders_per_minute:
@@ -356,7 +372,7 @@ class AlpacaAdapter:
             until = next_until
         raise ValueError("order pagination budget exceeded")
 
-    def recover(self):
+    def recover(self, *, with_details=False):
         self.reconciled = False
         self.read_account_details()
         activities = self.read_activities()
@@ -397,6 +413,9 @@ class AlpacaAdapter:
                 if abs(amount - qty * D(row["filled_avg_price"] or "0")) > qty * D("0.0001"):
                     complete = False
         self.reconciled = complete
+        if with_details:
+            facts = self.read_account_details()
+            return self._snapshot(facts), facts
         return self.read_account()
 
     def on_trade_update(self, message):

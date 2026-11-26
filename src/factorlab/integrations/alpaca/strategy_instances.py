@@ -144,6 +144,7 @@ class StrategyInstances:
                     self.attach(owner, package, account)
         blocked = self.corporate_actions(at.astimezone(ZoneInfo('America/New_York')).date().isoformat(),
                                          facts.account_id)
+        self.runner.executor.enforce_portfolio_risk(facts.account_id, account=account)
         for owner, native in self.native.items():
             if service.client.feed != 'iex':
                 raise ValueError('original V69 input provenance requires IEX')

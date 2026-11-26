@@ -285,32 +285,39 @@ class CapitalPolicy:
                                                  (account_id, strategy_id)).fetchall():
                 self._tighten_symbol_limit(account_id, symbol, limits.max_instrument_exposure)
 
-    def validate_orders(self, account, strategy_id, *, include_id=None):
+    def validate_orders(self, account, strategy_id, *, include_id=None, risk_now=None,
+                        risk_ids=None, official_equity=None, apply_portfolio=True):
         """Check instance, gross symbol and account projections in the outbox transaction."""
-        from .control import exposure_limit_reason
-        from .contracts import Side, TERMINAL
+        from .control import exposure_limit_reason, inventory_effect
+        from .contracts import TERMINAL
         account_id = account.account_id
         policy = self.store.db.execute('SELECT budget FROM capital_accounts WHERE account=?',
                                        (account_id,)).fetchone()
         if policy is None:
             return
         limits = self.limits(account_id, strategy_id)
+        config = self.store.portfolio_risk.config(account_id) if risk_now is not None else None
+        positions = (account.official_positions if config is not None and account.official_positions is not None
+                     else account.positions)
         owned = self.store.holdings(account_id, strategy_id)
-        marks = {p.instrument_id: p.mark_price for p in account.positions}
+        marks = {p.instrument_id: p.mark_price for p in positions}
         exposures = {}
         for symbol, quantity in owned.items():
             if quantity:
-                if symbol not in marks:
+                if symbol in marks:
+                    exposures[symbol] = abs(quantity) * marks[symbol]
+                elif config is None:
                     raise ValueError('owned inventory requires an official mark')
-                exposures[symbol] = abs(quantity) * marks[symbol]
         symbols = {}
-        for position in account.positions:
+        for position in positions:
             symbol = position.instrument_id
             symbols[symbol] = symbols.get(symbol, ZERO) + abs(position.quantity) * position.mark_price
         account_exposure = sum(symbols.values(), ZERO)
         pending, local_ids, reductions = [], set(), {}
         holdings = {strategy_id: owned}
-        for owner, order in self._orders(account_id):
+        orders = (tuple(self.store.active_orders(account_id)) if config is not None
+                  else self._orders(account_id))
+        for owner, order in orders:
             snapshot = order['record'].snapshot
             intent = snapshot.intent
             symbol = intent.instrument_id
@@ -321,8 +328,10 @@ class CapitalPolicy:
             if owner not in holdings:
                 holdings[owner] = self.store.holdings(account_id, owner)
             held = holdings[owner].get(symbol, ZERO)
-            direction = 1 if intent.side == Side.BUY else -1
-            reducing = held * direction < ZERO
+            effect = inventory_effect(intent.side, quantity, held)
+            if effect == 'REVERSE':
+                raise ValueError('orders exceed instance owned inventory')
+            reducing = effect in ('REDUCE', 'CLOSE')
             if reducing:
                 key = (owner, symbol)
                 reductions[key] = reductions.get(key, ZERO) + quantity
@@ -333,14 +342,18 @@ class CapitalPolicy:
             symbols[symbol] = symbols.get(symbol, ZERO) + amount
             if owner == strategy_id:
                 exposures[symbol] = exposures.get(symbol, ZERO) + amount
-                if not order['attempted'] or intent.client_order_id == include_id:
+                selected = intent.client_order_id == include_id or (
+                    not order['attempted'] and (include_id is None or config is None))
+                if selected:
                     pending.append((symbol, intent.quantity * order['reservation_price'], amount > ZERO))
         foreign = False
         for order in account.open_orders:
             if order.intent.client_order_id not in local_ids and order.status not in TERMINAL:
                 foreign = True
                 if order.intent.limit_price is None:
-                    raise ValueError('unpriced foreign order risk')
+                    if config is None or any(increasing for _, _, increasing in pending):
+                        raise ValueError('unpriced foreign order risk')
+                    continue
                 amount = ((order.intent.quantity - order.cumulative_filled_quantity)
                           * order.intent.limit_price)
                 symbol = order.intent.instrument_id
@@ -363,6 +376,19 @@ class CapitalPolicy:
                     raise ValueError('SYMBOL_EXPOSURE_LIMIT')
                 if account_exposure > Decimal(policy[0]):
                     raise ValueError('ACCOUNT_BUDGET_LIMIT')
+        if config is not None and apply_portfolio and any(increasing for _, _, increasing in pending):
+            from .portfolio_risk import PortfolioRiskRejected
+            currency = self.store.db.execute('SELECT currency FROM capital_accounts WHERE account=?',
+                                             (account_id,)).fetchone()[0]
+            snapshot, openings = self.store.portfolio_risk.observe(
+                account, currency, risk_now, config, orders=orders, equity=official_equity)
+            selected = {include_id} if include_id is not None else risk_ids
+            for client_id in sorted(selected):
+                opening = openings.get(client_id)
+                if opening is not None:
+                    reason = self.store.portfolio_risk.reason(config[0], snapshot, opening)
+                    if reason:
+                        raise PortfolioRiskRejected(reason)
 
     def qualify(self, spec, binding, allocation=None):
         """Atomically reserve exclusive symbols for an explicitly funded instance."""
@@ -508,25 +534,25 @@ class CapitalPolicy:
             previous = pd.Series({owner: float(capital / budget) for owner, capital in owners.items()})
         return optimizer.optimize(replace(data, previous_weights=previous))
 
-    def risk_snapshot(self, executor, account_id, *, official_equity):
+    def risk_snapshot(self, executor, account_id, *, official_equity, account=None, margin=None):
         """Read one official account observation and one coherent journal view."""
-        with self.store.transaction():
+        context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
+        with context:
             row = self.store.db.execute(
                 'SELECT currency,budget FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
             if row is None:
                 raise KeyError(account_id)
             currency, budget = row[0], Decimal(row[1])
-            account = executor.adapter.read_account()
+            account = executor.adapter.read_account() if account is None else account
             if account.account_id != account_id:
                 raise ValueError('matching official account required')
             derivatives = account.market == Market.BINANCE_USDM
             funding = None
-            margin = None
             margin_attribution = None
             if derivatives:
                 from .capital_funding import attribute_funding
                 from .capital_margin import attribute_margin
-                margin = executor.adapter.margin_facts()
+                margin = executor.adapter.margin_facts() if margin is None else margin
                 if margin.account_id != account_id:
                     raise ValueError('margin facts must match the account')
                 account = margin.shared(account.open_orders, reconciled=account.reconciled)

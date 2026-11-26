@@ -64,7 +64,8 @@ class DemoInstanceExecutionAdapter:
             weights={}, owned_symbols=configured['symbols'], now=now,
             rebalance_id=decision_id, signal_inputs=dict(input_identity=receipt['input_identity']),
             direct_orders=[(intent, intent.limit_price) for intent in accepted['intents']],
-            concurrent_direct_orders=receipt['decision']['kind'] == 'orders')
+            concurrent_direct_orders=receipt['decision']['kind'] == 'orders',
+            record_risk_rejection=True)
 
     def advance(self, decision_id, *, equity, quotes, rules, now):
         """Advance one accepted decision on the account owner's execution turn."""

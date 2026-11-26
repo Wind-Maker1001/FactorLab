@@ -38,6 +38,19 @@ def exposure_limit_reason(limits, *, order_notional, instrument_exposure, accoun
     return 'APPROVED'
 
 
+def inventory_effect(side, quantity, held):
+    """Classify one order against the confirmed inventory of its own instance."""
+    if held == ZERO:
+        return 'OPEN'
+    if (held > ZERO) == (side is Side.BUY):
+        return 'ADD'
+    if quantity < abs(held):
+        return 'REDUCE'
+    if quantity == abs(held):
+        return 'CLOSE'
+    return 'REVERSE'
+
+
 class RiskRejected(ValueError):
     def __init__(self, decision):
         self.decision = decision

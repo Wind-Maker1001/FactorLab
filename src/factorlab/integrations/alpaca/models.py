@@ -24,6 +24,7 @@ class AlpacaAccount:
     trading_blocked: bool
     account_blocked: bool
     observed_at: datetime
+    initial_margin: Decimal | None = None
 
     @classmethod
     def from_payload(cls, row):
@@ -31,7 +32,8 @@ class AlpacaAccount:
             raise ValueError("Alpaca account must use USD")
         return cls(row["id"], D(row["equity"]), D(row["cash"]), D(row["buying_power"]),
                    row["status"], row["trading_blocked"], row["account_blocked"],
-                   datetime.now(timezone.utc))
+                   datetime.now(timezone.utc),
+                   None if row.get("initial_margin") is None else D(row["initial_margin"]))
 
 
 def order_parameters(intent, asset):

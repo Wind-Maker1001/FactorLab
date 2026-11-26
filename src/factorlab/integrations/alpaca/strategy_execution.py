@@ -95,6 +95,6 @@ class AlpacaDecisionExecution:
             rebalance_id=receipt['package_id'] + ':' + receipt['event_id'],
             weights=weights, owned_symbols=(tuple(intent.instrument_id for intent, _ in direct)
                 if direct is not None else tuple(weights if deltas is None else deltas)), now=self.clock(),
-            quantity_deltas=deltas, direct_orders=direct,
+            quantity_deltas=deltas, direct_orders=direct, record_risk_rejection=True,
             signal_inputs=dict(package_id=receipt['package_id'], event_id=receipt['event_id'],
                                input_identity=receipt['input_identity']))

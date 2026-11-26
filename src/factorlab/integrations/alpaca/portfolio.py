@@ -37,8 +37,7 @@ class AlpacaPortfolioAdapter:
     def read_account(self):
         # Original-order recovery can observe a fill after the runner's initial
         # account recovery, invalidating its inventory/cash admission snapshot.
-        self.adapter.recover()
-        return self.adapter.read_account()
+        return self.adapter.recover()
 
     def query_order(self, client_order_id):
         try:
@@ -101,7 +100,10 @@ class AlpacaPortfolioAdapter:
             quantity, price, details['observed_at'], 'alpaca-paper-execution-activities', event_id,
             cumulative_filled_notional=notional)
 
-    def submit_order(self, intent):
+    def submit_risk_checked(self, intent, admit):
+        return self.submit_order(intent, risk_admission=admit)
+
+    def submit_order(self, intent, *, risk_admission=None):
         price = intent.limit_price
         if price is None:
             row = self.store.db.execute('SELECT plan FROM portfolio_orders WHERE id=?',
@@ -109,7 +111,10 @@ class AlpacaPortfolioAdapter:
             price = next(order['reservation_price'] for order in self.store.orders(row[0])
                          if order['record'].snapshot.intent.client_order_id == intent.client_order_id)
         try:
-            self.adapter.submit_order(intent, reservation_price=price)
+            if risk_admission is None:
+                self.adapter.submit_order(intent, reservation_price=price)
+            else:
+                self.adapter.submit_order(intent, reservation_price=price, risk_admission=risk_admission)
         except RiskRejected as error:
             return OrderEvent(intent.client_order_id, None, OrderStatus.REJECTED, D(0), None,
                 self.clock(), 'alpaca-local-admission:' + error.decision.reason,
