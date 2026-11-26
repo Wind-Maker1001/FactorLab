@@ -46,3 +46,7 @@ python -m factorlab.trading.capital_cli portfolio.sqlite3 ACCOUNT close-001 rele
 | 历史与绩效 | 固定资本、旧数据库和原历史导入测试；独立收益测试使用已知的 21% TWR 和 10% XIRR。 |
 
 独立代码审查覆盖全名义保证、资金费截止、旧资格回放、退出实例重启、命令异常处置与排队中的过期决策。可信 CI 使用仓库的 `FactorLab PR validation` 工作流对 PR 合并候选执行检查。
+
+PR 为 [#263](https://github.com/Wind-Maker1001/FactorLab/pull/263)，对应检查以 PR 当前提交记录为准。
+
+本地 Windows Python 3.13 的两市场、资本迁移、命令与实例回归在两个逻辑 CPU 上通过 25 项，测试主进程峰值工作集为 136.2 MiB。进程中断回滚测试通过独立运行。Alpaca 实例重启与云运行回归通过 21 项。扩大回归通过 475 项，余下一项在源码修订时触发策略包源码身份变更，冻结源码后单独复测通过。资源数字来自离线定向运行。

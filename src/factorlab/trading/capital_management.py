@@ -111,6 +111,8 @@ class CapitalManagement:
         if derivatives:
             funds = margin.usdt()
             unrealized = funds['unrealizedProfit']
+            if any(funds[key] is None for key in ('walletBalance', 'availableBalance', 'unrealizedProfit')):
+                raise ValueError('official wallet, availability and unrealized profit are required')
             equity = funds['walletBalance'] + unrealized
             open_ids = {(o.intent.instrument_id, o.intent.client_order_id) for o in account.open_orders}
             account = margin.shared(account.open_orders,
@@ -121,7 +123,9 @@ class CapitalManagement:
             raise ValueError('official account equity is required')
         risk = executor.capital_policy.risk_snapshot(executor, account_id,
             official_equity=equity, account=account, margin=margin)
-        wallet = next(asset.total for asset in account.assets if asset.currency == risk.currency)
+        wallet = next((asset.total for asset in account.assets if asset.currency == risk.currency), None)
+        if wallet is None:
+            raise ValueError('official settlement balance is required')
         official_available = account.official_available
         if official_available is None:
             official_available = risk.available
@@ -141,7 +145,10 @@ class CapitalManagement:
         wallet_room = None
         pool_cash = None
         if complete:
-            pool_cash = exact_sum((wallet, -exact_sum(s.wallet for s in risk.strategies)))
+            attributed = exact_sum(s.wallet for s in risk.strategies)
+            pool_cash = exact_sum((wallet, attributed.copy_negate()))
+            complete = pool_cash >= ZERO
+        if complete:
             obligations = exact_sum(s.capital.reserved + (s.occupied if derivatives else ZERO)
                                     for s in risk.strategies)
             wallet_room = max(ZERO, min(wallet - obligations, risk.available,
@@ -274,6 +281,8 @@ class CapitalManagement:
         snapshot = self._snapshot(account_id)
         if operation.get('reduction_plan') is not None:
             self._require_reduction(account_id, source, operation['reduction_plan'])
+        if snapshot.pool_cash is not None and snapshot.pool_cash < ZERO:
+            raise ValueError('attributed strategy cash exceeds the official wallet')
         if snapshot.allocatable is None:
             raise ValueError('capital changes require reconciled cash, orders, inventory and funding')
         owners = {s.strategy_id: s for s in snapshot.strategies}

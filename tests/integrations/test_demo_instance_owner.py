@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 from factorlab.integrations.binance_futures_trading.demo_instance_owner import DemoInstanceOwner
+from factorlab.trading.portfolio_execution import PortfolioExecutor, PortfolioStore
 
 
 def test_expired_unsent_task_is_rejected_without_submission(tmp_path):
@@ -45,19 +46,25 @@ def test_mailbox_targets_use_only_existing_instance_capital(tmp_path):
         symbols=['BTCUSDT', 'ETHUSDT'], allocation=dict(budget_usdt=D(20))))
     receipts = []
     session = SimpleNamespace(adapter=SimpleNamespace(account_id='account'), _now=lambda: NOW)
-    execution = SimpleNamespace(session=session, store=store, execute=receipts.append)
+    capital = PortfolioStore(tmp_path / 'tasks-capital.sqlite3')
+    capital.db.execute('INSERT INTO portfolio_allocations VALUES (?,?,?,?,?)',
+                       ('account', 'one', 'funded', '20', '20'))
+    executor = PortfolioExecutor(None, capital)
+    execution = SimpleNamespace(session=session, store=store, executor=executor, execute=receipts.append)
     owner = DemoInstanceOwner(session, execution)
     task = dict(task_id='task', allocation_id='funded', equity_usdt='10',
         weights={'BTCUSDT': '.4', 'ETHUSDT': '.4'}, valid_until=(NOW+timedelta(minutes=1)).isoformat())
     try:
         status, _ = owner.accept_task(task)
         assert status == 'ACCEPTED'
-        assert receipts[0]['decision']['targets'] == {'BTCUSDT': D('.2'), 'ETHUSDT': D('.2')}
+        assert receipts[0]['decision']['targets'] == {'BTCUSDT': D('.4'), 'ETHUSDT': D('.4')}
+        assert receipts[0]['event']['task']['equity_usdt'] == '10'
         with pytest.raises(SafetyBlocked, match='funded instance'):
             owner.accept_task(dict(task, equity_usdt='21'))
         assert owner.accept_task(dict(task, valid_until=NOW.isoformat()))[0] == 'REJECTED'
         assert len(receipts) == 1
     finally:
+        capital.close()
         store.close()
 
 
@@ -163,17 +170,20 @@ def test_account_exchange_failure_is_not_treated_as_symbol_unavailability(tmp_pa
     store = PaperStore(tmp_path / 'account-failure.sqlite3')
     store.db.execute('CREATE TABLE demo_instance_outbox (id TEXT, payload TEXT, completed INTEGER)')
     store.db.execute('INSERT INTO demo_instance_outbox VALUES(?,?,0)',
-        ('pending', dumps(dict(intents=[intent('pending')]))))
+        ('pending', dumps(dict(receipt=dict(binding=dict(account_id='account', instance_id='one')),
+                               intents=[intent('pending')]))))
     def unavailable(symbol):
         raise ExchangeError(-2015, 401, 'AUTHENTICATION')
-    session = SimpleNamespace(symbol_context=unavailable)
-    execution = SimpleNamespace(session=session, store=store,
+    session = SimpleNamespace(symbol_context=unavailable, adapter=SimpleNamespace(account_id='account'))
+    capital = PortfolioStore(tmp_path / 'account-failure-capital.sqlite3')
+    execution = SimpleNamespace(session=session, store=store, executor=PortfolioExecutor(None, capital),
         advance=lambda *args, **kwargs: pytest.fail('account failure must block advancement'))
     owner = DemoInstanceOwner(session, execution)
     try:
         with pytest.raises(ExchangeError, match='AUTHENTICATION'):
             owner.poll()
     finally:
+        capital.close()
         store.close()
 
 
@@ -187,7 +197,8 @@ def test_poll_blocks_pending_execution_until_instance_activation_recovers(tmp_pa
     session = SimpleNamespace(_now=lambda: NOW, adapter=SimpleNamespace(account_id='account',
         read_facts=lambda: SimpleNamespace(usdt=lambda: dict(
             walletBalance=Decimal(5000), unrealizedProfit=Decimal(0)))))
-    execution = SimpleNamespace(session=session, store=store,
+    capital = PortfolioStore(tmp_path / 'activation-capital.sqlite3')
+    execution = SimpleNamespace(session=session, store=store, executor=PortfolioExecutor(None, capital),
         advance=lambda decision_id, **kwargs: calls.append(decision_id) or 'WAITING')
     owner = DemoInstanceOwner(session, execution)
     callback = {'package_id': 'package'}
@@ -201,7 +212,7 @@ def test_poll_blocks_pending_execution_until_instance_activation_recovers(tmp_pa
         deployment = SimpleNamespace(store=view, step=lambda: calls.append('activation-retry'))
         owner.attach(runtime, deployment)
         store.db.execute('INSERT INTO demo_instance_outbox VALUES(?,?,0)',
-            (instance_id, dumps(dict(receipt=dict(binding=dict(instance_id=instance_id)), intents=[]))))
+            (instance_id, dumps(dict(receipt=dict(binding=view.binding()), intents=[]))))
     try:
         assert owner.poll() == {'healthy': 'WAITING'}
         assert calls == ['activation-retry', 'healthy']
@@ -210,13 +221,15 @@ def test_poll_blocks_pending_execution_until_instance_activation_recovers(tmp_pa
         assert owner.poll() == {'blocked': 'WAITING', 'healthy': 'WAITING'}
         assert calls == ['blocked', 'healthy']
     finally:
+        capital.close()
         store.close()
 
 
-def test_activation_callback_is_retried_before_any_new_decision():
+def test_activation_callback_is_retried_before_any_new_decision(tmp_path):
     calls = []
     session = SimpleNamespace(adapter=SimpleNamespace(account_id='account'))
-    execution = SimpleNamespace(session=session)
+    capital = PortfolioStore(tmp_path / 'callback-capital.sqlite3')
+    execution = SimpleNamespace(session=session, executor=PortfolioExecutor(None, capital))
     view = SimpleNamespace(binding=lambda: dict(account_id='account', instance_id='one'),
         pending=lambda: None, activation_callback=lambda: dict(package_id='package'),
         snapshot=lambda: dict(active='package'))
@@ -226,8 +239,11 @@ def test_activation_callback_is_retried_before_any_new_decision():
     owner = DemoInstanceOwner(session, execution)
     owner.attach(runtime, deployment)
     event = dict(binding=dict(instance_id='one'))
-    assert owner.decide('one', event) is None
-    assert calls == ['step']
-    view.activation_callback = lambda: None
-    owner.decide('one', event)
-    assert calls == ['step', 'recover', 'decide']
+    try:
+        assert owner.decide('one', event) is None
+        assert calls == ['step']
+        view.activation_callback = lambda: None
+        owner.decide('one', event)
+        assert calls == ['step', 'recover', 'decide']
+    finally:
+        capital.close()
