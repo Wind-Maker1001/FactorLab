@@ -9,6 +9,7 @@ import sys
 import tempfile
 
 from factorlab.trading.storage import dumps, decode
+from .model import model_effective_at, require_model_effective
 from .protocol import (StrategySpecV2, V1, V2, json_value, read_spec, read_decision, spec_payload)
 
 WORKER = Path(__file__).with_name('worker.py')
@@ -33,6 +34,10 @@ class StrategyWorkerError(ValueError):
     pass
 
 
+class StrategyPackageError(StrategyWorkerError):
+    """An installed strategy package could not be loaded by an instance."""
+
+
 class LoadedStrategy:
     """No user module is imported into the caller, including during discovery.
 
@@ -44,6 +49,8 @@ class LoadedStrategy:
         if trusted is not True:
             raise ValueError('explicit trusted=True is required for Python strategy code')
         self.timeout = timeout
+        self._model_payload = None
+        self._model_effective_at = None
         path = Path(path).resolve()
         self.manifest_path = path / 'strategy.json' if path.is_dir() else path
         manifest = (dict(file=path.name, **{'class': class_name}, version=version,
@@ -81,9 +88,17 @@ class LoadedStrategy:
         """Load a verified S03 StrategyPackage using the S01 isolated worker process."""
         if trusted is not True:
             raise ValueError('explicit trusted=True is required for Python strategy code')
-        from .package import digest, load_package, package_entrypoint_file, validate_manifest, manifest_spec
+        try:
+            return cls._from_strategy_package(release_dir, manifest, timeout=timeout, qualify=qualify)
+        except (OSError, ValueError, TypeError, KeyError, ArithmeticError) as error:
+            raise StrategyPackageError(str(error)) from error
+
+    @classmethod
+    def _from_strategy_package(cls, release_dir, manifest, *, timeout, qualify):
+        from .package import (digest, read_package, package_entrypoint_file, validate_manifest,
+                              manifest_spec, model_identity)
         root = Path(release_dir).resolve()
-        installed = load_package(root, qualify=qualify)
+        installed, payload = read_package(root, qualify=qualify)
         if manifest is not None:
             validate_manifest(manifest, qualify=qualify)
             if manifest != installed:
@@ -91,9 +106,6 @@ class LoadedStrategy:
         if installed['interface'] not in {V1, V2}:
             raise ValueError('decision StrategyPackage required')
         entry_file, class_name = package_entrypoint_file(installed)
-        paths = [root / name for name in sorted(installed['files'])]
-        if any(p.is_symlink() or not p.resolve().is_relative_to(root) or not p.is_file() for p in paths):
-            raise ValueError('strategy package cannot contain linked or missing sources')
         instance = cls.__new__(cls)
         instance.timeout = timeout
         instance.manifest_path = root / 'manifest.json'
@@ -106,7 +118,17 @@ class LoadedStrategy:
             package=bool(installed.get('package', False)),
             dependencies=list(installed['dependencies']),
         ))
-        instance.sources = {name: (root / name).read_text(encoding='utf-8') for name in sorted(installed['files'])}
+        instance._model_payload = None
+        instance._model_effective_at = None
+        if 'model' in installed:
+            declaration = installed['model']
+            instance.manifest['model'] = declaration
+            instance._model_payload = payload.pop(declaration['file'])
+            instance._model_effective_at = model_effective_at(declaration)
+        if 'runtime_profile' in installed:
+            instance.manifest['runtime_profile'] = installed['runtime_profile']
+        instance.sources = {name: data.decode('utf-8').replace('\r\n', '\n').replace('\r', '\n')
+                            for name, data in sorted(payload.items())}
         instance.code_sha256 = sha256(json.dumps(instance.sources, sort_keys=True).encode()).hexdigest()
         instance.spec = read_spec(instance._call('describe'))
         if isinstance(instance.spec, StrategySpecV2) != (installed['interface'] == V2):
@@ -139,6 +161,8 @@ class LoadedStrategy:
             runtime_sha256=runtime_identity(),
             evidence_sha256=digest(installed['evidence']),
         )
+        if 'model' in installed:
+            instance.binding['model'] = model_identity(installed)
         return instance
 
     def _call(self, operation, event=None, state=None):
@@ -148,6 +172,10 @@ class LoadedStrategy:
                 dest = root / name
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 dest.write_text(source, encoding='utf-8')
+            if self._model_payload is not None:
+                dest = root / self.manifest['model']['file']
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_bytes(self._model_payload)
             request = dict(operation=operation, manifest=self.manifest, event=event, state=state)
             # No inherited environment, user HOME, current directory, handles,
             # PYTHONPATH, cloud credentials or Demo credential store location.
@@ -175,9 +203,14 @@ class LoadedStrategy:
         if isinstance(self.spec, StrategySpecV2):
             from .events import validate_event
             validate_event(event, self.spec)
+            self.require_event_time(event['event_time'])
         result = self._call('decide', event, json_value(state))
         return read_decision(result).validate(self.spec,
             None if isinstance(self.spec, StrategySpecV2) else event['symbol'])
+
+    def require_event_time(self, event_time):
+        if self._model_effective_at is not None:
+            require_model_effective(event_time, self._model_effective_at)
 
     def migrate_state(self, state, from_version):
         if runtime_identity() != self.binding['runtime_sha256']:

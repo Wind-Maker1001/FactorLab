@@ -4,9 +4,14 @@ import json
 import os
 from pathlib import Path
 
+from factorlab.errors import DataQualityError
+from factorlab.strategies.events import StrategyInputUnavailable, validate_event
+from factorlab.strategies.loader import StrategyWorkerError
+from factorlab.strategies.model import ModelNotEffective
 from factorlab.trading.storage import decode, dumps
 from factorlab.trading.portfolio_execution import TERMINAL
 from .cloud_execution import PreparationIncomplete
+from .market_data.client import MarketDataError
 from .scheduling import schedule_window
 
 
@@ -40,8 +45,15 @@ class AlpacaInstance:
         destination = directory / (key + '.json')
         if destination.exists():
             return decode(json.loads(destination.read_text(encoding='utf-8')))
+        orders = self.orders() if 'order_event' in self.spec.data['data_types'] else ()
         event = self.data.event(service, self.spec, self.binding, self.allocation(account), window,
-                               owned_orders=self.orders())
+                               owned_orders=orders)
+        try:
+            validate_event(event, self.spec)
+        except ValueError as error:
+            raise StrategyInputUnavailable(str(error)) from error
+        if 'model' in self.runtime.strategy.binding:
+            self.runtime.strategy.require_event_time(event['event_time'])
         temporary = destination.with_suffix('.tmp')
         with temporary.open('w', encoding='utf-8') as output:
             output.write(dumps(event) + '\n')
@@ -107,9 +119,19 @@ class AlpacaInstance:
             return
         try:
             event = self.event(service, window, account)
-        except PreparationIncomplete as error:
+        except (PreparationIncomplete, StrategyInputUnavailable, DataQualityError, MarketDataError) as error:
             self.state.update(state='PREPARATION_INCOMPLETE', reason=str(error))
             return
-        self.runtime.decide(event)
+        except ModelNotEffective as error:
+            self.state.update(state='WAITING_MODEL_EFFECTIVE', reason=str(error))
+            return
+        try:
+            self.runtime.decide(event)
+        except (StrategyInputUnavailable, ModelNotEffective) as error:
+            self.state.update(state='PREPARATION_INCOMPLETE', reason=str(error))
+            return
+        except StrategyWorkerError as error:
+            self.state.update(state='STRATEGY_FAILED', reason=str(error))
+            return
         self.recover(service, session)
         self.state.update(state='RUNNING', event_id=window.event_id, reason=None)

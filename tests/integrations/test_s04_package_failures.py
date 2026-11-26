@@ -29,12 +29,12 @@ def test_broken_package_is_diagnosed_and_paused(tmp_path, harness, damage, monke
             (router.releases / version / 'limit_cycle.py').write_text('broken source', encoding='utf-8')
         else:
             from pathlib import Path
-            original = Path.read_bytes
-            def unreadable(self):
+            original = Path.open
+            def unreadable(self, *args, **kwargs):
                 if self == path:
                     raise PermissionError('offline injected permission failure')
-                return original(self)
-            monkeypatch.setattr(Path, 'read_bytes', unreadable)
+                return original(self, *args, **kwargs)
+            monkeypatch.setattr(Path, 'open', unreadable)
         with pytest.raises(PackageLoadError):
             router._is_decision_package(version)
         assert router.reason.startswith('PACKAGE_LOAD_FAILED:')

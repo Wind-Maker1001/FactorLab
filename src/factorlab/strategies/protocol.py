@@ -85,6 +85,43 @@ V1 = 'FACTORLAB_DECISION_V1'
 V2 = 'FACTORLAB_DECISION_V2'
 DECISION_KINDS = frozenset({'target_weight', 'target_weights', 'target_quantities', 'quantity_deltas', 'orders'})
 BINDING_FIELDS = frozenset({'market', 'account_id', 'instance_id', 'allocation_id', 'strategy_id'})
+OBSERVATION_TYPES = frozenset({'closed_bar', 'quote', 'order_event', 'funding_forecast',
+                               'funding_settlement', 'volatility'})
+REFERENCE_TYPES = (OBSERVATION_TYPES - {'order_event'}) | {'feature', 'prediction'}
+
+
+def _validate_inputs(data, symbols):
+    references = data.get('references', {})
+    if not isinstance(references, dict) or set(references) & set(symbols):
+        raise ValueError('reference symbols must be separate from trading symbols')
+    if references and data['data_types'][0] != 'closed_bar':
+        raise ValueError('reference data requires a closed-bar decision event')
+    total_history = 0
+    for symbol, streams in references.items():
+        if (not isinstance(symbol, str) or not symbol.strip() or not isinstance(streams, dict)
+                or not streams or not set(streams) <= REFERENCE_TYPES):
+            raise ValueError('invalid reference streams')
+        for kind, requirement in streams.items():
+            fields = {'source', 'history_limit'}
+            if kind == 'closed_bar':
+                fields |= {'price_basis', 'interval_seconds'}
+            if (not isinstance(requirement, dict) or set(requirement) != fields
+                    or not isinstance(requirement['source'], str)
+                    or not requirement['source'].strip() or type(requirement['history_limit']) is not int
+                    or not 1 <= requirement['history_limit'] <= 1000):
+                raise ValueError('reference streams require an explicit source and bounded history')
+            if kind == 'closed_bar' and (not isinstance(requirement['price_basis'], str)
+                    or not requirement['price_basis'].strip() or type(requirement['interval_seconds']) is not int
+                    or requirement['interval_seconds'] <= 0):
+                raise ValueError('reference bars require an explicit price basis and interval')
+            total_history += requirement['history_limit']
+    if total_history > 4096:
+        raise ValueError('reference histories exceed the event budget')
+    for name in ('account_fields', 'allocation_fields'):
+        fields = data.get(name, [])
+        if (not isinstance(fields, list) or any(not isinstance(field, str) or not field.strip() for field in fields)
+                or len(fields) != len(set(fields))):
+            raise ValueError('invalid projection field declaration: ' + name)
 
 
 def validate_binding(binding):
@@ -121,10 +158,11 @@ class StrategySpecV2:
             raise ValueError('invalid strategy symbols/decision kind')
         data_types = self.data['data_types']
         if (not data_types or len(set(data_types)) != len(data_types)
-                or not set(data_types) <= {'closed_bar', 'quote', 'order_event', 'funding_forecast', 'funding_settlement', 'volatility'}
+                or not set(data_types) <= OBSERVATION_TYPES
                 or type(self.data['history_limit']) is not int or not 1 <= self.data['history_limit'] <= 1000
                 or type(self.data['historical_observations']) is not bool):
             raise ValueError('invalid strategy data requirements')
+        _validate_inputs(self.data, self.symbols)
         if self.schedule['kind'] == 'interval':
             if (set(self.schedule) != {'kind', 'interval_seconds'}
                     or type(self.schedule['interval_seconds']) is not int or self.schedule['interval_seconds'] <= 0):
