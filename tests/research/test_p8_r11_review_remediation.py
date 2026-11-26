@@ -449,6 +449,37 @@ def _setup_funding_grid_controller(
     return broker, store, controller, now, make_grid
 
 
+def test_volatility_grid_checkpoint_restores_live_window_and_next_decision(tmp_path):
+    from factorlab.experiments.grid_funding_adaptive import VolatilityAdaptiveGrid, VolatilityPolicy
+    broker, store, controller, now, make_funding = _setup_funding_grid_controller(
+        tmp_path, policy=FundingPolicy(), funding_events=[])
+    try:
+        base = make_funding()
+        def create():
+            return VolatilityAdaptiveGrid(base.config, base.rules, deployment_id=base.deployment_id,
+                account_id='r11-rec', market=Market.BINANCE_USDM, instrument_id='NVDAUSDT',
+                initial_equity=DEFAULT_DEMO_WALLET, fee_rate=D('.0003'), continuous_capacity=True,
+                vol_policy=VolatilityPolicy(), warmup_closes=[130, 131, 132, 133])
+        grid = create()
+        grid.observe_paper(controller, dict(id='v0', time=now[0].replace(tzinfo=None).isoformat(), price=D('132.89'),
+            high=D('132.89'), low=D('132.89'), close=D('132.89'), volume=10000,
+            completed_bar=True), delivery=1, observed_at=now[0])
+        restored = create()
+        restored.restore(controller)
+        assert restored.close_history == grid.close_history
+        assert restored._subclass_checkpoint() == grid._subclass_checkpoint()
+        event = dict(id='v1', time=(now[0]+timedelta(hours=1)).replace(tzinfo=None).isoformat(),
+            price=D(134), high=D(134), low=D(134), close=D(134), volume=10000, completed_bar=True)
+        # Compare staged next decisions without committing competing checkpoints.
+        from factorlab.strategies.grid_execution import _observation
+        for candidate in (grid, restored):
+            candidate._observe(_observation(event), candidate.account)
+        assert restored._subclass_checkpoint() == grid._subclass_checkpoint()
+        assert restored.prices == grid.prices
+    finally:
+        store.close()
+
+
 def test_r10_funding_grid_checkpoint_recovery_matches_continuous_and_handles_partial_and_age(tmp_path: Path):
     """Continuous run vs checkpoint-restored instance must behave identically across:
     partial fills, funding spike exit, age exit, full exit cleanup, and F08 rotation."""

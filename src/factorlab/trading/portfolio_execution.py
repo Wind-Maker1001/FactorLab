@@ -446,6 +446,7 @@ class PortfolioExecutor:
             self._capital_admission(account_id, strategy_id)
             self._recover_account(account_id)
             configured = self.capital_policy.is_configured(account_id)
+            exclusive = configured and not self._shared_policy(account_id)
             active = self.store.db.execute(
                 'SELECT id,payload FROM portfolio_plans WHERE account=? AND strategy=?',
                 (account_id, strategy_id)).fetchall()
@@ -717,6 +718,7 @@ class PortfolioExecutor:
                 break
             remaining = unrelated
         configured = self.capital_policy.is_configured(account_id)
+        exclusive = configured and not self._shared_policy(account_id)
         for symbol in children:
             if configured:
                 self.capital_policy.claim(account_id, strategy_id, symbol)

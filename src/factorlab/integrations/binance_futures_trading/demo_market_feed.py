@@ -44,6 +44,48 @@ def timestamp(milliseconds):
         raise FeedPaused('INVALID_TIMESTAMP') from error
 
 
+def read_closed_bars(client, *, symbol, interval, start, page_boundary, server, receipt_clock):
+    """Validate one official page without accessing a feed cursor or trading store."""
+    seconds = INTERVALS[interval]
+    width = seconds * 1000
+    count = (page_boundary - start) // width
+    if count == 0:
+        return [], [], None
+    rows = client.request('GET', '/fapi/v1/klines', dict(symbol=symbol,
+        interval=interval, startTime=start, endTime=page_boundary - 1, limit=count), signed=False)
+    if not isinstance(rows, list) or len(rows) > count + 1:
+        raise FeedPaused('INVALID_KLINES')
+    received_at = receipt_clock()
+    bars, previous = [], None
+    for row in rows:
+        if not isinstance(row, list) or len(row) < 7:
+            raise FeedPaused('INVALID_KLINE')
+        opened, closed = row[0], row[6]
+        timestamp(opened)
+        timestamp(closed)
+        if opened % width or closed + 1 != opened + width:
+            raise FeedPaused('INVALID_BOUNDARY')
+        if previous is not None and opened <= previous:
+            raise FeedPaused('UNORDERED_KLINES')
+        previous = opened
+        if opened > server:
+            raise FeedPaused('FUTURE_KLINE')
+        if closed + 1 > server or opened < start:
+            continue
+        if opened != start + len(bars) * width:
+            raise FeedPaused('BAR_SEQUENCE_GAP')
+        if any(not isinstance(value, str) for value in row[1:6]):
+            raise FeedPaused('DECIMAL_STRINGS_REQUIRED')
+        try:
+            bars.append(ClosedBar(symbol, timestamp(opened), timestamp(closed + 1),
+                *(Decimal(value) for value in row[1:6]), seconds, SOURCE))
+        except (ValueError, InvalidOperation) as error:
+            raise FeedPaused('INVALID_OHLCV') from error
+    if len(bars) != count:
+        raise FeedPaused('BAR_SEQUENCE_GAP')
+    return bars, rows, received_at
+
+
 class DemoMarketFeed:
     """Callbacks must persistently deduplicate replay after an interrupted ack.
 
@@ -155,46 +197,8 @@ class DemoMarketFeed:
             raise
 
     def _bars(self, start, page_boundary, server):
-        width = self.seconds * 1000
-        count = (page_boundary - start) // width
-        if count == 0:
-            return [], [], None
-        rows = self.client.request('GET', '/fapi/v1/klines', dict(symbol=self.symbol,
-            interval=self.interval, startTime=start,
-            endTime=page_boundary - 1, limit=count), signed=False)
-        if not isinstance(rows, list) or len(rows) > count + 1:
-            raise FeedPaused('INVALID_KLINES')
-        bars_received_at = self.receipt_clock()
-        bars, previous = [], None
-        for row in rows:
-            if not isinstance(row, list) or len(row) < 7:
-                raise FeedPaused('INVALID_KLINE')
-            opened, closed = row[0], row[6]
-            timestamp(opened)
-            timestamp(closed)
-            if opened % width or closed + 1 != opened + width:
-                raise FeedPaused('INVALID_BOUNDARY')
-            if previous is not None and opened <= previous:
-                raise FeedPaused('UNORDERED_KLINES')
-            previous = opened
-            if opened > server:
-                raise FeedPaused('FUTURE_KLINE')
-            if closed + 1 > server:
-                continue
-            if opened < start:
-                continue
-            if opened != start + len(bars) * width:
-                raise FeedPaused('BAR_SEQUENCE_GAP')
-            if any(not isinstance(v, str) for v in row[1:6]):
-                raise FeedPaused('DECIMAL_STRINGS_REQUIRED')
-            try:
-                bars.append(ClosedBar(self.symbol, timestamp(opened), timestamp(closed + 1),
-                    *(Decimal(v) for v in row[1:6]), self.seconds, SOURCE))
-            except (ValueError, InvalidOperation) as error:
-                raise FeedPaused('INVALID_OHLCV') from error
-        if len(bars) != count:
-            raise FeedPaused('BAR_SEQUENCE_GAP')
-        return bars, rows, bars_received_at
+        return read_closed_bars(self.client, symbol=self.symbol, interval=self.interval,
+            start=start, page_boundary=page_boundary, server=server, receipt_clock=self.receipt_clock)
 
     def _backfill(self, start, boundary, server, width):
         # Hold the newest closed bar for a fresh market batch. Every earlier

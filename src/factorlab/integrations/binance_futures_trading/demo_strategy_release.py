@@ -14,7 +14,7 @@ from factorlab.trading.control import RiskRejected
 from factorlab.trading.paper import Quote
 from factorlab.trading.realtime import PersistenceConflict
 from .demo_market_feed import FeedPaused
-from .demo_runtime import MAX_NOTIONAL, MAX_QUANTITY
+from .demo_runtime import MAX_NOTIONAL, MAX_QUANTITY, durable_control_state
 from .protocol import SafetyBlocked
 from .strategy_deployment import DeploymentStore, DeploymentController, LEGACY, TERMINAL
 from .strategy_package import (
@@ -166,6 +166,12 @@ class ReleaseConsumer:
         self._runners = {}
         self._expected = None
         self.bridge.session.strategy_write_guard = self.write_guard
+        from .demo_instance_host import DemoInstanceHost
+        self.instance_host = None
+        self._instance_stack = stack
+        if DemoInstanceHost.registered(self.store, self.bridge.session.adapter.account_id):
+            self.instance_host = DemoInstanceHost(self.bridge.session, self.bridge.runtime,
+                self.store, self.releases, directory, stack, self.base.control)
 
     def __getattr__(self, name):
         return getattr(self.base, name)
@@ -438,6 +444,14 @@ class ReleaseConsumer:
                 self.store.rollback(self.base.reason)
 
     def _before_poll(self):
+        if self.instance_host is None:
+            from .demo_instance_host import DemoInstanceHost
+            if DemoInstanceHost.registered(self.store, self.bridge.session.adapter.account_id):
+                self.instance_host = DemoInstanceHost(self.bridge.session, self.bridge.runtime,
+                    self.store, self.releases, self.releases.parent, self._instance_stack, self.base.control)
+        if (self.instance_host is not None and self.base.control.desired() == 'RUNNING'
+                and durable_control_state(self.bridge.runtime) is None):
+            self.instance_host.step()
         state = self.store.snapshot()
         if self.store.pending() or self.store.activation_callback() is not None or state['active'] != LEGACY:
             if state['active'] == LEGACY:
@@ -502,6 +516,8 @@ class ReleaseConsumer:
         self.base.reason = reason
 
     def historical_bar(self, bar):
+        if self.instance_host is not None:
+            self.instance_host.closed_bar(bar, historical=True)
         state = self.store.snapshot()
         if self.store.pending() or self.store.activation_callback() is not None:
             return False
@@ -519,6 +535,8 @@ class ReleaseConsumer:
         return False
 
     def closed_bar(self, bar):
+        if self.instance_host is not None:
+            self.instance_host.closed_bar(bar)
         state = self.store.snapshot()
         if self.store.pending() or self.store.activation_callback() is not None:
             return False

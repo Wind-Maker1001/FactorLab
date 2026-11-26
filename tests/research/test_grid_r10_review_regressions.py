@@ -165,7 +165,7 @@ def test_dataset_audit_rejects_corrupted_cache_before_research(tmp_path, monkeyp
     for name in ("R04B", "R07"):
         pd.DataFrame([{"time": start.isoformat(), "mark_price": 200, "rate": 0, "rate_type": "Regular"}]).to_csv(
             root / f"{name}-base-baseline-funding-settlements.csv", index=False)
-    monkeypatch.setattr(g, "load_hourly", lambda _: ([], {}))
+    monkeypatch.setattr("factorlab.experiments.grid_empirical.load_hourly", lambda _: ([], {}))
     monkeypatch.setattr(g, "_http_get_json", lambda _: pytest.fail("Offline audit must not fetch data"))
     with pytest.raises(ValueError, match="hourly|Hourly"):
         load_and_audit_r10_dataset(repo_root=tmp_path, r04b_snapshot=tmp_path, cache_dir=tmp_path,

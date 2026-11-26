@@ -730,6 +730,33 @@ def calibrated_worker(network_grid, monkeypatch):
     return run, state, fake, requests
 
 
+def test_paused_worker_reconciles_instances_without_market_acquisition_or_dispatch(calibrated_worker, monkeypatch, tmp_path):
+    from factorlab.trading.portfolio_execution import PortfolioStore
+    from factorlab.integrations.binance_futures_trading.demo_instance_owner import DemoInstanceOwner
+    run, _, _, requests = calibrated_worker
+    calls = []
+    def rounds(supervisor, state):
+        session = state.consumer.bridge.session
+        capital = PortfolioStore(tmp_path / 'paused-capital.sqlite3')
+        owner = DemoInstanceOwner.open(session, capital,
+            capability=lambda *args: pytest.fail('paused owner cannot acquire write authority'))
+        reconcile = owner.reconcile
+        def record():
+            calls.append(session.adapter.account_id)
+            reconcile()
+        monkeypatch.setattr(owner, 'reconcile', record)
+        monkeypatch.setattr(owner, 'poll', lambda: pytest.fail('paused owner cannot advance decisions'))
+        state.consumer.control.request('PAUSED')
+        try:
+            supervisor.before_poll()
+            assert calls == [session.adapter.account_id]
+            assert owner.market_sources is None
+            assert not [request for request in requests if request.get_method() in {'POST', 'DELETE'}]
+        finally:
+            capital.close()
+    assert run(rounds, execute=True) == 0
+
+
 def test_worker_reports_exhausted_budget_without_losing_account_recovery(calibrated_worker, monkeypatch):
     run, _, _, requests = calibrated_worker
 

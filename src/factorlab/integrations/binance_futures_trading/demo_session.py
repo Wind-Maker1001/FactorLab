@@ -125,6 +125,9 @@ class DemoSession:
         self._write_guard = write_guard
         self._receipt_sink = receipt_sink
         self._order_quote_at = None
+        self._instance_guards = {}
+        self._instance_receipt_sinks = {}
+        self.instance_owner = None
         transport = DemoNetworkTransport(authorization=authorization, observe_response=self._observe_response,
             write_guard=self._admit_write if write_guard is not None else None)
         self.client = _demo_client(credential, transport, self.requests)
@@ -145,20 +148,32 @@ class DemoSession:
         leverage = configuration['leverage']
         instruments = (Instrument(self.symbol, 'USDT'),)
         restored = controller_store.load()
-        if controller_store.event_payload('demo:static-shared-account:v1') is not None and restored is not None:
-            if set(restored.instruments) - {'NVDAUSDT', 'QQQUSDT', 'SPYUSDT'}:
+        shared = controller_store.event_payload('demo:static-shared-account:v1')
+        declared = {self.symbol}
+        if shared is not None:
+            declared.update({'NVDAUSDT', 'QQQUSDT', 'SPYUSDT'})
+        from factorlab.trading.storage import decode
+        for payload, in controller_store.db.execute(
+                "SELECT payload FROM events WHERE id LIKE 'demo:instance:%'"):
+            instance = decode(json.loads(payload))
+            if instance['binding']['account_id'] != account_id:
+                raise SafetyBlocked('persisted Demo instance belongs to another account')
+            declared.update(instance['symbols'])
+        if restored is not None:
+            if set(restored.instruments) - declared:
                 raise SafetyBlocked('unexpected shared account instrument')
             instruments = tuple(restored.instruments.values())
-        shared = controller_store.event_payload('demo:static-shared-account:v1')
-        self.shared_account = shared is not None
-        if self.shared_account:
-            from factorlab.trading.storage import decode
+        self.shared_account = len(instruments) > 1
+        if shared is not None:
             allocation = decode(json.loads(shared))
             limits = replace(limits, account_budget=allocation['grid_budget'] + allocation['portfolio_budget'])
         self.gateway = DemoExecutionGateway(self.adapter, observation, instruments,
             {'USDT': balance}, leverage=leverage, max_leverage=leverage)
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)
         self.gateway.bind_controller(self.controller)
+        from .demo_symbols import DemoSymbolContext, DemoSymbolRegistry
+        self.symbols = DemoSymbolRegistry(self.adapter, controller_store)
+        self.symbols.contexts[self.symbol] = DemoSymbolContext(observation, configuration)
         if reconcile_on_open:
             self._recover(initial_facts=facts)
 
@@ -175,8 +190,13 @@ class DemoSession:
         old = self.client.transport
         if old.authorization is not None:
             old.authorization.revoke()
+        for capability in old.authorizations.values():
+            capability.revoke()
+        self._instance_guards.clear()
+        self._instance_receipt_sinks.clear()
         self._write_guard, self._receipt_sink = write_guard, receipt_sink
-        self.client.transport = replace(old, authorization=authorization, write_guard=self._admit_write)
+        self.client.transport = replace(old, authorization=authorization, authorizations={},
+                                        write_guard=self._admit_write)
         self.write_uncertain = False
         self.receipt_error = False
         self._recovered_receipt_count = len(self.receipts)
@@ -189,19 +209,22 @@ class DemoSession:
         if self._write_guard is not None and 'GTC' not in symbol.get('timeInForce', ()):
             raise SafetyBlocked('Demo symbol lacks current GTC support')
 
-    def refresh_rules(self):
+    def symbol_context(self, symbol):
+        context = self.symbols.require(symbol)
+        self.gateway.register_symbol(context)
+        return context
+
+    def refresh_rules(self, symbol=None):
         """Refresh the account-bound observation before planning or admitting new orders."""
-        if not self.gateway.rules.is_fresh(self._now()):
-            with self.client.recover_get_clock():
-                observation = observe_demo_rules(self.adapter, self.symbol, source_version=DEMO.host,
-                                                 on_symbol=self._check_symbol)
-            self.gateway.rules = observation.rules
+        if symbol is not None:
+            return self.symbol_context(symbol).rules
+        self.gateway.rules = self.symbol_context(self.symbol).rules
 
     def _admit_write(self, method, params, plan):
         if self.receipt_error or self.write_uncertain:
             raise SafetyBlocked('previous Demo write requires GET-only recovery')
         if any(receipt['http_status'] == 400
-               and receipt.get('request_parameters',{}).get('symbol',self.symbol) == self.symbol
+               and receipt.get('request_parameters',{}).get('symbol',self.symbol) == params['symbol']
                for receipt in self.receipts[self._recovered_receipt_count:]):
             raise SafetyBlocked('Demo HTTP 400 stopped further writes')
         now = self._now()
@@ -213,7 +236,9 @@ class DemoSession:
         if method == 'POST' and 'leverage' not in params:
             if not timedelta(0) <= now - self._order_quote_at <= timedelta(seconds=5):
                 raise SafetyBlocked('STALE_QUOTE at Demo dispatch')
-        self._write_guard(method, params, plan)
+        client_id = params.get('newClientOrderId', params.get('origClientOrderId'))
+        key = client_id if client_id is not None else ('configuration', params['symbol'])
+        self._instance_guards.get(key, self._write_guard)(method, params, plan)
 
     def _observe_response(self, request, response):
         method = request.method
@@ -221,8 +246,16 @@ class DemoSession:
             self.requests[method] += 1
         if method == 'GET':
             return
+        parameters = parse_qs(request.query)
+        if request.path == '/fapi/v1/leverage':
+            symbol = parameters['symbol'][0]
+            sink = self._instance_receipt_sinks[('configuration', symbol)]
+            sink(dict(method=method, client_order_id='pf-leverage-' + symbol,
+                http_status=response.status if response else None, outcome_unknown=response is None,
+                symbol=symbol, leverage=int(parameters['leverage'][0])))
+            return
         client_id_key = 'newClientOrderId' if method == 'POST' else 'origClientOrderId'
-        client_id = parse_qs(request.query)[client_id_key][0]
+        client_id = parameters[client_id_key][0]
         status = response.status if response is not None else None
         payload = {}
         if response is not None and len(response.body) <= 2 * 1024 * 1024:
@@ -249,17 +282,19 @@ class DemoSession:
                       'positionSide', 'reduceOnly', 'updateTime'}
         receipt['acknowledgement'] = {key: value for key, value in payload.items() if key in ack_fields}
         self.receipts.append(receipt)
-        if self._receipt_sink is not None:
+        sink = self._instance_receipt_sinks.get(client_id, self._receipt_sink)
+        if sink is not None:
             try:
-                self._receipt_sink(receipt)
+                sink(receipt)
             except Exception:
                 # Let the adapter reconcile the actual response even when reporting fails.
                 self.receipt_error = True
 
-    def _fresh_book(self, payload=None):
+    def _fresh_book(self, payload=None, *, symbol=None):
+        symbol = self.symbol if symbol is None else symbol
         if payload is None:
-            payload = self.client.request('GET', BOOK, {'symbol': self.symbol}, signed=False)
-        book = _book(payload, self.symbol)
+            payload = self.client.request('GET', BOOK, {'symbol': symbol}, signed=False)
+        book = _book(payload, symbol)
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo top of book')
         return book
@@ -322,9 +357,10 @@ class DemoSession:
         finally:
             self.last_recovery_seconds = perf_counter() - started
 
-    def _require_absent(self, client_order_id):
+    def _require_absent(self, client_order_id, *, symbol=None):
+        symbol = self.symbol if symbol is None else symbol
         try:
-            self.client.request('GET', '/fapi/v1/order', {'symbol': self.symbol, 'origClientOrderId': client_order_id})
+            self.client.request('GET', '/fapi/v1/order', {'symbol': symbol, 'origClientOrderId': client_order_id})
         except ExchangeError as error:
             if error.code == -2013 and error.category == 'ORDER_NOT_FOUND':
                 return
@@ -387,6 +423,38 @@ class DemoSession:
         self._prepare_submission(intent.client_order_id, intent.side, intent.reduce_only)
         return self._submit_prepared(intent, book)
 
+    def submit_instance_intent(self, intent, *, instance_id, allocation_id, authorization, guard, book=None):
+        """Route an instance order without changing the legacy session's symbol or rules."""
+        from .demo_allocations import DemoAllocations
+        if self._write_guard is None:
+            raise SafetyBlocked('instance execution requires the existing Execute owner')
+        if (intent.market is not Market.BINANCE_USDM or intent.order_type is not OrderType.LIMIT
+                or intent.position_side not in (None, 'BOTH')):
+            raise SafetyBlocked('Demo instance execution requires one-way LIMIT')
+        if (authorization.plan.symbol != intent.instrument_id
+                or authorization.plan.account_id != self.adapter.account_id):
+            raise SafetyBlocked('instance capability symbol or account mismatch')
+        owners = DemoAllocations(self.controller)
+        owners.claim(intent, instance_id=instance_id, allocation_id=allocation_id)
+        if intent.client_order_id in self._protocol_ids():
+            return self.adapter.order(intent.client_order_id)
+        context = self.symbol_context(intent.instrument_id)
+        self.controller._atomic(lambda: self.gateway.state.instruments.update(
+            {intent.instrument_id: Instrument(intent.instrument_id, 'USDT')}))
+        facts = self.adapter.read_facts()
+        if demo_account_configuration(facts, intent.instrument_id) != context.configuration:
+            raise SafetyBlocked('Demo symbol configuration changed before submission')
+        if not self.gateway.read_account().reconciled:
+            raise SafetyBlocked('reconcile Demo account before instance submission')
+        if any(row['symbol'] == intent.instrument_id and row['clientOrderId'] not in self.gateway.state.orders
+               for row in facts.open_orders):
+            raise SafetyBlocked('unowned order conflicts with instance symbol')
+        owners.admit(intent, instance_id=instance_id, allocation_id=allocation_id)
+        self._require_absent(intent.client_order_id, symbol=intent.instrument_id)
+        self.client.transport.authorizations[intent.client_order_id] = authorization
+        self._instance_guards[intent.client_order_id] = guard
+        return self._submit_prepared(intent, book)
+
     def _prepare_submission(self, client_order_id, side, reduce_only):
         if self._write_guard is None or not self.client.transport.permitted():
             raise SafetyBlocked('active Demo runtime authorization required')
@@ -406,27 +474,30 @@ class DemoSession:
             if receipt['method'] == method and receipt['client_order_id'] == client_order_id:
                 if not receipt['outcome_unknown']:
                     receipt['outcome_unknown'] = True
-                    if self._receipt_sink is not None:
+                    sink = self._instance_receipt_sinks.get(client_order_id, self._receipt_sink)
+                    if sink is not None:
                         try:
-                            self._receipt_sink(receipt)
+                            sink(receipt)
                         except Exception:
                             self.receipt_error = True
                 break
 
     def _submit_prepared(self, intent, book):
+        symbol = intent.instrument_id
         if self.shared_account:
             account = self.gateway.read_account()
             relevant = {p.instrument_id for p in account.positions}
             relevant.update(o.intent.instrument_id for o in account.open_orders)
-            for symbol in sorted(relevant - {self.symbol}):
-                payload = self.client.request('GET', BOOK, {'symbol':symbol}, signed=False)
-                observed = _book(payload,symbol)
-                self.controller.quote(Quote(symbol, observed['askPrice'], observed['time_utc']))
-        book = self._fresh_book() if book is None else book
+            for other in sorted(relevant - {symbol}):
+                payload = self.client.request('GET', BOOK, {'symbol':other}, signed=False)
+                observed = _book(payload,other)
+                self.controller.quote(Quote(other, observed['askPrice'], observed['time_utc']))
+        if book is None:
+            book = self._fresh_book() if symbol == self.symbol else self._fresh_book(symbol=symbol)
         if not timedelta(0) <= self._now() - book['time_utc'] <= timedelta(seconds=5):
             raise SafetyBlocked('STALE_QUOTE: Demo prepared book')
         self._order_quote_at = book['time_utc']
-        self.controller.quote(Quote(self.symbol, book['askPrice'], self._order_quote_at))
+        self.controller.quote(Quote(symbol, book['askPrice'], self._order_quote_at))
         receipt_index = len(self.receipts)
         try:
             result = self.controller.submit(intent)
@@ -445,8 +516,15 @@ class DemoSession:
         order = self.adapter.order(client_order_id)
         if order.reconcile_required or order.exchange_order_id is None or order.status in TERMINAL:
             raise SafetyBlocked('Demo cancellation requires a known active order')
-        facts = self._fresh_bound_facts()
-        if not any(row['symbol'] == self.symbol and row['clientOrderId'] == client_order_id
+        symbol = order.intent.instrument_id
+        if symbol == self.symbol:
+            facts = self._fresh_bound_facts()
+        else:
+            context = self.symbol_context(symbol)
+            facts = self.adapter.read_facts()
+            if demo_account_configuration(facts, symbol) != context.configuration:
+                raise SafetyBlocked('Demo cancellation symbol configuration changed')
+        if not any(row['symbol'] == symbol and row['clientOrderId'] == client_order_id
                    and str(row['orderId']) == order.exchange_order_id for row in facts.open_orders):
             raise SafetyBlocked('Demo order no longer observed active; use GET recovery')
         receipt_index = len(self.receipts)

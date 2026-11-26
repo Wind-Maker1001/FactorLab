@@ -77,7 +77,12 @@ def observe_demo_rules(adapter, symbol='NVDAUSDT', *, source_version, on_symbol=
     bracket = symbol_row([brackets] if isinstance(brackets, dict) else brackets, symbol)
     rules = RuleObservation.from_exchange(symbol_info, bracket, adapter.clock(), source_version)
     observation = DemoRuleObservation(rules, adapter.account_id, client)
-    adapter._rule_observation = observation
+    original = getattr(adapter, '_rule_observation', None)
+    if original is None or original.rules.symbol == symbol:
+        adapter._rule_observation = observation
+    if not hasattr(adapter, '_rule_observations'):
+        adapter._rule_observations = {}
+    adapter._rule_observations[symbol] = observation
     return observation
 
 
@@ -130,16 +135,17 @@ class DemoFuturesAdapter(FuturesAdapter):
             if self._admitted_cancel_id != client_order_id:
                 raise SafetyBlocked('Demo cancellation requires shared controller admission')
             order = self.order(client_order_id)
-            plan = transport.authorization.plan
+            authorization = transport.authorization_for(order.intent.instrument_id, client_order_id)
+            plan = authorization.plan
             if (plan.account_id != self.account_id or order.intent.instrument_id != plan.symbol
                     or not (client_order_id.startswith(plan.client_id_prefix)
-                            or client_order_id in transport.authorization.cancellation_ids)):
+                            or client_order_id in authorization.cancellation_ids)):
                 raise SafetyBlocked('cancel outside approved identity scope')
             params = dict(symbol=plan.symbol, origClientOrderId=client_order_id)
             transport._admission['request'] = ('DELETE', params, self.account_id)
         elif type(transport.authorization) is not DemoExecutionAuthorization:
             raise SafetyBlocked('Demo injected writes disabled by default')
-        if type(transport) is DemoNetworkTransport and transport.authorization.plan.quote_policy is not None:
+        if type(transport) is DemoNetworkTransport and plan.quote_policy is not None:
             with self.store.transaction():
                 if self.db.execute('SELECT 1 FROM demo_cancel_attempts WHERE id=?', (client_order_id,)).fetchone():
                     transport._admission.clear()
@@ -169,6 +175,23 @@ class DemoExecutionGateway(FuturesPaperGateway):
         self._controller = None
         self._bounded_observation = None
         self.quote_receipt = None
+        self.symbol_contexts = {}
+
+    def register_symbol(self, context):
+        observation = context.observation
+        if (observation.account_id != self.adapter.account_id
+                or observation.client is not self.adapter.client
+                or self.adapter._rule_observations.get(context.symbol) is not observation):
+            raise SafetyBlocked('current account-bound Demo symbol observation required')
+        self.symbol_contexts[context.symbol] = context
+
+    def execution_rules(self, symbol):
+        context = self.symbol_contexts.get(symbol)
+        if context is None:
+            if symbol != self.rules.symbol:
+                raise SafetyBlocked('order symbol differs from observed Demo rules')
+            return super().execution_rules(symbol)
+        return context.rules, context.leverage, context.leverage
 
     def prepare_bounded_quote(self, observation):
         from .bounded_quote import bounded_quote
@@ -340,31 +363,31 @@ class DemoExecutionGateway(FuturesPaperGateway):
     def submit_order(self, intent):
         if not self.read_account().reconciled:
             raise SafetyBlocked('RECONCILE_REQUIRED: confirmed Demo account projection required')
-        if intent.instrument_id != self.rules.symbol:
-            raise SafetyBlocked('order symbol differs from observed Demo rules')
-        if type(self.adapter.client.transport) is DemoNetworkTransport:
+        rules, _, _ = self.execution_rules(intent.instrument_id)
+        transport = self.adapter.client.transport
+        plan = None
+        if type(transport) is DemoNetworkTransport:
+            plan = transport.authorization_for(intent.instrument_id, intent.client_order_id).plan
             self._network_admission(intent)
         elif type(self.adapter.client.transport.authorization) is not DemoExecutionAuthorization:
             raise SafetyBlocked('Demo injected writes disabled by default')
-        if (type(self.adapter.client.transport) is DemoNetworkTransport
-                and self.adapter.client.transport.authorization.plan.quote_policy is not None):
+        if plan is not None and plan.quote_policy is not None:
             import json
-            policy = self.adapter.client.transport.authorization.plan.quote_policy
+            policy = plan.quote_policy
             self.quote_receipt['dispatch'] = 'POSSIBLE_DISPATCH_GET_ONLY'
             with self.adapter.store.transaction():
                 if self.adapter.db.execute('SELECT 1 FROM demo_quote_receipts WHERE id=?', (intent.client_order_id,)).fetchone():
                     raise SafetyBlocked('bounded POST opportunity already consumed')
                 self.adapter.db.execute('INSERT INTO demo_quote_receipts VALUES(?,?,?)',
                     (intent.client_order_id, policy.digest, json.dumps(self.quote_receipt, sort_keys=True)))
-        if (type(self.adapter.client.transport) is DemoNetworkTransport
-                and self.adapter.client.transport.authorization.plan.quote_policy is not None):
+        if plan is not None and plan.quote_policy is not None:
             from .bounded_quote import bounded_quote
-            approved_plan = self.adapter.client.transport.authorization.plan
+            approved_plan = plan
             def dispatch_guard():
-                if self.adapter.client.transport.authorization.plan != approved_plan:
+                if transport.authorization_for(intent.instrument_id, intent.client_order_id).plan != approved_plan:
                     raise SafetyBlocked('bounded execution plan changed at dispatch')
                 expected, _ = bounded_quote(approved_plan, self._bounded_observation,
-                    facts=self.adapter.facts, rules=self.rules, now=self.clock())
+                    facts=self.adapter.facts, rules=rules, now=self.clock())
                 if expected != intent:
                     raise SafetyBlocked('bounded identity changed at dispatch')
                 if self.state.kill_switch:
@@ -415,7 +438,8 @@ class DemoExecutionGateway(FuturesPaperGateway):
     def check_price_band(self, symbol, price, reference, *, quote_price=None):
         """Shared check for replacement planning and formal POST admission."""
         from decimal import Decimal
-        band = self.rules.filters.get('PERCENT_PRICE', {})
+        rules, _, _ = self.execution_rules(symbol)
+        band = rules.filters.get('PERCENT_PRICE', {})
         if any(band.get(k) is None for k in ('multiplierUp', 'multiplierDown')):
             raise SafetyBlocked('UNKNOWN price band')
         low, high = reference * Decimal(band['multiplierDown']), reference * Decimal(band['multiplierUp'])
@@ -436,7 +460,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
         transport = adapter.client.transport
         if not demo_network_permitted(adapter.client):
             raise SafetyBlocked('Demo network authorization missing or expired')
-        plan = transport.authorization.plan
+        plan = transport.authorization_for(intent.instrument_id, intent.client_order_id).plan
         if plan.account_id != adapter.account_id or state.account_id != adapter.account_id:
             raise SafetyBlocked('execution plan account mismatch')
         if self._controller is None or self._controller.broker is not self:
@@ -448,8 +472,11 @@ class DemoExecutionGateway(FuturesPaperGateway):
         if (intent.instrument_id != plan.symbol or intent.order_type.value not in plan.order_types or intent.quantity > plan.max_quantity
                 or not intent.client_order_id.startswith(plan.client_id_prefix)):
             raise SafetyBlocked('order outside execution plan')
-        observation = getattr(adapter, '_rule_observation', None)
-        if observation is None or observation.client is not adapter.client or observation.rules is not self.rules:
+        rules, _, _ = self.execution_rules(intent.instrument_id)
+        observation = (self.symbol_contexts[intent.instrument_id].observation
+            if intent.instrument_id in self.symbol_contexts
+            else getattr(adapter, '_rule_observation', None))
+        if observation is None or observation.client is not adapter.client or observation.rules is not rules:
             raise SafetyBlocked('current Demo rules binding required')
         facts = adapter.facts
         if facts is None or facts.account_id != adapter.account_id:
@@ -467,7 +494,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
             if self._bounded_observation is None:
                 raise SafetyBlocked('immutable bounded observation required')
             expected, receipt = bounded_quote(plan, self._bounded_observation,
-                facts=facts, rules=self.rules, now=self.clock())
+                facts=facts, rules=rules, now=self.clock())
             if expected != intent:
                 raise SafetyBlocked('bounded exact intent mismatch')
             if self.quote_receipt['plan_digest'] != receipt['plan_digest']:
@@ -479,7 +506,7 @@ class DemoExecutionGateway(FuturesPaperGateway):
             self.quote_receipt = receipt
         else:
             reference = self.fresh_mark_price(plan.symbol)
-        filters = self.rules.filters
+        filters = rules.filters
         if set(filters) - SUPPORTED_NETWORK_FILTERS:
             raise SafetyBlocked('unsupported exchange filter')
         if filters.get('POSITION_RISK_CONTROL', {}).get('positionControlSide') not in (None, 'NONE'):
@@ -535,5 +562,5 @@ class DemoExecutionGateway(FuturesPaperGateway):
         margin_limit = plan.max_margin
         if self._controller.store.event_payload('demo:static-shared-account:v1') is not None:
             margin_limit = max(margin_limit, Decimal(27))
-        if max(funds['initialMargin'], collateral) + reserved + additional_margin > margin_limit:
+        if additional_margin and max(funds['initialMargin'], collateral) + reserved + additional_margin > margin_limit:
             raise SafetyBlocked('plan margin limit')

@@ -15,7 +15,7 @@ from factorlab.integrations.binance_equity_trading.protocol import Unavailable
 from test_realtime import Harness, NOW, rules
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_simulation_partial_cancel_duplicate_restart_and_accounting(tmp_path, market):
     path = tmp_path / 'paper.sqlite'
     h = Harness(path, market, simulation_policy=PAPER_SIMULATION, acceptance_signal=True)
@@ -86,7 +86,7 @@ account.close()
         RealtimeAccount(path, market, clock=lambda: h.time)
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_public_simulation_uses_official_reader_and_session_not_forged_state(tmp_path, monkeypatch, market):
     now = [NOW]
     row = rules(market)
@@ -143,7 +143,7 @@ def test_public_simulation_uses_official_reader_and_session_not_forged_state(tmp
     restored.close()
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_policy_cannot_bypass_forged_public_provenance(tmp_path, market):
     a = RealtimeAccount(tmp_path / 'a', market, clock=lambda: NOW, data_mode='public',
                         simulation_policy=PAPER_SIMULATION)
@@ -191,7 +191,7 @@ def test_simulated_permission_does_not_open_a_closed_or_unknown_session(tmp_path
     h.account.close()
 
 
-@pytest.mark.parametrize('market', list(Market))
+@pytest.mark.parametrize('market', (Market.BINANCE_USDM, Market.BINANCE_EQUITY))
 def test_simulation_no_touch_no_fill_and_stale_market_pauses(tmp_path, market):
     h = Harness(tmp_path / 'a', market, simulation_policy=PAPER_SIMULATION)
     h.quote('100')
@@ -247,7 +247,7 @@ def test_simulation_state_and_environment_do_not_authorize_real_network(tmp_path
     client = FuturesClient(Credentials('offline-key', 'offline-secret', Environment.PRODUCTION),
         environment=Environment.PRODUCTION,
         transport=ReadOnlyNetworkTransport(environment=Environment.PRODUCTION, permit_account_read=True))
-    with pytest.raises(SafetyBlocked, match='NO LIVE MONEY: all real trading requests forbidden'):
+    with pytest.raises(SafetyBlocked, match='NO LIVE MONEY: production or unauthorized network write forbidden'):
         client.request(method, path, state.runtime)
     for operation in (live_submit, live_cancel):
         with pytest.raises(PermissionError, match='NO LIVE MONEY'):

@@ -170,6 +170,8 @@ def _observation(event):
         raise ValueError('invalid reseed_withdrawn')
     if reseed_withdrawn:
         observation['reseed_withdrawn'] = True
+    if 'source_bar' in event:
+        observation['source_bar'] = dict(event['source_bar'])
     if action == 'cancel':
         observation['order_id'] = event['order_id']
         validate_identity(observation['order_id'])
@@ -782,6 +784,37 @@ class GridExecution:
         if payload['authority'] != self._authority(state, cursor):
             raise ValueError('Grid checkpoint requires authority reconciliation')
         return saved['revision'], payload
+
+    def decision_checkpoint(self):
+        """Snapshot native decisions for an external, authoritative execution owner."""
+        return dict(version=_CHECKPOINT_VERSION,
+            decision={name: getattr(self, name) for name in _DECISION_FIELDS},
+            timestamp=None if self.timestamp is None else self.timestamp.isoformat(),
+            true_ranges=list(self.true_ranges),
+            account=None if self.account is None else asdict(self.account),
+            turnover=self._turnover, pending_rebuild=self.pending_rebuild, pending_bar=self.pending_bar,
+            orders=self.orders, records=self.records, targets=self.targets, levels=self.levels, created=self.created,
+            cancellations=sorted(self.cancellations), expirations=sorted(self.expirations),
+            exit_cancellations=sorted(self.exit_cancellations), subclass_state=self._subclass_checkpoint())
+
+    def restore_decision_checkpoint(self, payload):
+        """Restore decisions without manufacturing broker orders, fills or balances."""
+        if self.delivery or payload['version'] != _CHECKPOINT_VERSION:
+            raise ValueError('fresh engine and compatible Grid checkpoint required')
+        for name in _DECISION_FIELDS:
+            setattr(self, name, payload['decision'][name])
+        self.timestamp = None if payload['timestamp'] is None else pd.Timestamp(payload['timestamp'])
+        self.true_ranges.extend(payload['true_ranges'])
+        self.account = None if payload['account'] is None else GridAccount(**payload['account'])
+        self._turnover = payload['turnover']
+        for name in ('pending_rebuild', 'pending_bar'):
+            value = payload[name]
+            setattr(self, name, None if value is None else tuple(value))
+        for name in ('orders', 'records', 'targets', 'levels', 'created'):
+            setattr(self, name, dict(payload[name]))
+        for name in ('cancellations', 'expirations', 'exit_cancellations'):
+            setattr(self, name, set(payload[name]))
+        self._restore_subclass_checkpoint(None, payload, None, None)
 
     def _subclass_checkpoint(self):
         """Optional subclass-specific decision state persisted in the checkpoint payload."""

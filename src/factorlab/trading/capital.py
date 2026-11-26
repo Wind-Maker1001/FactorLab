@@ -157,13 +157,10 @@ class CapitalPolicy:
             elif selected != self.mode(account_id):
                 self.store.db.execute('UPDATE capital_accounts SET mode=? WHERE account=?',
                                       (selected.value, account_id))
-            existing = set(self.store.db.execute('SELECT symbol,strategy FROM portfolio_claims WHERE account=?',
-                                                 (account_id,)))
-            existing.update((order['record'].snapshot.intent.instrument_id, owner)
-                            for owner, order in self._orders(account_id))
+            existing = set(self.store.db.execute('SELECT symbol,strategy FROM portfolio_claims WHERE account=?', (account_id,)))
+            existing.update((order['record'].snapshot.intent.instrument_id, owner) for owner, order in self._orders(account_id))
             for symbol, owner in existing:
-                self._tighten_symbol_limit(account_id, symbol,
-                                           self.limits(account_id, owner).max_instrument_exposure)
+                self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, owner).max_instrument_exposure)
 
     def _orders(self, account_id):
         for owner, payload in self.store.db.execute(
@@ -472,11 +469,9 @@ class CapitalPolicy:
         for symbol in symbols:
             self._validate_release(account_id, from_strategy, symbol)
             others = {owner for owner, quantity in self.store.db.execute(
-                'SELECT strategy,quantity FROM portfolio_claims WHERE account=? AND symbol=?',
-                (account_id, symbol)) if Decimal(quantity)}
+                'SELECT strategy,quantity FROM portfolio_claims WHERE account=? AND symbol=?', (account_id, symbol)) if Decimal(quantity)}
             others.update(owner for owner, in self.store.db.execute(
-                'SELECT strategy FROM capital_symbols WHERE account=? AND symbol=?',
-                (account_id, symbol)))
+                'SELECT strategy FROM capital_symbols WHERE account=? AND symbol=?', (account_id, symbol)))
             others.difference_update((from_strategy, to_strategy))
             if self.mode(account_id) == CapitalPolicyMode.EXCLUSIVE and others:
                 raise ValueError(f'position ownership conflict: {symbol}')

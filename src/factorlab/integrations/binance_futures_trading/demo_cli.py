@@ -175,6 +175,24 @@ def run_command(args, root, store, runtime, requests, smoke_id):
         runtime.save_tradfi(account_id, receipt)
         status = 'DEMO_TRADFI_SIGNED' if receipt['success'] else 'DEMO_TRADFI_NOT_CONFIRMED'
         return dict(status=status, agreement=receipt)
+    if command == 'capital-history-import':
+        from pathlib import Path
+        from factorlab.trading.storage import decode
+        from factorlab.trading.portfolio_execution import PortfolioExecutor, PortfolioStore
+        from .demo_legacy_migration import register_account_history_source, start_account_history
+        from .demo_portfolio_adapter import DemoPortfolioAdapter
+        source = decode(json.loads(Path(args.source).read_text(encoding='utf-8')))
+        with open_session(root, store, runtime, requests) as (session, _):
+            recover(session)
+            register_account_history_source(session, **source)
+            directory = root / journal_id(session.adapter.account_id)
+            def no_writes(*_):
+                raise SafetyBlocked('capital migration permits official reads only')
+            with closing(PortfolioStore(directory / 'portfolio.sqlite3')) as capital:
+                executor = PortfolioExecutor(DemoPortfolioAdapter(session, capability=no_writes), capital,
+                    quote_currency='USDT', clock=session._now)
+                start_account_history(session, executor)
+            return dict(status='DEMO_CAPITAL_HISTORY_ADOPTED', receipt_id=source['receipt_id'])
     if command == 'update-budget':
         binding, _ = load_bound_credential(store)
         with open_session(root, store, runtime, requests, require_bound_configuration=True) as (session, _):
@@ -297,6 +315,8 @@ def parse_args(argv):
     commands = parser.add_subparsers(dest='command', required=True)
     for name in ('setup', 'credentials-update', 'credentials-delete', 'status', 'recover'):
         commands.add_parser(name)
+    migration = commands.add_parser('capital-history-import', help='adopt complete original 7/20 history with official reads only')
+    migration.add_argument('--source', required=True, help='local storage-encoded complete original migration manifest')
     smoke = commands.add_parser('smoke-test')
     smoke.add_argument('--approval-id', type=UUID,
         help='record a separately approved one-time Demo test under this unique UUID')

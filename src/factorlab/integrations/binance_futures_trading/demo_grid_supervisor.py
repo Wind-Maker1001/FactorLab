@@ -71,7 +71,7 @@ def grid_factory(settings, *, new_deployment=False):
             raise SafetyBlocked('minimum legal Grid pair exceeds Demo budgets')
         return GridExecution(config, rules, deployment_id=deployment_id,
             account_id=session.adapter.account_id, market=Market.BINANCE_USDM,
-            instrument_id='NVDAUSDT', initial_equity=status['balances']['walletBalance'],
+            instrument_id=session.symbol, initial_equity=status['balances']['walletBalance'],
             continuous_capacity=True)
     return create
 
@@ -198,7 +198,7 @@ class GridConsumer:
         return self._accept_bar(bar, historical=False)
 
     def _accept_bar(self, bar, *, historical):
-        if (not bar.complete or bar.source != SOURCE or bar.symbol != 'NVDAUSDT'
+        if (not bar.complete or bar.source != SOURCE or bar.symbol != self.bridge.grid.instrument_id
                 or bar.closed_at > self.clock()):
             raise FeedPaused('INVALID_CLOSED_BAR')
         if self.control.desired() == 'STOPPED':
@@ -581,7 +581,7 @@ class GridSupervisorRuntime:
                 client, consumer, state_path=self.path,
                 consumer_id='grid-' + self.mode + ':' + bridge.feed_deployment_id,
                 interval=self.args.interval, max_backfill=self.args.max_backfill,
-                initial_bars=initial_bars, catch_up=True,
+                symbol=bridge.grid.instrument_id, initial_bars=initial_bars, catch_up=True,
                 exchange_time=bridge.session.client.demo_time,
                 receipt_clock=bridge.session._now)))
             from .demo_market_collection import DemoBookCollection, collection_client
@@ -589,7 +589,7 @@ class GridSupervisorRuntime:
             reader.share_demo_clock(bridge.session.client)
             collection = DemoBookCollection(reader, poll_seconds=self.args.poll_seconds,
                 clock=reader.monotonic, on_acquired=collection_requests.acquired,
-                exchange_time=reader.demo_time)
+                exchange_time=reader.demo_time, symbol=bridge.grid.instrument_id)
             if self.supervisor is not None:
                 feed.collection = collection
                 collection.start()
@@ -641,8 +641,20 @@ class GridSupervisorRuntime:
         if self.execute and self._effective_desired() == 'RUNNING':
             from .demo_portfolio_consumer import DemoPortfolioConsumer
             DemoPortfolioConsumer(self.bridge.session, self.runtime, self.directory).poll()
+            if self.bridge.session.instance_owner is not None:
+                owner = self.bridge.session.instance_owner
+                if owner.market_sources is None:
+                    from .demo_market_collection import DemoSymbolCollections
+                    owner.market_sources = self.stack.enter_context(closing(DemoSymbolCollections(
+                        self.bridge.session.client, self.requests, MarketClient,
+                        poll_seconds=self.args.poll_seconds)))
+                owner.poll()
         try:
             self.consumer.before_poll()
+            if (self.execute and self._effective_desired() == 'PAUSED'
+                    and self.bridge.session.instance_owner is not None):
+                self.bridge.session.instance_owner.reconcile()
+                self.runtime.release_unfilled_exit_reservations(self.bridge.gateway.state.orders)
         except ExchangeError as error:
             if _is_auth_exchange_error(error):
                 self.last_exception = error.category

@@ -42,6 +42,77 @@ read-only network transport still rejects POST/DELETE/PUT, including in Demo.
 Production requests cannot pass the Demo transport, and production credentials
 cannot construct its client. The authorization is never a production capability.
 
+## Original capital history import
+
+Use `capital-history-import --source <local-file>` with the existing Demo CLI
+account arguments to initialize the original 7 USDT grid and 20 USDT portfolio
+allocations. The source file uses `factorlab.trading.storage.dumps` encoding so
+Decimal amounts and original timestamps retain their types. Its top-level fields
+are `receipt_id`, `manifest`, `sleeves`, and the explicit Decimal `fee_rate`.
+
+The manifest identifies the original account, declares `history_complete: true`,
+and maps every original allocation ID to its economic identity. Each sleeve
+supplies its original instance, logical strategy, allocation, capital, initial
+cash/inventory, owned symbols, creation time and trading session. Grid evidence
+includes the complete deployment journal IDs and order IDs; portfolio evidence
+includes the complete task journal IDs. Both require independently supplied
+complete order/event ID lists in `source_receipt`, plus `history_complete: true`.
+Current journal scans alone are not evidence that the source history is complete.
+
+Import reconciles through official reads and does not authorize network writes.
+All sleeves must export successfully before adoption. The first complete export
+is frozen under the original receipt; interrupted startup reuses it rather than
+reconstructing economic history from current balances. Existing order ownership
+must agree with the imported instance and allocation. Startup resumes the same
+receipt and original order IDs; official account equity is a risk input, not a
+source of additional allocation cash.
+
+## Dynamic symbol discovery
+
+第一阶段以离线及官方只读能力验证为主，正式云端执行交由最终集成部署任务，不制造不必要的验收交易。
+
+独立 worktree、独立 PR，不自动合并。
+
+不新增第二个账户执行所有者，不为每个标的创建一套交易引擎。
+
+The account-bound registry accepts `PERPETUAL` and `TRADIFI_PERPETUAL`
+contracts only after checking trading status, LIMIT/GTC support, supported filters,
+and the account's observed leverage/margin configuration. Discovery grants no
+capital or network write permission.
+
+A public read of `https://demo-fapi.binance.com/fapi/v1/exchangeInfo` on
+2026-11-26 returned these candidate rules:
+
+| Symbol | Contract type | Status | Price tick | Quantity step | Minimum notional (USDT) |
+| --- | --- | --- | --- | --- | --- |
+| BTCUSDT | PERPETUAL | TRADING | 0.10 | 0.0001 | 50 |
+| ETHUSDT | PERPETUAL | TRADING | 0.01 | 0.001 | 20 |
+| NVDAUSDT | TRADIFI_PERPETUAL | TRADING | 0.01000 | 0.01 | 5 |
+| QQQUSDT | TRADIFI_PERPETUAL | TRADING | 0.01000 | 0.01 | 5 |
+| SPYUSDT | TRADIFI_PERPETUAL | TRADING | 0.01000 | 0.01 | 5 |
+
+The response's `serverTime` was `1794563888939`; execution must reacquire fresh
+rules and account evidence rather than use this snapshot. In particular, the
+existing 7 USDT grid allocation cannot fund a BTC or ETH minimum-size opening,
+and the 20 USDT portfolio allocation cannot fund a BTC opening. Adding a symbol
+must not increase either allocation.
+
+Legacy portfolio recovery attributes orders from the original persisted task
+batches, retaining their client IDs and allocation. A matching `pf` prefix alone
+does not establish ownership. Symbol-bound capabilities and receipt sinks share
+the original transport; portfolio acquisition, submission and cancellation do not
+change the NVDA session's symbol, configuration or gateway rules. Configuration
+POSTs and portfolio order POSTs consume the same cumulative account budget.
+
+Instance exit-budget holds belong to original entry IDs, not to the identity of
+one future strategy decision. Reductions release only holds attributable to the
+same instance, allocation and symbol. FIFO determines budget attribution only;
+it does not transfer inventory between strategies. A partial reduction retains
+the remaining hold and its exit POST slot, so splitting an exit requires spare
+POST capacity. Submitted notional uses the actual reduction price. An exhausted
+budget rejects the dispatch atomically without releasing the hold. Neither an
+unfilled cancellation nor a lost acknowledgement refunds a consumed POST.
+
 ## State and recovery
 
 The existing adapter journal persists clientOrderId before dispatch. A lost submit

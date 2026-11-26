@@ -30,8 +30,8 @@ import urllib.request
 import numpy as np
 import pandas as pd
 
-from factorlab.experiments.grid_empirical import load_hourly
 from factorlab.experiments.grid_fifo import (
+    D,
     attribute_events as paper_fifo_attribute_events,
     attribution as paper_fifo_attribution,
 )
@@ -39,8 +39,6 @@ from factorlab.experiments.grid_funding import (
     cashflow as funding_cashflow,
     position_settlements,
 )
-from factorlab.experiments.grid_lifecycle import lifecycle_metrics
-from factorlab.experiments.grid_paper import D, run_experiment
 from factorlab.strategies.grid import GridConfig
 from factorlab.strategies.grid_execution import GridExecution, GridRules
 from factorlab.trading.contracts import Market, Side, ZERO
@@ -392,6 +390,7 @@ class FundingSensitiveGrid(GridExecution):
         extra: dict[str, Any] = {
             "r10_strategy": "B_FUNDING_SENSITIVE_GRID",
             "funding_policy": asdict(self.funding_policy),
+            "funding_events": list(self._all_funding_events),
         }
         if self.use_f11_limit_exit:
             extra["use_f11_limit_exit"] = True
@@ -450,7 +449,10 @@ class FundingSensitiveGrid(GridExecution):
     def _observe(self, event, account):
         # Compute causal observation time strictly BEFORE super()._observe so initial
         # sequence==1 seeding obeys the causal funding gate.
-        obs_utc = parse_utc(event["time"]) + timedelta(hours=1, microseconds=-1)
+        # Demo source bars timestamp the close; research bars timestamp the open.
+        obs_utc = parse_utc(event["time"])
+        if 'source_bar' not in event:
+            obs_utc += timedelta(hours=1, microseconds=-1)
         blocked, est_bps_h, net_margin_bps, block_reason = self._evaluate_entry_block(obs_utc)
         prev_blocked = self.buy_blocked
         self.buy_blocked = blocked
@@ -627,7 +629,8 @@ class VolatilityAdaptiveGrid(GridExecution):
         self.vol_policy = vol_policy
         # Keep only the necessary trailing warmup closes (strictly pre-window).
         keep = max(vol_policy.vol_window_hours + 2, 10)
-        self.close_history: list[float] = [float(x) for x in warmup_closes[-keep:]]
+        self._warmup_closes = tuple(float(x) for x in warmup_closes[-keep:])
+        self.close_history: list[float] = list(self._warmup_closes)
         self.current_vol_1h = causal_realized_vol_1h(
             self.close_history, vol_policy.vol_window_hours, vol_policy.reference_vol_1h
         )
@@ -637,6 +640,22 @@ class VolatilityAdaptiveGrid(GridExecution):
         self.total_observed_hours = 0
         self.adaptive_rebuilds = 0
         self.vol_events: list[dict[str, Any]] = []
+
+    _checkpoint_fields = ('close_history', 'current_vol_1h', 'current_half_width',
+                          'buy_blocked', 'blocked_hours', 'total_observed_hours',
+                          'adaptive_rebuilds', 'vol_events')
+
+    def _subclass_checkpoint(self) -> dict[str, Any]:
+        checkpoint = {name: getattr(self, name) for name in self._checkpoint_fields}
+        checkpoint['close_history'] = self.close_history.copy()
+        checkpoint['vol_events'] = self.vol_events.copy()
+        return checkpoint
+
+    def _restore_subclass_checkpoint(self, state, payload, broker, store) -> None:
+        checkpoint = payload['subclass_state']
+        for name in self._checkpoint_fields:
+            value = checkpoint[name]
+            setattr(self, name, list(value) if isinstance(value, list) else value)
 
     def _stage(self) -> VolatilityAdaptiveGrid:
         staged = super()._stage()
@@ -648,6 +667,7 @@ class VolatilityAdaptiveGrid(GridExecution):
         return super().deployment() | {
             "r10_strategy": "C_VOL_ADAPTIVE_GRID",
             "vol_policy": asdict(self.vol_policy),
+            "warmup_closes": list(self._warmup_closes),
         }
 
     def _propose(self, side, target, quantity, level=-1, market=False):
@@ -833,6 +853,7 @@ def load_and_audit_r10_dataset(
     allow_network_supplement: bool = True,
 ) -> tuple[list[dict[str, Any]], list[tuple[datetime, Decimal, Decimal, str]], dict[str, Any]]:
     """Load certified R04B + corroborated R07 + post-R07 continuous 1h dataset and audit it."""
+    from factorlab.experiments.grid_empirical import load_hourly
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1263,6 +1284,8 @@ def run_paired_window(
     cleanup_dir: bool = False,
 ) -> dict[str, Any]:
     """Run one strategy arm on one window using the authoritative Paper engine and compute full metrics."""
+    from factorlab.experiments.grid_paper import run_experiment
+    from factorlab.experiments.grid_lifecycle import lifecycle_metrics
     anchor = float(bars[0]["close"])
     rules = demo_grid_rules()
     fee_bps = float(fee_rate * 10_000)
@@ -1521,6 +1544,8 @@ def run_paired_window_multi_overlay(
     cleanup_dir: bool = True,
 ) -> dict[str, dict[str, Any]]:
     """Run one funding-independent arm (Strategy A or C) once and evaluate multiple funding overlays identically."""
+    from factorlab.experiments.grid_paper import run_experiment
+    from factorlab.experiments.grid_lifecycle import lifecycle_metrics
     if strategy_id.startswith("B"):
         raise ValueError("Funding-sensitive Strategy B depends on funding rates and cannot reuse one ledger across regimes")
     anchor = float(bars[0]["close"])
