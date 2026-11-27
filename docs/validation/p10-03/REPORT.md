@@ -127,13 +127,33 @@ Band (V48/V50: MA28, 21日波动带 0.5*vol, QQQ>MA63 约束, 市场宽度>=2/3 
 - 测试与冻结夹具：`tests/research/test_v179_v182_equivalence.py`、`tests/integrations/test_alpaca_v179_v182_runtime.py`、`tests/fixtures/v179_v182_original/`
 - 验证报告与证据：`docs/validation/p10-03/{REPORT.md,differential-summary.json,target-weight-differences.csv,order-intent-differences.csv,alpaca-acceptance-summary.json,runtime-dependencies-resources.json}`
 
-### 8.2 面向 P10-04 的稳定接口
+### 8.2 面向 P10-04 与 P10-11 的稳定接口与合同协同
 - **研究层全链路分析接口**：`NativeV179` / `NativeV182`（含 `explain_targets(t, prices, valid_prices, held)` 输出全量中间层权重、市场状态、Ridge 月度截止点与预测值）及 `V179Planner` / `V182Planner`。
 - **无状态检查点接口**：`V179Strategy` / `V182Strategy`。
-- **离线模型训练接口**：`train_monthly_ridge_artifact(adjusted_close, market_index, omit_sndk=...)`。
+- **离线模型训练与冻结工件合同（与 P10-11 对齐）**：`train_monthly_ridge_artifact(adjusted_close, market_index, omit_sndk=...)`、`validate_ridge_artifact`、`select_causal_month_model`、`predict_residual_from_artifact`。工件通过 `artifact_sha256`、逐月 `train_start <= train_cutoff < effective_from_signal_date` 与 `strict_model_month=True` 绑定，避免研究端与运行时出现两套模型时间口径。
+- **只读外部参考数据时间语义（与 P10-11 及 `MarketDataService.prepare_history` 对齐）**：`LocalBenchmarkProvider` 与 `YahooSP500TRProvider` 显式区分四类时间戳：`signal_cutoff`（有效时间截止，必须等于上一已完成交易日收盘）、`acquired_at`（I/O 或 HTTP 完成后实测获取时间）、`knowledge_cutoff`（实时模式等于 `acquired_at`，历史 PIT 回放模式由调用方显式指定且不伪造 `observed_at`）以及最终决策 `event_time`（`StrategyData.event()` 在行情与基准准备完成后读取，满足 `signal_cutoff < acquired_at <= observed_horizon <= event_time`）。
 - **V2 运行时与打包接口**：`V179AlpacaStrategy` / `V182AlpacaStrategy`、`build_v179_package` / `build_v182_package`。
 - **复现命令**：
   ```bash
   PYTHONPATH=src python -m pytest tests/research/test_v179_v182_equivalence.py tests/integrations/test_alpaca_v179_v182_runtime.py -v
   PYTHONPATH=src python tools/research/validate_v179_v182_migration.py
   ```
+
+---
+
+## 9. PR #262 审查修复与复验记录（P1 / P2 / 打包基线）
+
+- **P1（基准获取时间与决策时间解耦）**：
+  - 同时修复 `LocalBenchmarkProvider.history()`、`YahooSP500TRProvider.history()`、`StrategyData.event()` 与 `_AlpacaBlendStrategyV2._extract_benchmark()`。
+  - 实时路径不再在数据读取/HTTP 请求前传入过期 `now=self.clock()`，而是对齐 `MarketDataService.prepare_history()` 语义，在获取完成后取 `acquired_at = self.clock()` 作为实时知识时间截止（`knowledge_cutoff`），并在 `StrategyData.event()` 中以后获取时钟 `observed_horizon` 及 `signal_cutoff` 双向校验每条记录。
+  - 完整保留 `observed_at` 校验、历史 PIT 显式 `knowledge_cutoff` 回放（支持带 `received_at` 的修订版本选择，未带 `received_at` 的实时快照对过去 `knowledge_cutoff` 严格 fail-closed）、未来 `received_at` / 盘前 `received_at` / 未来 `signal_cutoff` 拒绝。
+  - 新增 `test_benchmark_advancing_clock_http_delay_explicit_received_at_pit_and_isolation` 覆盖真实推进时钟、模拟 HTTP 1.5s 延迟、本地与 Yahoo HTTP、显式 `received_at`、历史 PIT 回放、未来数据拒绝及 Yahoo 503 仅阻塞 V179/V182 而不影响 V69；原有三策略共存与小额碎股用例也升级为推进时钟并通过。
+- **P2（跨月空预测窗口不误要求新月份模型）**：
+  - 在 `predict_residual_from_artifact()` 中先提取当月 `score_now = panel.loc[days[0]:days[-1]]`，为空则跳过，仅在存在实际预测行时以 `score_now.index.min()` 调用 `select_causal_month_model(..., strict_month_coverage=strict_month_coverage)`；同时在 `NativeV100.targets()` 中对真实信号日 `previous` 保留 `select_causal_month_model` 校验，确保实际信号月缺少模型时（无论是否开启诊断）仍严格抛出 `ModelArtifactStaleError`。
+  - 新增 `test_month_boundary_empty_prediction_month_crossyear_holiday_and_restart`（覆盖 V179 与 V182），验证月初首个交易日执行上月末信号（`2025-12-01` 执行 `2025-11-28` 信号）、空新月份跳过、实际新月份缺模型拒绝、跨年且节假日顺延周首日调仓（`2024-01-02` 周二执行 `2023-12-29` 信号）及重启幂等一致性。
+- **分发打包与归档防篡改扫描**：
+  - 按既有 `v69_original` 先例，在 `tools/migration/scan_distribution.py` 绑定 `tests/fixtures/v179_v182_original/source-manifest.json` 全部 13 个冻结 Parquet 精确路径与 SHA-256，并在 `tools/migration/check_distribution_rejections.py` 新增 `unbound_v179_v182` 与 `changed_v179_v182` 两项归档篡改拒绝用例。
+  - 本地 Python 3.14 完整通过 `python -m build`、`inspect_distributions.py`（509 模块，0 违规）、`check_distribution_rejections.py`（23 项归档攻击全部拒绝）与 `packaging_ci.py`（wheel/sdist 独立 core-only venv 安装、导入、CLI、demo 与 0 findings 扫描）。
+- **联合复验结果**：
+  - Python 3.13.9：`test_v179_v182_equivalence.py` **22 passed**、`test_alpaca_v179_v182_runtime.py` **4 passed**；全量 V69 + Alpaca 集成套件零回归。
+  - 23 归档账户全链路重放再次确认：`max_weight_diff = 9.714e-17`、`max_requested_qty_diff = 1.455e-10`、`max_nav_diff_usd = 0.0107` USD。

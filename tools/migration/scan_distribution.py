@@ -36,10 +36,10 @@ def scan(directory, output):
     golden={item['source_path']:item['source_sha256'] for item in mapping['files']
             if item['source_path'].startswith('tests/research/fixtures/') and
             item['source_path'].endswith('.parquet')}
-    fixture_root='tests/fixtures/v69_original/'
-    frozen=json.loads((ROOT/fixture_root/'source-manifest.json').read_text(encoding='utf-8'))
-    golden.update({fixture_root+name:meta['sha256'] for name,meta in frozen['files'].items()
-                   if name.endswith('.parquet')})
+    for fixture_root in ('tests/fixtures/v69_original/', 'tests/fixtures/v179_v182_original/'):
+        frozen=json.loads((ROOT/fixture_root/'source-manifest.json').read_text(encoding='utf-8'))
+        golden.update({fixture_root+name:meta['sha256'] for name,meta in frozen['files'].items()
+                       if name.endswith('.parquet')})
     for archive_path in sorted(directory.glob('*')):
         if archive_path.suffix=='.whl':
             with zipfile.ZipFile(archive_path) as archive:

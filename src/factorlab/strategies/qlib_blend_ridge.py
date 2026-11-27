@@ -323,12 +323,17 @@ def predict_residual_from_artifact(
 
     for month in months.unique():
         days = calendar[months == month]
-        # Validate causality at the first session of the month (where the month's model activates).
-        _, entry = select_causal_month_model(artifact, days[0], strict_month_coverage=strict_month_coverage)
-        if entry is None:
-            continue
         score_now = panel.loc[days[0]:days[-1]]
         if score_now.empty:
+            continue
+        first_predict_day = score_now.index.min()
+        # Require and validate a causal monthly model only when the month has actual prediction rows.
+        _, entry = select_causal_month_model(
+            artifact,
+            first_predict_day,
+            strict_month_coverage=strict_month_coverage,
+        )
+        if entry is None:
             continue
         preds = _predict_matrix(score_now[features].to_numpy(dtype=float), entry)
         row = score_now[['ticker']].assign(score=preds)

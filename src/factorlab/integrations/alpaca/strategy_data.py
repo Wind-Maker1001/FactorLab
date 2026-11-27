@@ -138,14 +138,35 @@ class StrategyData:
                 calendar=calendar,
                 days=days,
                 signal_cutoff=window.signal_cutoff,
-                now=self.clock(),
             )
+            bench_observed_horizon = pd.Timestamp(self.clock())
+            if bench_observed_horizon.tzinfo is None:
+                raise ValueError('aware clock timestamp required')
+            bench_observed_horizon_utc = bench_observed_horizon.tz_convert('UTC')
+            cutoff_utc = pd.Timestamp(window.signal_cutoff).tz_convert('UTC')
+            if bench.series_id != benchmark_series:
+                raise PreparationIncomplete('INVALID_BENCHMARK_SERIES:' + benchmark_series)
+            for rec in bench.records:
+                eff_utc = pd.Timestamp(rec['effective_at']).tz_convert('UTC')
+                obs_utc = pd.Timestamp(rec['observed_at']).tz_convert('UTC')
+                if eff_utc > cutoff_utc or eff_utc > obs_utc:
+                    raise PreparationIncomplete('NONCAUSAL_BENCHMARK_EFFECTIVE_TIME:' + benchmark_series)
+                if obs_utc > bench_observed_horizon_utc:
+                    raise PreparationIncomplete('NONCAUSAL_BENCHMARK_OBSERVATION:' + benchmark_series)
+            if (
+                len(bench.records) != len(days)
+                or pd.Timestamp(bench.records[-1]['effective_at']).tz_convert('UTC') != cutoff_utc
+            ):
+                raise PreparationIncomplete('INCOMPLETE_BENCHMARK:' + benchmark_series)
             benchmark_context = {
                 bench.series_id: dict(
                     series_id=bench.series_id,
                     source=bench.source,
                     history_basis=bench.history_basis,
+                    signal_cutoff=bench.signal_cutoff or window.signal_cutoff,
                     acquired_at=bench.acquired_at,
+                    knowledge_cutoff=bench.knowledge_cutoff or bench.acquired_at,
+                    observed_horizon=bench_observed_horizon.to_pydatetime(),
                     provenance=bench.provenance,
                     history=list(bench.records),
                 )

@@ -14,8 +14,8 @@
   "ridge_artifact_fitted_months": 179,
   "online_window_sessions": 252,
   "timings": {
-    "v179_252d_inference_ms": 334.47,
-    "v182_252d_inference_ms": 322.96
+    "v179_252d_inference_ms": 179.36,
+    "v182_252d_inference_ms": 174.0
   },
   "peak_memory": {
     "v179_252d_inference_peak_mib": 0.975,

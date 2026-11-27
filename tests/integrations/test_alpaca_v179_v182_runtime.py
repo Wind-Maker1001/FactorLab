@@ -447,8 +447,8 @@ def test_v179_v182_packages_coexist_with_v69_isolated_state_restart_upgrade_and_
     assert v69_posts == 4
     host_missing.close()
 
-    # Phase 2: Supply verified read-only ^SP500TR snapshot -> V179 & V182 execute cleanly alongside V69!
-    bench_provider = LocalBenchmarkProvider(BENCHMARK_PARQUET, clock=clock)
+    # Phase 2: Supply verified read-only ^SP500TR snapshot with advancing clock -> V179 & V182 execute cleanly alongside V69!
+    bench_provider = LocalBenchmarkProvider(BENCHMARK_PARQUET, clock=tick_clock)
     host = StrategyInstances(
         tmp_path, adapter, configuration, clock=tick_clock, revision='a' * 40, benchmark_provider=bench_provider
     )
@@ -572,7 +572,7 @@ def test_small_paper_account_fractional_shares_and_equity_scaling(tmp_path, froz
         dict(releases=str(releases), trusted_python=True,
              instances=[dict(binding=binding, funding={'capital': '1000', 'initial_cash': '1000'})]),
         clock=tick_clock, revision='4' * 40,
-        benchmark_provider=LocalBenchmarkProvider(BENCHMARK_PARQUET, clock=clock),
+        benchmark_provider=LocalBenchmarkProvider(BENCHMARK_PARQUET, clock=tick_clock),
     )
     host.tick(service, weekly_window(service.calendar, clock()), clock(), adapter.read_account_details())
     assert host.state['instances']['V179_SMALL']['state'] == 'RUNNING'
@@ -582,4 +582,276 @@ def test_small_paper_account_fractional_shares_and_equity_scaling(tmp_path, froz
     assert D(0) < spent <= D('900.01')
     assert any(D(o['qty']) != D(o['qty']).to_integral_value() for o in server.posts)
     host.close()
+    adapter.store.db.close()
+
+
+def test_benchmark_advancing_clock_http_delay_explicit_received_at_pit_and_isolation(
+    tmp_path, frozen_market_slice
+):
+    """P1 regression: advancing clock, simulated HTTP delay, explicit received_at,
+    future-data rejection, historical PIT replay, and V69 isolation under Yahoo failures.
+    """
+    from factorlab.integrations.alpaca.scheduling import schedule_window
+    from factorlab.integrations.alpaca.strategy_assets import StrategyAssets
+    from factorlab.integrations.alpaca.strategy_data import StrategyData
+    from factorlab.trading.portfolio_execution import PortfolioStore
+
+    bars, bench, artifact = frozen_market_slice
+    days = bars['AAPL'].index
+    cal = AlpacaSessionCalendar(
+        [dict(date=str(d.date()), open='09:30', close='16:00') for d in days],
+        coverage_start=str((days[0] - pd.Timedelta(days=7)).date()),
+        coverage_end=str(days[-1].date()),
+    )
+    session = pd.Timestamp('2026-10-05')
+    pos = days.get_loc(session)
+    prior_days = days[pos - 252:pos]
+    cutoff = cal.at(prior_days[-1], 'close').to_pydatetime()
+
+    # Shared genuinely advancing clock (+500ms per call).
+    clock_state = [datetime(2026, 10, 5, 13, 35, 0, tzinfo=timezone.utc)]
+
+    def advancing_clock():
+        clock_state[0] = clock_state[0] + timedelta(milliseconds=500)
+        return clock_state[0]
+
+    # 1. LocalBenchmarkProvider under real advancing clock (live mode: no pre-fetch now).
+    start_ts = clock_state[0]
+    local_live = LocalBenchmarkProvider(BENCHMARK_PARQUET, clock=advancing_clock)
+    hist_local = local_live.history(
+        BENCHMARK_SERIES,
+        calendar=cal,
+        days=prior_days,
+        signal_cutoff=cutoff,
+    )
+    assert hist_local.acquired_at > start_ts
+    assert hist_local.signal_cutoff == cutoff
+    assert hist_local.knowledge_cutoff == hist_local.acquired_at
+    assert len(hist_local.records) == 252
+    assert all(r['observed_at'] == hist_local.acquired_at for r in hist_local.records)
+    assert hist_local.records[-1]['effective_at'] == cutoff
+
+    # 2. YahooSP500TRProvider under simulated HTTP delay (+1.5s inside transport) + extra future bar in payload.
+    extra_days = days[pos - 252:pos + 2]  # includes execution session + future session after cutoff
+    yahoo_payload = {
+        'chart': {
+            'result': [{
+                'timestamp': [int(cal.at(d, 'close').timestamp()) for d in extra_days],
+                'indicators': {'quote': [{'close': [float(bench.at[d, 'close']) for d in extra_days]}]},
+            }]
+        }
+    }
+    pre_http = clock_state[0]
+
+    def delayed_transport(url: str, timeout: float):
+        clock_state[0] = clock_state[0] + timedelta(milliseconds=1500)
+        return 200, yahoo_payload
+
+    yahoo_live = YahooSP500TRProvider(transport=delayed_transport, clock=advancing_clock)
+    hist_yahoo = yahoo_live.history(
+        BENCHMARK_SERIES,
+        calendar=cal,
+        days=prior_days,
+        signal_cutoff=cutoff,
+    )
+    assert hist_yahoo.acquired_at >= pre_http + timedelta(milliseconds=1500)
+    assert hist_yahoo.knowledge_cutoff == hist_yahoo.acquired_at
+    assert len(hist_yahoo.records) == 252
+    assert hist_yahoo.records[-1]['payload']['session'] == str(prior_days[-1].date())
+    assert all(r['effective_at'] <= cutoff for r in hist_yahoo.records)
+
+    # 3. Full StrategyData.event() with advancing clock + both LocalBenchmarkProvider and delayed Yahoo provider.
+    server = OfflineAlpacaPaperServer(
+        account_id='paper-p1-clock',
+        initial_cash=D('40000'),
+        bars=bars,
+        now_fn=lambda: clock_state[0],
+    )
+    adapter = AlpacaAdapter(
+        PaperHTTP(AlpacaConfig('key', 'secret', 'https://paper-api.alpaca.markets'), transport=server.paper_transport),
+        tmp_path / 'p1-account.sqlite3',
+        limits=RiskLimits(D('50000'), D('50000'), D('50000'), 100),
+    )
+    client = MarketDataClient(
+        Credentials('key', 'secret'), feed='iex', request=server.market_transport, now=advancing_clock
+    )
+    service = MarketDataService.connect(client, MarketCache(tmp_path / 'p1-cache'), start='2025-08-01', end='2026-11-23')
+    store = PortfolioStore(tmp_path / 'p1-portfolio.sqlite3')
+    assets = StrategyAssets(adapter, store, clock=advancing_clock)
+    spec = V179AlpacaStrategy('paper-p1-clock', '10000', model_artifact=artifact, feed='iex').describe()
+    binding = dict(
+        market='ALPACA_US_EQUITY', account_id='paper-p1-clock',
+        strategy_id=spec.strategy_id, instance_id='V179_P1', allocation_id='v179-p1',
+    )
+    assets.qualify(spec, binding, {'capital': D('10000'), 'cash': D('10000'), 'positions': {}})
+    sched_win = schedule_window(service.calendar, spec.schedule, clock_state[0])
+    assert sched_win is not None
+    win = weekly_window(service.calendar, clock_state[0])
+
+    for provider in (local_live, yahoo_live):
+        data = StrategyData(assets, clock=advancing_clock, benchmark_provider=provider)
+        ev = data.event(service, spec, binding, {'cash': '10000', 'positions': {}}, sched_win)
+        b = ev['context']['benchmark'][BENCHMARK_SERIES]
+        assert pd.Timestamp(b['signal_cutoff']) == pd.Timestamp(sched_win.signal_cutoff)
+        assert pd.Timestamp(b['signal_cutoff']) < pd.Timestamp(b['acquired_at'])
+        assert pd.Timestamp(b['acquired_at']) <= pd.Timestamp(b['observed_horizon'])
+        assert pd.Timestamp(b['observed_horizon']) <= pd.Timestamp(ev['event_time'])
+        # Strategy itself validates causality and produces a valid decision.
+        dec = V179AlpacaStrategy('paper-p1-clock', '10000', model_artifact=artifact, feed='iex').decide(ev, {})
+        assert dec.targets is not None and len(dec.targets) == len(ASSETS)
+
+    # 4. Explicit received_at handling: valid preserved, future received_at rejected, pre-close rejected.
+    explicit_df = bench.loc[prior_days, ['close']].copy()
+    explicit_df['received_at'] = [cal.at(d, 'close') + timedelta(minutes=30) for d in prior_days]
+    valid_path = tmp_path / 'bench_explicit_valid.parquet'
+    explicit_df.to_parquet(valid_path)
+    hist_explicit = LocalBenchmarkProvider(valid_path, clock=advancing_clock).history(
+        BENCHMARK_SERIES, calendar=cal, days=prior_days, signal_cutoff=cutoff,
+    )
+    assert hist_explicit.records[-1]['observed_at'] == (cal.at(prior_days[-1], 'close') + timedelta(minutes=30)).to_pydatetime()
+    assert hist_explicit.records[-1]['observed_at'] < hist_explicit.acquired_at
+
+    future_obs_df = explicit_df.copy()
+    future_obs_df.loc[prior_days[-1], 'received_at'] = clock_state[0] + timedelta(hours=2)
+    future_obs_path = tmp_path / 'bench_future_obs.parquet'
+    future_obs_df.to_parquet(future_obs_path)
+    with pytest.raises(PreparationIncomplete, match='INCOMPLETE_BENCHMARK'):
+        LocalBenchmarkProvider(future_obs_path, clock=advancing_clock).history(
+            BENCHMARK_SERIES, calendar=cal, days=prior_days, signal_cutoff=cutoff,
+        )
+
+    preclose_df = explicit_df.copy()
+    preclose_df.loc[prior_days[-1], 'received_at'] = cal.at(prior_days[-1], 'close') - timedelta(minutes=5)
+    preclose_path = tmp_path / 'bench_preclose.parquet'
+    preclose_df.to_parquet(preclose_path)
+    with pytest.raises(PreparationIncomplete, match='INCOMPLETE_BENCHMARK'):
+        LocalBenchmarkProvider(preclose_path, clock=advancing_clock).history(
+            BENCHMARK_SERIES, calendar=cal, days=prior_days, signal_cutoff=cutoff,
+        )
+
+    # 5. Historical PIT replay (explicit knowledge_cutoff in the past with live wall-clock on provider):
+    #    - Picks the revision known at knowledge_cutoff, never a later revision.
+    #    - Fails closed when explicit received_at is after knowledge_cutoff.
+    #    - Fails closed when snapshot lacks explicit received_at and acquired_at > knowledge_cutoff.
+    pit_cutoff = (cal.at(prior_days[-1], 'close') + timedelta(hours=1)).to_pydatetime()
+    live_wall = datetime(2026, 11, 20, 15, 0, 0, tzinfo=timezone.utc)
+    rev_row = pd.DataFrame(
+        {'close': [float(explicit_df.loc[prior_days[-1], 'close']) + 999.0],
+         'received_at': [pd.Timestamp(pit_cutoff) + timedelta(hours=2)]},
+        index=pd.DatetimeIndex([prior_days[-1]]),
+    )
+    pit_df = pd.concat([explicit_df, rev_row])
+    pit_path = tmp_path / 'bench_pit_revisions.parquet'
+    pit_df.to_parquet(pit_path)
+    hist_pit = LocalBenchmarkProvider(pit_path, clock=lambda: live_wall).history(
+        BENCHMARK_SERIES,
+        calendar=cal,
+        days=prior_days,
+        signal_cutoff=cutoff,
+        knowledge_cutoff=pit_cutoff,
+    )
+    assert hist_pit.knowledge_cutoff == pit_cutoff
+    assert hist_pit.acquired_at == live_wall
+    assert hist_pit.records[-1]['payload']['close'] == pytest.approx(float(explicit_df.loc[prior_days[-1], 'close']))
+
+    # Explicit received_at after pit_cutoff -> rejected.
+    late_pit_df = explicit_df.copy()
+    late_pit_df.loc[prior_days[-1], 'received_at'] = pd.Timestamp(pit_cutoff) + timedelta(minutes=1)
+    late_pit_path = tmp_path / 'bench_pit_late.parquet'
+    late_pit_df.to_parquet(late_pit_path)
+    with pytest.raises(PreparationIncomplete, match='INCOMPLETE_BENCHMARK'):
+        LocalBenchmarkProvider(late_pit_path, clock=lambda: live_wall).history(
+            BENCHMARK_SERIES, calendar=cal, days=prior_days, signal_cutoff=cutoff, knowledge_cutoff=pit_cutoff,
+        )
+
+    # Snapshot without explicit received_at cannot satisfy an earlier historical knowledge_cutoff.
+    with pytest.raises(PreparationIncomplete, match='INCOMPLETE_BENCHMARK'):
+        LocalBenchmarkProvider(BENCHMARK_PARQUET, clock=lambda: live_wall).history(
+            BENCHMARK_SERIES, calendar=cal, days=prior_days, signal_cutoff=cutoff, knowledge_cutoff=pit_cutoff,
+        )
+
+    # 6. Future signal_cutoff (> acquired) must be rejected fail-closed.
+    future_signal_cutoff = cal.at(days[pos + 1], 'close').to_pydatetime()
+    with pytest.raises(PreparationIncomplete, match='INCOMPLETE_BENCHMARK'):
+        local_live.history(
+            BENCHMARK_SERIES, calendar=cal, days=days[pos - 250:pos + 2], signal_cutoff=future_signal_cutoff,
+        )
+
+    # 7. StrategyInstances isolation under advancing clock: Yahoo HTTP 503 blocks ONLY V179/V182,
+    #    while V69 completes; switching to delayed-HTTP Yahoo provider allows V179/V182 to complete.
+    iso_root = tmp_path / 'iso_host'
+    iso_root.mkdir()
+    iso_releases = iso_root / 'releases'
+    pkg_179 = build_v179_package(
+        account_id='paper-p1-clock', capital='10000', model_artifact=artifact,
+        code_commit='5' * 40, destination=iso_root / 'v179.zip',
+        evidence={'p1': True}, feed='iex',
+    )
+    pkg_182 = build_v182_package(
+        account_id='paper-p1-clock', capital='5000', model_artifact=artifact,
+        code_commit='6' * 40, destination=iso_root / 'v182.zip',
+        evidence={'p1': True}, feed='iex',
+    )
+    install_package(iso_root / 'v179.zip', iso_releases)
+    install_package(iso_root / 'v182.zip', iso_releases)
+    b69 = dict(market='ALPACA_US_EQUITY', account_id='paper-p1-clock', strategy_id='V69_CAUSAL',
+               instance_id='V69_CAUSAL', allocation_id='v69-original')
+    b179 = dict(market='ALPACA_US_EQUITY', account_id='paper-p1-clock', strategy_id='V179_TREND_BLEND',
+                instance_id='V179_TREND', allocation_id='v179-iso')
+    b182 = dict(market='ALPACA_US_EQUITY', account_id='paper-p1-clock', strategy_id='V182_RECOVERY_BLEND',
+                instance_id='V182_RECOVERY', allocation_id='v182-iso')
+    dep_iso = DeploymentStore(iso_root / 'deployments.sqlite3')
+    for bnd, man, sel in ((b179, pkg_179, 'iso-179'), (b182, pkg_182, 'iso-182')):
+        dep_iso.register_instance(bnd)
+        vw = dep_iso.for_instance(bnd['instance_id'])
+        _promote(vw, man, sel)
+        vw.close()
+    dep_iso.close()
+
+    iso_cfg = dict(
+        releases=str(iso_releases),
+        trusted_python=True,
+        capital_policy=dict(
+            currency='USD', budget='35000', fee_rate='0',
+            mode=CapitalPolicyMode.SHARED_SAME_DIRECTION.value,
+        ),
+        instances=[
+            dict(binding=b69, native_v69=True, funding={'capital': '20000', 'initial_cash': '20000'}),
+            dict(binding=b179, funding={'capital': '10000', 'initial_cash': '10000'}),
+            dict(binding=b182, funding={'capital': '5000', 'initial_cash': '5000'}),
+        ],
+    )
+    failing_yahoo = YahooSP500TRProvider(
+        transport=lambda url, timeout: (503, {}),
+        clock=advancing_clock,
+    )
+    host_fail = StrategyInstances(
+        iso_root, adapter, iso_cfg, clock=advancing_clock, revision='5' * 40, benchmark_provider=failing_yahoo,
+    )
+    for _ in range(6):
+        host_fail.tick(service, win, clock_state[0], adapter.read_account_details())
+        if host_fail.state['instances']['V69_CAUSAL']['state'] == 'WEEK_COMPLETE':
+            break
+    assert host_fail.state['instances']['V69_CAUSAL']['state'] == 'WEEK_COMPLETE'
+    assert host_fail.state['instances']['V179_TREND']['state'] == 'PREPARATION_INCOMPLETE'
+    assert 'BENCHMARK_HTTP_ERROR:^SP500TR:503' in host_fail.state['instances']['V179_TREND']['reason']
+    assert host_fail.state['instances']['V182_RECOVERY']['state'] == 'PREPARATION_INCOMPLETE'
+    host_fail.close()
+
+    # Now run with delayed Yahoo HTTP provider under advancing clock -> V179 & V182 both succeed!
+    host_ok = StrategyInstances(
+        iso_root, adapter, iso_cfg, clock=advancing_clock, revision='5' * 40, benchmark_provider=yahoo_live,
+    )
+    for _ in range(6):
+        host_ok.tick(service, win, clock_state[0], adapter.read_account_details())
+        if all(
+            host_ok.state['instances'][name]['state'] in {'RUNNING', 'WEEK_COMPLETE'}
+            for name in ('V69_CAUSAL', 'V179_TREND', 'V182_RECOVERY')
+        ):
+            break
+    assert host_ok.state['instances']['V69_CAUSAL']['state'] == 'WEEK_COMPLETE'
+    assert host_ok.state['instances']['V179_TREND']['state'] == 'RUNNING'
+    assert host_ok.state['instances']['V182_RECOVERY']['state'] == 'RUNNING'
+    host_ok.close()
+    store.db.close()
     adapter.store.db.close()

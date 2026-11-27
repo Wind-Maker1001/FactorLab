@@ -478,3 +478,141 @@ def test_252_session_window_matches_full_history_online_inference(frozen_target_
             w_182.targets(t, prices, valid, held),
             rtol=1e-12, atol=1e-12,
         )
+
+
+@pytest.mark.parametrize('variant_cls', [V179Strategy, V182Strategy])
+def test_month_boundary_empty_prediction_month_crossyear_holiday_and_restart(
+    frozen_target_market, frozen_artifacts, variant_cls
+):
+    """P2 regression: empty new-month execution row must not demand a future monthly model,
+    while actual signal months missing a causal model must still fail closed.
+    """
+    from factorlab.strategies.qlib_blend_ridge import (
+        _compute_base_series,
+        predict_residual_from_artifact,
+    )
+
+    close, volume, _, index = frozen_target_market
+    full_artifact = frozen_artifacts[False]
+    cal = _make_calendar(close.index)
+
+    # 1. First trading day of a new month (Monday 2025-12-01) executing on prior month's
+    #    last completed trading day (Friday 2025-11-28), with artifact trained strictly
+    #    through 2025-11-28 (no 2025-12 model).
+    dec1 = pd.Timestamp('2025-12-01')
+    nov28 = cal.shift(dec1, -1)
+    assert nov28 == pd.Timestamp('2025-11-28')
+    trunc_nov = train_monthly_ridge_artifact(close.loc[:nov28], index.loc[:nov28], omit_sndk=False)
+    assert '2025-11' in trunc_nov['models']
+    assert '2025-12' not in trunc_nov['models']
+
+    win_nov = close.loc[:nov28].iloc[-252:].index
+    month_boundary_event = dict(
+        session=dec1,
+        calendar=cal,
+        close=close.loc[win_nov],
+        volume=volume.loc[win_nov],
+        market_index=index.loc[win_nov],
+        benchmark_series=BENCHMARK_SERIES,
+        holdings={},
+        cash=50_000.0,
+    )
+    trunc_dec = variant_cls(trunc_nov, strict_model_month=True).decide(month_boundary_event, {})
+    full_dec = variant_cls(full_artifact, strict_model_month=True).decide(month_boundary_event, {})
+    assert trunc_dec['weights'] is not None
+    assert trunc_dec['diagnostics']['ridge_month'] == '2025-11'
+    assert trunc_dec['weights'] == pytest.approx(full_dec['weights'], rel=1e-12, abs=1e-12)
+    assert trunc_dec['orders'] == full_dec['orders']
+
+    # Direct predict_residual_from_artifact with trailing empty new-month row must skip empty 2025-12.
+    extended_idx = win_nov.append(pd.DatetimeIndex([dec1]))
+    ext_close = close.loc[win_nov].reindex(extended_idx)
+    ext_index = index.loc[win_nov].reindex(extended_idx)
+    eligible, mkt, breadth, residual, score, risk = _compute_base_series(ext_close, ext_index, omit_sndk=False)
+    preds_trunc = predict_residual_from_artifact(
+        ext_close[eligible], residual[eligible], score[eligible], risk[eligible],
+        breadth, mkt, trunc_nov, strict_month_coverage=True,
+    )
+    preds_full = predict_residual_from_artifact(
+        ext_close[eligible], residual[eligible], score[eligible], risk[eligible],
+        breadth, mkt, full_artifact, strict_month_coverage=True,
+    )
+    assert preds_trunc.loc[dec1].isna().all()
+    pd.testing.assert_series_equal(preds_trunc.loc[nov28], preds_full.loc[nov28], rtol=1e-12, atol=1e-12)
+
+    # 2. Actual signal month missing a model (execution Monday 2025-12-08, signal Friday 2025-12-05)
+    #    MUST still raise ModelArtifactStaleError with strict_model_month=True (both with & without diagnostics).
+    dec8 = pd.Timestamp('2025-12-08')
+    dec5 = cal.shift(dec8, -1)
+    assert dec5 == pd.Timestamp('2025-12-05')
+    win_dec5 = close.loc[:dec5].iloc[-252:].index
+    missing_month_event = dict(
+        session=dec8,
+        calendar=cal,
+        close=close.loc[win_dec5],
+        volume=volume.loc[win_dec5],
+        market_index=index.loc[win_dec5],
+        benchmark_series=BENCHMARK_SERIES,
+        holdings={},
+        cash=50_000.0,
+    )
+    with pytest.raises(ModelArtifactStaleError):
+        variant_cls(trunc_nov, strict_model_month=True).decide(missing_month_event, {}, include_diagnostics=True)
+    with pytest.raises(ModelArtifactStaleError):
+        variant_cls(trunc_nov, strict_model_month=True).decide(missing_month_event, {}, include_diagnostics=False)
+
+    # Non-causal effective_from_signal_date after first valid prediction date in month must still fail.
+    bad_eff = json.loads(json.dumps(trunc_nov))
+    bad_eff['models']['2025-11']['effective_from_signal_date'] = '2025-11-28'
+    bad_eff.pop('artifact_sha256', None)
+    with pytest.raises(ModelArtifactError):
+        predict_residual_from_artifact(
+            ext_close[eligible], residual[eligible], score[eligible], risk[eligible],
+            breadth, mkt, bad_eff, strict_month_coverage=True,
+        )
+
+    # 3. Cross-year & New Year's Day holiday-shifted first session of week:
+    #    Tuesday 2024-01-02 (Monday 2024-01-01 holiday) executing on Friday 2023-12-29 signal,
+    #    with artifact trained strictly through 2023-12-29 (has 2023-12, no 2024-01).
+    jan2 = pd.Timestamp('2024-01-02')
+    dec29 = cal.shift(jan2, -1)
+    assert dec29 == pd.Timestamp('2023-12-29')
+    trunc_2023 = train_monthly_ridge_artifact(close.loc[:dec29], index.loc[:dec29], omit_sndk=False)
+    assert '2023-12' in trunc_2023['models']
+    assert '2024-01' not in trunc_2023['models']
+
+    win_2023 = close.loc[:dec29].iloc[-252:].index
+    crossyear_event = dict(
+        session=jan2,
+        calendar=cal,
+        close=close.loc[win_2023],
+        volume=volume.loc[win_2023],
+        market_index=index.loc[win_2023],
+        benchmark_series=BENCHMARK_SERIES,
+        holdings={},
+        cash=50_000.0,
+    )
+    cy_trunc = variant_cls(trunc_2023, strict_model_month=True).decide(crossyear_event, {})
+    cy_full = variant_cls(full_artifact, strict_model_month=True).decide(crossyear_event, {})
+    assert cy_trunc['weights'] is not None
+    assert cy_trunc['diagnostics']['ridge_month'] == '2023-12'
+    assert cy_trunc['state']['last_week'] == [2024, 1]
+    assert cy_trunc['weights'] == pytest.approx(cy_full['weights'], rel=1e-12, abs=1e-12)
+    assert cy_trunc['orders'] == cy_full['orders']
+
+    # Next trading day in same week (Wednesday 2024-01-03) produces no rebalance.
+    assert variant_cls(trunc_2023, strict_model_month=True).decide(
+        dict(crossyear_event, session=pd.Timestamp('2024-01-03')), cy_trunc['state']
+    )['orders'] == []
+
+    # 4. Restart consistency: fresh strategy instance with persisted JSON checkpoint produces
+    #    zero duplicate orders on replay, and fresh cold replay reproduces identical decisions.
+    persisted = json.loads(json.dumps(cy_trunc['state']))
+    restarted_replay = variant_cls(trunc_2023, strict_model_month=True).decide(crossyear_event, persisted)
+    assert restarted_replay['weights'] is None and restarted_replay['orders'] == []
+    assert restarted_replay['state'] == persisted
+
+    cold_restarted = variant_cls(trunc_2023, strict_model_month=True).decide(crossyear_event, {})
+    assert cold_restarted['weights'] == cy_trunc['weights']
+    assert cold_restarted['orders'] == cy_trunc['orders']
+    assert cold_restarted['state'] == cy_trunc['state']

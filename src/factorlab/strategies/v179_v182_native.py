@@ -119,6 +119,12 @@ class NativeV100(NativeV69):
         return weights * (0.375 / gross) if gross > 0.375 else weights
 
     def targets(self, previous, prices, valid_prices, held):
+        if self.ridge_artifact is not None:
+            select_causal_month_model(
+                self.ridge_artifact,
+                previous,
+                strict_month_coverage=self.strict_model_month,
+            )
         weights = super().targets(previous, prices, valid_prices, held)
         for rule in self.rules:
             weights = self.cap(self.apply_rule(rule, previous, prices, held, weights))

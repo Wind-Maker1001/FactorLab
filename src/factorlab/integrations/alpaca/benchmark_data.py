@@ -51,6 +51,83 @@ class BenchmarkHistory:
     acquired_at: datetime
     records: tuple[dict, ...]
     provenance: dict
+    signal_cutoff: datetime | None = None
+    knowledge_cutoff: datetime | None = None
+
+
+def _to_utc_timestamp(value: datetime | pd.Timestamp, *, name: str) -> pd.Timestamp:
+    ts = pd.Timestamp(value)
+    if ts.tzinfo is None:
+        raise ValueError(f'aware {name} timestamp required')
+    return ts.tz_convert('UTC')
+
+
+def _resolve_knowledge_cutoff(
+    acquired: pd.Timestamp,
+    *,
+    knowledge_cutoff: datetime | None = None,
+    now: datetime | None = None,
+) -> pd.Timestamp:
+    """Resolve the knowledge-time horizon for observed_at filtering.
+
+    - Live execution (both ``knowledge_cutoff`` and ``now`` omitted): uses the
+      post-acquisition timestamp ``acquired`` so valid newly acquired records
+      from completed sessions are never dropped by a pre-request clock read.
+    - Historical PIT replay (explicit ``knowledge_cutoff`` or ``now``): enforces
+      the caller-specified historical knowledge-time boundary without forging
+      observation timestamps.
+    """
+    if knowledge_cutoff is not None and now is not None:
+        kc = _to_utc_timestamp(knowledge_cutoff, name='knowledge_cutoff')
+        nw = _to_utc_timestamp(now, name='now')
+        if kc != nw:
+            raise ValueError('knowledge_cutoff and now must match when both are provided')
+        return kc
+    explicit = knowledge_cutoff if knowledge_cutoff is not None else now
+    if explicit is None:
+        return acquired
+    return _to_utc_timestamp(explicit, name='knowledge_cutoff')
+
+
+def _filter_causal_records(
+    records: list[dict],
+    *,
+    series_id: str,
+    days: pd.DatetimeIndex,
+    signal_cutoff: pd.Timestamp,
+    knowledge_cutoff: pd.Timestamp,
+    allow_revisions: bool = False,
+) -> list[dict]:
+    if signal_cutoff > knowledge_cutoff:
+        raise PreparationIncomplete('INCOMPLETE_BENCHMARK:' + series_id)
+    causal = [
+        rec for rec in records
+        if pd.Timestamp(rec['effective_at']).tz_convert('UTC') <= signal_cutoff
+        and pd.Timestamp(rec['observed_at']).tz_convert('UTC') <= knowledge_cutoff
+    ]
+    if allow_revisions:
+        latest_by_session: dict[str, dict] = {}
+        for rec in sorted(
+            causal,
+            key=lambda item: (
+                pd.Timestamp(item['effective_at']).tz_convert('UTC'),
+                pd.Timestamp(item['observed_at']).tz_convert('UTC'),
+            ),
+        ):
+            latest_by_session[rec['payload']['session']] = rec
+        causal = sorted(
+            latest_by_session.values(),
+            key=lambda item: pd.Timestamp(item['effective_at']).tz_convert('UTC'),
+        )
+    expected_sessions = [str(d.date()) for d in days]
+    actual_sessions = [rec['payload']['session'] for rec in causal]
+    if (
+        actual_sessions != expected_sessions
+        or not causal
+        or pd.Timestamp(causal[-1]['effective_at']).tz_convert('UTC') != signal_cutoff
+    ):
+        raise PreparationIncomplete('INCOMPLETE_BENCHMARK:' + series_id)
+    return causal
 
 
 def _normalize_benchmark_frame(
@@ -64,6 +141,7 @@ def _normalize_benchmark_frame(
     validate_benchmark_series_id(series_id)
     if 'close' not in frame.columns:
         raise PreparationIncomplete('INVALID_BENCHMARK_SCHEMA:' + series_id)
+    received_utc = _to_utc_timestamp(received_at, name='received_at')
     records = []
     for idx, row in frame.iterrows():
         day = pd.Timestamp(idx).normalize()
@@ -72,10 +150,12 @@ def _normalize_benchmark_frame(
         close_val = float(row['close'])
         if not np.isfinite(close_val) or close_val <= 0:
             continue
-        eff = calendar.at(day, 'close')
-        obs = pd.Timestamp(row['received_at']) if 'received_at' in row and pd.notna(row['received_at']) else received_at
-        if obs.tzinfo is None:
-            obs = obs.tz_localize('UTC')
+        eff = calendar.at(day, 'close').tz_convert('UTC')
+        if 'received_at' in row and pd.notna(row['received_at']):
+            obs = pd.Timestamp(row['received_at'])
+            obs = obs.tz_localize('UTC') if obs.tzinfo is None else obs.tz_convert('UTC')
+        else:
+            obs = received_utc
         complete = bool(row['complete']) if 'complete' in row and pd.notna(row['complete']) else True
         if not complete or eff > obs:
             continue
@@ -91,7 +171,7 @@ def _normalize_benchmark_frame(
                 'complete': True,
             },
         })
-    records.sort(key=lambda item: item['effective_at'])
+    records.sort(key=lambda item: (item['effective_at'], item['observed_at']))
     return records
 
 
@@ -147,16 +227,24 @@ class LocalBenchmarkProvider:
         calendar,
         days: pd.DatetimeIndex,
         signal_cutoff: datetime,
-        now: datetime,
+        now: datetime | None = None,
+        knowledge_cutoff: datetime | None = None,
     ) -> BenchmarkHistory:
         validate_benchmark_series_id(series_id)
         if days.empty:
             raise PreparationIncomplete('INSUFFICIENT_BENCHMARK_CALENDAR:' + series_id)
+        cutoff_ts = _to_utc_timestamp(signal_cutoff, name='signal_cutoff')
         df, digest = self._load_frame()
-        acquired = pd.Timestamp(self.clock())
-        now_ts = pd.Timestamp(now)
-        cutoff_ts = pd.Timestamp(signal_cutoff)
+        acquired = _to_utc_timestamp(self.clock(), name='acquired_at')
+        knowledge_ts = _resolve_knowledge_cutoff(
+            acquired,
+            knowledge_cutoff=knowledge_cutoff,
+            now=now,
+        )
         window_df = df.loc[df.index.isin(days)]
+        has_explicit_received_at = 'received_at' in window_df.columns
+        if window_df.index.has_duplicates and not has_explicit_received_at:
+            raise PreparationIncomplete('DUPLICATE_BENCHMARK_SESSION:' + series_id)
         records = _normalize_benchmark_frame(
             window_df,
             series_id=series_id,
@@ -164,13 +252,14 @@ class LocalBenchmarkProvider:
             calendar=calendar,
             received_at=acquired,
         )
-        causal = [
-            rec for rec in records
-            if pd.Timestamp(rec['effective_at']) <= cutoff_ts
-            and pd.Timestamp(rec['observed_at']) <= now_ts
-        ]
-        if len(causal) != len(days) or pd.Timestamp(causal[-1]['effective_at']) != cutoff_ts:
-            raise PreparationIncomplete('INCOMPLETE_BENCHMARK:' + series_id)
+        causal = _filter_causal_records(
+            records,
+            series_id=series_id,
+            days=days,
+            signal_cutoff=cutoff_ts,
+            knowledge_cutoff=knowledge_ts,
+            allow_revisions=has_explicit_received_at,
+        )
         return BenchmarkHistory(
             series_id=series_id,
             source=self.source,
@@ -182,7 +271,12 @@ class LocalBenchmarkProvider:
                 'sha256': digest,
                 'coverage_start': str(days[0].date()),
                 'coverage_end': str(days[-1].date()),
+                'signal_cutoff': cutoff_ts.isoformat(),
+                'knowledge_cutoff': knowledge_ts.isoformat(),
+                'acquired_at': acquired.isoformat(),
             },
+            signal_cutoff=cutoff_ts.to_pydatetime(),
+            knowledge_cutoff=knowledge_ts.to_pydatetime(),
         )
 
 
@@ -218,11 +312,13 @@ class YahooSP500TRProvider:
         calendar,
         days: pd.DatetimeIndex,
         signal_cutoff: datetime,
-        now: datetime,
+        now: datetime | None = None,
+        knowledge_cutoff: datetime | None = None,
     ) -> BenchmarkHistory:
         validate_benchmark_series_id(series_id)
         if days.empty:
             raise PreparationIncomplete('INSUFFICIENT_BENCHMARK_CALENDAR:' + series_id)
+        cutoff_ts = _to_utc_timestamp(signal_cutoff, name='signal_cutoff')
         period1 = int((pd.Timestamp(days[0]).tz_localize('UTC') - pd.Timedelta(days=5)).timestamp())
         period2 = int((pd.Timestamp(days[-1]).tz_localize('UTC') + pd.Timedelta(days=2)).timestamp())
         url = self.base_url + '?' + urlencode({
@@ -237,7 +333,12 @@ class YahooSP500TRProvider:
             raise PreparationIncomplete('BENCHMARK_TRANSPORT_ERROR:' + series_id) from exc
         if status != 200 or not isinstance(payload, dict):
             raise PreparationIncomplete(f'BENCHMARK_HTTP_ERROR:{series_id}:{status}')
-        acquired = pd.Timestamp(self.clock())
+        acquired = _to_utc_timestamp(self.clock(), name='acquired_at')
+        knowledge_ts = _resolve_knowledge_cutoff(
+            acquired,
+            knowledge_cutoff=knowledge_cutoff,
+            now=now,
+        )
         try:
             result = payload['chart']['result'][0]
             timestamps = result['timestamp']
@@ -259,15 +360,14 @@ class YahooSP500TRProvider:
             calendar=calendar,
             received_at=acquired,
         )
-        now_ts = pd.Timestamp(now)
-        cutoff_ts = pd.Timestamp(signal_cutoff)
-        causal = [
-            rec for rec in records
-            if pd.Timestamp(rec['effective_at']) <= cutoff_ts
-            and pd.Timestamp(rec['observed_at']) <= now_ts
-        ]
-        if len(causal) != len(days) or pd.Timestamp(causal[-1]['effective_at']) != cutoff_ts:
-            raise PreparationIncomplete('INCOMPLETE_BENCHMARK:' + series_id)
+        causal = _filter_causal_records(
+            records,
+            series_id=series_id,
+            days=days,
+            signal_cutoff=cutoff_ts,
+            knowledge_cutoff=knowledge_ts,
+            allow_revisions=False,
+        )
         digest = sha256(json.dumps(payload, sort_keys=True, separators=(',', ':')).encode('utf-8')).hexdigest()
         return BenchmarkHistory(
             series_id=series_id,
@@ -280,7 +380,12 @@ class YahooSP500TRProvider:
                 'sha256': digest,
                 'coverage_start': str(days[0].date()),
                 'coverage_end': str(days[-1].date()),
+                'signal_cutoff': cutoff_ts.isoformat(),
+                'knowledge_cutoff': knowledge_ts.isoformat(),
+                'acquired_at': acquired.isoformat(),
             },
+            signal_cutoff=cutoff_ts.to_pydatetime(),
+            knowledge_cutoff=knowledge_ts.to_pydatetime(),
         )
 
 

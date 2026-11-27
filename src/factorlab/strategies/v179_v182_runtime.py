@@ -129,12 +129,16 @@ class _AlpacaBlendStrategyV2:
         if not isinstance(records, list) or not records:
             raise ValueError(f'empty benchmark history for {BENCHMARK_SERIES}')
         event_time = pd.Timestamp(event['event_time'])
+        signal_cutoff = bundle.get('signal_cutoff')
+        cutoff_ts = None if signal_cutoff is None else pd.Timestamp(signal_cutoff)
         values = {}
         for row in records:
             obs_at = pd.Timestamp(row['observed_at'])
             eff_at = pd.Timestamp(row['effective_at'])
-            if obs_at > event_time or eff_at > event_time:
+            if eff_at > obs_at or obs_at > event_time or eff_at > event_time:
                 raise ValueError('noncausal benchmark observation detected')
+            if cutoff_ts is not None and eff_at > cutoff_ts:
+                raise ValueError('benchmark observation exceeds signal_cutoff')
             payload = row['payload']
             session = pd.Timestamp(payload['session']).normalize()
             close_val = float(payload['close'])
