@@ -561,3 +561,108 @@ class V179Planner(_BlendPlannerMixin, NativeV179):
 
 class V182Planner(_BlendPlannerMixin, NativeV182):
     pass
+
+
+class NativeBlendSignalAdapter:
+    """SignalGenerator adapter exposing native FactorLab V179/V182 to P10-04 independent validation."""
+
+    signal_source = 'NATIVE_FL'
+
+    def __init__(
+        self,
+        version: str,
+        close: pd.DataFrame,
+        volume: pd.DataFrame,
+        opening: pd.DataFrame | None = None,
+        *,
+        market_index: pd.Series,
+        omit_sndk: bool = False,
+        omit_symbols: tuple[str, ...] = (),
+        blend_override: tuple[float, float] | None = None,
+        ridge_artifact: dict | None = None,
+    ) -> None:
+        key = version.lower()
+        if key == 'v179':
+            cls = NativeV179
+        elif key == 'v182':
+            cls = NativeV182
+        else:
+            raise ValueError(f'Unsupported native blend strategy version: {version}')
+        self.strategy_name = key
+        self._omit_symbols = tuple(sorted(set(omit_symbols) | ({'SNDK'} if omit_sndk else set())))
+        self._blend_override = blend_override
+        self._strategy = cls(
+            close,
+            volume,
+            opening,
+            market_index=market_index,
+            omit_sndk=omit_sndk,
+            ridge_artifact=ridge_artifact,
+            allow_offline_fit=(ridge_artifact is None),
+            strict_model_month=False,
+        )
+
+    def targets(
+        self,
+        previous: pd.Timestamp,
+        prices: pd.Series,
+        valid_prices: pd.Series,
+        held: pd.Series,
+    ) -> pd.Series:
+        if self._blend_override is not None:
+            high_share, low_share = self._blend_override
+            growth = NativeV125.targets(self._strategy, previous, prices, valid_prices, held)
+            defensive = NativeV165.targets(self._strategy, previous, prices, valid_prices, held)
+            if self._strategy.blend_rule == 'trend':
+                cond = (
+                    self._strategy.index.at[previous] > self._strategy.index_long.at[previous]
+                    and self._strategy.breadth.at[previous] >= 0.5
+                )
+            else:
+                cond = (
+                    self._strategy.breadth_change.at[previous] > 0.10
+                    and self._strategy.index.at[previous] > self._strategy.market_fast.at[previous]
+                )
+            share = high_share if cond else low_share
+            w = (growth * share + defensive * (1.0 - share)).copy()
+        else:
+            w = self._strategy.targets(previous, prices, valid_prices, held).copy()
+        for sym in self._omit_symbols:
+            if sym in w.index:
+                w.loc[sym] = 0.0
+        return w
+
+    def indicator_snapshot(self, previous: pd.Timestamp) -> dict:
+        s = self._strategy
+        return {
+            'breadth': float(s.breadth.at[previous]) if pd.notna(s.breadth.at[previous]) else None,
+            'index': float(s.index.at[previous]) if pd.notna(s.index.at[previous]) else None,
+            'index_long_200': float(s.index_long.at[previous]) if pd.notna(s.index_long.at[previous]) else None,
+            'market_fast_63': float(s.market_fast.at[previous]) if pd.notna(s.market_fast.at[previous]) else None,
+            'breadth_change_10': float(s.breadth_change.at[previous]) if pd.notna(s.breadth_change.at[previous]) else None,
+        }
+
+
+def build_signal_provider(
+    version: str,
+    close: pd.DataFrame,
+    volume: pd.DataFrame,
+    opening: pd.DataFrame | None = None,
+    *,
+    market_index: pd.Series,
+    omit_sndk: bool = False,
+    omit_symbols: tuple[str, ...] = (),
+    blend_override: tuple[float, float] | None = None,
+    ridge_artifact: dict | None = None,
+) -> NativeBlendSignalAdapter:
+    return NativeBlendSignalAdapter(
+        version,
+        close,
+        volume,
+        opening,
+        market_index=market_index,
+        omit_sndk=omit_sndk,
+        omit_symbols=omit_symbols,
+        blend_override=blend_override,
+        ridge_artifact=ridge_artifact,
+    )

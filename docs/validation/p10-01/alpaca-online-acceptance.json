@@ -1,0 +1,99 @@
+﻿{
+  "checked_at_utc": "2026-11-26T15:30:25.196699+00:00",
+  "release_file": "/opt/factorlab-alpaca/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/lib/python3.13/site-packages/factorlab/integrations/alpaca/adapter.py",
+  "calendar_and_scheduling": {
+    "current_weekly_window": {
+      "week": "2026-11-23",
+      "execution_session": "2026-11-23",
+      "signal_cutoff": "2026-11-20",
+      "due": false,
+      "market_open": false,
+      "next_open": "2026-11-27T14:30:00+00:00"
+    },
+    "holiday_2026_11_26_minute": null,
+    "holiday_2026_11_26_daily": null,
+    "monday_2026_11_23_minute": {
+      "event_id": "closed-bar:2026-11-23T15:31:00+00:00:60",
+      "session": "2026-11-23",
+      "signal_cutoff": "2026-11-23 15:31:00+00:00",
+      "opened_at": "2026-11-23 15:30:00+00:00",
+      "closed_at": "2026-11-23 21:00:00+00:00",
+      "interval_seconds": 60
+    },
+    "monday_2026_11_23_hourly": {
+      "event_id": "closed-bar:2026-11-23T15:30:00+00:00:3600",
+      "session": "2026-11-23",
+      "signal_cutoff": "2026-11-23 15:30:00+00:00",
+      "opened_at": "2026-11-23 14:30:00+00:00",
+      "closed_at": "2026-11-23 21:00:00+00:00",
+      "interval_seconds": 3600
+    },
+    "monday_2026_11_23_daily": {
+      "event_id": "session_open:2026-11-23",
+      "session": "2026-11-23",
+      "signal_cutoff": "2026-11-20 21:00:00+00:00",
+      "opened_at": "2026-11-23 14:30:00+00:00",
+      "closed_at": "2026-11-23 21:00:00+00:00",
+      "interval_seconds": null
+    },
+    "monday_2026_11_23_weekly": {
+      "event_id": "natural_week_open:2026-11-23",
+      "session": "2026-11-23",
+      "signal_cutoff": "2026-11-20 21:00:00+00:00",
+      "opened_at": "2026-11-23 14:30:00+00:00",
+      "closed_at": "2026-11-23 21:00:00+00:00",
+      "interval_seconds": null
+    },
+    "black_friday_2026_11_27_1035ET_weekly_not_due": null,
+    "black_friday_2026_11_27_1035ET_hourly": {
+      "event_id": "closed-bar:2026-11-27T15:30:00+00:00:3600",
+      "session": "2026-11-27",
+      "signal_cutoff": "2026-11-27 15:30:00+00:00",
+      "opened_at": "2026-11-27 14:30:00+00:00",
+      "closed_at": "2026-11-27 18:00:00+00:00",
+      "interval_seconds": 3600
+    },
+    "black_friday_2026_11_27_1305ET_after_early_close": null
+  },
+  "official_account_and_corporate_actions": {
+    "account_id": "ec3132ce-9768-4c6f-a640-050119d464c4",
+    "reconciled": true,
+    "cash": "100000.05",
+    "equity": "100000.05",
+    "positions_count": 0,
+    "open_orders_count": 0,
+    "total_activities_fetched": 21,
+    "fill_activities_count": 18,
+    "corporate_activities_count": 0,
+    "no_http_422_error": true
+  },
+  "multi_instance_and_shared_security": {
+    "registered_instances": [
+      "V69_CAUSAL",
+      "balanced-1",
+      "legacy-grid"
+    ],
+    "capital_policy_mode": "SHARED_SAME_DIRECTION",
+    "shared_aapl_owners": [
+      {
+        "account_id": "ec3132ce-9768-4c6f-a640-050119d464c4",
+        "symbol": "AAPL",
+        "strategy_id": "V69_CAUSAL",
+        "instance_id": "V69_CAUSAL",
+        "allocation_id": "v69-original",
+        "logical_strategy_id": "V69_CAUSAL"
+      },
+      {
+        "account_id": "ec3132ce-9768-4c6f-a640-050119d464c4",
+        "symbol": "AAPL",
+        "strategy_id": "balanced-1",
+        "instance_id": "balanced-1",
+        "allocation_id": "balanced-usd",
+        "logical_strategy_id": "alpaca-balanced"
+      }
+    ],
+    "aapl_default_ceiling_usd": "4000",
+    "over_budget_allocation_rejected": "ValueError: allocations exceed static account capital budget",
+    "corporate_receipt_idempotent_ingest_verified": true
+  }
+}

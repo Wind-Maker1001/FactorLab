@@ -107,7 +107,7 @@ def frozen_artifacts():
 
 def test_all_v179_v182_fixture_hashes():
     manifest = json.loads((ROOT / 'source-manifest.json').read_text(encoding='utf-8'))
-    assert len(manifest['files']) == 59
+    assert len(manifest['files']) == 63
     for rel, meta in manifest['files'].items():
         raw = (ROOT / rel).read_bytes()
         assert len(raw) == meta['bytes'], rel
@@ -690,3 +690,114 @@ def test_monthly_training_timing_truncated_history_matches_full_after_first_sess
         assert dec_d0['diagnostics']['ridge_month'] == month_key
         assert dec_d0['weights'] == pytest.approx(dec_full['weights'], rel=1e-12, abs=1e-12)
         assert dec_d0['orders'] == dec_full['orders']
+
+
+@pytest.mark.parametrize('version', ['v179', 'v182'])
+@pytest.mark.parametrize('case', ['normal', 'no_sndk'])
+def test_p10_04_independent_validation_signal_vs_execution_equivalence(
+    version, case
+):
+    """Verify native V179/V182 through merged P10-04 independent validation framework,
+    explicitly distinguishing SIGNAL_EQUIVALENCE from EXECUTION_EQUIVALENCE.
+    """
+    from factorlab.research.external_validation.config import ExternalValidationConfig
+    from factorlab.research.external_validation.replay import (
+        ExternalPackageSignalAdapter,
+        FactorLabIndependentBacktester,
+        build_signal_provider,
+        compare_against_reference,
+        load_market_panel,
+    )
+
+    omit_sndk = case == 'no_sndk'
+    window = ExternalValidationConfig().window_map()['target']
+    panel = load_market_panel(ROOT, window, tickers=tuple(TICKERS))
+
+    # 1. Native FactorLab signal provider resolved automatically via P10-04 hook vs frozen reference adapter.
+    native_sig = build_signal_provider(version, panel, package_dir=ROOT, omit_sndk=omit_sndk)
+    assert native_sig.signal_source == 'NATIVE_FL'
+    ref_sig = ExternalPackageSignalAdapter(
+        version,
+        ROOT,
+        panel.close,
+        panel.volume,
+        panel.opening,
+        market_index=panel.benchmark_close,
+        omit_sndk=omit_sndk,
+    )
+    assert ref_sig.signal_source == 'EXTERNAL_PACKAGE_FROZEN_SIGNAL_PENDING_P10_03'
+
+    # 2. SIGNAL_EQUIVALENCE: direct indicator + target equivalence on identical market/holdings,
+    #    independent of execution price precision (qlib_float32 vs float64).
+    sample_dates = [pd.Timestamp('2023-01-03'), pd.Timestamp('2025-05-09'), pd.Timestamp('2026-10-02')]
+    held = pd.Series([5.0, 0.0, 2.0, 0.0, 3.0, 1.0, 0.5, 2.0], index=TICKERS)
+    for dt in sample_dates:
+        n_snap = native_sig.indicator_snapshot(dt)
+        r_snap = ref_sig.indicator_snapshot(dt)
+        for key in ('breadth', 'index', 'index_long_200', 'market_fast_63', 'breadth_change_10'):
+            if r_snap[key] is None:
+                assert n_snap[key] is None
+            else:
+                assert n_snap[key] == pytest.approx(r_snap[key], rel=1e-12, abs=1e-12)
+        prices = panel.close.loc[dt]
+        valid = np.isfinite(prices) & prices.gt(0)
+        pd.testing.assert_series_equal(
+            native_sig.targets(dt, prices, valid, held),
+            ref_sig.targets(dt, prices, valid, held),
+            rtol=1e-12,
+            atol=1e-12,
+        )
+
+    ref_account_dir = ROOT / 'accounts' / version / 'target' / case
+
+    # 3. EXECUTION_EQUIVALENCE under qlib_float32 reference-compatible matching:
+    #    all 16 fail-closed 7-layer checks pass (both SIGNAL_EQUIVALENCE and EXECUTION_EQUIVALENCE).
+    bt_f32 = FactorLabIndependentBacktester(
+        initial_capital=300_000.0,
+        fee_rate=0.001,
+        open_price_mode='qlib_float32',
+        gross_cap=0.90,
+        tickers=tuple(TICKERS),
+    )
+    res_native_f32 = bt_f32.run(
+        native_sig, panel, window_name='target', start=window.start, end=window.end, case=case
+    )
+    res_ref_f32 = bt_f32.run(
+        ref_sig, panel, window_name='target', start=window.start, end=window.end, case=case
+    )
+    diff_native_f32 = compare_against_reference(res_native_f32, ref_account_dir)
+    assert res_native_f32.signal_source == 'NATIVE_FL'
+    assert diff_native_f32['layer_checks']['layer2_targets_exact'] is True
+    assert diff_native_f32['exact_reference_match'] is True
+    assert diff_native_f32['failed_checks'] == []
+    assert diff_native_f32['layer2_targets']['max_abs_weight_diff'] <= 1e-12
+    assert diff_native_f32['layer5_daily_ledger']['max_abs_nav_diff_usd'] <= 1e-4
+    # Native FL targets match external frozen adapter targets bit-for-bit across all weekly dates.
+    np.testing.assert_allclose(
+        res_native_f32.targets[list(TICKERS)].to_numpy(dtype=float),
+        res_ref_f32.targets[list(TICKERS)].to_numpy(dtype=float),
+        rtol=1e-12,
+        atol=1e-12,
+    )
+
+    # 4. Separate SIGNAL_EQUIVALENCE from EXECUTION_EQUIVALENCE under float64 high-precision mode:
+    #    native signal targets remain exact against both external reference & targets.csv,
+    #    while execution ledger tracks float64 parquet matching independently of Qlib float32 bins.
+    bt_f64 = FactorLabIndependentBacktester(
+        initial_capital=300_000.0,
+        fee_rate=0.001,
+        open_price_mode='float64',
+        gross_cap=0.90,
+        tickers=tuple(TICKERS),
+    )
+    res_native_f64 = bt_f64.run(
+        native_sig, panel, window_name='target', start=window.start, end=window.end, case=case
+    )
+    res_ref_f64 = bt_f64.run(
+        ref_sig, panel, window_name='target', start=window.start, end=window.end, case=case
+    )
+    diff_native_f64 = compare_against_reference(res_native_f64, ref_account_dir)
+    assert diff_native_f64['layer_checks']['layer2_targets_exact'] is True
+    assert diff_native_f64['layer2_targets']['max_abs_weight_diff'] <= 1e-12
+    # Native FL execution matches external-signal FL execution identically under float64 too.
+    assert float((res_native_f64.daily['nav'] - res_ref_f64.daily['nav']).abs().max()) <= 1e-9

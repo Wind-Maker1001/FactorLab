@@ -19,7 +19,7 @@
 | `Qlib_v182与v179_策略源码配置与回测复现.zip` | `10,842,371` | `21abc3eebaf816264b325525ce0997910e63d6abd72b47b96c21b5fffe91a79a` |
 | `F02_v69_策略入口_依赖_配置_结果.zip` | `115,479` | `d3e7346c8100e4c5ea6d9a98f3a60a151405288198bb5c84a1f4e32bb9dfe97e` |
 
-- 仓库冻结夹具位于 `tests/fixtures/v179_v182_original/`，包含全部 59 个原始策略源码、配置、`LICENSE-QLIB`、`fixtures/target/*.parquet`（3,997 个交易日，2011-01-03 至 2026-11-23）以及 `target/{normal,no_sndk}` 参考账本，完整清单及逐文件 SHA-256 记录于 `tests/fixtures/v179_v182_original/source-manifest.json`，由单元测试自动核验。
+- 仓库冻结夹具位于 `tests/fixtures/v179_v182_original/`，包含全部 63 个原始策略源码、配置、`LICENSE-QLIB`、`fixtures/target/*.parquet`（3,997 个交易日，2011-01-03 至 2026-11-23）以及 `target/{normal,no_sndk}` 参考账本（含 `attribution.csv` 以支持 P10-04 完整 7 层验收），完整清单及逐文件 SHA-256 记录于 `tests/fixtures/v179_v182_original/source-manifest.json`，由单元测试自动核验。
 - 原始参考结果（`verification.json`，30 万美元初始资金，主窗口 2023-01-03 至 2026-11-23）：
   - `v179/target/normal`：977 日、873 笔成交、净收益 `186.9815%`、最大回撤 `-15.2525%`、标普总回报基准 `98.7816%`。
   - `v182/target/normal`：977 日、874 笔成交、净收益 `177.1905%`、最大回撤 `-15.1230%`、标普总回报基准 `98.7816%`。
@@ -173,3 +173,21 @@ Band (V48/V50: MA28, 21日波动带 0.5*vol, QQQ>MA63 约束, 市场宽度>=2/3 
   - 保持原始 5 交易日前瞻标签、508 交易日回看窗口、Ridge `alpha=80` 及 `strict_model_month=True` 因果语义，在每个拟合月记录 `label_maturity_date` 并于 `validate_ridge_artifact` 强制校验 `train_start <= train_cutoff < label_maturity_date <= effective_from_signal_date`。
   - 明确区分五个时间点：训练样本截止日 `train_cutoff`（`calendar[i-5]`）、标签成熟时间 `label_maturity_date`（当月首交易日 `d_0 = calendar[i]` 收盘）、模型生成时间 `generated_at`（`d_0` 收盘且全部行情与 `^SP500TR` 可用后）、模型生效信号日 `effective_from_signal_date`（`d_0`）与实际执行日 `execution_session`（严格晚于 `d_0` 的首个当月信号自然周开盘）。
   - 更新 `examples/v179_v182_alpaca/README.md` 与 `tools/research/train_v179_v182_ridge.py`，覆盖月初周一（`2025-12-01`）、月初周五（`2025-08-01`）与跨年节假日顺延（`2024-01-02` 周二）场景，并新增参数化截断历史回归 `test_monthly_training_timing_truncated_history_matches_full_after_first_session` 验证仅用上月末数据不生成当月模型、加入当月首日后与完整历史模型误差 `< 1e-12`。
+
+---
+
+## 11. 同步 `origin/main` (`9f02ebf`) 与 P10-11 / P10-04 联合验收记录
+
+- **合并整合（含 `#264` P10-11、`#267` P10-01、`#269` P10-04）**：
+  - 逐文件解决 `package.py`、`loader.py`、`strategy_data.py`、`strategy_instances.py` 全部 4 处冲突（未使用 `ours`/`theirs` 覆盖），完整保留：
+    1. **P10-11 全部能力**：外部策略协议（`references` / `runtime_profile` / `LinearModel` / `DataHubReferences`）、无 TOCTOU 的 `read_package()` 源码校验加载、`StrategyPackageError` / `StrategyAssetIneligible` 隔离以及 `StrategyData.qualify()`。
+    2. **P10-03 全部能力与已通过 Codex 复审的五条 P1/P2 修复**：V179/V182 原生金融逻辑与月度 Ridge 工件、`^SP500TR` 后获取时间语义与 PIT 回放、跨月空预测行跳过、带仓兼容 `artifact_refresh` 模型更新与回滚、加载前零执行纯 AST 工件校验（统一复用 P10-11 `read_package()` 实现 `load_package_sources()`）以及当月首交易日收盘后月度训练时机合同。
+- **对接 P10-04 独立验证框架（明确区分 `SIGNAL_EQUIVALENCE` 与 `EXECUTION_EQUIVALENCE`）**：
+  - 在 `src/factorlab/strategies/v179_v182_native.py` 暴露 `NativeBlendSignalAdapter` 与 `build_signal_provider`（`signal_source = "NATIVE_FL"`），并在 P10-04 的 `replay.py` 预留挂载钩子接入原生 V179/V182，同时在 `evaluation.py` 中显式分离 `SIGNAL_EQUIVALENCE` 与 `EXECUTION_EQUIVALENCE` 状态维度。
+  - **独立差分实测结果**：
+    - **`SIGNAL_EQUIVALENCE`（原生信号 vs 冻结参考信号，独立于撮合精度）**：`v179/v182` 原生 `NATIVE_FL` 相对 `ExternalPackageSignalAdapter` 与参考 `targets.csv` 在全部 **23 / 23** 归档账户上目标权重最大绝对差 **`9.714e-17`**（`layer2_targets_exact = True`），且在 `qlib_float32` 与 `float64` 两种撮合精度下均精确通过。
+    - **`EXECUTION_EQUIVALENCE`（P10-04 独立回测引擎 7 层 fail-closed 16 项核验）**：在 `qlib_float32` 参考兼容模式下全部 **23 / 23** 归档账户精确通过（`exact_reference_match = True`，`failed_checks = []`，日净值最大差 **`2.794e-09` USD**）；在 `float64` 高精度模式下，原生 `NATIVE_FL` 与冻结参考信号在同一 FL 独立引擎下日净值最大差 **`<= 1e-9` USD**。
+  - **治理与金融结论保留**：严格保留 P10-04 的 **`INCONCLUSIVE`（`overall_promoted = False`、`retained_incumbent = "v69"`、`FORMAL_ADMISSION_BLOCKED`）** 金融结论，绝不因原生移植及信号/执行等价通过而自动将 V179/V182 晋升为 Champion，不操作生产 VM。
+- **合并后联合回归结果**：
+  - Python 3.13.9 全量套件（`test_external_strategy`、`test_s04_package_failures`、`test_alpaca_v179_v182_runtime`、`test_alpaca_instance_switch`、`test_strategy_management_v2`、`test_strategy_management_recovery`、`test_v179_v182_equivalence`、`test_p10_04_external_validation`、`test_v69_equivalence`）：**116 passed, 0 failed**。
+  - Python 3.14 分发构建、清单巡检与 23 项归档攻击拒绝扫描全部通过。

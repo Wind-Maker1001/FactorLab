@@ -1,0 +1,452 @@
+﻿{
+  "checked_at_utc": "2026-11-26T15:32:22.340238+00:00",
+  "systemd_enabled": {
+    "factorlab-demo-execute.service": "enabled",
+    "factorlab-demo-tradfi-observer.service": "enabled",
+    "factorlab-alpaca-paper.service": "enabled",
+    "factorlab-demo-health.timer": "enabled",
+    "factorlab-demo-daily-report.timer": "enabled",
+    "factorlab-demo-backup.timer": "enabled",
+    "factorlab-demo-strategy-deploy.timer": "enabled",
+    "factorlab-demo-tradfi-health.timer": "enabled",
+    "factorlab-alpaca-paper-health.timer": "enabled"
+  },
+  "binance_backup_service": {
+    "rc": 0,
+    "elapsed_seconds": 76.36,
+    "backup_status": {
+      "backup_bytes": 27542573,
+      "backup_name": "backup-20261126T153229Z",
+      "backup_path": "/var/backups/factorlab-demo/backup-20261126T153229Z",
+      "completed_at": "2026-11-26T15:33:34.305021+00:00",
+      "database_count": 14,
+      "drill_restore": {
+        "backup_path": "/var/backups/factorlab-demo/backup-20261126T153229Z",
+        "checks": {
+          "binding_match": true,
+          "budget_match": true,
+          "control_match": true,
+          "controller_match": true,
+          "databases_match": true,
+          "funding_match": true,
+          "integrity_all_ok": true,
+          "orders_match": true,
+          "secret_files_excluded": true,
+          "task_mailbox_match": true
+        },
+        "drilled_at": "2026-11-26T15:33:04.891683+00:00",
+        "isolated_restore_path": "/var/backups/factorlab-demo/.restore-drill-z03pc9uy/restored-state",
+        "kept_restored": false,
+        "passed": true,
+        "quarantine": {
+          "backup_manifest_present_in_restored": true,
+          "c05_handoff_blocks_backup": true,
+          "c05_handoff_blocks_restored": true,
+          "execute_lock_blocked": true,
+          "execute_lock_error": "restored Demo state is restricted to cloud GET-only recovery",
+          "get_only_lock_allowed": true,
+          "quarantine_file_present": true,
+          "quarantine_reason": "restored-state-requires-GET-only-recovery"
+        },
+        "snapshot": {
+          "binding": {
+            "account_id_sha256_prefix": "a85bde3c47c7",
+            "environment": "DEMO",
+            "host": "https://demo-fapi.binance.com",
+            "journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+            "journal_id_matches_account": true,
+            "present": true
+          },
+          "control": {
+            "durable_control_state": "RUNNING",
+            "grid_control_desired": "RUNNING",
+            "grid_mode": "execute",
+            "grid_supervisor_present": true
+          },
+          "controller": {
+            "events_count": 32765,
+            "present": true,
+            "snapshot_count": 1
+          },
+          "database_bytes": 27475968,
+          "database_count": 14,
+          "databases": [
+            "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+            "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3",
+            "external/task-mailbox/tasks.sqlite3",
+            "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+            "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3",
+            "grid-preview/grid-supervisor.sqlite3",
+            "grid-preview/runtime.sqlite3",
+            "grid-supervisor.sqlite3",
+            "runtime.sqlite3",
+            "strategy-deployment.sqlite3",
+            "strategy-dry-run.sqlite3",
+            "strategy-execute.sqlite3",
+            "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+            "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3"
+          ],
+          "protocol": {
+            "events_count": 210,
+            "funding_continuity_ok": true,
+            "funding_coverage": {
+              "complete": true,
+              "covered_from_ms": 1794650735948,
+              "covered_through_ms": 1795707160071,
+              "updated_at": "2026-11-26T15:32:40.352326+00:00"
+            },
+            "funding_earliest_ms": 1795338000000,
+            "funding_events_count": 32,
+            "funding_latest_ms": 1795705200000,
+            "funding_time_monotonic": true,
+            "funding_tran_ids_unique": true,
+            "meta_account_matches_binding": true,
+            "order_recovery_count": 121,
+            "orders_by_status": {
+              "CANCELED": 56,
+              "FILLED": 64,
+              "REJECTED": 2,
+              "SUBMITTED": 1
+            },
+            "orders_count": 123,
+            "present": true,
+            "receipts_count": 210,
+            "rejections_count": 2,
+            "unknown_orders_count": 0
+          },
+          "runtime": {
+            "active_window_id": "window-bce684fc966547049c3600e5a2778a98",
+            "authorization_journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+            "authorization_state": "RUNNING",
+            "campaigns_count": 46,
+            "consumed_posts": 110,
+            "consumed_submitted_notional": "694.4328000",
+            "continuous_authorization_present": true,
+            "diagnostic_present": false,
+            "dispatches_count": 181,
+            "durable_control_state": null,
+            "max_loss": "250",
+            "opening_equity": "5000.00000000",
+            "present": true,
+            "remaining_notional": "499305.5672000",
+            "remaining_posts": 99890,
+            "total_notional": "500000",
+            "total_orders": 100000
+          },
+          "task_mailbox": {
+            "content_sha256": "be821ef37b46830296c622f863c88fa7f27336f61262873c7929ab7c15f45316",
+            "present": true,
+            "rows": {
+              "portfolio_receipts": 6,
+              "portfolio_tasks": 2
+            }
+          },
+          "total_bytes": 27542640
+        }
+      },
+      "error_category": null,
+      "maintenance_window": {
+        "auxiliary_units": [
+          "factorlab-demo-strategy-deploy.timer",
+          "factorlab-demo-tradfi-observer.service"
+        ],
+        "downtime_seconds": 5.756,
+        "interrupted_unit": "factorlab-demo-execute.service",
+        "post_health": {
+          "account_recovered": true,
+          "alive": true,
+          "consumed_posts": 125,
+          "consumed_submitted_notional": "781.5300000",
+          "deployment_id": "fl-d7345f8795464a65-g-0003b",
+          "desired": "RUNNING",
+          "execute_healthy": true,
+          "get_only_healthy": false,
+          "grid_state": "RUNNING",
+          "market_fresh": true,
+          "mode": "EXECUTE",
+          "open_orders_count": 1,
+          "pid": 767167,
+          "positions_count": 0,
+          "ready": true,
+          "remaining_notional": "499218.4700000",
+          "remaining_posts": 99875,
+          "status": "RUNNING",
+          "systemd_active_state": "active",
+          "systemd_main_pid": 767167,
+          "systemd_n_restarts": 0,
+          "systemd_sub_state": "running",
+          "unknown_count": 0
+        },
+        "pre_health": {
+          "account_recovered": true,
+          "alive": true,
+          "consumed_posts": 125,
+          "consumed_submitted_notional": "781.5300000",
+          "deployment_id": "fl-d7345f8795464a65-g-0003b",
+          "desired": "RUNNING",
+          "execute_healthy": true,
+          "get_only_healthy": false,
+          "grid_state": "RUNNING",
+          "market_fresh": true,
+          "mode": "EXECUTE",
+          "open_orders_count": 1,
+          "pid": 763010,
+          "positions_count": 0,
+          "ready": true,
+          "remaining_notional": "499218.4700000",
+          "remaining_posts": 99875,
+          "status": "RUNNING",
+          "systemd_active_state": "active",
+          "systemd_main_pid": 763010,
+          "systemd_n_restarts": 0,
+          "systemd_sub_state": "running",
+          "unknown_count": 0
+        },
+        "reconcile_reason": null,
+        "reconcile_verified": true,
+        "restart_succeeded": true,
+        "restarted_at": "2026-11-26T15:32:47.836698+00:00",
+        "service_control_enabled": true,
+        "stopped_at": "2026-11-26T15:32:42.079469+00:00"
+      },
+      "offsite_enabled": false,
+      "retention": {
+        "evaluated_at": "2026-11-26T15:33:05.694808+00:00",
+        "kept_invalid": [],
+        "kept_invalid_count": 0,
+        "kept_valid": [
+          {
+            "bytes": 27477037,
+            "created_at": "2026-11-26T15:32:29+00:00",
+            "name": "backup-20261126T153229Z",
+            "protected_min_copy": true
+          },
+          {
+            "bytes": 25125933,
+            "created_at": "2026-11-26T10:40:00+00:00",
+            "name": "backup-20261126T104000Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 25125933,
+            "created_at": "2026-11-26T03:15:01+00:00",
+            "name": "backup-20261126T031501Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 24626221,
+            "created_at": "2026-11-25T11:20:48+00:00",
+            "name": "backup-20261125T112048Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 24327213,
+            "created_at": "2026-11-25T10:12:19+00:00",
+            "name": "backup-20261125T101219Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 23684141,
+            "created_at": "2026-11-25T03:15:02+00:00",
+            "name": "backup-20261125T031502Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 23094317,
+            "created_at": "2026-11-24T18:58:59+00:00",
+            "name": "backup-20261124T185859Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 23086125,
+            "created_at": "2026-11-24T18:54:43+00:00",
+            "name": "backup-20261124T185443Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 22909997,
+            "created_at": "2026-11-24T18:50:37+00:00",
+            "name": "backup-20261124T185037Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 20812807,
+            "created_at": "2026-11-24T03:15:03+00:00",
+            "name": "backup-20261124T031503Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 17236969,
+            "created_at": "2026-11-23T03:15:02+00:00",
+            "name": "backup-20261123T031502Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 16843753,
+            "created_at": "2026-11-22T17:43:07+00:00",
+            "name": "backup-20261122T174307Z",
+            "protected_min_copy": false
+          },
+          {
+            "bytes": 16770025,
+            "created_at": "2026-11-22T16:55:47+00:00",
+            "name": "backup-20261122T165547Z",
+            "protected_min_copy": false
+          }
+        ],
+        "kept_valid_count": 13,
+        "min_valid_copies": 1,
+        "pruned": [],
+        "pruned_count": 0,
+        "retention_days": 14,
+        "skipped_reason": null,
+        "total_kept_bytes": 291120471
+      },
+      "started_at": "2026-11-26T15:32:29.070438+00:00",
+      "status": "SUCCEEDED",
+      "verification": {
+        "backup_manifest_present": true,
+        "binding": {
+          "account_id_sha256_prefix": "a85bde3c47c7",
+          "environment": "DEMO",
+          "host": "https://demo-fapi.binance.com",
+          "journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+          "journal_id_matches_account": true,
+          "present": true
+        },
+        "control": {
+          "durable_control_state": "RUNNING",
+          "grid_control_desired": "RUNNING",
+          "grid_mode": "execute",
+          "grid_supervisor_present": true
+        },
+        "controller": {
+          "events_count": 32765,
+          "present": true,
+          "snapshot_count": 1
+        },
+        "database_bytes": 27475968,
+        "database_count": 14,
+        "databases": [
+          "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+          "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3",
+          "external/task-mailbox/tasks.sqlite3",
+          "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+          "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3",
+          "grid-preview/grid-supervisor.sqlite3",
+          "grid-preview/runtime.sqlite3",
+          "grid-supervisor.sqlite3",
+          "runtime.sqlite3",
+          "strategy-deployment.sqlite3",
+          "strategy-dry-run.sqlite3",
+          "strategy-execute.sqlite3",
+          "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3",
+          "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3"
+        ],
+        "integrity_all_ok": true,
+        "path": "/var/backups/factorlab-demo/backup-20261126T153229Z",
+        "protocol": {
+          "events_count": 210,
+          "funding_continuity_ok": true,
+          "funding_coverage": {
+            "complete": true,
+            "covered_from_ms": 1794650735948,
+            "covered_through_ms": 1795707160071,
+            "updated_at": "2026-11-26T15:32:40.352326+00:00"
+          },
+          "funding_earliest_ms": 1795338000000,
+          "funding_events_count": 32,
+          "funding_latest_ms": 1795705200000,
+          "funding_time_monotonic": true,
+          "funding_tran_ids_unique": true,
+          "meta_account_matches_binding": true,
+          "order_recovery_count": 121,
+          "orders_by_status": {
+            "CANCELED": 56,
+            "FILLED": 64,
+            "REJECTED": 2,
+            "SUBMITTED": 1
+          },
+          "orders_count": 123,
+          "present": true,
+          "receipts_count": 210,
+          "rejections_count": 2,
+          "unknown_orders_count": 0
+        },
+        "quarantine_present": false,
+        "quarantine_reason": null,
+        "runtime": {
+          "active_window_id": "window-bce684fc966547049c3600e5a2778a98",
+          "authorization_journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+          "authorization_state": "RUNNING",
+          "campaigns_count": 46,
+          "consumed_posts": 110,
+          "consumed_submitted_notional": "694.4328000",
+          "continuous_authorization_present": true,
+          "diagnostic_present": false,
+          "dispatches_count": 181,
+          "durable_control_state": null,
+          "max_loss": "250",
+          "opening_equity": "5000.00000000",
+          "present": true,
+          "remaining_notional": "499305.5672000",
+          "remaining_posts": 99890,
+          "total_notional": "500000",
+          "total_orders": 100000
+        },
+        "secret_files_excluded": true,
+        "sidecar_bytes": 65536,
+        "task_mailbox": {
+          "content_sha256": "be821ef37b46830296c622f863c88fa7f27336f61262873c7929ab7c15f45316",
+          "present": true,
+          "rows": {
+            "portfolio_receipts": 6,
+            "portfolio_tasks": 2
+          }
+        },
+        "total_bytes": 27542573,
+        "valid": true
+      },
+      "verified": true,
+      "version": 1
+    }
+  },
+  "binance_daily_report": {
+    "rc": 0,
+    "latest_md_exists": true,
+    "latest_md_mtime": "2026-11-26T15:33:40.934381+00:00",
+    "latest_md_bytes": 2893
+  },
+  "alpaca_before": {
+    "rc": 0,
+    "pid": 726025,
+    "starts": 21,
+    "healthy": true,
+    "trade_stream": "CONNECTED",
+    "market": "CONNECTED"
+  },
+  "alpaca_after_network_fault": {
+    "rc": 1,
+    "pid": 726025,
+    "starts": 21,
+    "healthy": false,
+    "trade_stream": "CONNECTED",
+    "market": "CONNECTED",
+    "last_recovery_at": "2026-11-26T15:33:18.074811+00:00"
+  },
+  "alpaca_after_restart": {
+    "rc": 0,
+    "pid": 767635,
+    "starts": 22,
+    "healthy": true,
+    "trade_stream": "CONNECTED",
+    "market": "CONNECTED",
+    "revision": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+    "strategy": {
+      "frequency": "natural-week",
+      "name": "v69-original",
+      "reason": null,
+      "state": "WAITING_NEXT_WEEK"
+    }
+  }
+}

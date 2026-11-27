@@ -1,0 +1,47 @@
+{
+  "checked_at_utc": "2026-11-26T15:24:19.579159+00:00",
+  "deployment_sha": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+  "expected_src_files": 515,
+  "runtime_imports": {
+    "binance_adapter": "/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/source/src/factorlab/integrations/binance_futures_trading/adapter.py",
+    "binance_protocol": "/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/source/src/factorlab/integrations/binance_futures_trading/protocol.py",
+    "binance_instance_host": "/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/source/src/factorlab/integrations/binance_futures_trading/demo_instance_host.py",
+    "alpaca_cloud_runtime": "/opt/factorlab-alpaca/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/lib/python3.13/site-packages/factorlab/integrations/alpaca/cloud_runtime.py",
+    "alpaca_native_v69": "/opt/factorlab-alpaca/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/lib/python3.13/site-packages/factorlab/integrations/alpaca/native_v69.py",
+    "shared_capital_policy": "/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/source/src/factorlab/trading/capital.py"
+  },
+  "live_processes": {
+    "factorlab-demo-execute.service": {
+      "pid": 763010,
+      "cmdline": "/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_grid_supervisor start --execute"
+    },
+    "factorlab-demo-tradfi-observer.service": {
+      "pid": 763012,
+      "cmdline": "/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.tradfi_cloud --state-root /var/lib/factorlab-tradfi-observer --execute-health /var/lib/factorlab-demo/execute-state/cloud-health.json --symbols QQQUSDT SPYUSDT --poll-seconds 30 --task-db /var/lib/factorlab-tradfi-observer/task-mailbox/tasks.sqlite3"
+    },
+    "factorlab-alpaca-paper.service": {
+      "pid": 726025,
+      "cmdline": "/opt/factorlab-alpaca/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.alpaca.cloud_runtime run --revision 12335ebd56fda7a2d0e709176806d96e3e7b7b67"
+    }
+  },
+  "trees": {
+    "binance_source": {
+      "files_compared": 515,
+      "mismatches": [],
+      "extra": [],
+      "matches_commit": true
+    },
+    "alpaca_source": {
+      "files_compared": 515,
+      "mismatches": [],
+      "extra": [],
+      "matches_commit": true
+    },
+    "alpaca_installed_package": {
+      "files_compared": 509,
+      "mismatches": [],
+      "extra": [],
+      "matches_commit": true
+    }
+  }
+}

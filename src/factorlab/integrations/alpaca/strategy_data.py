@@ -2,6 +2,9 @@
 from decimal import Decimal as D
 import pandas as pd
 
+from factorlab.strategies.events import ReferenceUnavailable, StrategyInputUnavailable
+from factorlab.strategies.reference_data import reference_context
+
 from .cloud_execution import PreparationIncomplete
 from .portfolio import portfolio_quote
 from .scheduling import aggregate_minutes
@@ -21,9 +24,27 @@ def _observation(row):
                 source=row['source'], payload=payload)
 
 
+def _bar_window(calendar, cutoff, interval, limit):
+    eligible = calendar.schedule.loc[calendar.schedule.open < cutoff]
+    if interval is None:
+        return eligible.loc[eligible.close <= cutoff, 'close'].iloc[-limit:]
+    size = pd.Timedelta(seconds=interval)
+    timestamps = []
+    for session in reversed(list(eligible.itertuples())):
+        count = (min(session.close, cutoff) - session.open) // size
+        take = min(count, limit - len(timestamps))
+        timestamps.extend((session.Index, session.open + size * offset)
+                          for offset in range(count, count - take, -1))
+        if len(timestamps) == limit:
+            break
+    timestamps.reverse()
+    return pd.Series([at for _, at in timestamps], index=[day for day, _ in timestamps])
+
+
 class StrategyData:
-    def __init__(self, assets, *, clock, benchmark_provider=None):
+    def __init__(self, assets, *, clock, reference_provider=None, benchmark_provider=None):
         self.assets, self.clock = assets, clock
+        self.reference_provider = reference_provider
         self.benchmark_provider = benchmark_provider
 
     def _calendar_rows(self, calendar):
@@ -78,65 +99,115 @@ class StrategyData:
             factors[instrument.symbol] = factor
         return frames, factors
 
+    def qualify(self, service, spec):
+        feed = spec.data.get('feed')
+        if feed is not None and feed != service.client.feed:
+            raise StrategyInputUnavailable('strategy requires its declared Alpaca feed: ' + feed)
+        for symbol, streams in spec.data.get('references', {}).items():
+            for kind, request in streams.items():
+                if request['source'].startswith('ALPACA:'):
+                    source = 'ALPACA:' + getattr(service, 'history_client', service.client).feed
+                    interval = request.get('interval_seconds')
+                    if (kind != 'closed_bar' or request['source'] != source
+                            or request['price_basis'] != 'raw'
+                            or interval != 86400 and (not 60 <= interval <= 3600 or interval % 60)):
+                        raise ReferenceUnavailable('unavailable Alpaca reference series: ' + symbol + '/' + kind)
+                elif self.reference_provider is None or not self.reference_provider.supports(symbol, kind, request):
+                    raise ReferenceUnavailable('unavailable reference source: ' + request['source'])
+
+    def _bars(self, service, instrument, expected, interval, limit):
+        if len(expected) != limit:
+            raise PreparationIncomplete('INSUFFICIENT_CALENDAR_HISTORY')
+        try:
+            frame = service.history(instrument, expected.index[0], expected.index[-1],
+                                    timeframe='1Min' if interval is not None else '1Day')
+            acquired = pd.Timestamp(self.clock())
+            if interval is not None:
+                frame = aggregate_minutes(frame, calendar=service.calendar, interval_seconds=interval, now=acquired)
+        except ValueError as error:
+            raise PreparationIncomplete('INVALID_HISTORY:' + instrument.symbol) from error
+        frame = frame.loc[frame.complete & frame.closed_at.isin(expected)
+                          & (frame.received_at <= acquired)].sort_values('closed_at')
+        if list(frame.closed_at) != list(expected):
+            raise PreparationIncomplete('INCOMPLETE_HISTORY:' + instrument.symbol)
+        return frame.to_dict('records')
+
+    def _references(self, service, spec, window):
+        references = {}
+        calendar = service.calendar
+        for symbol, streams in spec.data.get('references', {}).items():
+            history = {}
+            for kind, request in streams.items():
+                limit = request['history_limit']
+                if request['source'].startswith('ALPACA:'):
+                    interval = request['interval_seconds']
+                    minute_interval = None if interval == 86400 else interval
+                    expected = _bar_window(calendar, window.signal_cutoff, minute_interval, limit)
+                    instrument = self.assets.reference_instrument(symbol)
+                    rows = self._bars(service, instrument, expected, minute_interval, limit)
+                    observations = []
+                    for row in rows:
+                        observation = _observation(row)
+                        observation['payload'].update(price_basis=row['adjustment'], interval_seconds=interval)
+                        observations.append(observation)
+                else:
+                    if kind == 'closed_bar':
+                        interval = request['interval_seconds']
+                        expected = _bar_window(calendar, window.signal_cutoff,
+                                               None if interval == 86400 else interval, limit)
+                        days = expected.index
+                    else:
+                        days = calendar.schedule.index[calendar.schedule.index <= pd.Timestamp(window.session)][-limit:]
+                    if days.empty:
+                        raise PreparationIncomplete('INSUFFICIENT_REFERENCE_CALENDAR:' + symbol)
+                    observations = self.reference_provider.history(symbol, kind, request,
+                        start=days[0].date().isoformat(), end=days[-1].date().isoformat(),
+                        as_of=self.clock(), effective_through=window.signal_cutoff if kind == 'closed_bar' else None)
+                if len(observations) != limit:
+                    raise ReferenceUnavailable('incomplete reference history: ' + symbol + '/' + kind)
+                history[kind] = observations
+            references[symbol] = reference_context(history)
+        return references
+
     def event(self, service, spec, binding, allocation, window, *, owned_orders=()):
+        self.qualify(service, spec)
         instruments = self.assets.instruments(spec.symbols)
         calendar = service.calendar
         day = pd.Timestamp(window.session)
-        available_days = calendar.schedule.index[calendar.schedule.index <= day]
         limit = spec.data['history_limit']
-        if window.interval_seconds is None:
-            days = available_days[available_days < day][-limit:]
-        else:
-            counts = ((calendar.schedule.loc[available_days, 'close']
-                       - calendar.schedule.loc[available_days, 'open']).dt.total_seconds()
-                      // window.interval_seconds).astype(int)
-            days = []
-            count = 0
-            for previous in reversed(available_days):
-                days.append(previous)
-                count += int(counts.loc[previous])
-                if count >= limit + int(counts.loc[day]):
-                    break
-            days = pd.DatetimeIndex(sorted(days))
         needs_bars = 'closed_bar' in spec.data['data_types']
-        if needs_bars and days.empty:
-            raise PreparationIncomplete('INSUFFICIENT_CALENDAR_HISTORY')
         adjustment_basis = spec.data.get('adjustment_basis')
         partial_symbols = set(spec.data.get('allow_partial_symbol_history', ()))
         benchmark_series = spec.data.get('benchmark_series')
         frames = {}
         factors = None
+        daily_days = None
         if needs_bars:
+            expected = _bar_window(calendar, window.signal_cutoff, window.interval_seconds, limit)
             if adjustment_basis is not None and window.interval_seconds is None:
-                if len(days) != limit:
+                daily_days = expected.index
+                if len(daily_days) != limit:
                     raise PreparationIncomplete('INSUFFICIENT_CALENDAR_HISTORY')
                 frames, factors = self._adjusted_daily_frames(
-                    service, instruments, days, window=window,
+                    service, instruments, daily_days, window=window,
                     adjustment_basis=adjustment_basis, partial_symbols=partial_symbols,
                 )
             else:
-                for instrument in instruments:
-                    frame = service.history(instrument, days[0], day if window.interval_seconds else days[-1],
-                                            timeframe='1Min' if window.interval_seconds else '1Day')
-                    acquired = pd.Timestamp(self.clock())
-                    if window.interval_seconds is not None:
-                        frame = aggregate_minutes(frame, calendar=calendar,
-                            interval_seconds=window.interval_seconds, now=acquired)
-                    frame = frame.loc[frame.complete & (frame.closed_at <= window.signal_cutoff)
-                                      & (frame.received_at <= acquired)].sort_values('closed_at').iloc[-limit:]
-                    if len(frame) != limit or pd.Timestamp(frame.iloc[-1].closed_at) != pd.Timestamp(window.signal_cutoff):
-                        raise PreparationIncomplete('INCOMPLETE_HISTORY:' + instrument.symbol)
-                    frames[instrument.symbol] = frame
+                frames = {instrument.symbol: self._bars(service, instrument, expected, window.interval_seconds, limit)
+                          for instrument in instruments}
+        references = self._references(service, spec, window)
         benchmark_context = None
         if benchmark_series is not None:
             if self.benchmark_provider is None:
                 raise PreparationIncomplete('MISSING_BENCHMARK_PROVIDER:' + benchmark_series)
-            if len(days) != limit:
+            if daily_days is None:
+                daily_days = _bar_window(calendar, window.signal_cutoff, None, limit).index
+            if len(daily_days) != limit:
                 raise PreparationIncomplete('INSUFFICIENT_BENCHMARK_HISTORY:' + benchmark_series)
             bench = self.benchmark_provider.history(
                 benchmark_series,
                 calendar=calendar,
-                days=days,
+                days=daily_days,
                 signal_cutoff=window.signal_cutoff,
             )
             bench_observed_horizon = pd.Timestamp(self.clock())
@@ -154,7 +225,7 @@ class StrategyData:
                 if obs_utc > bench_observed_horizon_utc:
                     raise PreparationIncomplete('NONCAUSAL_BENCHMARK_OBSERVATION:' + benchmark_series)
             if (
-                len(bench.records) != len(days)
+                len(bench.records) != len(daily_days)
                 or pd.Timestamp(bench.records[-1]['effective_at']).tz_convert('UTC') != cutoff_utc
             ):
                 raise PreparationIncomplete('INCOMPLETE_BENCHMARK:' + benchmark_series)
@@ -180,7 +251,9 @@ class StrategyData:
         for instrument in instruments:
             observations, histories = {}, {}
             if needs_bars:
-                history = [_observation(row) for row in frames[instrument.symbol].to_dict('records')]
+                rows = frames[instrument.symbol]
+                records = rows.to_dict('records') if isinstance(rows, pd.DataFrame) else rows
+                history = [_observation(row) for row in records]
                 if history:
                     observations['closed_bar'] = history[-1]
                 histories['closed_bar'] = history
@@ -224,10 +297,13 @@ class StrategyData:
             )
         if benchmark_context is not None:
             context['benchmark'] = benchmark_context
-        return dict(protocol='FACTORLAB_DECISION_V2', binding=binding, event_id=window.event_id,
-                    event_time=event_time, data_type=spec.data['data_types'][0], symbols=symbols,
-                    account={'market': binding['market'], 'account_id': binding['account_id']},
-                    allocation=allocation, context=context)
+        event = dict(protocol='FACTORLAB_DECISION_V2', binding=binding, event_id=window.event_id,
+                     event_time=event_time, data_type=spec.data['data_types'][0], symbols=symbols,
+                     account={'market': binding['market'], 'account_id': binding['account_id']},
+                     allocation=allocation, context=context)
+        if references:
+            event['references'] = references
+        return event
 
     def quotes(self, service, symbols, *, session, decision_at):
         if not symbols:

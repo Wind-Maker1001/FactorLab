@@ -19,6 +19,7 @@ from .package import (
 )
 from .protocol import V2, validate_binding, json_value
 from .identity import content_identity
+from .events import StrategyInputUnavailable
 
 
 class SupersededSwitch(Exception):
@@ -78,6 +79,7 @@ class DeploymentStore:
           CREATE TABLE IF NOT EXISTS instance_decisions(instance_id TEXT NOT NULL, version TEXT NOT NULL,
             watermark TEXT NOT NULL, input_identity TEXT NOT NULL, result TEXT NOT NULL,
             PRIMARY KEY(instance_id,version,watermark));
+          CREATE INDEX IF NOT EXISTS instance_decision_sequence ON instance_decisions(instance_id);
           CREATE TABLE IF NOT EXISTS instance_dispatches(instance_id TEXT NOT NULL, version TEXT NOT NULL,
             watermark TEXT NOT NULL, PRIMARY KEY(instance_id,version,watermark));
           CREATE TABLE IF NOT EXISTS activation_callbacks(instance_id TEXT PRIMARY KEY,
@@ -434,8 +436,16 @@ class DeploymentStore:
             self.db.execute('INSERT OR IGNORE INTO instance_dispatches VALUES(?,?,?)',
                             (self.instance_id, receipt['package_id'], receipt['event_id']))
 
+    def require_new_model_event(self, event):
+        latest = self.db.execute('SELECT result FROM instance_decisions WHERE instance_id=? '
+            'ORDER BY rowid DESC LIMIT 1', (self.instance_id,)).fetchone()
+        if latest is not None:
+            previous = decode(json.loads(latest[0]))['event']
+            if event['event_time'] <= previous['event_time'] or event['event_id'] == previous['event_id']:
+                raise StrategyInputUnavailable('model decision must advance the instance event time')
+
     def commit_decision(self, package_id, event_id, input_identity, decision, *, event, expected_checkpoint,
-                        expected_watermark=_UNSET):
+                        expected_watermark=_UNSET, model=None):
         if self.legacy:
             raise ValueError('V2 decision journal requires a registered instance')
         with self.atomic():
@@ -454,6 +464,9 @@ class DeploymentStore:
                 raise ValueError('concurrent strategy state update')
             receipt = dict(binding=self.binding(), package_id=package_id, event_id=event_id,
                            input_identity=input_identity, event=event, decision=decision)
+            if model is not None:
+                self.require_new_model_event(event)
+                receipt['model'] = model
             self._insert('decisions', dict(version=package_id, watermark=event_id, input_identity=input_identity, result=dumps(receipt)))
             self._update('deployment', dict(checkpoint=encoded(decision['state']).decode(), watermark=event_id))
             return receipt
