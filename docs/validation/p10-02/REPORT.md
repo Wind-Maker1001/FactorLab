@@ -1,7 +1,7 @@
 # P10-02：FactorLab 执行端轻量化及 ARM64 跨架构适配验证报告
 
-> **状态**：已修复 PR #268 的 one-shot 隔离、并发、管道清理、纳秒精度和最小环境邮箱执行问题，并完成最小环境业务验收。Windows x64、原生 Linux x64 和原生 Linux ARM64 均通过，Linux 两份业务产物逐字节一致。
-> **开发分支**：`perf/p10-02-lightweight-arm64`（原独立 worktree，PR #268，修复基于 `108dc07`，包含 #264 / P10-11 和 #267 / P10-01）
+> **状态**：已同步 `origin/main` `afbc80f` 并完成最终联合回归。网格时间戳复制、pickle、哈希和预算观察回滚通过。最小 Execute 邮箱、自适应网格、V179/V182 工件、动态资本、组合风控、灾备及 CPU/CUDA/Colab 研究路径已完成本地验收。
+> **开发分支**：`perf/p10-02-lightweight-arm64`（原独立 worktree，PR #268，合并提交 `562cebf`）
 > **证据归档目录**：`docs/validation/p10-02/evidence/`
 
 ---
@@ -113,6 +113,22 @@
 
 [原生跨架构验收 run 46011391931](https://github.com/Wind-Maker1001/FactorLab/actions/runs/46011391931) 在代码提交 `68d87558f1ec5e55351bcd36577c50486ebac256` 上执行。两个原生 runner 各自建新 venv 并通过相同验收。下载的 `mailbox-ubuntu-24.04` 和 `mailbox-ubuntu-24.04-arm` 产物逐字节相同，包含六笔订单的原 ID、数量、价格、终态、六项任务回执及两类自适应网格恢复结果。
 
+### 3.4 同步 `afbc80f` 后的最终联合验证
+
+`_NaiveTimestamp` 通过显式重建参数支持 `copy`、`deepcopy` 和各 pickle 协议，保留纳秒余数与 `fold`。零纳秒余数时沿用等值 `datetime` 的哈希，有纳秒余数时按整数 epoch 纳秒计算，和旧 pandas 值一致。`test_grid_regime_budget.py` 共 27 例通过。此前失败的 8 例现已实际走到拒绝点，验证持仓状态与策略预算不被污染，并能重新消费原投递序号。
+
+合并冲突集中在动态邮箱接收。新任务沿用 main 的当前资本准入和冻结任务权益，已入账任务沿用原输入身份、执行计划与回执。两处有效期比较仍走标准库 UTC 解析。Windows x64 在两套独立 venv 重跑 Observer、共享 SQLite 与正式 Demo HTTP 适配器，得到和前次相同的 6 笔订单与终态回执。最小 Execute 全程未尝试导入 pandas 或 NumPy。
+
+| 回归范围 | 本地结果 |
+| --- | --- |
+| Alpaca V179/V182 工件装载、模型刷新与回滚，Alpaca 和 Binance 动态资本、组合风险及灾备 | 68 例通过，覆盖真实离线 HTTP 适配器、丢失回执、部分成交、账本恢复和备份。 |
+| P10-02 Worker 与 P10-11 策略，动态实例接收和资本待处理保护 | 50 例通过。Worker 测试只在强制超时断言时使用 450 ms，异常和恢复断言沿用测试已有的正常期限。 |
+| CPU 批量网格、Colab 控制器、失败产物保全、研究回放和资源计量 | 65 例通过。 |
+| 真机 CUDA 网格与 Paper 对照 | RTX 2070 上 19 例通过，含边界、成交、风控、批处理和 Monte Carlo 集成。CuPy 与 Toolkit 放在独立研究目录，进程内指定 `CUDA_PATH`。 |
+| 研究评估与 Monte Carlo | 73 例通过。 |
+
+以 `afbc80f` 为基线的本地差分审查核对了自动合并的工件校验、资本和风控入口，以及执行与研究的依赖分层。审查发现 `monte-carlo-*` 安装入口需要显式声明之前由基础包提供的研究依赖。把 NumPy、pandas 和 SciPy 放回对应的可选研究 extras，并把仅消融分析使用的校验导入推迟到该入口。在只安装 `monte-carlo-native` 和 `monte-carlo-benchmark` 的新 venv 中，成功从 wheel 编译执行 CPU 网格并加载 Colab benchmark。Colab 本次证据来自离线控制器和本地研究负载。
+
 ## 四、已实施的轻量化优化与 PR #268 Codex Review 修复说明
 
 所有优化均严格保持现有 OS 进程隔离、审计沙箱、单账户所有权、SQLite 账本持久性与金融精度，未引入独立常驻调度平台或重量级框架：
@@ -214,7 +230,7 @@
 | 策略工作负载组合（1 分钟最短周期） | 推荐长期稳定运行规模（双市场同机合计） | 并发配置建议 | 预估峰值总 PSS | 预估 1m CPU 基线占比 |
 | --- | --- | --- | --- | --- |
 | 纯 Python / Decimal / P10-11 `lightweight` 策略 | **6 – 12 个实例**（充裕）；最多可支撑 **16 – 18 个实例** | 默认每宿主 `POOL_MAX=1`（全机天然 ≤ 2）；或共享锁目录 `POOL_MAX=2, VM_MAX=2` | ~225 – 245 MiB | ~4.5% – 13%（< 24s/min 基线） |
-| 混合负载（轻量 + `numpy/pandas` 数值策略，如 `DualMAAdapter` / `V69` / `AdaptiveGridV2`） | **2 – 4 个数值实例**（含日频/周频 V69）+ **6 – 8 个轻量实例**（合计 8 – 12 实例） | 同上（**严禁全机并发 Worker > 2**，防止 3+ 个数值 Worker 同时启动触发 Swap） | ~285 – 360 MiB | ~11% – 22% |
+| 混合负载（轻量 + `numpy/pandas` 数值策略，如 `DualMAAdapter` / `V69`） | **2 – 4 个数值实例**（含日频/周频 V69）+ **6 – 8 个轻量实例**（合计 8 – 12 实例） | 同上（**严禁全机并发 Worker > 2**，防止 3+ 个数值 Worker 同时启动触发 Swap） | ~285 – 360 MiB | ~11% – 22% |
 | 超过 20 个高频 1 分钟实例（尤其含多数值策略） | **不推荐在 1 GiB / 2 vCPU B2 突发实例长期满载** | — | 内存可控但 CPU 逼近或超过 20%/vCPU 基线 | 长期可能耗尽 Azure CPU 积分导致降频 |
 
 ---
@@ -225,7 +241,7 @@
    - 本次完成了 ARM64 修复后 3/6/12/24 实例配对基准、双市场 12 策略轻/数值混合负载实测、四向金融结果一致性验证以及初版 183 秒连续观测；**尚未在真实联网行情下开展 24 小时 / 7 天长期实测**（含真实交易所断线重连、WebSocket 长连接抖动、跨日历/夏令时真实切换、Azure Monitor 代理多日内存波动及每日定时备份叠加）。
    - **Azure CPU 积分**：本次通过精确测量进程与子进程 CPU 时间（`RUSAGE_SELF + RUSAGE_CHILDREN`）并与 B2pts/B2ats v2 标称 20%/vCPU 基线（24s/min）比对评估可持续性，未通过 Azure Monitor API 读取云端实时积分余额表。
 2. **已知依赖兼容性与 P10-11 协同说明**：
-   - `AdaptiveGridV2` 内部经 `grid_restore.py` 调用研究模块 `factorlab.experiments.grid_funding_adaptive`（顶层依赖 `numpy` / `pandas`），因此在部署 `AdaptiveGridV2` 的主机上需使用包含 `strategy-numeric` 或 `execution-dual` 的环境（纯 22 MiB `execution-binance` 仅适用于不依赖 `numpy/pandas` 的原生 `GridExecution` 与纯 Decimal / P10-11 `lightweight` 策略）。
+   - `AdaptiveGridV2` 的资金费和波动率变体都可以在 22 MiB 的 `execution-binance` 环境中运行。`grid_restore.py` 使用标准库恢复状态并计算样本波动率。研究入口在读取研究数据和汇总结果时按需加载 `numpy` / `pandas`。
    - 与 **P10-11（PR #264 `59dbcad`）语义集成与联合验证**：
      - 在合并 `origin/main` 时，按接口语义完整集成 3 个冲突文件（`strategies/__init__.py`、`strategies/worker.py`、`strategies/loader.py`）并核验自动合并的 `strategies/decision_runtime.py` 与 `integrations/alpaca/strategy_instances.py`：同时保留 P10-11 的外部策略协议、`strategy_event()` 参考行情裁剪、冻结线性模型工件（`LinearModel` / `model_effective_at` / `require_event_time` / `model_identity`）、`StrategyPackageError` 与 `read_package()` 无 TOCTOU 读取，以及 P10-02 的最小依赖、延迟导入、one-shot 逐请求隔离、宿主/整机双层并发上限和 `9e6cfc8` 先终止再关闭管道的清理顺序。
      - **联合回归**：本地 x64 运行 `test_external_strategy.py`、`test_p10_02_lightweight_arm64.py`、`test_alpaca_native_v69.py`、`test_demo_adaptive_grid_v2.py`、`test_demo_instance_host.py`、`test_unified_cloud_strategy_s04.py`、`test_s04_package_failures.py` 及 `test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape` 共 **77 passed, 0 failed**（143.82s）；ARM64 最小无 `scipy` 环境（`venv-opt-dual`）运行上述执行套件 + `test_alpaca_deployment.py` 共 **78 passed, 0 failed**（75.88s）。

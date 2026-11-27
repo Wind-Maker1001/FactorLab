@@ -16,7 +16,6 @@ from factorlab.metrics.factor import evaluate_factors
 from factorlab.metrics.portfolio import calculate_portfolio_metrics
 from factorlab.metrics.prediction import evaluate_predictions
 from factorlab.metrics.robustness import RobustnessOptions, holm_adjust, mean_uncertainty
-from factorlab.validation.ablation_statistics import summarize_ablation
 
 
 EVIDENCE = (
@@ -259,6 +258,8 @@ class ResearchEvaluation:
 
     def ablation(self, name, daily):
         """Recompute existing receipt-based descriptive factorial comparisons."""
+        from factorlab.validation.ablation_statistics import summarize_ablation
+
         sample = self._sample(daily, ["model", "group", "fold", "date"])
         metrics, contrasts, volatility = summarize_ablation(sample)
         return EvaluationResult(name, "ablation", self.context, {},

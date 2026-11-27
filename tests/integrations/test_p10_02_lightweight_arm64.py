@@ -509,6 +509,8 @@ def test_p2_close_race_before_spawn_and_during_execution_timeout_and_errors(tmp_
         assert active_worker_count() == 0
         assert live_worker_pids() == ()
 
+        # Give normal startup its usual deadline after the forced timeout.
+        strat_fast.timeout = strat_a.timeout
         # 3. Exception & sandbox violation must release capacity and leave next call healthy
         with pytest.raises(StrategyWorkerError, match='ValueError: strategy error'):
             strat_fast.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'er1', 'now': now, 'raise_err': True}, {})
@@ -917,3 +919,28 @@ def test_grid_timestamp_preserves_nanosecond_ordering_and_replay_detection():
     ev1_mutated = {'id': 'obs-1', 'time': '2026-01-01T00:00:00.123456800', 'price': D('100'), 'volume': 1}
     with pytest.raises(ValueError):
         grid.observe(ev1_mutated, acct, delivery=1)
+
+
+@pytest.mark.parametrize('text,nanosecond', [
+    ('2026-01-01T00:00:00.123456', 0),
+    ('2026-01-01T00:00:00.123456789', 789),
+    ('1969-12-31T23:59:59.999999999', 999),
+])
+def test_grid_timestamp_copy_and_pickle_preserve_value_and_hash(text, nanosecond):
+    from copy import copy, deepcopy
+    from datetime import datetime
+    import pickle
+
+    from factorlab.strategies.grid import _parse_naive_timestamp
+
+    stamp = _parse_naive_timestamp(text)
+    copies = [copy(stamp), deepcopy(stamp)]
+    copies.extend(pickle.loads(pickle.dumps(stamp, protocol))
+                  for protocol in range(pickle.HIGHEST_PROTOCOL + 1))
+    by_timestamp = {stamp: 'original'}
+    for restored in copies:
+        assert restored.isoformat() == text and restored.nanosecond == nanosecond
+        assert by_timestamp[restored] == 'original'
+    if nanosecond == 0:
+        standard = datetime.fromisoformat(text)
+        assert stamp == standard and by_timestamp[standard] == 'original'

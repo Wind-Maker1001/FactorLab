@@ -7,6 +7,7 @@ import re
 from factorlab.errors import ConfigurationError
 
 _ISO_FRAC_RE = re.compile(r"[.,](\d+)$")
+_EPOCH = datetime(1970, 1, 1)
 
 
 class _NaiveTimestamp(datetime):
@@ -16,7 +17,7 @@ class _NaiveTimestamp(datetime):
 
     def __new__(
         cls, year, month, day, hour=0, minute=0, second=0, microsecond=0,
-        tzinfo=None, *, fold=0, nanosecond=0,
+        tzinfo=None, fold=0, nanosecond=0,
     ):
         obj = super().__new__(cls, year, month, day, hour, minute, second, microsecond, tzinfo, fold=fold)
         obj.nanosecond = int(nanosecond)
@@ -61,14 +62,25 @@ class _NaiveTimestamp(datetime):
         pair = self._ns_pair(other)
         return NotImplemented if pair is NotImplemented else pair[0] >= pair[1]
 
+    def __reduce_ex__(self, _protocol):
+        # datetime's packed pickle state omits the subclass's nanosecond slot.
+        fields = (self.year, self.month, self.day, self.hour, self.minute, self.second,
+                  self.microsecond, self.tzinfo, self.fold, self.nanosecond)
+        return type(self), fields
+
     def __hash__(self):
-        return hash((super().__hash__(), self.nanosecond))
+        if self.nanosecond == 0:
+            return super().__hash__()
+        # Match pandas.Timestamp's epoch nanoseconds without going through a float.
+        delta = self - _EPOCH
+        whole_seconds = delta.days * 86_400 + delta.seconds
+        return hash((whole_seconds * 1_000_000 + delta.microseconds) * 1_000 + self.nanosecond)
 
 
 def _make_naive_timestamp(dt: datetime, nanosecond: int = 0) -> _NaiveTimestamp:
     return _NaiveTimestamp(
         dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.microsecond,
-        nanosecond=nanosecond,
+        fold=dt.fold, nanosecond=nanosecond,
     )
 
 
