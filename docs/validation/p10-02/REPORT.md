@@ -1,6 +1,6 @@
 # P10-02：FactorLab 执行端轻量化及 ARM64 跨架构适配验证报告
 
-> **状态**：已修复 PR #268 的 one-shot 隔离、并发、管道清理、纳秒精度和最小环境邮箱执行问题，并完成 Windows x64 最小环境业务验收。原生 Linux x64 / ARM64 的同场景与逐字节对照由 PR 检查发布。
+> **状态**：已修复 PR #268 的 one-shot 隔离、并发、管道清理、纳秒精度和最小环境邮箱执行问题，并完成最小环境业务验收。Windows x64、原生 Linux x64 和原生 Linux ARM64 均通过，Linux 两份业务产物逐字节一致。
 > **开发分支**：`perf/p10-02-lightweight-arm64`（原独立 worktree，PR #268，修复基于 `108dc07`，包含 #264 / P10-11 和 #267 / P10-01）
 > **证据归档目录**：`docs/validation/p10-02/evidence/`
 
@@ -109,9 +109,9 @@
 | HTTP 与最小安装 | 6 次订单 POST、5 次原订单 DELETE。Execute venv 只有锁文件列出的运行期包，`pip check` 通过，业务运行期间无 pandas / numpy 导入尝试。 |
 | 其他延迟导入 | 资金费网格和波动率网格均在纯执行环境中恢复并处理首条观察。 |
 
-定向回归在 Windows x64 上两批分别通过 70 和 44 例。前者覆盖 Observer 调度、组合消费者、动态过期、V2 自适应网格实盘形态的离线测试，以及 one-shot、双层并发和管道清理。后者覆盖新增邮箱纳秒边界、实例宿主、QQQ/SPY 持久化、P10-11 外部策略和统一策略部署。
+定向回归在 Windows x64 上两批分别通过 70 和 44 例。前者覆盖 Observer 调度、组合消费者、动态过期、V2 自适应网格实盘形态的离线测试，以及 one-shot、双层并发和管道清理。后者覆盖新增邮箱纳秒边界、实例宿主、QQQ/SPY 持久化、P10-11 外部策略和统一策略部署。研究端 R10、实验记录器及 Demo 自适应恢复另通过 28 例。两类 V2 网格用最小 Execute 解释器启动真实 one-shot Worker，首次决策和状态重放均与进程内参考结果一致。
 
-[PR #268 检查](https://github.com/Wind-Maker1001/FactorLab/pull/268/checks) 的 `Lightweight Binance mailbox` 在原生 Linux x64 和 ARM64 上各自创建两套新环境，运行同一个脚本。随后 `Lightweight Binance mailbox parity` 对照两个证据文件中的回执、原订单 ID、数量、价格和状态。
+[原生跨架构验收 run 46011391931](https://github.com/Wind-Maker1001/FactorLab/actions/runs/46011391931) 在代码提交 `68d87558f1ec5e55351bcd36577c50486ebac256` 上执行。两个原生 runner 各自建新 venv 并通过相同验收。下载的 `mailbox-ubuntu-24.04` 和 `mailbox-ubuntu-24.04-arm` 产物逐字节相同，包含六笔订单的原 ID、数量、价格、终态、六项任务回执及两类自适应网格恢复结果。
 
 ## 四、已实施的轻量化优化与 PR #268 Codex Review 修复说明
 
