@@ -1,0 +1,32 @@
+{
+  "version": "v50",
+  "reference": "v49",
+  "universe": "same eight US assets",
+  "development": [
+    "2022-01-01",
+    "2023-12-31"
+  ],
+  "validation": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "main": [
+    "2025-01-01",
+    "2026-11-15"
+  ],
+  "smoke": [
+    "2026-11-16",
+    "2026-11-20"
+  ],
+  "candidates": [
+    "band",
+    "blend",
+    "band_xgb"
+  ],
+  "rules": "All retain QQQ 63-session ETF gate, nominal TQQQ at one third, weekly prior-close decisions and next open executions. Lift eligible targets by 10% when QQQ above 63-day SMA and at least two thirds of trend-ready symbols above SMA28. Band: entry > SMA28*(1+0.5*21-day daily volatility), hold existing while close >= SMA28*(1-0.5*volatility). Blend: 2/3 of base weight for 28-day trend, 1/3 for 63-day trend, require 28-day warmup. Band_xgb: band plus 1+0.15*tanh(predicted five-day return / (sqrt(5)*own 21-day volatility)) multiplier. Max nominal target 37.11% for the ML candidate, subject to floating point and drift between rebalances.",
+  "model": "XGBRegressor; monthly fitting, past mature next-open to sixth-open return, up to 504 feature sessions, minimum 126 distinct eligible feature dates. Only observed markets, no ticker identifiers. 45 shallow trees, max depth 2, learning rate 0.05, lambda 10, min_child_weight 20, seed 49, single thread. No parameter search.",
+  "score": "Development only. Eligible if all three ratios exceed v49, net cumulative return >= v49, average invested fraction >=90% of v49, QQQ beta <=v49+0.08. Choose minimum sum of descending ranks across the three ratios among eligible; ties break by higher Sortino, then listed candidate order. If no eligible, evaluate top rank as research challenger only.",
+  "promotion": "Require development eligible and all three ratios higher in both validation and main, net return >= v49, exposure >=90% of v49 and beta increase <=0.08 in both. Stress cost and main ex-SNDK require three ratios no lower than matched v49, with nonnegative change in net return. Five sessions for execution only. If conditions fail retain v49. Treat results as retrospective even when outside selection.",
+  "metrics": "Daily NAV net of fees, first return vs 300000, cash and risk-free rate 0, target downside return 0, 252 sessions. Sharpe uses sample standard deviation, Sortino uses RMS of negative parts over every session. Calmar uses geometric annualized return / absolute max drawdown including initial capital. OLS daily vs QQQ, alpha = 252*intercept. Short (<30) windows suppress annualized metrics. Paired circular 20-session block bootstrap 2000 resamples for marginal 95% differences on validation & main.",
+  "cases": "Normal cost 10bp one-way. Stress 30bp one-way separately on validation/main. Omit SNDK entirely for main challenge including breadth and model. Five-session alternate opening print for functional check. Separate USD300k account per window; compare same-budget passive eight-asset basket and 32% QQQ sleeve on main."
+}

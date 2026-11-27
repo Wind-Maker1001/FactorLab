@@ -1,0 +1,2 @@
+* -text
+*.parquet -filter -diff -merge -text

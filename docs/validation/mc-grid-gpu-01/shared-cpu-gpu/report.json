@@ -1,0 +1,380 @@
+{
+  "schema_version": 1,
+  "evidence": "RESEARCH_SIMULATION",
+  "model": "gbm",
+  "quote_preparation": "round to six decimals before freezing; same quotes for Paper and CUDA",
+  "seed": 1729,
+  "definition": {
+    "dataset": {
+      "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+      "as_of": "2026-11-14T00:00:00+00:00",
+      "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+      "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+      "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+      "drift": -1.2254443425042917e-05,
+      "dt": 1,
+      "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+      "initial_price": 204.34,
+      "observations": [
+        "2026-05-14T02:00:00+00:00",
+        "2026-08-12T00:00:00+00:00"
+      ],
+      "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+      "returns": 2159,
+      "source": "BINANCE_USDM_PUBLIC_DATA",
+      "time_unit": "hour",
+      "volatility": 0.004451385931577554
+    },
+    "grid": {
+      "atr_multiplier": 1,
+      "atr_window": 72,
+      "breakout": "pause",
+      "budget": null,
+      "center_rule": "last_close",
+      "expiry_reseed_interval": 100,
+      "expiry_reseed_limit": 0,
+      "fee_bps": 4,
+      "initial_cash": 1000,
+      "initial_inventory": 0,
+      "initial_price": 204.34,
+      "levels": 8,
+      "lower": 163.472,
+      "max_cash_committed": 1000,
+      "max_drawdown": 0.2,
+      "max_inventory": 100,
+      "max_turnover": 10,
+      "min_rebuild_interval": 72,
+      "minimum_price": 0.01,
+      "minimum_quantity": 1,
+      "mode": "geometric",
+      "order_ttl": 100,
+      "quantity": 10,
+      "rebuild_threshold": 2,
+      "slippage_bps": 6,
+      "upper": 245.208
+    },
+    "rules": {
+      "min_notional": "5",
+      "min_quantity": "0.01",
+      "quantity_unit": "0.01",
+      "step_size": "0.01",
+      "tick_size": "0.01"
+    },
+    "as_of": "2026-11-14T00:00:00+00:00",
+    "start": "2026-11-15T00:00:00Z",
+    "threshold_as_of": "2026-06-28T00:00:00Z",
+    "capacity": "0.10",
+    "costs": {
+      "fee_rate": ".0004",
+      "funding": "NOT_SIMULATED",
+      "slippage": ".0006"
+    },
+    "experiment": {
+      "seeds": [
+        1729,
+        2718,
+        31415
+      ],
+      "sizes": [
+        16,
+        64,
+        128
+      ],
+      "batch_size": 8,
+      "steps": 168,
+      "resamples": 999,
+      "budget_seconds": 900,
+      "cost_safety_factor": 1.2
+    },
+    "models": [
+      "gbm",
+      "moving_block_bootstrap",
+      "regime_historical",
+      "jump_down"
+    ]
+  },
+  "python": "3.13.9",
+  "numpy": "2.3.5",
+  "sizes": [
+    {
+      "paths": 100,
+      "wall_seconds": 0.3975928000290878,
+      "generation_seconds": 0.00044600002001971006,
+      "cuda_call_seconds": 0.39713439997285604,
+      "kernel_seconds": 0.010754699993412942,
+      "paths_per_second": 251.51360887994957,
+      "setup_seconds": 0.38584439997794107,
+      "compile_or_cache_seconds": 0.11926879995735362,
+      "upload_and_allocation_seconds": 0.00011209998046979308,
+      "output_transfer_seconds": 3.9000005926936865e-05,
+      "device_allocation_peak_bytes": 151552,
+      "risk": {
+        "paths": 100,
+        "confidence": 0.95,
+        "var": 0.0020064811053745355,
+        "cvar": 0.0026699082856691753,
+        "loss_probability": 0.32
+      },
+      "device": "NVIDIA GeForce RTX 2070",
+      "cupy": "14.2.0",
+      "cu_cost": null,
+      "cpu_batch": {
+        "paths": 100,
+        "call_seconds": 0.009640300006140023,
+        "kernel_seconds": 0.00028689997270703316,
+        "setup_seconds": 0.005648599995765835,
+        "paths_per_second": 10373.121161821602,
+        "economics_match": true,
+        "implementation": "single-threaded native CPU, same state-transition source as CUDA"
+      },
+      "paper_reference": {
+        "paths": 100,
+        "seconds": 11.96677970001474,
+        "paths_per_second": 8.356467028458527,
+        "economics_match": true,
+        "implementation": "existing in-memory authoritative Paper"
+      },
+      "process_peak_rss_bytes": 502247424,
+      "cu_cost_status": "LOCAL_DEVICE_NO_PLATFORM_CU_RATE"
+    },
+    {
+      "paths": 1000,
+      "wall_seconds": 0.011470900033600628,
+      "generation_seconds": 0.004988799977581948,
+      "cuda_call_seconds": 0.00630130001809448,
+      "kernel_seconds": 0.0022883000201545656,
+      "paths_per_second": 87177.11749477322,
+      "setup_seconds": 0.0004935999750159681,
+      "compile_or_cache_seconds": 9.999494068324566e-07,
+      "upload_and_allocation_seconds": 0.0010123999672941864,
+      "output_transfer_seconds": 0.000103199970908463,
+      "device_allocation_peak_bytes": 1486848,
+      "risk": {
+        "paths": 1000,
+        "confidence": 0.95,
+        "var": 0.0018080071044045576,
+        "cvar": 0.0026599959887353302,
+        "loss_probability": 0.336
+      },
+      "device": "NVIDIA GeForce RTX 2070",
+      "cupy": "14.2.0",
+      "cu_cost": null,
+      "cpu_batch": {
+        "paths": 1000,
+        "call_seconds": 0.00678859994513914,
+        "kernel_seconds": 0.0044667000183835626,
+        "setup_seconds": 1.500011421740055e-06,
+        "paths_per_second": 147305.77852301236,
+        "economics_match": true,
+        "implementation": "single-threaded native CPU, same state-transition source as CUDA"
+      },
+      "paper_reference": {
+        "paths": 100,
+        "seconds": 10.046615700004622,
+        "paths_per_second": 9.95360059407408,
+        "economics_match": true,
+        "implementation": "existing in-memory authoritative Paper"
+      },
+      "process_peak_rss_bytes": 513863680,
+      "cu_cost_status": "LOCAL_DEVICE_NO_PLATFORM_CU_RATE"
+    },
+    {
+      "paths": 10000,
+      "wall_seconds": 0.06313739996403456,
+      "generation_seconds": 0.033578299975488335,
+      "cuda_call_seconds": 0.029146699991542846,
+      "kernel_seconds": 0.006396899989340454,
+      "paths_per_second": 158384.72926817348,
+      "setup_seconds": 0.0011156000546179712,
+      "compile_or_cache_seconds": 1.600012183189392e-06,
+      "upload_and_allocation_seconds": 0.004622000036761165,
+      "output_transfer_seconds": 0.0004582999972626567,
+      "device_allocation_peak_bytes": 6081024,
+      "risk": {
+        "paths": 10000,
+        "confidence": 0.95,
+        "var": 0.0016491780199214198,
+        "cvar": 0.0025852277557907887,
+        "loss_probability": 0.3087
+      },
+      "device": "NVIDIA GeForce RTX 2070",
+      "cupy": "14.2.0",
+      "cu_cost": null,
+      "cpu_batch": {
+        "paths": 10000,
+        "call_seconds": 0.041417300002649426,
+        "kernel_seconds": 0.027072399971075356,
+        "setup_seconds": 4.100031219422817e-06,
+        "paths_per_second": 241445.00002077172,
+        "economics_match": true,
+        "implementation": "single-threaded native CPU, same state-transition source as CUDA"
+      },
+      "paper_reference": {
+        "paths": 100,
+        "seconds": 10.272585099970456,
+        "paths_per_second": 9.734648000169654,
+        "economics_match": true,
+        "implementation": "existing in-memory authoritative Paper"
+      },
+      "process_peak_rss_bytes": 556433408,
+      "cu_cost_status": "LOCAL_DEVICE_NO_PLATFORM_CU_RATE"
+    },
+    {
+      "paths": 100000,
+      "wall_seconds": 0.7764483999926597,
+      "generation_seconds": 0.4489718000404537,
+      "cuda_call_seconds": 0.32435849989997223,
+      "kernel_seconds": 0.05103670002426952,
+      "paths_per_second": 128791.55910546711,
+      "setup_seconds": 0.010588099888991565,
+      "compile_or_cache_seconds": 2.8600043151527643e-05,
+      "upload_and_allocation_seconds": 0.03372630011290312,
+      "output_transfer_seconds": 0.005926600017119199,
+      "device_allocation_peak_bytes": 6081024,
+      "risk": {
+        "paths": 100000,
+        "confidence": 0.95,
+        "var": 0.001614670898360433,
+        "cvar": 0.0025861402964067596,
+        "loss_probability": 0.3008
+      },
+      "device": "NVIDIA GeForce RTX 2070",
+      "cupy": "14.2.0",
+      "cu_cost": null,
+      "cpu_batch": {
+        "paths": 100000,
+        "call_seconds": 0.7195715999696404,
+        "kernel_seconds": 0.4499049000442028,
+        "setup_seconds": 4.87996730953455e-05,
+        "paths_per_second": 138971.5769830537,
+        "economics_match": true,
+        "implementation": "single-threaded native CPU, same state-transition source as CUDA"
+      },
+      "paper_reference": {
+        "paths": 100,
+        "seconds": 11.350707900011912,
+        "paths_per_second": 8.810023205679979,
+        "economics_match": true,
+        "implementation": "existing in-memory authoritative Paper"
+      },
+      "process_peak_rss_bytes": 568004608,
+      "cu_cost_status": "LOCAL_DEVICE_NO_PLATFORM_CU_RATE"
+    },
+    {
+      "paths": 1000000,
+      "wall_seconds": 7.109780099999625,
+      "generation_seconds": 4.119267600122839,
+      "cuda_call_seconds": 2.9621673998772167,
+      "kernel_seconds": 0.4999084001756273,
+      "paths_per_second": 140651.32619221974,
+      "setup_seconds": 0.10027820017421618,
+      "compile_or_cache_seconds": 0.00023999984841793776,
+      "upload_and_allocation_seconds": 0.30149609956424683,
+      "output_transfer_seconds": 0.049895200005266815,
+      "device_allocation_peak_bytes": 6081024,
+      "risk": {
+        "paths": 1000000,
+        "confidence": 0.95,
+        "var": 0.0016083154371012666,
+        "cvar": 0.0025836917860201708,
+        "loss_probability": 0.299193
+      },
+      "device": "NVIDIA GeForce RTX 2070",
+      "cupy": "14.2.0",
+      "cu_cost": null,
+      "cpu_batch": {
+        "paths": 1000000,
+        "call_seconds": 6.384805699810386,
+        "kernel_seconds": 3.8489422996062785,
+        "setup_seconds": 0.0004017996252514422,
+        "paths_per_second": 156621.83737708695,
+        "economics_match": true,
+        "implementation": "single-threaded native CPU, same state-transition source as CUDA"
+      },
+      "paper_reference": {
+        "paths": 100,
+        "seconds": 7.670594799972605,
+        "paths_per_second": 13.036798658737279,
+        "economics_match": true,
+        "implementation": "existing in-memory authoritative Paper"
+      },
+      "process_peak_rss_bytes": 693170176,
+      "cu_cost_status": "LOCAL_DEVICE_NO_PLATFORM_CU_RATE"
+    }
+  ],
+  "audit_policy": "independent random + representative + extremes; never used for population risk",
+  "audits": [
+    {
+      "path_id": 11332,
+      "independent_random": false,
+      "representative": false,
+      "extreme": true,
+      "paper_terminal_nav": 1004.3567317703756,
+      "gpu_terminal_nav": 1004.3567317703756,
+      "maximum_absolute_step_error": 1.1368683772161603e-13
+    },
+    {
+      "path_id": 40425,
+      "independent_random": false,
+      "representative": true,
+      "extreme": false,
+      "paper_terminal_nav": 1000.2998546395488,
+      "gpu_terminal_nav": 1000.2998546395488,
+      "maximum_absolute_step_error": 1.1368683772161603e-13
+    },
+    {
+      "path_id": 203758,
+      "independent_random": false,
+      "representative": false,
+      "extreme": true,
+      "paper_terminal_nav": 987.9535935106281,
+      "gpu_terminal_nav": 987.9535935106281,
+      "maximum_absolute_step_error": 1.2761146306328186e-13
+    },
+    {
+      "path_id": 217768,
+      "independent_random": true,
+      "representative": false,
+      "extreme": false,
+      "paper_terminal_nav": 1000.0,
+      "gpu_terminal_nav": 1000.0,
+      "maximum_absolute_step_error": 0.0
+    },
+    {
+      "path_id": 228646,
+      "independent_random": true,
+      "representative": false,
+      "extreme": false,
+      "paper_terminal_nav": 999.6060833336235,
+      "gpu_terminal_nav": 999.6060833336234,
+      "maximum_absolute_step_error": 1.1368683772161603e-13
+    },
+    {
+      "path_id": 475374,
+      "independent_random": true,
+      "representative": false,
+      "extreme": false,
+      "paper_terminal_nav": 999.6672809389328,
+      "gpu_terminal_nav": 999.6672809389328,
+      "maximum_absolute_step_error": 1.1368683772161603e-13
+    },
+    {
+      "path_id": 517102,
+      "independent_random": false,
+      "representative": true,
+      "extreme": false,
+      "paper_terminal_nav": 1000.0,
+      "gpu_terminal_nav": 1000.0,
+      "maximum_absolute_step_error": 0.0
+    },
+    {
+      "path_id": 972172,
+      "independent_random": false,
+      "representative": true,
+      "extreme": false,
+      "paper_terminal_nav": 999.7768198462287,
+      "gpu_terminal_nav": 999.7768198462287,
+      "maximum_absolute_step_error": 1.1368683772161603e-13
+    }
+  ]
+}

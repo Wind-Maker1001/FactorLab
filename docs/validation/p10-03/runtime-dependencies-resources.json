@@ -1,0 +1,30 @@
+{
+  "runtime_dependencies": [
+    "numpy",
+    "pandas"
+  ],
+  "cloud_qlib_dependency": false,
+  "cloud_sklearn_dependency": false,
+  "offline_training_dependencies": [
+    "numpy",
+    "pandas",
+    "scikit-learn"
+  ],
+  "ridge_artifact_json_bytes": 178804,
+  "ridge_artifact_fitted_months": 179,
+  "online_window_sessions": 252,
+  "timings": {
+    "v179_252d_inference_ms": 335.43,
+    "v182_252d_inference_ms": 325.81
+  },
+  "peak_memory": {
+    "v179_252d_inference_peak_mib": 0.974,
+    "v182_252d_inference_peak_mib": 0.959
+  },
+  "packages": {
+    "v179_package_zip_bytes": 181460,
+    "v182_package_zip_bytes": 181463,
+    "v179_package_id": "8de93cdae53df254eaf7954ebc558c6de9b45233dcfd85bdae5cab5fe27b6d87",
+    "v182_package_id": "0154c282a3f65329f96dba381477b33f8b2c1419e3dc4a6847ebb1aa1df34136"
+  }
+}

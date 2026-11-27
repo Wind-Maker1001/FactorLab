@@ -45,21 +45,25 @@ class AlpacaPortfolioAdapter:
             details = self.adapter.read_order_details(client_order_id)
             executions = self.adapter.read_order_executions(client_order_id)
         except self.order_not_found:
-            rejection = self.adapter.store.get('rejection:' + client_order_id)
-            if rejection is not None:
-                row = self.store.db.execute('SELECT plan FROM portfolio_orders WHERE id=?',
-                                            (client_order_id,)).fetchone()
-                order = next(o for o in self.store.orders(row[0])
-                    if o['record'].snapshot.intent.client_order_id == client_order_id)
-                return OrderEvent(client_order_id, None, OrderStatus.REJECTED, D(0), None,
-                    order['record'].observed_at, 'alpaca-paper-http-rejection:' + str(rejection['status']),
-                    'alpaca-paper-http-rejection:' + client_order_id)
-            # ALP-E01 commits this admission journal before every HTTP POST.
-            # Its absence proves the process stopped before entering submission;
-            # an existing journal plus REST 404 remains genuinely uncertain.
-            if self.adapter.store.order(client_order_id) is None:
-                raise SubmissionNotAttempted(client_order_id) from None
-            raise OrderAbsent(client_order_id) from None
+            return self._absent_order(client_order_id)
+        return self._project_order(client_order_id, details, executions)
+
+    def _absent_order(self, client_order_id):
+        rejection = self.adapter.store.get('rejection:' + client_order_id)
+        if rejection is not None:
+            row = self.store.db.execute('SELECT plan FROM portfolio_orders WHERE id=?',
+                                        (client_order_id,)).fetchone()
+            order = next(o for o in self.store.orders(row[0])
+                if o['record'].snapshot.intent.client_order_id == client_order_id)
+            return OrderEvent(client_order_id, None, OrderStatus.REJECTED, D(0), None,
+                order['record'].observed_at, 'alpaca-paper-http-rejection:' + str(rejection['status']),
+                'alpaca-paper-http-rejection:' + client_order_id)
+        # An existing admission record plus REST 404 remains uncertain.
+        if self.adapter.store.order(client_order_id) is None:
+            raise SubmissionNotAttempted(client_order_id) from None
+        raise OrderAbsent(client_order_id) from None
+
+    def _project_order(self, client_order_id, details, executions):
         if details['client_order_id'] != client_order_id:
             raise ValueError('Alpaca client order identity mismatch')
         row = self.store.db.execute('SELECT plan FROM portfolio_orders WHERE id=?',

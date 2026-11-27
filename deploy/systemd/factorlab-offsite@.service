@@ -1,0 +1,23 @@
+[Unit]
+Description=Pull and verify FactorLab %i offsite backups
+After=network-online.target
+Wants=network-online.target
+OnFailure=factorlab-dr-failure@offsite-%i.service
+
+[Service]
+Type=oneshot
+User=factorlab-backup
+Group=factorlab-backup
+EnvironmentFile=/etc/factorlab-dr/%i.env
+LoadCredential=ssh-key:/etc/factorlab-dr/%i.ssh-key
+ExecStart=/opt/factorlab-dr/venv/bin/python -m factorlab.integrations.offsite_backup pull --market %i --host ${FACTORLAB_OFFSITE_HOST} --source ${FACTORLAB_OFFSITE_SOURCE} --latest --root /var/backups/factorlab-offsite/%i --keep 2 --max-snapshot-bytes ${FACTORLAB_OFFSITE_MAX_BYTES} --max-age-hours 30 --ssh-config /etc/factorlab-dr/ssh_config
+TimeoutStartSec=25min
+MemoryMax=192M
+CPUQuota=50%
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+PrivateDevices=true
+InaccessiblePaths=-/etc/factorlab-alpaca-paper -/etc/factorlab-demo
+ReadWritePaths=/var/backups/factorlab-offsite/%i

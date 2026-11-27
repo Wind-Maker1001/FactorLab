@@ -1,0 +1,2 @@
+execution_date,event_time,order_id,event_id,cumulative_filled_quantity,cumulative_fee,side,grid_level,executed_shares,execution_price,trade_notional,fee,slippage,transaction_cost,estimated_budget_cost
+2026-11-18T06:00:00+00:00,2026-11-18T06:59:59.999999+00:00,research-00000005,paper:6,0.10,0.0079607256512480,BUY,4,0.1,199.0181412812,19.90181412812,0.007960725651248,0.01193392812,0.019894653771248,0.01990181412812
