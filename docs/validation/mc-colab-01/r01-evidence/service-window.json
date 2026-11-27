@@ -1,0 +1,534 @@
+[
+  {
+    "time_usec": "1795776661290825",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:51:01.225791+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776670821782",
+    "unit": "init.scope",
+    "message": "Starting factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health..."
+  },
+  {
+    "time_usec": "1795776670833190",
+    "unit": "init.scope",
+    "message": "Starting factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness..."
+  },
+  {
+    "time_usec": "1795776674934603",
+    "unit": "factorlab-demo-tradfi-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat_age_seconds": 13.708258
+    }
+  },
+  {
+    "time_usec": "1795776675519925",
+    "unit": "init.scope",
+    "message": "factorlab-demo-tradfi-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776675522912",
+    "unit": "init.scope",
+    "message": "Finished factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness."
+  },
+  {
+    "time_usec": "1795776676878854",
+    "unit": "factorlab-alpaca-paper-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat": "2026-11-27T10:51:05.481739+00:00",
+      "heartbeat_age_seconds": 11.395828,
+      "error": null,
+      "account_recovered": true,
+      "last_recovery_at": "2026-11-27T10:50:50.790993+00:00",
+      "market": {
+        "error": null,
+        "last_event_at": null,
+        "last_rest_at": "2026-11-27T10:50:56.566953+00:00",
+        "recoveries": 1424,
+        "state": "CONNECTED"
+      },
+      "market_rest": {
+        "clock_open": false,
+        "feed": "iex",
+        "fresh_quotes": false,
+        "missing_symbols": [],
+        "received_at": "2026-11-27T10:50:56.594364+00:00"
+      }
+    }
+  },
+  {
+    "time_usec": "1795776677313690",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776677314418",
+    "unit": "init.scope",
+    "message": "Finished factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health."
+  },
+  {
+    "time_usec": "1795776677314815",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Consumed 1.409s CPU time."
+  },
+  {
+    "time_usec": "1795776691939337",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:51:31.828538+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776722455671",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:52:02.417546+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776730970541",
+    "unit": "init.scope",
+    "message": "Starting factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health..."
+  },
+  {
+    "time_usec": "1795776730974208",
+    "unit": "init.scope",
+    "message": "Starting factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness..."
+  },
+  {
+    "time_usec": "1795776733100923",
+    "unit": "factorlab-demo-tradfi-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat_age_seconds": 10.681951
+    }
+  },
+  {
+    "time_usec": "1795776733375977",
+    "unit": "init.scope",
+    "message": "factorlab-demo-tradfi-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776733376780",
+    "unit": "init.scope",
+    "message": "Finished factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness."
+  },
+  {
+    "time_usec": "1795776734086699",
+    "unit": "factorlab-alpaca-paper-health.service",
+    "health": {
+      "healthy": false,
+      "heartbeat": "2026-11-27T10:52:05.071328+00:00",
+      "heartbeat_age_seconds": 9.011515,
+      "error": null,
+      "account_recovered": true,
+      "last_recovery_at": "2026-11-27T10:51:50.223642+00:00",
+      "market": {
+        "error": "StreamDisconnected",
+        "last_event_at": null,
+        "last_rest_at": "2026-11-27T10:50:56.566953+00:00",
+        "recoveries": 1424,
+        "state": "RECONNECTING"
+      },
+      "market_rest": {
+        "clock_open": false,
+        "feed": "iex",
+        "fresh_quotes": false,
+        "missing_symbols": [],
+        "received_at": "2026-11-27T10:51:56.030883+00:00"
+      }
+    }
+  },
+  {
+    "time_usec": "1795776734244612",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Main process exited, code=exited, status=1/FAILURE"
+  },
+  {
+    "time_usec": "1795776734248164",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Failed with result 'exit-code'."
+  },
+  {
+    "time_usec": "1795776734248364",
+    "unit": "init.scope",
+    "message": "Failed to start factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health."
+  },
+  {
+    "time_usec": "1795776734248502",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Consumed 1.228s CPU time."
+  },
+  {
+    "time_usec": "1795776752991745",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:52:32.925971+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776783549639",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:53:03.466181+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776791130581",
+    "unit": "init.scope",
+    "message": "Starting factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health..."
+  },
+  {
+    "time_usec": "1795776791150967",
+    "unit": "init.scope",
+    "message": "Starting factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness..."
+  },
+  {
+    "time_usec": "1795776793095494",
+    "unit": "factorlab-demo-tradfi-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat_age_seconds": 9.629034
+    }
+  },
+  {
+    "time_usec": "1795776793332924",
+    "unit": "init.scope",
+    "message": "factorlab-demo-tradfi-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776793334119",
+    "unit": "init.scope",
+    "message": "Finished factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness."
+  },
+  {
+    "time_usec": "1795776793973442",
+    "unit": "factorlab-alpaca-paper-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat": "2026-11-27T10:53:04.823262+00:00",
+      "heartbeat_age_seconds": 9.150029,
+      "error": null,
+      "account_recovered": true,
+      "last_recovery_at": "2026-11-27T10:52:50.214241+00:00",
+      "market": {
+        "error": null,
+        "last_event_at": null,
+        "last_rest_at": "2026-11-27T10:53:02.238245+00:00",
+        "recoveries": 1426,
+        "state": "CONNECTED"
+      },
+      "market_rest": {
+        "clock_open": false,
+        "feed": "iex",
+        "fresh_quotes": false,
+        "missing_symbols": [],
+        "received_at": "2026-11-27T10:52:55.991960+00:00"
+      }
+    }
+  },
+  {
+    "time_usec": "1795776794059274",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776794059668",
+    "unit": "init.scope",
+    "message": "Finished factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health."
+  },
+  {
+    "time_usec": "1795776794059992",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Consumed 1.180s CPU time."
+  },
+  {
+    "time_usec": "1795776814096032",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:53:34.029264+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776844668291",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:54:04.597839+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776851511930",
+    "unit": "init.scope",
+    "message": "Starting factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health..."
+  },
+  {
+    "time_usec": "1795776851554973",
+    "unit": "init.scope",
+    "message": "Starting factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness..."
+  },
+  {
+    "time_usec": "1795776858909535",
+    "unit": "factorlab-demo-tradfi-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat_age_seconds": 14.311027
+    }
+  },
+  {
+    "time_usec": "1795776859337522",
+    "unit": "init.scope",
+    "message": "factorlab-demo-tradfi-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776859339301",
+    "unit": "init.scope",
+    "message": "Finished factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness."
+  },
+  {
+    "time_usec": "1795776861488080",
+    "unit": "factorlab-alpaca-paper-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat": "2026-11-27T10:54:04.804373+00:00",
+      "heartbeat_age_seconds": 16.678368,
+      "error": null,
+      "account_recovered": true,
+      "last_recovery_at": "2026-11-27T10:53:49.816772+00:00",
+      "market": {
+        "error": null,
+        "last_event_at": null,
+        "last_rest_at": "2026-11-27T10:53:36.358044+00:00",
+        "recoveries": 1427,
+        "state": "CONNECTED"
+      },
+      "market_rest": {
+        "clock_open": false,
+        "feed": "iex",
+        "fresh_quotes": false,
+        "missing_symbols": [],
+        "received_at": "2026-11-27T10:53:55.754785+00:00"
+      }
+    }
+  },
+  {
+    "time_usec": "1795776862974853",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776863003170",
+    "unit": "init.scope",
+    "message": "Finished factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health."
+  },
+  {
+    "time_usec": "1795776863003450",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Consumed 1.633s CPU time."
+  },
+  {
+    "time_usec": "1795776875404393",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:54:35.235845+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776905949212",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:55:05.877345+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776911696052",
+    "unit": "init.scope",
+    "message": "Starting factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health..."
+  },
+  {
+    "time_usec": "1795776911699159",
+    "unit": "init.scope",
+    "message": "Starting factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness..."
+  },
+  {
+    "time_usec": "1795776913280628",
+    "unit": "factorlab-demo-tradfi-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat_age_seconds": 7.402992
+    }
+  },
+  {
+    "time_usec": "1795776913358185",
+    "unit": "init.scope",
+    "message": "factorlab-demo-tradfi-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776913358581",
+    "unit": "init.scope",
+    "message": "Finished factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness."
+  },
+  {
+    "time_usec": "1795776914204699",
+    "unit": "factorlab-alpaca-paper-health.service",
+    "health": {
+      "healthy": false,
+      "heartbeat": "2026-11-27T10:55:11.111760+00:00",
+      "heartbeat_age_seconds": 3.092785,
+      "error": null,
+      "account_recovered": true,
+      "last_recovery_at": "2026-11-27T10:54:56.239726+00:00",
+      "market": {
+        "error": "StreamDisconnected",
+        "last_event_at": null,
+        "last_rest_at": "2026-11-27T10:54:17.061962+00:00",
+        "recoveries": 1428,
+        "state": "RECONNECTING"
+      },
+      "market_rest": {
+        "clock_open": false,
+        "feed": "iex",
+        "fresh_quotes": false,
+        "missing_symbols": [],
+        "received_at": "2026-11-27T10:55:02.078255+00:00"
+      }
+    }
+  },
+  {
+    "time_usec": "1795776914303885",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Main process exited, code=exited, status=1/FAILURE"
+  },
+  {
+    "time_usec": "1795776914305472",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Failed with result 'exit-code'."
+  },
+  {
+    "time_usec": "1795776914305665",
+    "unit": "init.scope",
+    "message": "Failed to start factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health."
+  },
+  {
+    "time_usec": "1795776914305765",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Consumed 1.160s CPU time."
+  },
+  {
+    "time_usec": "1795776936478651",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:55:36.448500+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776966982598",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:56:06.956336+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  },
+  {
+    "time_usec": "1795776971856283",
+    "unit": "init.scope",
+    "message": "Starting factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health..."
+  },
+  {
+    "time_usec": "1795776971858398",
+    "unit": "init.scope",
+    "message": "Starting factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness..."
+  },
+  {
+    "time_usec": "1795776973290921",
+    "unit": "factorlab-demo-tradfi-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat_age_seconds": 6.333714
+    }
+  },
+  {
+    "time_usec": "1795776973370583",
+    "unit": "init.scope",
+    "message": "factorlab-demo-tradfi-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776973371120",
+    "unit": "init.scope",
+    "message": "Finished factorlab-demo-tradfi-health.service - FactorLab TradFi observer heartbeat and quote freshness."
+  },
+  {
+    "time_usec": "1795776974087595",
+    "unit": "factorlab-alpaca-paper-health.service",
+    "health": {
+      "healthy": true,
+      "heartbeat": "2026-11-27T10:56:10.790969+00:00",
+      "heartbeat_age_seconds": 3.296487,
+      "error": null,
+      "account_recovered": true,
+      "last_recovery_at": "2026-11-27T10:55:55.974549+00:00",
+      "market": {
+        "error": null,
+        "last_event_at": null,
+        "last_rest_at": "2026-11-27T10:55:48.958143+00:00",
+        "recoveries": 1429,
+        "state": "CONNECTED"
+      },
+      "market_rest": {
+        "clock_open": false,
+        "feed": "iex",
+        "fresh_quotes": false,
+        "missing_symbols": [],
+        "received_at": "2026-11-27T10:56:01.757599+00:00"
+      }
+    }
+  },
+  {
+    "time_usec": "1795776974172207",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Deactivated successfully."
+  },
+  {
+    "time_usec": "1795776974172506",
+    "unit": "init.scope",
+    "message": "Finished factorlab-alpaca-paper-health.service - FactorLab Alpaca Paper health."
+  },
+  {
+    "time_usec": "1795776974173021",
+    "unit": "init.scope",
+    "message": "factorlab-alpaca-paper-health.service: Consumed 1.147s CPU time."
+  },
+  {
+    "time_usec": "1795776997524063",
+    "unit": "factorlab-demo-tradfi-observer.service",
+    "health": {
+      "observed_at": "2026-11-27T10:56:37.457060+00:00",
+      "market_error": null,
+      "account_fresh": true
+    }
+  }
+]

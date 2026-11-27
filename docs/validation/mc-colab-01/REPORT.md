@@ -190,12 +190,33 @@ round p95 was not populated by this deployment. The pre-existing
 STALE_OR_FUTURE_QUOTE marker remained unchanged. Alpaca's before/after health
 was healthy, error=null, market CONNECTED; the market clock was closed.
 
-TODO: obtain task-window Alpaca/management latency evidence and a representative
-open-market coexistence window before approving this small shared VM for
-routine research control. The measured run establishes successful bounded
-execution and no observed service restart, but the host pressure increase and
-closed Alpaca market do not establish latency neutrality. Do not increase the
-controller limits or VM size to resolve this evidence gap.
+Historical journald records subsequently supplied the missing task-window
+Alpaca/management observations; see [sanitized service window](r01-evidence/service-window.json).
+Alpaca was healthy immediately before and during the task, but had
+StreamDisconnected/RECONNECTING health failures at 10:52:14 (before allocation)
+and 10:55:14 (13 seconds after completion), recovering by 10:56:14. These failures
+are therefore not a newly introduced error signature. The during-run heartbeat
+age was 16.678 seconds, versus 9.150 immediately before and 3.093 immediately
+after. The existing health probe itself took approximately 11.49 seconds during
+the run (10:54:11–10:54:23), versus approximately 3 seconds immediately before. This is an
+observed management-latency regression in the measured window, not proof of its
+cause. REST received-at minus recovery-start was 5.938 seconds during the run,
+versus 5.778 immediately before; this measures the combined poll span, not an
+individual API request latency.
+
+TradFi health remained healthy throughout, with no market errors and fresh
+account projections. Its heartbeat age was 14.311 seconds during the run,
+versus 9.629 immediately before and 7.403 immediately after. Existing observer
+records continued at approximately 30.5-second intervals. Thus service
+continuity is established, but latency neutrality is not: management probe
+completion slowed while host pressure increased. Closed-market observations
+are recorded as such, not elevated into an additional acceptance requirement.
+
+TODO: resolve the observed management-latency regression before approving
+routine research control on this shared VM; use a lighter control approach or
+a non-trading Linux controller if isolation cannot be demonstrated. Do not
+increase controller limits, upgrade the VM, or change trading services to
+resolve this issue.
 
 ### Concurrency and regression evidence
 
