@@ -1,8 +1,12 @@
 """V2 decisions enter the existing Execute owner's durable outbox."""
+from contextlib import nullcontext
 from decimal import Decimal as D, ROUND_DOWN
 import json
 
-from factorlab.trading import Market, OrderIntent, OrderType, Side
+from factorlab.trading import Market, OrderEvent, OrderIntent, OrderStatus, OrderType, Side
+from factorlab.trading.contracts import ZERO
+from factorlab.trading.control import RiskRejected
+from factorlab.trading.portfolio_execution import DirectOrderCapitalRejected
 from factorlab.trading.realtime import identity
 from factorlab.trading.storage import decode, dumps
 from .demo_allocations import DemoAllocations
@@ -20,6 +24,8 @@ class DemoInstanceExecutionAdapter:
         self.owners = DemoAllocations(session.controller)
         self.store.db.execute('''CREATE TABLE IF NOT EXISTS demo_instance_outbox (
             id TEXT PRIMARY KEY, payload TEXT NOT NULL, completed INTEGER NOT NULL DEFAULT 0)''')
+        self.store.db.execute('CREATE INDEX IF NOT EXISTS demo_pending_decisions '
+                              'ON demo_instance_outbox(completed) WHERE completed=0')
 
     def qualify(self, spec, binding, allocation):
         if binding['market'] != Market.BINANCE_USDM.value or binding['account_id'] != self.session.adapter.account_id:
@@ -42,28 +48,74 @@ class DemoInstanceExecutionAdapter:
             dict(binding=binding, symbols=sorted(spec.symbols), allocation=allocation,
                  shorting=spec.execution['shorting']))
 
+    def pending_commitments(self, account_id):
+        """Read the durable acceptance journal while the portfolio writer is locked."""
+        capital = self.executor.store.db
+        commitments = {}
+        for raw, in self.store.db.execute('SELECT payload FROM demo_instance_outbox WHERE completed=0'):
+            accepted = decode(json.loads(raw))
+            binding = accepted['receipt']['binding']
+            if binding['account_id'] != account_id:
+                continue
+            owner = binding['instance_id']
+            for intent in accepted['intents']:
+                prepared = capital.execute('SELECT 1 FROM portfolio_orders WHERE id=?',
+                                           (intent.client_order_id,)).fetchone()
+                if prepared is None:
+                    notional = intent.quantity * intent.limit_price if intent.side == Side.BUY else ZERO
+                    commitments[owner] = commitments.get(owner, ZERO) + notional
+        return commitments
+
     def prepare_plan(self, decision_id, *, now):
         """Recover the same shared execution plan after durable receipt acceptance."""
         if self.executor is None:
             raise SafetyBlocked('shared PortfolioExecutor required')
-        row = self.store.db.execute(
-            'SELECT payload FROM demo_instance_outbox WHERE id=?', (decision_id,)).fetchone()
-        if row is None:
-            raise SafetyBlocked('unknown accepted Demo decision')
-        accepted = decode(json.loads(row[0]))
-        receipt = accepted['receipt']
-        binding = receipt['binding']
-        funded = self.executor.store.allocation(binding['account_id'], binding['instance_id'])
-        if funded is None or funded['allocation_id'] != binding['allocation_id']:
-            raise SafetyBlocked('instance requires its existing shared capital allocation')
-        configured = decode(json.loads(self.store.event_payload('demo:instance:' + binding['instance_id'])))
-        return self.executor.create(
-            account_id=binding['account_id'], strategy_id=binding['instance_id'],
-            strategy_version=receipt['package_id'], trading_session=receipt['event_id'],
-            weights={}, owned_symbols=configured['symbols'], now=now,
-            rebalance_id=decision_id, signal_inputs=dict(input_identity=receipt['input_identity']),
-            direct_orders=[(intent, intent.limit_price) for intent in accepted['intents']],
-            concurrent_direct_orders=receipt['decision']['kind'] == 'orders')
+        with self.executor.store.transaction():
+            row = self.store.db.execute(
+                'SELECT payload,completed FROM demo_instance_outbox WHERE id=?', (decision_id,)).fetchone()
+            if row is None:
+                raise SafetyBlocked('unknown accepted Demo decision')
+            if row[1] == 2:
+                return None
+            accepted = decode(json.loads(row[0]))
+            receipt = accepted['receipt']
+            binding = receipt['binding']
+            funded = self.executor.store.allocation(binding['account_id'], binding['instance_id'])
+            if funded is None or funded['allocation_id'] != binding['allocation_id']:
+                raise SafetyBlocked('instance requires its existing shared capital allocation')
+            configured = decode(json.loads(self.store.event_payload('demo:instance:' + binding['instance_id'])))
+            return self.executor.create(
+                account_id=binding['account_id'], strategy_id=binding['instance_id'],
+                strategy_version=receipt['package_id'], trading_session=receipt['event_id'],
+                weights={}, owned_symbols=configured['symbols'], now=now,
+                rebalance_id=decision_id, signal_inputs=dict(input_identity=receipt['input_identity']),
+                direct_orders=[(intent, intent.limit_price) for intent in accepted['intents']],
+                concurrent_direct_orders=receipt['decision']['kind'] == 'orders')
+
+    def _prepare_or_reject(self, decision_id, *, now):
+        try:
+            return self.prepare_plan(decision_id, now=now)
+        except (DirectOrderCapitalRejected, RiskRejected) as error:
+            capital = self.executor.store
+            with capital.transaction():
+                raw, = self.store.db.execute('SELECT payload FROM demo_instance_outbox WHERE id=?',
+                                             (decision_id,)).fetchone()
+                accepted = decode(json.loads(raw))
+                protocol_ids = self.session._protocol_ids()
+                for intent in accepted['intents']:
+                    if intent.client_order_id in protocol_ids or capital.db.execute(
+                            'SELECT 1 FROM portfolio_orders WHERE id=?', (intent.client_order_id,)).fetchone():
+                        raise SafetyBlocked('capital rejection cannot discard a prepared or dispatched order') from error
+                accepted['rejection_reason'] = str(error)
+                with self.store.transaction():
+                    for intent in accepted['intents']:
+                        event_id = 'demo:capital-rejection:' + intent.client_order_id
+                        event = OrderEvent(intent.client_order_id, None, OrderStatus.REJECTED,
+                                           ZERO, None, now, 'demo-local-capital-rejection', event_id)
+                        self.store.record_metadata(event_id, event)
+                    self.store.db.execute('UPDATE demo_instance_outbox SET completed=2,payload=? WHERE id=?',
+                                          (dumps(accepted), decision_id))
+            return None
 
     def advance(self, decision_id, *, equity, quotes, rules, now):
         """Advance one accepted decision on the account owner's execution turn."""
@@ -82,7 +134,9 @@ class DemoInstanceExecutionAdapter:
                     'SELECT id,payload FROM demo_instance_outbox ORDER BY rowid')
                     if any(intent.client_order_id == client_id
                            for intent in decode(json.loads(raw))['intents']))
-                original_plan = self.prepare_plan(original, now=now)
+                original_plan = self._prepare_or_reject(original, now=now)
+                if original_plan is None:
+                    continue
             else:
                 original_plan = row[0]
             self.executor.cancel(original_plan, client_id)
@@ -90,7 +144,9 @@ class DemoInstanceExecutionAdapter:
                 if order['record'].snapshot.intent.client_order_id == client_id)
             if order['record'].snapshot.status not in TERMINAL or order['uncertain']:
                 return None
-        plan_id = self.prepare_plan(decision_id, now=now)
+        plan_id = self._prepare_or_reject(decision_id, now=now)
+        if plan_id is None:
+            return None
         from dataclasses import replace
         execution_quotes = {symbol: replace(quote, session=accepted['receipt']['event_id'])
                             for symbol, quote in quotes.items()}
@@ -176,8 +232,13 @@ class DemoInstanceExecutionAdapter:
                 raise SafetyBlocked('cancellation outside instance symbol declaration')
             self.owners.require_cancel(cancel['client_order_id'], instance_id=instance,
                                        allocation_id=binding['allocation_id'])
-        # Every child is accepted atomically; replay never re-applies a quantity delta.
-        with self.store.transaction():
+        # All acceptance writes are in the controller journal. The portfolio
+        # transaction only serializes visibility with cash mutations and plan creation.
+        capital = self.executor.store if self.executor is not None else None
+        with (capital.transaction() if capital is not None else nullcontext(),
+              self.store.transaction()):
+            if capital is not None and capital.capital_balance(binding['account_id'], instance)[3]:
+                raise SafetyBlocked('retired capital allocation')
             for intent in intents:
                 self.owners.claim_in_transaction(intent, instance_id=instance, allocation_id=binding['allocation_id'])
             self.store.db.execute('INSERT INTO demo_instance_outbox(id,payload) VALUES(?,?)',

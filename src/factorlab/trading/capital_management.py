@@ -68,6 +68,7 @@ class StrategyCapital:
     funding: D | None
     corporate_cash_flow: D | None
     retired: bool
+    pending_decisions: bool = False
 
 
 @dataclass(frozen=True)
@@ -91,6 +92,9 @@ class CapitalManagement:
     def __init__(self, executor):
         self.executor = executor
         self.store = executor.store
+        # Strategy IDs map to unprepared buy notional, or None until the
+        # venue's decision can be priced and recorded in the portfolio outbox.
+        self.pending_commitments = None
 
     def snapshot(self, account_id):
         """Refresh original confirmations and read official facts under the order lock."""
@@ -148,16 +152,25 @@ class CapitalManagement:
             attributed = exact_sum(s.wallet for s in risk.strategies)
             pool_cash = exact_sum((wallet, attributed.copy_negate()))
             complete = pool_cash >= ZERO
+        pending = self.pending_commitments(account_id) if self.pending_commitments is not None else {}
+        reservations = {s.capital.strategy_id: s.capital.reserved
+                        + (pending.get(s.capital.strategy_id) or ZERO) * (1 + fee_rate)
+                        for s in risk.strategies}
         if complete:
-            obligations = exact_sum(s.capital.reserved + (s.occupied if derivatives else ZERO)
-                                    for s in risk.strategies)
-            wallet_room = max(ZERO, min(wallet - obligations, risk.available,
+            obligations = []
+            for strategy in risk.strategies:
+                local = strategy.capital.reserved + (strategy.occupied if derivatives else ZERO)
+                unprepared = reservations[strategy.capital.strategy_id] - strategy.capital.reserved
+                # An oversized unprepared receipt can only tie up its own sleeve's cash.
+                obligations.append(local + min(unprepared, max(ZERO, strategy.wallet - local)))
+            wallet_room = max(ZERO, min(wallet - exact_sum(obligations), risk.available,
                                         official_available - max(ZERO, unrealized)))
         strategies = []
         for s in risk.strategies:
             owner = s.capital.strategy_id
             base = store.allocation_basis(account_id, owner)
             _, cash_in, cash_out, retired = store.capital_balance(account_id, owner)
+            reserved = reservations[owner]
             exit_fee = withdrawable = unavailable = None
             if complete:
                 holdings = store.holdings(account_id, owner)
@@ -165,19 +178,19 @@ class CapitalManagement:
                 exit_fee = gross * fee_rate
                 collateral = s.occupied if derivatives else ZERO
                 losses = min(ZERO, s.nav - s.wallet) if derivatives else ZERO
-                free = s.wallet + losses - collateral - s.capital.reserved - exit_fee
+                free = s.wallet + losses - collateral - reserved - exit_fee
                 # The existing policy funds gross exposure at full notional.
                 # Keep that headroom in addition to protecting wallet collateral.
-                budget_room = s.capital.capital - gross - s.capital.reserved / (1 + fee_rate)
+                budget_room = s.capital.capital - gross - reserved / (1 + fee_rate)
                 withdrawal = min(free, wallet_room, budget_room)
                 if derivatives:
-                    withdrawal = min(withdrawal, s.capital.cash - s.capital.reserved + min(ZERO, s.funding))
-                withdrawable = max(ZERO, withdrawal)
+                    withdrawal = min(withdrawal, s.capital.cash - reserved + min(ZERO, s.funding))
+                withdrawable = ZERO if owner in pending and pending[owner] is None else max(ZERO, withdrawal)
                 unavailable = max(ZERO, s.wallet - withdrawable)
             strategies.append(StrategyCapital(owner, bindings[owner], s.capital.allocation_id,
-                base['capital'], s.capital.capital, cash_in, cash_out, s.wallet, s.capital.reserved,
+                base['capital'], s.capital.capital, cash_in, cash_out, s.wallet, reserved,
                 s.occupied, exit_fee, withdrawable, unavailable, s.nav, s.realized_pnl,
-                s.unrealized_pnl, s.fees, s.funding, s.corporate_cash_flow, retired))
+                s.unrealized_pnl, s.fees, s.funding, s.corporate_cash_flow, retired, owner in pending))
         unallocated = risk.budget - risk.allocated
         allocatable = (max(ZERO, min(unallocated, pool_cash, wallet_room, equity - risk.allocated))
                        if complete else None)
@@ -294,6 +307,8 @@ class CapitalManagement:
             raise ValueError('retired capital allocation')
         capacity = snapshot.allocatable if donor is None else donor.withdrawable
         if kind == 'RELEASE':
+            if donor.pending_decisions:
+                raise ValueError('capital release requires prepared or rejected strategy decisions')
             self._require_flat(account_id, source)
             if donor.cash < ZERO:
                 raise ValueError('strategy cash deficit must be funded before retirement')

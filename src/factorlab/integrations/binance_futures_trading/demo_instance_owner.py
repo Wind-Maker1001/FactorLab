@@ -26,6 +26,7 @@ class DemoInstanceOwner:
             store, quote_currency='USDT', clock=session._now)
         execution = DemoInstanceExecutionAdapter(session, executor=executor)
         owner = cls(session, execution)
+        executor.capital.pending_commitments = execution.pending_commitments
         def admitted_capability(intent, ownership):
             authorization, guard = capability(intent, ownership)
             def admitted_guard(method, params, plan):
@@ -116,10 +117,14 @@ class DemoInstanceOwner:
             'SELECT completed,payload FROM demo_instance_outbox WHERE id=?', (decision_id,)).fetchone()
         expired = utc_instant(task['valid_until']) <= self.session._now()
         if existing is not None:
-            if decode(json.loads(existing[1]))['receipt']['input_identity'] != identity(task):
+            saved = decode(json.loads(existing[1]))
+            if saved['receipt']['input_identity'] != identity(task):
                 raise SafetyBlocked('decision identity has conflicting content')
             if existing[0]:
-                return ('REJECTED' if existing[0] == 2 else 'COMPLETED'), dict(journal=decision_id)
+                result = dict(journal=decision_id)
+                if 'rejection_reason' in saved:
+                    result['reason'] = saved['rejection_reason']
+                return ('REJECTED' if existing[0] == 2 else 'COMPLETED'), result
             if expired:
                 return 'RECONCILING', dict(reason='EXPIRED_INFLIGHT', journal=decision_id)
         else:

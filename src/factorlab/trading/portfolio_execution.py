@@ -35,6 +35,10 @@ class SubmissionNotAttempted(OrderAbsent):
     """
 
 
+class DirectOrderCapitalRejected(ValueError):
+    """A direct plan could not reserve the capital needed before dispatch."""
+
+
 class PortfolioAdapter(Protocol):
     """query_order must distinguish authoritative absence from uncertain transport."""
 
@@ -465,7 +469,8 @@ class PortfolioExecutor:
             request['direct_orders'] = direct_orders
         if concurrent_direct_orders:
             request['concurrent_direct_orders'] = True
-        with self.store.transaction():
+        context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
+        with context:
             previous = self.store.plan(identity)
             if previous:
                 if previous['request'] != decode(json.loads(dumps(request))):
@@ -532,7 +537,7 @@ class PortfolioExecutor:
                 allocation = self.store.allocation(account_id, strategy_id)
                 has_buys = any(intent.side == Side.BUY for intent, _ in direct_orders)
                 if allocation is not None and has_buys and self.store.cash(account_id, strategy_id) < ZERO:
-                    raise ValueError('direct orders exceed allocated cash')
+                    raise DirectOrderCapitalRejected('direct orders exceed allocated cash')
                 account = self.adapter.read_account()
                 if (account.account_id != account_id or not account.reconciled
                         or self._account_uncertain(account_id, owned_symbols)):
@@ -540,7 +545,7 @@ class PortfolioExecutor:
                 if (allocation is not None and has_buys
                         and (self.store.cash(account_id, strategy_id)
                              + self._funding_adjustment(account, strategy_id)) < ZERO):
-                    raise ValueError('direct orders exceed capital after funding')
+                    raise DirectOrderCapitalRejected('direct orders exceed capital after funding')
                 balance = next(a for a in account.assets if a.currency == self.quote_currency)
                 registered = {order['record'].snapshot.intent.client_order_id: order
                               for _, order in self.store.account_orders(account_id)}
@@ -572,7 +577,7 @@ class PortfolioExecutor:
                                                 (account_id,)).fetchone()
                 fee_factor = 1 + (ZERO if fee_row is None else D(fee_row[0]))
                 if max(broker_pending * fee_factor, balance.reserved) + local_pending * fee_factor > balance.total:
-                    raise ValueError('direct orders exceed available account cash')
+                    raise DirectOrderCapitalRejected('direct orders exceed available account cash')
                 self.capital_policy.validate_orders(account, strategy_id)
         return identity
 

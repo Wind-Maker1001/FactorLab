@@ -34,6 +34,7 @@ class StrategyInstances:
         self.boot_id = uuid4().hex
         self.instances, self.views, self.controllers = {}, {}, {}
         self.native = {}
+        self.capital.pending_commitments = self.pending_commitments
         self.loaded = {}
         self.identity = None
         self.state = {'state': 'RECOVERING', 'instances': {}}
@@ -117,6 +118,13 @@ class StrategyInstances:
     @property
     def capital(self):
         return self.runner.executor.capital
+
+    def pending_commitments(self, account_id):
+        # Decision recovery and capital commands run on the same account owner.
+        # Keep an unacknowledged decision funded until normal plan recovery.
+        return {owner: None for owner, view in self.views.items()
+                if view.binding()['account_id'] == account_id
+                and (active := view.snapshot()['active']) is not None and view.outstanding(active)}
 
     @property
     def symbols(self):

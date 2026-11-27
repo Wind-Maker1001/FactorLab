@@ -290,8 +290,8 @@ class CapitalPolicy:
 
     def validate_orders(self, account, strategy_id, *, include_id=None):
         """Check instance, gross symbol and account projections in the outbox transaction."""
-        from .control import exposure_limit_reason
-        from .contracts import Side, TERMINAL
+        from .control import RiskRejected, exposure_limit_reason
+        from .contracts import RiskDecision, Side, TERMINAL
         account_id = account.account_id
         policy = self.store.db.execute('SELECT budget FROM capital_accounts WHERE account=?',
                                        (account_id,)).fetchone()
@@ -357,15 +357,15 @@ class CapitalPolicy:
                 continue
             reason = exposure_limit_reason(limits, order_notional=amount,
                 instrument_exposure=exposures[symbol], account_exposure=sum(exposures.values(), ZERO))
-            if reason != 'APPROVED':
-                raise ValueError(reason)
-            if increasing:
+            if reason == 'APPROVED':
                 if shared and foreign:
                     raise ValueError('unknown external orders prevent risk increase')
                 if symbols[symbol] > self.symbol_limit(account_id, symbol):
-                    raise ValueError('SYMBOL_EXPOSURE_LIMIT')
-                if account_exposure > Decimal(policy[0]):
-                    raise ValueError('ACCOUNT_BUDGET_LIMIT')
+                    reason = 'SYMBOL_EXPOSURE_LIMIT'
+                elif account_exposure > Decimal(policy[0]):
+                    reason = 'ACCOUNT_BUDGET_LIMIT'
+            if reason != 'APPROVED':
+                raise RiskRejected(RiskDecision(False, reason))
 
     def qualify(self, spec, binding, allocation=None):
         """Atomically reserve exclusive symbols for an explicitly funded instance."""
