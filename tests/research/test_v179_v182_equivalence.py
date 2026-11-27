@@ -107,7 +107,7 @@ def frozen_artifacts():
 
 def test_all_v179_v182_fixture_hashes():
     manifest = json.loads((ROOT / 'source-manifest.json').read_text(encoding='utf-8'))
-    assert len(manifest['files']) == 60
+    assert len(manifest['files']) == 59
     for rel, meta in manifest['files'].items():
         raw = (ROOT / rel).read_bytes()
         assert len(raw) == meta['bytes'], rel

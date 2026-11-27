@@ -19,7 +19,7 @@
 | `Qlib_v182与v179_策略源码配置与回测复现.zip` | `10,842,371` | `21abc3eebaf816264b325525ce0997910e63d6abd72b47b96c21b5fffe91a79a` |
 | `F02_v69_策略入口_依赖_配置_结果.zip` | `115,479` | `d3e7346c8100e4c5ea6d9a98f3a60a151405288198bb5c84a1f4e32bb9dfe97e` |
 
-- 仓库冻结夹具位于 `tests/fixtures/v179_v182_original/`，包含全部 60 个原始策略源码、配置、`LICENSE-QLIB`、`fixtures/target/*.parquet`（3,997 个交易日，2011-01-03 至 2026-11-23）以及 `target/{normal,no_sndk}` 参考账本，完整清单及逐文件 SHA-256 记录于 `tests/fixtures/v179_v182_original/source-manifest.json`，由单元测试自动核验。
+- 仓库冻结夹具位于 `tests/fixtures/v179_v182_original/`，包含全部 59 个原始策略源码、配置、`LICENSE-QLIB`、`fixtures/target/*.parquet`（3,997 个交易日，2011-01-03 至 2026-11-23）以及 `target/{normal,no_sndk}` 参考账本，完整清单及逐文件 SHA-256 记录于 `tests/fixtures/v179_v182_original/source-manifest.json`，由单元测试自动核验。
 - 原始参考结果（`verification.json`，30 万美元初始资金，主窗口 2023-01-03 至 2026-11-23）：
   - `v179/target/normal`：977 日、873 笔成交、净收益 `186.9815%`、最大回撤 `-15.2525%`、标普总回报基准 `98.7816%`。
   - `v182/target/normal`：977 日、874 笔成交、净收益 `177.1905%`、最大回撤 `-15.1230%`、标普总回报基准 `98.7816%`。

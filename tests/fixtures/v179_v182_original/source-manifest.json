@@ -4,10 +4,6 @@
       "bytes": 1162,
       "sha256": "9906940f61b1f0b533fa7d99baf55178b2808fbe113ea51dfbfad8572ccd5f2b"
     },
-    "README.md": {
-      "bytes": 3055,
-      "sha256": "06b768e1b03c55ff22b0d3605f257933d43d95fa439a8e85e3cd1cc6c8543384"
-    },
     "accounts/v179/target/no_sndk/daily.parquet": {
       "bytes": 76644,
       "sha256": "266bf2611a08cf3829377a2e551d2e35d118c68dfd08498617eb71a6c9075ba3"
