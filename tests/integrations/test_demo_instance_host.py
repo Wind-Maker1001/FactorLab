@@ -7,6 +7,7 @@ import pytest
 from factorlab.integrations.binance_futures_trading.demo_instance_host import DemoInstanceHost
 from factorlab.integrations.binance_futures_trading.demo_runtime import DemoRuntime
 from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
+from factorlab.strategies.loader import StrategyPackageError
 from factorlab.trading import Market
 from factorlab.trading.portfolio_execution import PortfolioStore
 from test_binance_demo_execution import setup, NOW
@@ -21,9 +22,13 @@ def test_host_restores_registered_instances_from_existing_capital_without_alloca
                           (adapter.account_id, 'one', 'original-allocation', '7', '7'))
     loads, prepared = [], []
     def load(path, *, manifest, trusted):
+        from test_strategy_protocol_v2 import spec
         assert trusted is True
         loads.append(path.name)
-        return SimpleNamespace(binding=dict(package_id=path.name))
+        if path.name == 'missing-package':
+            raise StrategyPackageError('offline fixture: missing installed package')
+        return SimpleNamespace(binding=dict(package_id=path.name), spec=spec(
+            market=Market.BINANCE_USDM.value, account_id=adapter.account_id, symbols=['NVDAUSDT']))
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_instance_host.LoadedStrategy',
                         SimpleNamespace(from_strategy_package=load))
     def decision_runtime(strategy, store, execution, *, allocation):
@@ -32,12 +37,17 @@ def test_host_restores_registered_instances_from_existing_capital_without_alloca
             package_id=strategy.binding['package_id'], recover=lambda: None)
     monkeypatch.setattr('factorlab.integrations.binance_futures_trading.demo_instance_host.InstanceDecisionRuntime',
                         decision_runtime)
-    rows = [dict(instance_id='one', binding=binding), dict(instance_id='other',
+    rows = [dict(instance_id='missing', binding=dict(binding, instance_id='missing')),
+        dict(instance_id='one', binding=binding), dict(instance_id='other',
         binding=dict(binding, market='ALPACA_US_EQUITY'))]
     view = SimpleNamespace(legacy=False, instance_id='one', binding=lambda: binding,
         snapshot=lambda: dict(active='original-package'), pending=lambda: None,
         activation_callback=lambda: None, manifest=lambda version: dict(package_id=version), close=lambda: None)
-    registry = SimpleNamespace(instances=lambda: rows, for_instance=lambda instance: view)
+    missing = SimpleNamespace(legacy=False, instance_id='missing',
+        snapshot=lambda: dict(active='missing-package', previous=None), manifest=lambda version: {},
+        close=lambda: None)
+    registry = SimpleNamespace(instances=lambda: rows,
+        for_instance=lambda instance: missing if instance == 'missing' else view)
     try:
         with closing(DemoRuntime(tmp_path)) as runtime:
             for _ in range(2):
@@ -47,6 +57,7 @@ def test_host_restores_registered_instances_from_existing_capital_without_alloca
                     host = DemoInstanceHost(session, runtime, registry, tmp_path / 'releases',
                         tmp_path, stack, SimpleNamespace(desired=lambda: 'PAUSED'))
                     assert set(host.owner.instances) == {'one'}
+                    assert host.instance_status['missing']['state'] == 'PACKAGE_UNAVAILABLE'
                     assert host.owner.instances['one'][0].package_id == 'original-package'
                     assert host.owner.execution.executor.store.allocation(adapter.account_id, 'one')['capital'] == D(7)
                     assert host.owner.execution.executor.store.db.execute('SELECT count(*) FROM portfolio_allocations').fetchone()[0] == 1
@@ -54,7 +65,7 @@ def test_host_restores_registered_instances_from_existing_capital_without_alloca
                     with pytest.raises(SafetyBlocked, match='not running'):
                         host.dispatch_gate(binding)
                     assert controller.limits.account_budget == D(7)
-            assert loads == ['original-package', 'original-package']
+            assert loads == ['missing-package', 'original-package'] * 2
             assert all(allocation['allocation_id'] == 'original-allocation' for allocation in prepared)
     finally:
         controller.store.close()
@@ -207,7 +218,7 @@ def test_host_waits_for_matching_portfolio_bars_and_preserves_history(tmp_path):
                 data=dict(data_types=['closed_bar', 'funding_settlement'], history_limit=3),
                 schedule=dict(kind='interval', interval_seconds=60))
             binding = dict(account_id=adapter.account_id, instance_id='portfolio')
-            host.owner.instances['portfolio'] = (SimpleNamespace(package_id='original-package', strategy=SimpleNamespace(spec=spec),
+            host.owner.instances['portfolio'] = (SimpleNamespace(package_id='original-package', strategy=SimpleNamespace(spec=spec, binding={}),
                 store=SimpleNamespace(binding=lambda: binding)), None)
             host.deliver = Mock(return_value='accepted')
             bar = ClosedBar('BTCUSDT', NOW-timedelta(minutes=1), NOW,

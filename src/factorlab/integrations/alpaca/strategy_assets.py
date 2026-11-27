@@ -3,7 +3,13 @@ from decimal import Decimal as D
 
 from factorlab.trading.contracts import Market
 from factorlab.trading.portfolio_execution import InstrumentRules
+from factorlab.strategies.events import ReferenceUnavailable
+from .http import AlpacaError
 from .market_data.inputs import Instrument
+
+
+class StrategyAssetIneligible(ValueError):
+    """The instance's declared asset or capability is unavailable."""
 
 
 class StrategyAssets:
@@ -14,39 +20,55 @@ class StrategyAssets:
     def qualify(self, spec, binding, allocation):
         spec.require_binding(binding)
         if spec.market != Market.ALPACA_US_EQUITY.value or spec.capital['currency'] != 'USD':
-            raise ValueError('Alpaca US equity USD binding required')
+            raise StrategyAssetIneligible('Alpaca US equity USD binding required')
         if (spec.execution['shorting'] or spec.execution['reduce_only']
                 or not spec.execution['order_types']
                 or not set(spec.execution['order_types']) <= {'LIMIT', 'MARKET'}
                 or not spec.execution['time_in_force']
                 or not set(spec.execution['time_in_force']) <= {'DAY'}):
-            raise ValueError('unsupported cash-only Alpaca execution requirements')
+            raise StrategyAssetIneligible('unsupported cash-only Alpaca execution requirements')
         if spec.capital['requested'] > allocation['capital']:
-            raise ValueError('strategy requested capital exceeds its allocation')
+            raise StrategyAssetIneligible('strategy requested capital exceeds its allocation')
         if not set(spec.data['data_types']) <= {'closed_bar', 'quote', 'order_event'}:
-            raise ValueError('unsupported Alpaca data requirements')
+            raise StrategyAssetIneligible('unsupported Alpaca data requirements')
         schedule = spec.schedule
         if schedule['kind'] == 'calendar':
             if (schedule['calendar_id'] != 'alpaca' or schedule['timezone'] != 'America/New_York'
                     or schedule['event'] not in {'session_open', 'natural_week_open'}):
-                raise ValueError('unsupported Alpaca calendar schedule')
+                raise StrategyAssetIneligible('unsupported Alpaca calendar schedule')
         elif (schedule['kind'] != 'interval' or type(schedule['interval_seconds']) is not int
               or not 60 <= schedule['interval_seconds'] <= 3600 or schedule['interval_seconds'] % 60):
-            raise ValueError('unsupported Alpaca bar interval')
+            raise StrategyAssetIneligible('unsupported Alpaca bar interval')
         for symbol in spec.symbols:
             self.resolve(symbol, fractional=spec.execution['fractional_quantities'])
 
     def resolve(self, symbol, *, fractional=False):
-        asset = self.adapter.read_asset(symbol)
+        try:
+            asset = self.adapter.read_asset(symbol)
+        except AlpacaError as error:
+            if error.status == 404:
+                raise StrategyAssetIneligible('unknown Alpaca trading asset: ' + symbol) from error
+            raise
         if (asset['symbol'] != symbol or asset['class'] != 'us_equity'
                 or asset['status'] != 'active' or not asset['tradable'] or not asset['id']):
-            raise ValueError('official asset is not an active tradable US equity: ' + symbol)
+            raise StrategyAssetIneligible('official asset is not an active tradable US equity: ' + symbol)
         if fractional and not asset['fractionable']:
-            raise ValueError('asset does not support requested fractional quantities: ' + symbol)
+            raise StrategyAssetIneligible('asset does not support requested fractional quantities: ' + symbol)
         key = 'alpaca-asset:' + self.adapter.read_account_details().account_id + ':' + symbol
         self.store.record_metadata(key, dict(asset_id=asset['id'], symbol=symbol, asset_class=asset['class']))
         self.assets[symbol] = asset
         return asset
+
+    def reference_instrument(self, symbol):
+        try:
+            asset = self.adapter.read_asset(symbol)
+        except AlpacaError as error:
+            if error.status == 404:
+                raise ReferenceUnavailable('unknown Alpaca reference asset: ' + symbol) from error
+            raise
+        if asset['symbol'] != symbol or asset['class'] != 'us_equity' or not asset['id']:
+            raise ReferenceUnavailable('Alpaca reference asset identity mismatch: ' + symbol)
+        return Instrument(asset['id'], symbol, self.clock())
 
     def instruments(self, symbols, *, at=None):
         at = self.clock() if at is None else at

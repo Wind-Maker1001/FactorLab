@@ -15,14 +15,23 @@ def main():
     from factorlab.trading.storage import decode, dumps
     from factorlab.strategies.protocol import (Decision, StrategySpec, DecisionV2, StrategySpecV2,
                                                decision_payload, spec_payload, json_value)
-    from factorlab.strategies.events import validate_event
+    from factorlab.strategies.events import strategy_event, validate_event
+    from factorlab.strategies.model import LinearModel
     request = decode(json.loads(sys.stdin.read(4 * 1024 * 1024)))
-    # Import library dependencies before restricting IO. Trusted strategy code
-    # still runs with a guard against accidental file/network/process access.
-    import factorlab.strategies.adapters  # noqa: F401
+    manifest = request['manifest']
+    # Preload the numerical libraries used by the built-in adapters on the
+    # existing worker path. Lightweight packages use audited imports directly.
+    if 'model' not in manifest and manifest.get('runtime_profile') != 'lightweight':
+        import factorlab.strategies.adapters  # noqa: F401
+        if manifest.get('calendar_timezone') == 'America/New_York':
+            from pandas import Timestamp
+
+            # Pandas resolves system timezone data on the first localization.
+            # Initialize the calendar before restricting strategy file access.
+            Timestamp(2000, 1, 1).tz_localize('America/New_York')
     allowed = (package, source_root, Path(sys.base_prefix).resolve(), Path(sys.prefix).resolve())
     try:
-        for requirement in request['manifest'].get('dependencies', ()):
+        for requirement in manifest.get('dependencies', ()):
             name, version = requirement.split('==')
             if importlib.metadata.version(name) != version:
                 raise ValueError('strategy dependency mismatch')
@@ -47,7 +56,13 @@ def main():
 
     sys.addaudithook(guard)
     try:
-        manifest = request['manifest']
+        parameters = manifest['parameters']
+        if 'model' in manifest:
+            declaration = manifest['model']
+            model = LinearModel.read(declaration, (package / declaration['file']).read_bytes())
+            if request['operation'] == 'decide':
+                model.require_event_time(request['event']['event_time'])
+            parameters = dict(parameters, model=model)
         entry = package / manifest['file']
         # A package entrypoint supports ordinary relative imports.
         module_spec = importlib.util.spec_from_file_location('factorlab_selected_strategy', entry,
@@ -56,7 +71,7 @@ def main():
         sys.modules[module_spec.name] = module
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             module_spec.loader.exec_module(module)
-            strategy = getattr(module, manifest['class'])(**manifest['parameters'])
+            strategy = getattr(module, manifest['class'])(**parameters)
             spec = strategy.describe()
             if not isinstance(spec, (StrategySpec, StrategySpecV2)):
                 raise ValueError('describe must return a versioned StrategySpec')
@@ -73,7 +88,8 @@ def main():
                 v2 = isinstance(spec, StrategySpecV2)
                 if v2:
                     validate_event(request['event'], spec)
-                decision = strategy.decide(request['event'], request['state'])
+                event = strategy_event(request['event'], spec) if v2 else request['event']
+                decision = strategy.decide(event, request['state'])
                 if not isinstance(decision, DecisionV2 if v2 else Decision):
                     raise ValueError('decide must return a matching versioned Decision')
                 value = decision_payload(decision.validate(spec, None if v2 else request['event']['symbol']))

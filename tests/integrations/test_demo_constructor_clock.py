@@ -548,3 +548,116 @@ def test_signed_local_http_stages_use_injected_monotonic(wired, monkeypatch):
     assert event['headers_available_monotonic'] == pytest.approx(6.2)
     assert event['body_complete_monotonic'] == pytest.approx(6.2)
     assert event['timing_boundary'] == 'LOCAL_OPENER_AND_BODY_NOT_WIRE_OR_SERVER_RECEIPT'
+
+
+def test_expired_calibration_refreshes_before_signed_post_and_cleans_placeholder_on_failure(network_grid, monkeypatch):
+    from factorlab.integrations.binance_futures_trading.protocol import TimeCalibrationError
+    root, store, factory, _, fake, requests = network_grid
+    initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        original_request = bridge.session.client.request
+
+        def expire_at_post(method, path, params=None, *, signed=True):
+            if method == 'POST' and path == '/fapi/v1/order':
+                bridge.session.client._demo_time_valid = False
+            return original_request(method, path, params, signed=signed)
+
+        # Case 1: /fapi/v1/time fails right when POST tries to refresh expired calibration.
+        with monkeypatch.context() as patch:
+            patch.setattr(bridge.session.client, 'request', expire_at_post)
+            inject(patch, [Response(200, {}, b'{}')], endpoint=TIME)
+            requests.clear()
+            with pytest.raises(TimeCalibrationError):
+                observe(bridge)
+        # No HTTP POST was sent, and no phantom UNKNOWN placeholder remains in protocol.sqlite3.
+        assert not writes(requests)
+        assert paths(requests).count(TIME) == 1
+        assert not bridge.session.status()['unknown']
+        assert bridge.session.adapter.db.execute('SELECT count(*) FROM futures_orders').fetchone()[0] == 0
+        assert bridge.runtime.db.execute("SELECT count(*) FROM dispatches WHERE method='POST'").fetchone()[0] == 0
+
+    # Case 2: Once /fapi/v1/time succeeds, an expired calibration refreshes before POST and submits cleanly.
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        original_request = bridge.session.client.request
+
+        def expire_at_post_ok(method, path, params=None, *, signed=True):
+            if method == 'POST' and path == '/fapi/v1/order':
+                bridge.session.client._demo_time_valid = False
+            return original_request(method, path, params, signed=signed)
+
+        def consistent_time(_):
+            now_ms = round(bridge.session.client.projected_demo_time().estimated_ms)
+            return Response(200, {}, json.dumps(dict(serverTime=now_ms)).encode())
+
+        with monkeypatch.context() as patch:
+            patch.setattr(bridge.session.client, 'request', expire_at_post_ok)
+            inject(patch, [consistent_time], endpoint=TIME)
+            requests.clear()
+            observe(bridge)
+        assert len(writes(requests)) == 1
+        assert paths(requests).count(TIME) == 1
+        assert not bridge.session.status()['unknown']
+
+
+def test_post_confirm_readback_time_error_preserves_submitted_order_as_unknown(network_grid, monkeypatch):
+    root, store, factory, _, fake, requests = network_grid
+    initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        original_query = bridge.session.adapter.query_order
+
+        def fail_readback(client_order_id):
+            from factorlab.integrations.binance_futures_trading.protocol import TimeCalibrationError
+            raise TimeCalibrationError('readback clock expired after POST')
+
+        monkeypatch.setattr(bridge.session.adapter, 'query_order', fail_readback)
+        requests.clear()
+        observe(bridge)
+        # POST already reached the exchange, so the placeholder MUST NOT be deleted.
+        assert len(writes(requests)) == 1
+        assert len(bridge.session.status()['unknown']) == 1
+        monkeypatch.setattr(bridge.session.adapter, 'query_order', original_query)
+        bridge.recover()
+        assert not bridge.session.status()['unknown']
+
+
+@pytest.mark.parametrize('time_failure', [TimeoutError('time socket timeout'), Response(500, {}, b'{"code":-1000,"msg":"err"}'), Response(400, {}, b'{"code":-1100,"msg":"bad"}')])
+def test_pre_write_time_refresh_transport_or_http_error_cleans_placeholder(network_grid, monkeypatch, time_failure):
+    from factorlab.integrations.binance_futures_trading.protocol import TimeCalibrationError
+    root, store, factory, _, _, requests = network_grid
+    initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        original_request = bridge.session.client.request
+
+        def expire_at_post(method, path, params=None, *, signed=True):
+            if method == 'POST' and path == '/fapi/v1/order':
+                bridge.session.client._demo_time_valid = False
+            return original_request(method, path, params, signed=signed)
+
+        with monkeypatch.context() as patch:
+            patch.setattr(bridge.session.client, 'request', expire_at_post)
+            inject(patch, [time_failure], endpoint=TIME)
+            requests.clear()
+            with pytest.raises(TimeCalibrationError):
+                observe(bridge)
+        assert not writes(requests)
+        assert not bridge.session.status()['unknown']
+        assert bridge.session.adapter.db.execute('SELECT count(*) FROM futures_orders').fetchone()[0] == 0
+        assert bridge.session.adapter.db.execute('SELECT count(*) FROM futures_rejections').fetchone()[0] == 0
+        assert bridge.runtime.db.execute("SELECT count(*) FROM dispatches WHERE method='POST'").fetchone()[0] == 0
+
+
+def test_direct_unadmitted_write_never_triggers_time_refresh(network_grid):
+    from factorlab.integrations.binance_futures_trading.protocol import TimeCalibrationError
+    root, store, factory, _, _, requests = network_grid
+    initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        bridge.session.client._demo_time_valid = False
+        requests.clear()
+        with pytest.raises(TimeCalibrationError):
+            bridge.session.client.request('POST', '/fapi/v1/order', {'symbol': 'NVDAUSDT'})
+        assert requests == []

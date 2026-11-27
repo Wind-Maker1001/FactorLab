@@ -1,6 +1,7 @@
 """Causal per-symbol observations for the public strategy event envelope."""
 from datetime import timedelta
 from decimal import Decimal
+from itertools import islice
 import json
 
 from factorlab.trading.contracts import utc
@@ -12,12 +13,43 @@ TYPES = frozenset({'closed_bar', 'quote', 'order_event', 'funding_forecast',
                    'funding_settlement', 'volatility'})
 
 
+def qualify_instance_data(spec):
+    from factorlab.integrations.binance.market import symbol_name
+    from factorlab.strategies.loader import StrategyPackageError
+    from .demo_market_feed import INTERVALS, SOURCE
+
+    schedule = spec.schedule
+    if (schedule['kind'] != 'interval' or schedule['interval_seconds'] not in INTERVALS.values()
+            or not set(spec.data['data_types']) <= {
+                'closed_bar', 'order_event', 'funding_forecast', 'funding_settlement'
+            }):
+        raise StrategyPackageError('unsupported Binance Demo schedule or observations')
+    if spec.data.get('source', SOURCE) != SOURCE or spec.data.get('price_basis', 'raw') != 'raw':
+        raise StrategyPackageError('Binance Demo requires raw observations from its declared feed')
+    for symbol, declarations in spec.data.get('references', {}).items():
+        try:
+            symbol_name(symbol)
+        except ValueError as error:
+            raise StrategyPackageError('invalid Binance Demo reference symbol') from error
+        for kind, declaration in declarations.items():
+            if declaration['source'] != SOURCE:
+                raise StrategyPackageError('unsupported Binance Demo reference source')
+            if kind == 'closed_bar':
+                if declaration['price_basis'] != 'raw' or declaration['interval_seconds'] != schedule['interval_seconds']:
+                    raise StrategyPackageError('Binance Demo reference bars require raw, aligned bars')
+            elif kind not in {'funding_forecast', 'funding_settlement'}:
+                raise StrategyPackageError('unsupported Binance Demo reference observations')
+
+
 class DemoStrategyContext:
     def __init__(self, store):
         self.store = store
         self.store.db.execute('''CREATE TABLE IF NOT EXISTS demo_strategy_observations (
             id TEXT PRIMARY KEY, symbol TEXT NOT NULL, kind TEXT NOT NULL,
             observed_at TEXT NOT NULL, payload TEXT NOT NULL)''')
+        self.store.db.execute('CREATE INDEX IF NOT EXISTS demo_strategy_observations_range '
+            'ON demo_strategy_observations(symbol, kind, observed_at)')
+
 
     def observe(self, symbol, kind, *, event_id, observed_at, effective_at, source, payload):
         utc(observed_at)
@@ -42,7 +74,16 @@ class DemoStrategyContext:
                 (key, symbol, kind, observed_at.isoformat(), encoded))
         return True
 
-    def symbols(self, symbols, *, at, history_limit):
+    def history(self, symbol, kind, *, at, history_limit, source=None):
+        rows = self.store.db.execute('SELECT id,payload FROM demo_strategy_observations '
+            'WHERE symbol=? AND kind=? AND observed_at<=? ORDER BY observed_at DESC,rowid DESC LIMIT ?',
+            (symbol, kind, at.isoformat(), history_limit if source is None else -1))
+        observations = ((key, decode(json.loads(raw))) for key, raw in rows)
+        return list(reversed(list(islice(
+            ((key, value) for key, value in observations if source is None or value['source'] == source),
+            history_limit))))
+
+    def symbols(self, symbols, *, at, history_limit, data_types=TYPES):
         utc(at)
         if type(history_limit) is not int or history_limit < 1:
             raise ValueError('positive strategy history limit required')
@@ -50,14 +91,11 @@ class DemoStrategyContext:
         for symbol in symbols:
             history = {}
             watermarks = []
-            for kind in sorted(TYPES):
-                rows = self.store.db.execute('''SELECT id,payload FROM demo_strategy_observations
-                    WHERE symbol=? AND kind=? AND observed_at<=?
-                    ORDER BY observed_at DESC,rowid DESC LIMIT ?''',
-                    (symbol, kind, at.isoformat(), history_limit)).fetchall()
+            for kind in sorted(data_types):
+                rows = self.history(symbol, kind, at=at, history_limit=history_limit)
                 if rows:
-                    history[kind] = [decode(json.loads(row[1])) for row in reversed(rows)]
-                    watermarks.append((kind, rows[0][0]))
+                    history[kind] = [value for _, value in rows]
+                    watermarks.append((kind, rows[-1][0]))
             result[symbol] = dict(watermark=identity(watermarks),
                 observations={kind: rows[-1] for kind, rows in history.items()}, history=history)
         return result
@@ -67,13 +105,8 @@ class DemoStrategyContext:
         from factorlab.strategies.events import validate_event
         from factorlab.strategies.protocol import V2
         symbols = self.symbols(spec.symbols, at=event_time,
-                               history_limit=spec.data['history_limit'])
-        declared = set(spec.data['data_types'])
+                               history_limit=spec.data['history_limit'], data_types=spec.data['data_types'])
         for context in symbols.values():
-            context['observations'] = {kind: value for kind, value in context['observations'].items()
-                                       if kind in declared}
-            context['history'] = {kind: value for kind, value in context['history'].items()
-                                  if kind in declared}
             context['watermark'] = identity(context['history'])
         return validate_event(dict(protocol=V2, binding=binding, event_id=event_id,
             event_time=event_time, data_type=data_type, symbols=symbols,
