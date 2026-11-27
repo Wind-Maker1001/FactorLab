@@ -235,8 +235,9 @@ class DemoSymbolCollections:
         """Schedule or collect one page without waiting on another symbol's GET."""
         return self._collect((symbol, interval), self._read_bars, symbol, interval, after, history_limit)
 
-    def funding(self, symbol, *, after):
-        return self._collect((symbol, 'funding'), self._read_funding, symbol, after)
+    def funding(self, symbol, *, after,
+                kinds=frozenset({'funding_settlement', 'funding_forecast'}), limit=1000):
+        return self._collect((symbol, 'funding'), self._read_funding, symbol, after, kinds, limit)
 
     def _collect(self, key, read, *args):
         from concurrent.futures import ThreadPoolExecutor
@@ -258,17 +259,23 @@ class DemoSymbolCollections:
         return job.result()
 
     @staticmethod
-    def _read_funding(reader, symbol, after):
-        from .demo_market_feed import timestamp
-        params = dict(symbol=symbol, limit=1000)
-        if after is not None:
-            params['startTime'] = after
-        rows = reader.request('GET', '/fapi/v1/fundingRate', params, signed=False)
-        forecast = reader.request('GET', '/fapi/v1/premiumIndex', dict(symbol=symbol), signed=False)
+    def _read_funding(reader, symbol, after, kinds, limit):
+        from .demo_market_feed import SOURCE, timestamp
+
+        rows, forecast = [], None
+        if 'funding_settlement' in kinds:
+            params = dict(symbol=symbol, limit=limit)
+            if after is not None:
+                params['startTime'] = after
+            rows = reader.request('GET', '/fapi/v1/fundingRate', params, signed=False)
+            if not isinstance(rows, list) or len(rows) > limit:
+                raise FeedPaused('INVALID_FUNDING_SETTLEMENT')
+        if 'funding_forecast' in kinds:
+            forecast = reader.request('GET', '/fapi/v1/premiumIndex', dict(symbol=symbol), signed=False)
+            if not isinstance(forecast, dict):
+                raise FeedPaused('INVALID_FUNDING_FORECAST')
         reading = reader.demo_time(min_valid_seconds=5)
         observed_at = timestamp(reading.upper_ms)
-        if not isinstance(rows, list) or len(rows) > 1000 or not isinstance(forecast, dict):
-            raise FeedPaused('INVALID_FUNDING_OBSERVATION')
         observations = []
         previous = None
         for row in rows:
@@ -283,18 +290,19 @@ class DemoSymbolCollections:
             previous = effective_at
             event_id = symbol + ':' + str(row['fundingTime'])
             observations.append(dict(kind='funding_settlement', event_id=event_id,
-                observed_at=observed_at, effective_at=effective_at, source='BINANCE_USDM_DEMO_REST',
+                observed_at=observed_at, effective_at=effective_at, source=SOURCE,
                 payload=dict(event_id=event_id, funding_rate=rate, mark_price=mark)))
-        if forecast['symbol'] != symbol or type(forecast['time']) is not int:
-            raise FeedPaused('INVALID_FUNDING_FORECAST')
-        rate, mark = Decimal(forecast['lastFundingRate']), Decimal(forecast['markPrice'])
-        if (not rate.is_finite() or not mark.is_finite() or mark <= 0
-                or timestamp(forecast['time']) > observed_at):
-            raise FeedPaused('INVALID_FUNDING_FORECAST')
-        observations.append(dict(kind='funding_forecast',
-            event_id=symbol + ':' + str(forecast['time']), observed_at=observed_at,
-            effective_at=timestamp(forecast['nextFundingTime']), source='BINANCE_USDM_DEMO_REST',
-            payload=dict(funding_rate=rate, mark_price=mark)))
+        if forecast is not None:
+            if forecast['symbol'] != symbol or type(forecast['time']) is not int:
+                raise FeedPaused('INVALID_FUNDING_FORECAST')
+            rate, mark = Decimal(forecast['lastFundingRate']), Decimal(forecast['markPrice'])
+            if (not rate.is_finite() or not mark.is_finite() or mark <= 0
+                    or timestamp(forecast['time']) > observed_at):
+                raise FeedPaused('INVALID_FUNDING_FORECAST')
+            observations.append(dict(kind='funding_forecast',
+                event_id=symbol + ':' + str(forecast['time']), observed_at=observed_at,
+                effective_at=timestamp(forecast['nextFundingTime']), source=SOURCE,
+                payload=dict(funding_rate=rate, mark_price=mark)))
         return observations
 
     @staticmethod

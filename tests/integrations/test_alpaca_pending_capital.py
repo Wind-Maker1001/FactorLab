@@ -2,6 +2,7 @@
 from contextlib import closing
 from dataclasses import replace
 from decimal import Decimal as D
+from types import SimpleNamespace
 
 import pytest
 
@@ -13,6 +14,7 @@ from factorlab.trading.portfolio_execution import plan_identity
 from test_alpaca_instance_runtime import Account
 from test_alpaca_instance_switch import package, request
 from test_alpaca_portfolio import NOW
+from test_alpaca_scheduling import calendar
 
 
 class OfficialAccount(Account):
@@ -22,6 +24,7 @@ class OfficialAccount(Account):
 
 def test_restarted_alpaca_owner_protects_frozen_decision_before_plan_and_ack(tmp_path):
     manifest = package(tmp_path, '1', symbols=('SPY',))
+    successor = package(tmp_path, '2', symbols=('SPY',))
     package_id = manifest['package_id']
     donor = dict(market='ALPACA_US_EQUITY', account_id='paper',
                  strategy_id='alpaca-balanced', instance_id='donor', allocation_id='donor-usd')
@@ -35,6 +38,9 @@ def test_restarted_alpaca_owner_protects_frozen_decision_before_plan_and_ack(tmp
         instances=[dict(binding=binding, funding=dict(capital='40', initial_cash='40'))
                    for binding in (donor, recipient)])
     account = OfficialAccount()
+    account.http = SimpleNamespace(request=lambda *args, **kwargs: [])
+    account.read_corporate_activities = lambda **kwargs: []
+    service = SimpleNamespace(calendar=calendar(), client=SimpleNamespace(feed='iex'))
     event_id = 'committed-before-plan'
     session = '2026-11-24'
     identity = plan_identity('paper', 'donor', session, package_id + ':' + event_id)
@@ -78,3 +84,18 @@ def test_restarted_alpaca_owner_protects_frozen_decision_before_plan_and_ack(tmp
         assert host.store.cash('paper', 'recipient') == D(40)
         assert account.cash == D(100)
         assert account.posts == []
+
+        request(host.views['donor'], successor, 'resize-then-switch')
+
+    with closing(StrategyInstances(tmp_path, account, configuration, clock=lambda: NOW)) as host:
+        host.tick(service, {}, NOW, account.read_account_details())
+        assert host.views['donor'].snapshot()['active'] == successor['package_id']
+        instance = host.instances['donor']
+        assert instance.runtime.package_id == successor['package_id']
+        allocation = instance.allocation(account.read_account())
+        assert (allocation['allocation_id'], allocation['capital'], allocation['cash']) == (
+            'donor-usd', D(30), D(30))
+        assert host.store.plan(identity)['request']['quantity_deltas'] == {'SPY': D(1)}
+        assert host.store.cash('paper', 'recipient') == D(40)
+        assert account.cash == D(100)
+        assert not account.posts

@@ -132,6 +132,10 @@ class InstanceDecisionRuntime:
         saved = self.store.decision(self.package_id, event['event_id'], input_identity)
         if saved is not None:
             return saved
+        model = self.strategy.binding.get('model')
+        if model is not None:
+            self.strategy.require_event_time(event['event_time'])
+            self.store.require_new_model_event(event)
         snapshot = self.store.snapshot()
         checkpoint = snapshot['checkpoint']
         try:
@@ -141,7 +145,7 @@ class InstanceDecisionRuntime:
             raise
         receipt = self.store.commit_decision(self.package_id, event['event_id'], input_identity,
             decision_payload(decision), event=event, expected_checkpoint=checkpoint,
-            expected_watermark=snapshot['watermark'])
+            expected_watermark=snapshot['watermark'], model=model)
         self.adapter.execute(receipt)
         self.store.acknowledge(receipt)
         return receipt

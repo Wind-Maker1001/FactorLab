@@ -10,6 +10,7 @@ class AlpacaDeployment:
     def __init__(self, instance, view, *, boot_id):
         self.instance, self.view, self.boot_id = instance, view, boot_id
         self.paused = False
+        self.market_service = None
 
     def quiesce(self):
         self.paused = True
@@ -61,6 +62,8 @@ class AlpacaDeployment:
 
     def prepare(self, version):
         spec = manifest_spec(self.view.manifest(version))
+        if self.market_service is not None:
+            self.instance.data.qualify(self.market_service, spec)
         allocation = self.instance.allocation(self.instance.runner.adapter.recover())
         binding = self.instance.binding
         basis = self.instance.runner.store.allocation_basis(binding['account_id'], binding['instance_id'])

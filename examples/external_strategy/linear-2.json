@@ -1,0 +1,6 @@
+{
+  "schema": "FACTORLAB_LINEAR_MODEL_V1",
+  "features": ["return_1"],
+  "coefficients": [-0.5],
+  "intercept": 0.0
+}

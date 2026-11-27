@@ -8,10 +8,14 @@ from uuid import uuid4
 
 from factorlab.strategies.decision_runtime import InstanceDecisionRuntime
 from factorlab.strategies.deployment import DeploymentController
-from factorlab.strategies.loader import LoadedStrategy
+from factorlab.strategies.events import StrategyInputUnavailable
+from factorlab.strategies.loader import LoadedStrategy, StrategyPackageError, StrategyWorkerError
+from factorlab.strategies.model import ModelNotEffective
+from factorlab.strategies.reference_data import reference_context
 from factorlab.trading import Market
 from factorlab.trading.portfolio_execution import PortfolioStore
 from factorlab.trading.storage import decode
+from .demo_market_feed import INTERVALS, SOURCE
 from .demo_instance_capability import DemoInstanceCapability
 from .demo_instance_owner import DemoInstanceOwner
 from .demo_runtime import durable_control_state
@@ -24,6 +28,7 @@ class DemoInstanceHost:
         self.releases, self.stack, self.control = Path(releases), stack, control
         self.boot_id = uuid4().hex
         self.controllers, self.adapters = {}, {}
+        self.instance_status = {}
         path = Path(directory) / 'portfolio.sqlite3'
         from .demo_legacy_migration import account_history_source, start_account_history
         if not path.is_file() and account_history_source(session) is None:
@@ -45,13 +50,60 @@ class DemoInstanceHost:
             'PRIMARY KEY(instance_id,package_id))')
         self.refresh()
 
+    def _bar_history(self, symbol, bar, limit, *, require_full=False):
+        rows = self.owner.execution.store.db.execute(
+            'SELECT payload FROM demo_instance_bars WHERE symbol=? AND interval_seconds=? AND closed_at<=? '
+            'ORDER BY closed_at DESC LIMIT ?',
+            (symbol, bar.interval_seconds, bar.closed_at.isoformat(), limit)).fetchall()
+        history = [decode(json.loads(row[0])) for row in reversed(rows)]
+        if (not history or history[-1]['closed_at'] != bar.closed_at
+                or require_full and len(history) != limit
+                or any(previous['closed_at'] != current['opened_at']
+                       for previous, current in zip(history, history[1:]))):
+            return []
+        return history
+
+    def _references(self, declarations, bar):
+        from factorlab.strategies.events import ReferenceUnavailable
+
+        result = {}
+        for symbol, kinds in declarations.items():
+            histories = {}
+            for kind, requirement in kinds.items():
+                limit = requirement['history_limit']
+                if kind == 'closed_bar':
+                    bars = self._bar_history(symbol, bar, limit, require_full=True)
+                    history = [dict(observed_at=value['closed_at'], effective_at=value['closed_at'],
+                                    source=SOURCE, payload=dict(value, price_basis='raw'))
+                               for value in bars]
+                else:
+                    history = [value for _, value in self.context.history(
+                        symbol, kind, at=bar.closed_at, history_limit=limit, source=requirement['source'])]
+                if len(history) != limit:
+                    raise ReferenceUnavailable(f'INCOMPLETE_REFERENCE:{symbol}:{kind}')
+                histories[kind] = history
+            result[symbol] = reference_context(histories)
+        return result
+
+    def _allocation(self, binding, spec):
+        store = self.owner.execution.executor.store
+        account, owner = binding['account_id'], binding['instance_id']
+        allocation = store.allocation(account, owner)
+        fields = spec.data.get('allocation_fields', ())
+        if 'currency' in fields:
+            allocation['currency'] = 'USDT'
+        if 'cash' in fields:
+            allocation['cash'] = store.cash(account, owner)
+        if 'positions' in fields:
+            allocation['positions'] = store.holdings(account, owner)
+        return allocation
+
     def closed_bar(self, bar, *, historical=False):
         from dataclasses import asdict
         from datetime import timedelta
         from factorlab.strategies.protocol import V2
         from factorlab.trading.storage import dumps
         from factorlab.trading.realtime import PersistenceConflict, identity
-        from .demo_market_feed import SOURCE
         if self.control.desired() != 'RUNNING' or durable_control_state(self.runtime) is not None:
             return {}
         if not bar.complete or bar.source != SOURCE or bar.closed_at > self.session._now():
@@ -72,7 +124,10 @@ class DemoInstanceHost:
             return results
         for instance_id, (runtime, _) in tuple(self.owner.instances.items()):
             spec = runtime.strategy.spec
-            if (bar.symbol not in spec.symbols or 'closed_bar' not in spec.data['data_types']
+            references = spec.data.get('references', {})
+            reference_bar = 'closed_bar' in references.get(bar.symbol, {})
+            if (bar.symbol not in spec.symbols and not reference_bar
+                    or 'closed_bar' not in spec.data['data_types']
                     or spec.schedule['kind'] != 'interval'
                     or spec.schedule['interval_seconds'] != bar.interval_seconds):
                 continue
@@ -85,14 +140,9 @@ class DemoInstanceHost:
                 continue
             symbols = {}
             for symbol in spec.symbols:
-                rows = store.db.execute('SELECT payload FROM demo_instance_bars '
-                    'WHERE symbol=? AND interval_seconds=? AND closed_at<=? '
-                    'ORDER BY closed_at DESC LIMIT ?',
-                    (symbol, bar.interval_seconds, mark, spec.data['history_limit'])).fetchall()
-                history = [decode(json.loads(row[0])) for row in reversed(rows)]
-                if (not history or history[-1]['closed_at'] != bar.closed_at
-                        or any(previous['closed_at'] != current['opened_at']
-                               for previous, current in zip(history, history[1:]))):
+                history = self._bar_history(symbol, bar, spec.data['history_limit'],
+                                            require_full=bool(references or runtime.strategy.binding.get('model')))
+                if not history:
                     break
                 observations = [dict(observed_at=value['closed_at'], effective_at=value['closed_at'],
                     source=SOURCE, payload=value) for value in history]
@@ -100,23 +150,27 @@ class DemoInstanceHost:
                     history={'closed_bar': observations})
             if len(symbols) != len(spec.symbols):
                 continue
-            supplemental = self.context.symbols(spec.symbols, at=bar.closed_at,
-                history_limit=spec.data['history_limit'])
+            try:
+                reference_inputs = self._references(references, bar)
+            except StrategyInputUnavailable as error:
+                self.instance_status[instance_id] = dict(state='WAITING_DATA', reason=str(error))
+                continue
             declared = set(spec.data['data_types']) - {'closed_bar'}
+            supplemental = self.context.symbols(spec.symbols, at=bar.closed_at,
+                history_limit=spec.data['history_limit'], data_types=declared)
             for symbol, context in symbols.items():
                 extra = supplemental[symbol]
-                context['observations'].update({kind: value for kind, value in extra['observations'].items()
-                                                if kind in declared})
-                context['history'].update({kind: value for kind, value in extra['history'].items()
-                                          if kind in declared})
+                context['observations'].update(extra['observations'])
+                context['history'].update(extra['history'])
                 if len(context['history']) > 1:
                     context['watermark'] = identity(context['history'])
             binding = runtime.store.binding()
-            allocation = self.owner.execution.executor.store.allocation(binding['account_id'], instance_id)
             event = dict(protocol=V2, binding=binding,
                 event_id=event_id,
                 event_time=bar.closed_at, data_type='closed_bar', symbols=symbols,
-                account=self.session.status(), allocation=allocation)
+                account=self.session.status(), allocation=self._allocation(binding, spec))
+            if references:
+                event['references'] = reference_inputs
             if spec.decision_kind == 'orders':
                 from .demo_grid_context import grid_context
                 context = grid_context(self, runtime)
@@ -135,7 +189,11 @@ class DemoInstanceHost:
         if not self.owner.before_decision(instance_id):
             return None
         runtime, _ = self.owner.instances[instance_id]
-        validate_event(event, runtime.strategy.spec)
+        try:
+            validate_event(event, runtime.strategy.spec)
+        except StrategyInputUnavailable as error:
+            self.instance_status[instance_id] = dict(state='WAITING_DATA', reason=str(error))
+            return None
         if event['binding'] != runtime.store.binding():
             raise SafetyBlocked('event routed to another instance binding')
         if event['event_time'] > self.session._now():
@@ -160,7 +218,16 @@ class DemoInstanceHost:
                     and (runtime.strategy.spec.decision_kind != 'orders' or receipt['decision']['kind'] != 'orders')):
                 from factorlab.strategies.identity import content_identity
                 return runtime.store.decision(runtime.package_id, event['event_id'], content_identity(event))
-        return runtime.decide(event)
+        try:
+            result = runtime.decide(event)
+        except (StrategyInputUnavailable, ModelNotEffective) as error:
+            self.instance_status[instance_id] = dict(state='WAITING_DATA', reason=str(error))
+            return None
+        except StrategyWorkerError as error:
+            self.instance_status[instance_id] = dict(state='STRATEGY_FAILED', reason=type(error).__name__)
+            return None
+        self.instance_status[instance_id] = dict(state='RUNNING')
+        return result
 
     @staticmethod
     def registered(registry, account_id):
@@ -201,8 +268,17 @@ class DemoInstanceHost:
             self.controllers[instance_id], self.adapters[instance_id] = controller, adapter
             active = view.snapshot()['active']
             if active is not None:
-                adapter.prepare(active)
-                self.install(adapter)
+                try:
+                    adapter.prepare(active)
+                except StrategyPackageError as error:
+                    self.instance_status[instance_id] = dict(state='PACKAGE_UNAVAILABLE',
+                                                             reason=type(error).__name__)
+                    if (view.snapshot()['previous'] is not None
+                            and view.pending() is None and view.activation_callback() is None
+                            and not view.outstanding(active)):
+                        view.rollback('PACKAGE_UNAVAILABLE', expected_active=active)
+                else:
+                    self.install(adapter)
 
     def install(self, adapter):
         runtime = adapter.decision_runtime
@@ -211,6 +287,7 @@ class DemoInstanceHost:
             self.owner.instances[instance_id] = runtime, adapter.controller
         else:
             self.owner.attach(runtime, adapter.controller)
+        self.instance_status[instance_id] = dict(state='READY')
 
     def collect_order_events(self):
         """Deliver original confirmations only to their persisted instance owner."""
@@ -253,8 +330,7 @@ class DemoInstanceHost:
                                 event_time=at, data_type='order_event',
                                 symbols={symbol: dict(watermark=report.event_id,
                                     observations={'order_event': observation}, history={})},
-                                account=self.session.status(), allocation=self.owner.execution.executor.store.allocation(
-                                    binding['account_id'], instance_id))
+                                account=self.session.status(), allocation=self._allocation(binding, runtime.strategy.spec))
                             if runtime.strategy.spec.decision_kind == 'orders':
                                 from .demo_grid_context import grid_context
                                 context = grid_context(self, runtime)
@@ -273,21 +349,47 @@ class DemoInstanceHost:
         from factorlab.errors import DataQualityError
         from .demo_market_feed import FeedPaused
         from .protocol import ExchangeError
+
         sources = self.owner.market_sources
         if sources is None:
             return
-        symbols = {symbol for runtime, _ in self.owner.instances.values()
-                   if {'funding_settlement', 'funding_forecast'} & set(runtime.strategy.spec.data['data_types'])
-                   for symbol in runtime.strategy.spec.symbols}
-        for symbol in sorted(symbols):
-            rows = self.owner.execution.store.db.execute('SELECT payload FROM demo_strategy_observations '
-                "WHERE symbol=? AND kind='funding_settlement'", (symbol,)).fetchall()
+        funding_kinds = {'funding_settlement', 'funding_forecast'}
+        traded, references, settlement_limits = {}, {}, {}
+        for runtime, _ in self.owner.instances.values():
+            spec = runtime.strategy.spec
+            declared = funding_kinds.intersection(spec.data['data_types'])
+            if declared:
+                for symbol in spec.symbols:
+                    traded.setdefault(symbol, set()).update(declared)
+            for symbol, streams in spec.data.get('references', {}).items():
+                declared = funding_kinds.intersection(streams)
+                if declared:
+                    references.setdefault(symbol, set()).update(declared)
+                if 'funding_settlement' in declared:
+                    settlement_limits[symbol] = max(settlement_limits.get(symbol, 0),
+                        streams['funding_settlement']['history_limit'])
+        store = self.owner.execution.store
+        for symbol in sorted(traded.keys() | references.keys()):
+            rows = store.db.execute('SELECT payload FROM demo_strategy_observations '
+                "WHERE symbol=? AND kind='funding_settlement'", (symbol,))
             latest = max((decode(json.loads(raw))['effective_at'] for raw, in rows), default=None)
-            after = None if latest is None else round(latest.timestamp()*1000) + 1
+            after = None if latest is None else round(latest.timestamp() * 1000) + 1
             try:
-                observations = sources.funding(symbol, after=after)
-            except ExchangeError:
-                raise
+                if symbol in references:
+                    kinds = references[symbol] | traded.get(symbol, set())
+                    limit = 1000 if symbol in traded else settlement_limits.get(symbol, 1)
+                    if 'funding_settlement' in kinds:
+                        history = self.context.history(symbol, 'funding_settlement',
+                            at=self.session._now(), history_limit=limit, source=SOURCE)
+                        if len(history) < limit:
+                            after = None
+                    observations = sources.funding(symbol, after=after, kinds=kinds, limit=limit)
+                else:
+                    observations = sources.funding(symbol, after=after)
+            except ExchangeError as error:
+                if error.code != -1121:
+                    raise
+                continue
             except (DataQualityError, FeedPaused, TimeoutError, ConnectionError):
                 continue
             if observations is not None:
@@ -295,45 +397,55 @@ class DemoInstanceHost:
                     self.context.observe(symbol, **observation)
 
     def collect_bars(self):
-        from datetime import datetime
         from factorlab.errors import DataQualityError
-        from .demo_market_feed import FeedPaused, INTERVALS
+        from factorlab.trading.strategy import ClosedBar
+        from .demo_market_feed import FeedPaused
         from .protocol import ExchangeError
+
         sources = self.owner.market_sources
         if sources is None:
             return
         intervals = {seconds: interval for interval, seconds in INTERVALS.items()}
-        requirements = {}
+        requirements, full_history = {}, set()
         for runtime, _ in tuple(self.owner.instances.values()):
             spec = runtime.strategy.spec
             if 'closed_bar' not in spec.data['data_types'] or spec.schedule['kind'] != 'interval':
                 continue
             seconds = spec.schedule['interval_seconds']
-            if seconds not in intervals:
-                raise SafetyBlocked('unsupported Demo closed-bar interval')
+            references = spec.data.get('references', {})
             for symbol in spec.symbols:
                 key = symbol, seconds
                 requirements[key] = max(requirements.get(key, 0), spec.data['history_limit'])
+                if references or runtime.strategy.binding.get('model'):
+                    full_history.add(key)
+            for symbol, streams in references.items():
+                if 'closed_bar' in streams:
+                    key = symbol, seconds
+                    requirements[key] = max(requirements.get(key, 0), streams['closed_bar']['history_limit'])
+                    full_history.add(key)
         store = self.owner.execution.store
         for (symbol, seconds), history_limit in requirements.items():
-            latest = store.db.execute('SELECT MAX(closed_at) FROM demo_instance_bars '
-                'WHERE symbol=? AND interval_seconds=?', (symbol, seconds)).fetchone()[0]
-            after = None if latest is None else round(datetime.fromisoformat(latest).timestamp() * 1000)
+            row = store.db.execute('SELECT payload FROM demo_instance_bars '
+                'WHERE symbol=? AND interval_seconds=? ORDER BY closed_at DESC LIMIT 1',
+                (symbol, seconds)).fetchone()
+            latest = None if row is None else ClosedBar(**decode(json.loads(row[0])))
+            after = None
+            if latest is not None and ((symbol, seconds) not in full_history or self._bar_history(
+                    symbol, latest, history_limit, require_full=True)):
+                after = round(latest.closed_at.timestamp() * 1000)
             try:
                 bars = sources.bars(symbol, intervals[seconds], after=after, history_limit=history_limit)
-            except ExchangeError:
-                raise
+            except ExchangeError as error:
+                if error.code != -1121:
+                    raise
+                continue
             except (DataQualityError, FeedPaused, TimeoutError, ConnectionError):
                 continue
             if bars:
                 for bar in bars:
                     self.closed_bar(bar)
             elif latest is not None:
-                from factorlab.trading.strategy import ClosedBar
-                payload = store.db.execute('SELECT payload FROM demo_instance_bars '
-                    'WHERE symbol=? AND interval_seconds=? AND closed_at=?',
-                    (symbol, seconds, latest)).fetchone()[0]
-                self.closed_bar(ClosedBar(**decode(json.loads(payload))))
+                self.closed_bar(latest)
 
     def step(self):
         if durable_control_state(self.runtime) is not None or self.control.desired() != 'RUNNING':
@@ -355,7 +467,10 @@ class DemoInstanceDeployment:
         self.controller = None
 
     def prepare(self, version):
+        from .demo_strategy_context import qualify_instance_data
+
         strategy = self.host.load(self.view, version)
+        qualify_instance_data(strategy.spec)
         binding = self.view.binding()
         allocation = self.host.owner.execution.executor.store.allocation(
             binding['account_id'], binding['instance_id'])
