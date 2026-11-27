@@ -254,7 +254,7 @@ def _worker(job):
 def memory_plan(cell, workers=1, device='cpu'):
     # Conservative admission estimate, not a measured RSS bound.
     per_path = 8*((8*cell['assets']+16)*cell['n_steps']+128)+4096
-    working = min(cell['batch_size'],cell['n_paths'])*(per_path if device=='cpu' else 32)
+    working = min(cell['batch_size'] or 4096,cell['n_paths'])*(per_path if device=='cpu' else 32)
     samples_and_statistics = cell['n_paths']*128
     return dict(estimated_in_memory_bytes=workers*(working+samples_and_statistics+256*1024**2),
         estimated_disk_working_bytes=workers*(working+256*1024**2),

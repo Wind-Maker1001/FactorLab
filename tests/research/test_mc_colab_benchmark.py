@@ -138,9 +138,11 @@ def test_cu_cost_counts_every_execution_and_rejects_incomplete_window():
         cu_cost(study,cu_before=10,cu_after=9.5,allocation_seconds=40,setup_seconds=30)
 
 
-def test_subprocess_cpu_study_and_raw_replay(tmp_path):
+@pytest.mark.parametrize('batch_size',[31,None])
+def test_subprocess_cpu_study_and_raw_replay(tmp_path,batch_size):
     pytest.importorskip('psutil')
     c=configuration()
+    c['cells'][0]['batch_size']=batch_size
     report=run_study(c,tmp_path/'study',first_seed_only=True,statistics=False)
     assert report['status']=='COMPLETED',report['failures']
     assert len(report['rows'])==2
@@ -149,6 +151,7 @@ def test_subprocess_cpu_study_and_raw_replay(tmp_path):
     assert row['asset_path_steps_per_second']==pytest.approx(row['path_steps_per_second'])
     assert row['resources']['rss_peak_bytes']>0
     assert row['engine']['compute']['execution']['backend']=='numpy'
+    assert row['engine']['compute']['execution']['batch_size']==min(batch_size or 4096,257)
     replay=json.loads((tmp_path/'study/study.json').read_text())
     assert replay['rows'][0]['metrics']==report['rows'][0]['metrics']
     assert replay['independent_seed_summary'][0]['reliability_status']=='PILOT_ONLY'

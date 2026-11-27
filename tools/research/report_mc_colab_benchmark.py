@@ -41,8 +41,15 @@ def publish(source, output):
         a,b=studies['cpu-'+suffix],studies['gpu-'+suffix]
         comparisons[suffix]=dict(statistics=compare_studies(a,b),performance=performance_comparison(a,b))
     write_json(output/'comparisons.json',comparisons)
-    lines=['# Local measured results','',
-        'Hardware: i7-14700KF (single process, BLAS threads=1) and RTX 2070 8GB. Float64 throughout.',
+    environments=[]
+    for name,study in studies.items():
+        config=json.loads((source/name/'configuration.json').read_text(encoding='utf-8'))
+        gpus=sorted({row['resources']['gpu']['name'] for row in study['rows']
+            if row['resources']['gpu'] is not None})
+        environments.append(f"- {name}: host={json.dumps(study['environment']['host'],sort_keys=True)}; "
+            f"GPU={', '.join(gpus) or 'none'}; workers={study['workers']}; BLAS threads={config['blas_threads']}.")
+    lines=['# Measured results','',
+        'Float64 throughout. Recorded execution environments:',*environments,
         'Times include exact engine summary, exclude separately recorded external interval analysis. Rows with one seed are performance/capacity evidence, not formal statistical acceptance.','',
         '## Matched steady performance','',
         '| Study / workload | Paths | Assets | Steps | CPU s | GPU s | Speedup | Cold CPU / GPU s |',

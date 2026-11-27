@@ -30,14 +30,17 @@ def main():
     source = Path('/content/mc-colab-02-source')
     command('git', 'clone', '--no-checkout', 'https://github.com/Wind-Maker1001/FactorLab.git', str(source))
     command('git', 'checkout', '--detach', args.commit, cwd=source)
-    command(sys.executable, '-m', 'pip', 'install', '-e', str(source)+'[monte-carlo-benchmark]')
+    command(sys.executable, '-m', 'pip', 'install', '-e', str(source)+'[monte-carlo-cuda,monte-carlo-benchmark]')
     # A new interpreter imports only after installation and verifies loaded versions.
-    command(sys.executable, str(source/'tools/research/colab_mc_colab_02.py'),
-        '--execute', str(output), '--source', str(source), '--source-commit', args.commit)
-    (output/'setup-and-study.json').write_text(json.dumps(dict(
-        commit=args.commit, deployment_and_study_seconds=monotonic()-started,
-        cost_scope='controller allocation lifecycle includes initial wheel installation and release'), indent=2))
-    bundle_results(output, args.commit)
+    try:
+        command(sys.executable, str(source/'tools/research/colab_mc_colab_02.py'),
+            '--execute', str(output), '--source', str(source), '--source-commit', args.commit)
+    finally:
+        (output/'setup-and-study.json').write_text(json.dumps(dict(
+            commit=args.commit, deployment_and_study_seconds=monotonic()-started,
+            cost_scope='controller allocation lifecycle includes initial wheel installation and release'), indent=2))
+        # TODO: Extend the controller to download failure bundles before releasing the runtime.
+        bundle_results(output, args.commit)
 
 
 def bundle_results(output, commit):
@@ -52,8 +55,8 @@ def bundle_results(output, commit):
     report = dict(schema='MC_COLAB_02_ARTIFACT_NPZ_V1', commit=commit,
         archive='samples.npz', encoding='uint8 arrays containing original file bytes',
         manifest=manifest,
-        stages=json.loads((output / 'stages.json').read_text()),
-        environment=json.loads((output / 'environment.json').read_text()))
+        stages=json.loads((output / 'stages.json').read_text()) if (output/'stages.json').exists() else [],
+        environment=json.loads((output / 'environment.json').read_text()) if (output/'environment.json').exists() else None)
     (output / 'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
 
 
@@ -95,10 +98,16 @@ def execute(output, source, commit):
             continue
         config=json.loads((source/'configs/research'/filename).read_text())
         config['budget_seconds']=remaining-30
-        result=run_study(config,output/name,device=device,
-            first_seed_only=first,statistics=not points)
+        try:
+            result=run_study(config,output/name,device=device,
+                first_seed_only=first,statistics=not points)
+        except Exception as error:
+            outcomes.append(dict(stage=name,status='FAILED',error=f'{type(error).__name__}: {error}'))
+            write_json(output/'stages.json',outcomes)
+            raise
         outcomes.append(dict(stage=name,status=result['status'],rows=len(result['rows'])))
         if result['status']=='FAILED':
+            write_json(output/'stages.json',outcomes)
             raise RuntimeError(f'Cloud stage failed: {name}; inspect retained artifacts')
     write_json(output/'stages.json',outcomes)
 

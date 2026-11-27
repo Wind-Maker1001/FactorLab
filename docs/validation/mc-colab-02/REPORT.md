@@ -12,6 +12,10 @@ The CUDA-only fixed-input comparison belongs to `tests/research/cuda_monte_carlo
 
 Cloud execution completed on an officially allocated NVIDIA L4 (23034 MiB, driver 580.82.07), 12 vCPU and approximately 53 GiB host RAM using Python 3.13.16 and source revision `2f9bb3e7fff2d1f94175238cf1d825ea126a3356`. All three registered stages completed: GPU five-seed reliability (60 run rows), GPU scale (21 rows), and CPU five-seed reliability (60 rows). A fresh Python process verified loaded NumPy 2.3.5, CuPy CUDA13 14.0.1, SciPy 1.16.3 and psutil 5.9.5 against installed metadata. The downloaded report and NPZ contain 400 original evidence files. [Compact cloud studies, configurations, environment, allocation receipt and comparisons](cloud-evidence/) retain the measurement and statistical evidence. The instance was automatically released and the service reported no active sessions.
 
+## Failure evidence retention
+
+The cloud launcher packages retained stage outcomes and artifacts even when its execution subprocess fails, preserving the nonzero failure. TODO: Extend the separate controller's failure path to download this bundle before releasing the runtime; its current success-only download path can still discard partial cloud evidence. This controller extension is outside the completed study run. The measured run completed every stage and downloaded its evidence before release.
+
 ## Implementation measurement scope
 
 The experiment driver invokes the existing float64 `MonteCarloRunner`; the engine's default risk definitions are unchanged. Cold launch-to-first-completion includes subprocess startup, imports, input generation, resource instrumentation and CUDA discovery. Per-run runner wall time starts after resource sampler setup, and therefore must not be described as uninitialized CUDA context latency. Warm timings include the runner's exact risk summary but exclude external confidence-interval analysis, whose time is separately recorded. A whole-job resource sampler includes that analysis. GPU memory measurements cover the whole allocated device; private pool peak is a distinct metric.
