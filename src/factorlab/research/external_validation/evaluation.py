@@ -214,7 +214,11 @@ def evaluate_champion_and_status(
         is_native = base_results[(s, "target", "normal")].signal_source == "NATIVE_FL"
         if s == "v69":
             src_status = "PASSED" if qlib_v69_pass else "FAILED"
-            sig_status = "PASSED_NATIVE_FL" if is_native and v69_diff_f32 and v69_diff_f32["layer2_targets"]["max_abs_weight_diff"] < 1e-10 else "FAILED"
+            v69_l2_ok = bool(
+                v69_diff_f32
+                and (v69_diff_f32.get("layer_checks") or {}).get("layer2_targets_exact", False)
+            )
+            sig_status = "PASSED_NATIVE_FL" if is_native and v69_l2_ok else "FAILED"
             full_rep_status = "PASSED_NATIVE_FL" if is_native and v69_diff_f32 and v69_diff_f32["exact_reference_match"] else "FAILED"
         else:
             diffs_s = v179_diffs_f32 if s == "v179" else v182_diffs_f32

@@ -650,5 +650,95 @@
         }
       }
     }
+  },
+  "phase2_fl_independent_replay": {
+    "qlib_float32_exact_matches": "24/24",
+    "float64_exact_matches": "0/24",
+    "tolerances": {
+      "target_weight": {
+        "abs": 1e-10,
+        "rel": 1e-10
+      },
+      "requested_qty": {
+        "abs": 1e-06,
+        "rel": 1e-09
+      },
+      "filled_qty": {
+        "abs": 1e-06,
+        "rel": 1e-09
+      },
+      "fill_price_usd": {
+        "abs": 1e-06,
+        "rel": 1e-09
+      },
+      "fill_turnover_usd": {
+        "abs": 0.0001,
+        "rel": 1e-09
+      },
+      "fill_fee_usd": {
+        "abs": 1e-06,
+        "rel": 1e-09
+      },
+      "daily_nav_usd": {
+        "abs": 0.0001,
+        "rel": 1e-10
+      },
+      "daily_weight": {
+        "abs": 1e-08,
+        "rel": 1e-08
+      },
+      "daily_value_usd": {
+        "abs": 0.0001,
+        "rel": 1e-10
+      },
+      "daily_fee_usd": {
+        "abs": 1e-06,
+        "rel": 1e-09
+      },
+      "attribution_usd": {
+        "abs": 0.0001,
+        "rel": 1e-10
+      },
+      "sp500_metric": {
+        "abs": 1e-07,
+        "rel": 1e-07
+      },
+      "qqq_metric": {
+        "abs": 1e-07,
+        "rel": 1e-07
+      },
+      "accounting_residual_usd": {
+        "abs": 0.0001,
+        "rel": 0.0
+      }
+    },
+    "max_diffs_qlib_float32": {
+      "target_weight": 9.71445146547012e-17,
+      "requested_qty": 1.4551915228366852e-10,
+      "filled_qty": 1.4551915228366852e-10,
+      "fill_price_usd": 5.684341886080802e-14,
+      "fill_turnover_usd": 5.820766091346741e-10,
+      "fill_fee_usd": 1.2505552149377763e-12,
+      "daily_weight": 1.5543122344752192e-15,
+      "daily_nav_usd": 2.7939677238464355e-09,
+      "daily_value_usd": 2.7939677238464355e-09,
+      "daily_fee_usd": 4.092726157978177e-12,
+      "accounting_residual_usd": 4.889443516731262e-09,
+      "attribution_usd": 2.3865140974521637e-09,
+      "sp500_metric": 1.9095836023552692e-14,
+      "qqq_metric": 1.9095836023552692e-14
+    },
+    "max_diffs_float64": {
+      "target_weight": 9.71445146547012e-17,
+      "requested_qty": 0.02030657560680993,
+      "filled_qty": 0.02030657560680993,
+      "fill_price_usd": 3.0466062071354827e-05,
+      "fill_fee_usd": 0.00016581812997173984,
+      "daily_weight": 3.224340350271859e-08,
+      "daily_nav_usd": 0.36774224741384387,
+      "attribution_usd": 0.1244556293822825,
+      "sp500_metric": 1.1139960385264658e-06,
+      "qqq_metric": 1.1139960385264658e-06
+    }
   }
 }

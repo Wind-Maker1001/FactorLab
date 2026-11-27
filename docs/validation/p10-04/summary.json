@@ -2,14 +2,19 @@
   "schema": "FACTORLAB_EXTERNAL_VALIDATION_SUMMARY_V1",
   "study_id": "p10-04-external-validation",
   "code": {
-    "commit": "388a8ee0f28e4b90ee7dbb20403a29c7fe085898",
-    "tree": "73bbf14b2a7601d8ed884892e1c2a6710c2d8ab6"
+    "commit": "5f924f5ca82febbc262aef82ab190ca73d50d90e",
+    "tree": "59d70aa6a307b91ec9a5a32a70d723e87591460f"
   },
   "phase1_qlib_status": "PASSED",
   "phase1_qlib_passed": "23/23",
   "phase1_v69_qlib_verified": true,
   "phase2_fl_exact_qlib_f32": 24,
   "phase2_fl_total_qlib_f32": 24,
+  "phase2_fl_exact_float64": 0,
+  "phase2_fl_total_float64": 24,
+  "phase6_cross_market_calendar": "DAILY_NATURAL_UTC_CALENDAR_235959_UTC",
+  "phase6_cross_market_natural_days": 193,
+  "phase6_cross_market_rebalancing_assumed": false,
   "phase9_champion_verdict": "INCONCLUSIVE",
   "phase9_promoted": false,
   "phase9_status_matrix": {
@@ -44,5 +49,5 @@
       "CHAMPION_VERDICT": "INCONCLUSIVE"
     }
   },
-  "output_dir": "T:\\FactorLab_Audit_Temp\\p10-04\\full_run_v1"
+  "output_dir": "T:\\FactorLab_Audit_Temp\\p10-04\\recompute_p2_fixes"
 }

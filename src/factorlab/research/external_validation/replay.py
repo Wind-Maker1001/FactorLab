@@ -620,9 +620,10 @@ class FactorLabIndependentBacktester:
         by_symbol = (qty_history.shift(1, fill_value=0.0) * (close_win - prev_win)).fillna(0.0) + trade_pnl
         attribution = by_symbol.sum().rename("net_usd")
 
-        # Independent accounting reconciliation residual
+        # Independent accounting reconciliation residual (double-entry close mark vs cumulated PnL)
         pnl_recon = self.initial_capital + by_symbol.sum(axis=1).cumsum()
-        pnl_error = float((pnl_recon - daily["nav"]).abs().max())
+        float64_nav = daily["cash"] + daily["value"]
+        pnl_error = float((pnl_recon - float64_nav).abs().max())
         min_cash = float(daily["cash"].min())
         min_qty = float(qty_history.min().min())
 
@@ -675,13 +676,153 @@ class FactorLabIndependentBacktester:
         )
 
 
+# Pre-determined seven-layer numerical tolerances (frozen engineering contract; never relaxed post-hoc)
+REFERENCE_REPLAY_TOLERANCES: dict[str, dict[str, float]] = {
+    "target_weight": {"abs": 1e-10, "rel": 1e-10},
+    "requested_qty": {"abs": 1e-6, "rel": 1e-9},
+    "filled_qty": {"abs": 1e-6, "rel": 1e-9},
+    "fill_price_usd": {"abs": 1e-6, "rel": 1e-9},
+    "fill_turnover_usd": {"abs": 1e-4, "rel": 1e-9},
+    "fill_fee_usd": {"abs": 1e-6, "rel": 1e-9},
+    "daily_nav_usd": {"abs": 1e-4, "rel": 1e-10},
+    "daily_weight": {"abs": 1e-8, "rel": 1e-8},
+    "daily_value_usd": {"abs": 1e-4, "rel": 1e-10},
+    "daily_fee_usd": {"abs": 1e-6, "rel": 1e-9},
+    "attribution_usd": {"abs": 1e-4, "rel": 1e-10},
+    "sp500_metric": {"abs": 1e-7, "rel": 1e-7},
+    "qqq_metric": {"abs": 1e-7, "rel": 1e-7},
+    "accounting_residual_usd": {"abs": 1e-4, "rel": 0.0},
+}
+
+REQUIRED_BENCHMARK_METRIC_KEYS: tuple[str, ...] = (
+    "net_return",
+    "max_dd",
+    "cagr",
+    "sharpe",
+    "sortino",
+    "calmar",
+    "beta",
+    "alpha",
+)
+
+
+def _compare_numeric_arrays(
+    fl_vals: np.ndarray,
+    ref_vals: np.ndarray,
+    tol: dict[str, float],
+    *,
+    allow_empty: bool = False,
+) -> dict[str, Any]:
+    """Fail-closed elementwise comparison requiring finiteness and |fl - ref| <= abs_tol + rel_tol * |ref|."""
+    a = np.asarray(fl_vals, dtype=np.float64)
+    b = np.asarray(ref_vals, dtype=np.float64)
+    if a.shape != b.shape:
+        return {
+            "passed": False,
+            "max_abs_diff": float("nan"),
+            "max_rel_diff": float("nan"),
+            "has_non_finite": True,
+            "reason": f"shape_mismatch:{a.shape}!={b.shape}",
+        }
+    if a.size == 0:
+        return {
+            "passed": bool(allow_empty),
+            "max_abs_diff": 0.0 if allow_empty else float("nan"),
+            "max_rel_diff": 0.0 if allow_empty else float("nan"),
+            "has_non_finite": not allow_empty,
+            "reason": None if allow_empty else "empty_array",
+        }
+    finite_ok = bool(np.isfinite(a).all() and np.isfinite(b).all())
+    if not finite_ok:
+        return {
+            "passed": False,
+            "max_abs_diff": float("nan"),
+            "max_rel_diff": float("nan"),
+            "has_non_finite": True,
+            "reason": "non_finite_values",
+        }
+    abs_err = np.abs(a - b)
+    denom = np.abs(b)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        rel_err = np.where(denom > 0.0, abs_err / denom, np.where(abs_err == 0.0, 0.0, np.inf))
+    bound = float(tol["abs"]) + float(tol["rel"]) * denom
+    passed = bool(np.all(abs_err <= bound))
+    return {
+        "passed": passed,
+        "max_abs_diff": float(np.max(abs_err)),
+        "max_rel_diff": float(np.max(rel_err)),
+        "has_non_finite": False,
+        "reason": None if passed else "tolerance_exceeded",
+    }
+
+
+def _compare_metric_dicts(
+    fl_metrics: dict[str, Any],
+    ref_metrics: dict[str, Any],
+    keys: tuple[str, ...],
+    tol: dict[str, float],
+) -> dict[str, Any]:
+    """Fail-closed benchmark metric comparison across all required keys (no silent skipping of missing/NaN keys)."""
+    abs_diffs: dict[str, float] = {}
+    rel_diffs: dict[str, float] = {}
+    missing_or_invalid: list[str] = []
+    failed_keys: list[str] = []
+
+    for k in keys:
+        if k not in fl_metrics or k not in ref_metrics:
+            missing_or_invalid.append(f"{k}:missing")
+            continue
+        fv = fl_metrics[k]
+        rv = ref_metrics[k]
+        # Treat pandas NA / numpy nan consistently
+        fv_is_none = fv is None
+        rv_is_none = rv is None
+        if fv_is_none and rv_is_none:
+            # Degenerate null allowed ONLY for derived ratios (e.g. calmar when max_dd==0), never for net_return/max_dd
+            if k in ("net_return", "max_dd"):
+                missing_or_invalid.append(f"{k}:both_none_disallowed")
+            continue
+        if fv_is_none != rv_is_none:
+            missing_or_invalid.append(f"{k}:one_sided_none")
+            continue
+        try:
+            ff = float(fv)
+            rf = float(rv)
+        except (TypeError, ValueError):
+            missing_or_invalid.append(f"{k}:non_numeric")
+            continue
+        if not (np.isfinite(ff) and np.isfinite(rf)):
+            missing_or_invalid.append(f"{k}:non_finite")
+            continue
+        ad = abs(ff - rf)
+        rd = ad / abs(rf) if rf != 0.0 else (0.0 if ad == 0.0 else float("inf"))
+        abs_diffs[k] = ad
+        rel_diffs[k] = rd
+        if ad > float(tol["abs"]) + float(tol["rel"]) * abs(rf):
+            failed_keys.append(k)
+
+    passed = bool(len(missing_or_invalid) == 0 and len(failed_keys) == 0 and len(abs_diffs) > 0)
+    return {
+        "passed": passed,
+        "max_abs_diff": max(abs_diffs.values()) if (abs_diffs and not missing_or_invalid) else float("nan"),
+        "max_rel_diff": max(rel_diffs.values()) if (rel_diffs and not missing_or_invalid) else float("nan"),
+        "diffs": abs_diffs,
+        "rel_diffs": rel_diffs,
+        "missing_or_invalid_keys": missing_or_invalid,
+        "failed_keys": failed_keys,
+    }
+
+
 def compare_against_reference(
     fl_result: IndependentReplayResult,
     ref_dir: Path,
     *,
     is_v69_fixture: bool = False,
+    tolerances: dict[str, dict[str, float]] | None = None,
 ) -> dict[str, Any]:
-    """Perform 7-layer differential verification of FL independent replay against archived reference."""
+    """Perform fail-closed 7-layer differential verification of FL independent replay against archived reference."""
+    tols = tolerances if tolerances is not None else REFERENCE_REPLAY_TOLERANCES
+
     orig_daily = pd.read_parquet(ref_dir / "daily.parquet")
     orig_fills = pd.read_csv(ref_dir / "fills.csv", parse_dates=["date"])
     orig_targets = pd.read_csv(ref_dir / "targets.csv", parse_dates=["date", "signal_date"]).set_index("date")
@@ -693,71 +834,200 @@ def compare_against_reference(
     else:
         orig_sp500 = json.loads((ref_dir / "sp500_metrics.json").read_text(encoding="utf-8"))
 
-    # Layer 2: Targets diff
+    # ------------------------------------------------------------------
+    # Layer 2: Targets diff (exact dates, zero duplicates, zero NaN, strict tolerance)
+    # ------------------------------------------------------------------
     tickers = list(DEFAULT_TICKERS)
-    fl_t = fl_result.targets.reindex(index=orig_targets.index, columns=tickers)
-    or_t = orig_targets[tickers]
-    t_diff = (fl_t - or_t).abs()
-    max_target_diff = float(t_diff.max().max())
-    t_bad_days = t_diff.index[t_diff.max(axis=1) > 1e-10]
-    first_target_div = str(t_bad_days[0].date()) if len(t_bad_days) else None
+    fl_t_raw = fl_result.targets
+    t_cols_present = all(c in fl_t_raw.columns for c in tickers) and all(c in orig_targets.columns for c in tickers)
+    t_no_dups = bool(not fl_t_raw.index.duplicated().any() and not orig_targets.index.duplicated().any())
+    t_index_exact = bool(
+        len(fl_t_raw) == len(orig_targets)
+        and len(orig_targets) > 0
+        and t_no_dups
+        and fl_t_raw.index.equals(orig_targets.index)
+    )
+    if t_cols_present and t_index_exact:
+        fl_t = fl_t_raw[tickers].to_numpy(dtype=np.float64)
+        or_t = orig_targets[tickers].to_numpy(dtype=np.float64)
+        t_cmp = _compare_numeric_arrays(fl_t, or_t, tols["target_weight"])
+        if not t_cmp["has_non_finite"]:
+            t_abs = np.abs(fl_t - or_t)
+            t_bound = tols["target_weight"]["abs"] + tols["target_weight"]["rel"] * np.abs(or_t)
+            bad_mask = (t_abs > t_bound).any(axis=1)
+            first_target_div = str(orig_targets.index[bad_mask][0].date()) if bad_mask.any() else None
+        else:
+            first_target_div = "NON_FINITE_TARGETS"
+        layer2_targets_exact = bool(t_cmp["passed"])
+    else:
+        t_cmp = {"passed": False, "max_abs_diff": float("nan"), "max_rel_diff": float("nan"), "has_non_finite": True}
+        first_target_div = "INDEX_OR_COLUMN_MISMATCH"
+        layer2_targets_exact = False
 
-    # Layer 3 & 4: Orders & Fills diff
+    # ------------------------------------------------------------------
+    # Layer 3 & 4: Orders & Fills diff (identity, duplicates, requested/filled qty, price, turnover, fee)
+    # ------------------------------------------------------------------
     fl_f = fl_result.fills.reset_index(drop=True)
     or_f = orig_fills.reset_index(drop=True)
+    req_fill_cols = ("date", "ticker", "side", "requested", "quantity", "price", "fee")
+    fill_cols_present = all(c in fl_f.columns for c in req_fill_cols) and all(c in or_f.columns for c in req_fill_cols)
+    has_turnover_col = ("turnover" in fl_f.columns) and ("turnover" in or_f.columns)
     fills_count_match = len(fl_f) == len(or_f)
-    if fills_count_match and len(fl_f) > 0:
-        same_keys = bool(
-            (fl_f["date"].to_numpy() == or_f["date"].to_numpy()).all()
-            and (fl_f["ticker"].to_numpy() == or_f["ticker"].to_numpy()).all()
-            and (fl_f["side"].to_numpy() == or_f["side"].to_numpy()).all()
-        )
-        max_req_diff = float((fl_f["requested"] - or_f["requested"]).abs().max()) if same_keys else float("nan")
-        max_qty_diff = float((fl_f["quantity"] - or_f["quantity"]).abs().max()) if same_keys else float("nan")
-        max_px_diff = float((fl_f["price"] - or_f["price"]).abs().max()) if same_keys else float("nan")
-        max_fee_diff = float((fl_f["fee"] - or_f["fee"]).abs().max()) if same_keys else float("nan")
-        px_bad = fl_f.loc[(fl_f["price"] - or_f["price"]).abs() > 1e-9, "date"] if same_keys else pd.Series(dtype="datetime64[ns]")
-        first_fill_px_div = str(px_bad.iloc[0].date()) if len(px_bad) else None
+
+    if fill_cols_present:
+        fl_dup_keys = int(fl_f.duplicated(["date", "ticker", "side"]).sum()) if len(fl_f) else 0
+        or_dup_keys = int(or_f.duplicated(["date", "ticker", "side"]).sum()) if len(or_f) else 0
+    else:
+        fl_dup_keys = or_dup_keys = -1
+
+    if fill_cols_present and fills_count_match and fl_dup_keys == 0 and or_dup_keys == 0:
+        if len(fl_f) == 0:
+            same_keys = True
+            req_cmp = _compare_numeric_arrays(np.array([]), np.array([]), tols["requested_qty"], allow_empty=True)
+            qty_cmp = _compare_numeric_arrays(np.array([]), np.array([]), tols["filled_qty"], allow_empty=True)
+            px_cmp = _compare_numeric_arrays(np.array([]), np.array([]), tols["fill_price_usd"], allow_empty=True)
+            fee_cmp = _compare_numeric_arrays(np.array([]), np.array([]), tols["fill_fee_usd"], allow_empty=True)
+            to_cmp = _compare_numeric_arrays(np.array([]), np.array([]), tols["fill_turnover_usd"], allow_empty=True)
+            first_fill_px_div = None
+        else:
+            same_keys = bool(
+                (pd.to_datetime(fl_f["date"]).to_numpy() == pd.to_datetime(or_f["date"]).to_numpy()).all()
+                and (fl_f["ticker"].astype(str).to_numpy() == or_f["ticker"].astype(str).to_numpy()).all()
+                and (fl_f["side"].astype(str).to_numpy() == or_f["side"].astype(str).to_numpy()).all()
+            )
+            if same_keys:
+                req_cmp = _compare_numeric_arrays(fl_f["requested"].to_numpy(), or_f["requested"].to_numpy(), tols["requested_qty"])
+                qty_cmp = _compare_numeric_arrays(fl_f["quantity"].to_numpy(), or_f["quantity"].to_numpy(), tols["filled_qty"])
+                px_cmp = _compare_numeric_arrays(fl_f["price"].to_numpy(), or_f["price"].to_numpy(), tols["fill_price_usd"])
+                fee_cmp = _compare_numeric_arrays(fl_f["fee"].to_numpy(), or_f["fee"].to_numpy(), tols["fill_fee_usd"])
+                if has_turnover_col:
+                    to_cmp = _compare_numeric_arrays(fl_f["turnover"].to_numpy(), or_f["turnover"].to_numpy(), tols["fill_turnover_usd"])
+                else:
+                    # Recompute implied turnover qty*price when reference omits explicit turnover column
+                    to_cmp = _compare_numeric_arrays(
+                        fl_f["quantity"].to_numpy() * fl_f["price"].to_numpy(),
+                        or_f["quantity"].to_numpy() * or_f["price"].to_numpy(),
+                        tols["fill_turnover_usd"],
+                    )
+                if not px_cmp["has_non_finite"]:
+                    px_abs = np.abs(fl_f["price"].to_numpy(dtype=np.float64) - or_f["price"].to_numpy(dtype=np.float64))
+                    px_bound = tols["fill_price_usd"]["abs"] + tols["fill_price_usd"]["rel"] * np.abs(or_f["price"].to_numpy(dtype=np.float64))
+                    px_bad = fl_f.loc[px_abs > px_bound, "date"]
+                    first_fill_px_div = str(pd.Timestamp(px_bad.iloc[0]).date()) if len(px_bad) else None
+                else:
+                    first_fill_px_div = "NON_FINITE_PRICE"
+            else:
+                req_cmp = qty_cmp = px_cmp = fee_cmp = to_cmp = {
+                    "passed": False,
+                    "max_abs_diff": float("nan"),
+                    "max_rel_diff": float("nan"),
+                    "has_non_finite": True,
+                }
+                first_fill_px_div = "ORDER_IDENTITY_MISMATCH"
     else:
         same_keys = False
-        max_req_diff = max_qty_diff = max_px_diff = max_fee_diff = float("nan")
-        first_fill_px_div = "ROW_COUNT_MISMATCH"
+        req_cmp = qty_cmp = px_cmp = fee_cmp = to_cmp = {
+            "passed": False,
+            "max_abs_diff": float("nan"),
+            "max_rel_diff": float("nan"),
+            "has_non_finite": True,
+        }
+        first_fill_px_div = "DUPLICATE_ORDER_IDENTITY" if (fl_dup_keys > 0 or or_dup_keys > 0) else "ROW_COUNT_OR_SCHEMA_MISMATCH"
 
-    # Layer 5: Daily NAV & exposure diff
-    fl_d = fl_result.daily.reindex(orig_daily.index)
-    nav_diff = (fl_d["nav"] - orig_daily["nav"]).abs()
-    max_nav_diff_usd = float(nav_diff.max())
-    max_nav_rel_diff = float((nav_diff / orig_daily["nav"].abs()).max())
-    max_weight_diff = float((fl_d["weight"] - orig_daily["weight"]).abs().max())
-    nav_bad = nav_diff.index[nav_diff > 1e-6]
-    first_nav_div = str(nav_bad[0].date()) if len(nav_bad) else None
+    order_identity_exact = bool(fill_cols_present and fills_count_match and fl_dup_keys == 0 and or_dup_keys == 0 and same_keys)
 
-    # Layer 6: Per-ticker attribution diff
-    attr_diff = (fl_result.attribution.reindex(orig_attr.index) - orig_attr).abs()
-    max_attr_diff_usd = float(attr_diff.max())
-
-    # Layer 7: S&P 500 TR & QQQ metrics diff
-    sp_keys = ("net_return", "max_dd", "cagr", "sharpe", "sortino", "calmar", "beta", "alpha")
-    sp_diffs = {
-        k: abs(float(fl_result.sp500_metrics[k]) - float(orig_sp500[k]))
-        for k in sp_keys
-        if k in orig_sp500 and fl_result.sp500_metrics.get(k) is not None
-    }
-    qqq_ref = orig_result["metrics"]
-    qqq_diffs = {
-        k: abs(float(fl_result.qqq_metrics[k]) - float(qqq_ref[k]))
-        for k in sp_keys
-        if k in qqq_ref and qqq_ref[k] is not None and fl_result.qqq_metrics.get(k) is not None
-    }
-
-    exact_match = (
-        max_target_diff < 1e-10
-        and fills_count_match
-        and same_keys
-        and max_nav_diff_usd < 1e-4
-        and max_attr_diff_usd < 1e-4
-        and max(sp_diffs.values(), default=0.0) < 1e-7
+    # ------------------------------------------------------------------
+    # Layer 5: Daily ledger (exact index, zero duplicates, NAV, weight, value, fee, accounting audit)
+    # ------------------------------------------------------------------
+    fl_d_raw = fl_result.daily
+    d_no_dups = bool(not fl_d_raw.index.duplicated().any() and not orig_daily.index.duplicated().any())
+    d_index_exact = bool(
+        len(fl_d_raw) == len(orig_daily)
+        and len(orig_daily) > 0
+        and d_no_dups
+        and fl_d_raw.index.equals(orig_daily.index)
     )
+    d_cols_present = all(c in fl_d_raw.columns for c in ("nav", "weight")) and all(c in orig_daily.columns for c in ("nav", "weight"))
+    if d_index_exact and d_cols_present:
+        nav_cmp = _compare_numeric_arrays(fl_d_raw["nav"].to_numpy(), orig_daily["nav"].to_numpy(), tols["daily_nav_usd"])
+        wt_cmp = _compare_numeric_arrays(fl_d_raw["weight"].to_numpy(), orig_daily["weight"].to_numpy(), tols["daily_weight"])
+        if "value" in orig_daily.columns and "value" in fl_d_raw.columns:
+            val_cmp = _compare_numeric_arrays(fl_d_raw["value"].to_numpy(), orig_daily["value"].to_numpy(), tols["daily_value_usd"])
+        else:
+            val_cmp = {"passed": False, "max_abs_diff": float("nan"), "max_rel_diff": float("nan"), "has_non_finite": True}
+        if "fee" in orig_daily.columns and "fee" in fl_d_raw.columns:
+            dfee_cmp = _compare_numeric_arrays(fl_d_raw["fee"].to_numpy(), orig_daily["fee"].to_numpy(), tols["daily_fee_usd"])
+        else:
+            dfee_cmp = {"passed": False, "max_abs_diff": float("nan"), "max_rel_diff": float("nan"), "has_non_finite": True}
+        if not nav_cmp["has_non_finite"]:
+            nav_abs = np.abs(fl_d_raw["nav"].to_numpy(dtype=np.float64) - orig_daily["nav"].to_numpy(dtype=np.float64))
+            nav_bound = tols["daily_nav_usd"]["abs"] + tols["daily_nav_usd"]["rel"] * np.abs(orig_daily["nav"].to_numpy(dtype=np.float64))
+            nav_bad = orig_daily.index[nav_abs > nav_bound]
+            first_nav_div = str(nav_bad[0].date()) if len(nav_bad) else None
+        else:
+            first_nav_div = "NON_FINITE_NAV"
+    else:
+        nav_cmp = wt_cmp = val_cmp = dfee_cmp = {
+            "passed": False,
+            "max_abs_diff": float("nan"),
+            "max_rel_diff": float("nan"),
+            "has_non_finite": True,
+        }
+        first_nav_div = "INDEX_OR_COLUMN_MISMATCH"
+
+    acct_res = float(fl_result.accounting_audit.get("max_pnl_nav_residual_usd", float("nan")))
+    zero_borrowing = bool(fl_result.accounting_audit.get("zero_borrowing", False))
+    acct_audit_exact = bool(zero_borrowing and np.isfinite(acct_res) and acct_res <= tols["accounting_residual_usd"]["abs"])
+
+    # ------------------------------------------------------------------
+    # Layer 6: Per-ticker attribution (exact ticker set, zero duplicates, zero NaN)
+    # ------------------------------------------------------------------
+    fl_attr = fl_result.attribution
+    attr_no_dups = bool(not fl_attr.index.duplicated().any() and not orig_attr.index.duplicated().any())
+    attr_index_exact = bool(
+        len(fl_attr) == len(orig_attr)
+        and len(orig_attr) > 0
+        and attr_no_dups
+        and set(fl_attr.index) == set(orig_attr.index)
+    )
+    if attr_index_exact:
+        fl_attr_aligned = fl_attr.reindex(orig_attr.index)
+        attr_cmp = _compare_numeric_arrays(fl_attr_aligned.to_numpy(), orig_attr.to_numpy(), tols["attribution_usd"])
+        per_ticker_diff = {k: float(abs(fl_attr_aligned.at[k] - orig_attr.at[k])) for k in orig_attr.index}
+    else:
+        attr_cmp = {"passed": False, "max_abs_diff": float("nan"), "max_rel_diff": float("nan"), "has_non_finite": True}
+        per_ticker_diff = {}
+
+    # ------------------------------------------------------------------
+    # Layer 7: Dual-benchmark metrics (S&P 500 TR AND QQQ; zero silent skipping)
+    # ------------------------------------------------------------------
+    sp_cmp = _compare_metric_dicts(fl_result.sp500_metrics, orig_sp500, REQUIRED_BENCHMARK_METRIC_KEYS, tols["sp500_metric"])
+    qqq_ref = orig_result.get("metrics", {}) if isinstance(orig_result, dict) else {}
+    qqq_cmp = _compare_metric_dicts(fl_result.qqq_metrics, qqq_ref, REQUIRED_BENCHMARK_METRIC_KEYS, tols["qqq_metric"])
+
+    # ------------------------------------------------------------------
+    # Final fail-closed 7-layer exact reference match contract
+    # ------------------------------------------------------------------
+    layer_checks = {
+        "layer2_targets_exact": layer2_targets_exact,
+        "layer3_4_order_identity_exact": order_identity_exact,
+        "layer3_4_requested_qty_exact": bool(req_cmp["passed"]),
+        "layer3_4_filled_qty_exact": bool(qty_cmp["passed"]),
+        "layer3_4_fill_price_exact": bool(px_cmp["passed"]),
+        "layer3_4_fill_turnover_exact": bool(to_cmp["passed"]),
+        "layer3_4_fill_fee_exact": bool(fee_cmp["passed"]),
+        "layer5_daily_index_exact": d_index_exact,
+        "layer5_daily_nav_exact": bool(nav_cmp["passed"]),
+        "layer5_daily_weight_exact": bool(wt_cmp["passed"]),
+        "layer5_daily_value_exact": bool(val_cmp["passed"]),
+        "layer5_daily_fee_exact": bool(dfee_cmp["passed"]),
+        "layer5_accounting_audit_exact": acct_audit_exact,
+        "layer6_attribution_exact": bool(attr_index_exact and attr_cmp["passed"]),
+        "layer7_sp500_metrics_exact": bool(sp_cmp["passed"]),
+        "layer7_qqq_metrics_exact": bool(qqq_cmp["passed"]),
+    }
+    failed_checks = [name for name, ok in layer_checks.items() if not ok]
+    exact_match = bool(len(failed_checks) == 0)
 
     return {
         "version": fl_result.version,
@@ -767,37 +1037,63 @@ def compare_against_reference(
         "execution_engine": fl_result.execution_engine,
         "open_price_mode": fl_result.open_price_mode,
         "exact_reference_match": exact_match,
+        "failed_checks": failed_checks,
+        "layer_checks": layer_checks,
+        "tolerances": tols,
         "layer2_targets": {
             "rows": int(len(orig_targets)),
-            "max_abs_weight_diff": max_target_diff,
+            "fl_rows": int(len(fl_t_raw)),
+            "index_exact": t_index_exact,
+            "max_abs_weight_diff": float(t_cmp["max_abs_diff"]),
+            "max_rel_weight_diff": float(t_cmp["max_rel_diff"]),
             "first_divergence_date": first_target_div,
         },
         "layer3_4_orders_and_fills": {
             "orig_fills": int(len(or_f)),
             "fl_fills": int(len(fl_f)),
-            "count_and_keys_match": bool(fills_count_match and same_keys),
-            "max_requested_qty_diff": max_req_diff,
-            "max_filled_qty_diff": max_qty_diff,
-            "max_fill_price_diff_usd": max_px_diff,
-            "max_fee_diff_usd": max_fee_diff,
+            "orig_duplicate_keys": int(or_dup_keys),
+            "fl_duplicate_keys": int(fl_dup_keys),
+            "count_and_keys_match": order_identity_exact,
+            "max_requested_qty_diff": float(req_cmp["max_abs_diff"]),
+            "max_requested_qty_rel_diff": float(req_cmp["max_rel_diff"]),
+            "max_filled_qty_diff": float(qty_cmp["max_abs_diff"]),
+            "max_filled_qty_rel_diff": float(qty_cmp["max_rel_diff"]),
+            "max_fill_price_diff_usd": float(px_cmp["max_abs_diff"]),
+            "max_fill_price_rel_diff": float(px_cmp["max_rel_diff"]),
+            "max_turnover_diff_usd": float(to_cmp["max_abs_diff"]),
+            "max_fee_diff_usd": float(fee_cmp["max_abs_diff"]),
+            "max_fee_rel_diff": float(fee_cmp["max_rel_diff"]),
             "first_price_divergence_date": first_fill_px_div,
         },
         "layer5_daily_ledger": {
             "days": int(len(orig_daily)),
-            "max_abs_nav_diff_usd": max_nav_diff_usd,
-            "max_rel_nav_diff": max_nav_rel_diff,
-            "max_abs_weight_diff": max_weight_diff,
+            "fl_days": int(len(fl_d_raw)),
+            "index_exact": d_index_exact,
+            "max_abs_nav_diff_usd": float(nav_cmp["max_abs_diff"]),
+            "max_rel_nav_diff": float(nav_cmp["max_rel_diff"]),
+            "max_abs_weight_diff": float(wt_cmp["max_abs_diff"]),
+            "max_abs_value_diff_usd": float(val_cmp["max_abs_diff"]),
+            "max_abs_daily_fee_diff_usd": float(dfee_cmp["max_abs_diff"]),
             "first_nav_divergence_date": first_nav_div,
-            "accounting_residual_usd": fl_result.accounting_audit["max_pnl_nav_residual_usd"],
+            "accounting_residual_usd": acct_res,
+            "zero_borrowing": zero_borrowing,
         },
         "layer6_attribution": {
-            "max_abs_ticker_pnl_diff_usd": max_attr_diff_usd,
-            "per_ticker_diff_usd": {k: float(v) for k, v in attr_diff.items()},
+            "index_exact": attr_index_exact,
+            "max_abs_ticker_pnl_diff_usd": float(attr_cmp["max_abs_diff"]),
+            "max_rel_ticker_pnl_diff": float(attr_cmp["max_rel_diff"]),
+            "per_ticker_diff_usd": per_ticker_diff,
         },
         "layer7_metrics": {
-            "max_sp500_metric_diff": max(sp_diffs.values(), default=0.0),
-            "sp500_diffs": sp_diffs,
-            "max_qqq_metric_diff": max(qqq_diffs.values(), default=0.0),
-            "qqq_diffs": qqq_diffs,
+            "max_sp500_metric_diff": float(sp_cmp["max_abs_diff"]),
+            "max_sp500_metric_rel_diff": float(sp_cmp["max_rel_diff"]),
+            "sp500_diffs": sp_cmp["diffs"],
+            "sp500_missing_or_invalid_keys": sp_cmp["missing_or_invalid_keys"],
+            "sp500_failed_keys": sp_cmp["failed_keys"],
+            "max_qqq_metric_diff": float(qqq_cmp["max_abs_diff"]),
+            "max_qqq_metric_rel_diff": float(qqq_cmp["max_rel_diff"]),
+            "qqq_diffs": qqq_cmp["diffs"],
+            "qqq_missing_or_invalid_keys": qqq_cmp["missing_or_invalid_keys"],
+            "qqq_failed_keys": qqq_cmp["failed_keys"],
         },
     }
