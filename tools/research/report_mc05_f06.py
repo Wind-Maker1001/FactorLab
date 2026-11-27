@@ -30,6 +30,9 @@ def compact_evidence(source, destination):
         audit = json.loads((directory/'paper-audits/audit.json').read_text(encoding='utf-8'))
         for case in audit['cases']:
             case = dict(case, model=model, seed=seed, steps=report['steps'])
+            case_directory = directory/'paper-audits'/f"path-{case['path_id']}"
+            case['prices_file'] = str((case_directory/'prices.npy').resolve())
+            case['paper_directory'] = str((case_directory/'paper').resolve())
             audit_cases.append(case)
             selected = destination/'selected-prices'/name
             selected.mkdir(parents=True, exist_ok=True)
@@ -63,7 +66,7 @@ def report_markdown(studies, destination):
     lines = ['# MC-05-F06：多模型网格尾部风险研究', '',
         '本报告为历史校准条件下的合成路径研究，不是真实行情回放。报价先冻结六位小数；不声称旧MC-05逐路径复现。资金费率未模拟，净收益指本研究执行假设下的权益变动。', '',
         '## 全样本结果', '',
-        '每种子独立保留原始终态，三个规模档位严格嵌套。下表为各模型/周期最大档五种子指标的均值；种子范围及逐档点态区间见统计JSON。VaR/CVaR为初始权益比例损失，非仅成交账户。', '',
+        '每种子独立保留原始终态，同一模型/种子/周期内的规模档位严格嵌套；168小时为10k/100k/1M，720及2160小时为10k/100k。下表为各模型/周期最大档五种子指标的均值；种子范围及逐档点态区间见统计JSON。VaR/CVaR为初始权益比例损失，非仅成交账户。', '',
         '| 周期h | 模型 | 每种子账户 | 种子数 | 均值净收益% | 亏损概率% | 零成交% | VaR99% | CVaR99% | CVaR99种子范围% |',
         '|---:|---|---:|---:|---:|---:|---:|---:|---:|---|']
     result_rows, audit_all, thin_all = [], [], []

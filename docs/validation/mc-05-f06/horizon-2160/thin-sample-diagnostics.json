@@ -1,0 +1,542 @@
+[
+  {
+    "model": "gbm",
+    "seed": 1729,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.009110828450824615,
+        "subset_mean": 0.008586695159498193,
+        "subset_sd": 0.001963865650140246,
+        "subset_q025": 0.005355007816037924,
+        "subset_q975": 0.012743071732236365,
+        "subset_maximum": 0.015202282095622431
+      },
+      "0.99": {
+        "population": 0.013941854793138727,
+        "subset_mean": 0.011097632134963575,
+        "subset_sd": 0.0033968049293530847,
+        "subset_q025": 0.006153487637577906,
+        "subset_q975": 0.01876920654591052,
+        "subset_maximum": 0.022632710708831993
+      }
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 2718,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.009116157506015023,
+        "subset_mean": 0.008573127352124127,
+        "subset_sd": 0.0021846939481097133,
+        "subset_q025": 0.005274343153424777,
+        "subset_q975": 0.01368421742431248,
+        "subset_maximum": 0.01637950926257884
+      },
+      "0.99": {
+        "population": 0.013893840433633422,
+        "subset_mean": 0.011134896273094266,
+        "subset_sd": 0.00392767697634878,
+        "subset_q025": 0.006195110090494227,
+        "subset_q975": 0.020859187445133487,
+        "subset_maximum": 0.028492973554727463
+      }
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 31415,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.009192363108006186,
+        "subset_mean": 0.008944533480768926,
+        "subset_sd": 0.0022040009789254236,
+        "subset_q025": 0.005323520232453811,
+        "subset_q975": 0.013706905553729451,
+        "subset_maximum": 0.018945355454404567
+      },
+      "0.99": {
+        "population": 0.01406768413694418,
+        "subset_mean": 0.011742172842406716,
+        "subset_sd": 0.003463367134517895,
+        "subset_q025": 0.0061706895011555815,
+        "subset_q975": 0.018281369505633138,
+        "subset_maximum": 0.025580103248842634
+      }
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 57721,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.009139349107317072,
+        "subset_mean": 0.008790957843940617,
+        "subset_sd": 0.002180491073024229,
+        "subset_q025": 0.005242171466118619,
+        "subset_q975": 0.014146910093536823,
+        "subset_maximum": 0.01623389550147408
+      },
+      "0.99": {
+        "population": 0.01396066595350315,
+        "subset_mean": 0.01125795775163111,
+        "subset_sd": 0.003701470255110127,
+        "subset_q025": 0.005705386822444647,
+        "subset_q975": 0.020289539972536325,
+        "subset_maximum": 0.025078144646454636
+      }
+    }
+  },
+  {
+    "model": "gbm",
+    "seed": 65537,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.009090387718256498,
+        "subset_mean": 0.008941242335671505,
+        "subset_sd": 0.002164765911131917,
+        "subset_q025": 0.005065196457668629,
+        "subset_q975": 0.013065245335659462,
+        "subset_maximum": 0.01586349793973864
+      },
+      "0.99": {
+        "population": 0.013910263197532965,
+        "subset_mean": 0.011655542172508571,
+        "subset_sd": 0.003668802133561821,
+        "subset_q025": 0.0056658579689835425,
+        "subset_q975": 0.019864112285771465,
+        "subset_maximum": 0.022936634102967646
+      }
+    }
+  },
+  {
+    "model": "moving_block_bootstrap",
+    "seed": 1729,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.008850753183198843,
+        "subset_mean": 0.008442366282714721,
+        "subset_sd": 0.0021400581234444073,
+        "subset_q025": 0.0051089755290073015,
+        "subset_q975": 0.013614950516720875,
+        "subset_maximum": 0.015587864008459925
+      },
+      "0.99": {
+        "population": 0.01366823181951712,
+        "subset_mean": 0.011304001435899559,
+        "subset_sd": 0.004088113750599779,
+        "subset_q025": 0.005954021519390645,
+        "subset_q975": 0.020564189124922735,
+        "subset_maximum": 0.03131412343580098
+      }
+    }
+  },
+  {
+    "model": "moving_block_bootstrap",
+    "seed": 2718,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.00889467388044595,
+        "subset_mean": 0.008330345512984809,
+        "subset_sd": 0.0020089612480504557,
+        "subset_q025": 0.005100698069610359,
+        "subset_q975": 0.012752317380019097,
+        "subset_maximum": 0.015822681279479486
+      },
+      "0.99": {
+        "population": 0.013943368615645215,
+        "subset_mean": 0.011132631406304716,
+        "subset_sd": 0.0037489060713613667,
+        "subset_q025": 0.005899540802603992,
+        "subset_q975": 0.02012853165577362,
+        "subset_maximum": 0.02632793982630799
+      }
+    }
+  },
+  {
+    "model": "moving_block_bootstrap",
+    "seed": 31415,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.008749609076312653,
+        "subset_mean": 0.008390674505582457,
+        "subset_sd": 0.0020116274523261347,
+        "subset_q025": 0.0051531065556885075,
+        "subset_q975": 0.012860032713306064,
+        "subset_maximum": 0.014919873589119177
+      },
+      "0.99": {
+        "population": 0.013615838118995052,
+        "subset_mean": 0.010911575680037647,
+        "subset_sd": 0.003531156961718325,
+        "subset_q025": 0.005846294462083262,
+        "subset_q975": 0.018465226656753847,
+        "subset_maximum": 0.028996646332871134
+      }
+    }
+  },
+  {
+    "model": "moving_block_bootstrap",
+    "seed": 57721,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.008820237605837106,
+        "subset_mean": 0.008543377822195185,
+        "subset_sd": 0.0022520769518468353,
+        "subset_q025": 0.0050517726165293375,
+        "subset_q975": 0.013896365146287473,
+        "subset_maximum": 0.016742430578542744
+      },
+      "0.99": {
+        "population": 0.013909187175691638,
+        "subset_mean": 0.01131625039993956,
+        "subset_sd": 0.00391064547649653,
+        "subset_q025": 0.005783881964172052,
+        "subset_q975": 0.021708457139901258,
+        "subset_maximum": 0.024313747723678225
+      }
+    }
+  },
+  {
+    "model": "moving_block_bootstrap",
+    "seed": 65537,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.008896446258198116,
+        "subset_mean": 0.00857103340090556,
+        "subset_sd": 0.002144517390251254,
+        "subset_q025": 0.004907302638918213,
+        "subset_q975": 0.012966472311827116,
+        "subset_maximum": 0.015553394987799249
+      },
+      "0.99": {
+        "population": 0.013852310081716017,
+        "subset_mean": 0.011090157095140094,
+        "subset_sd": 0.0036136056317603,
+        "subset_q025": 0.00548953756248792,
+        "subset_q975": 0.01826127621723575,
+        "subset_maximum": 0.028031119548595607
+      }
+    }
+  },
+  {
+    "model": "regime_historical",
+    "seed": 1729,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.0015979003808175099,
+        "subset_mean": 0.0015577696873264482,
+        "subset_sd": 0.001406136216343187,
+        "subset_q025": 0.0,
+        "subset_q975": 0.005401497208137799,
+        "subset_maximum": 0.006772886955453341
+      },
+      "0.99": {
+        "population": 0.004799624653223297,
+        "subset_mean": 0.0032268751420633656,
+        "subset_sd": 0.0027416471011402843,
+        "subset_q025": 0.0,
+        "subset_q975": 0.010445178236297356,
+        "subset_maximum": 0.012828392829169921
+      }
+    }
+  },
+  {
+    "model": "regime_historical",
+    "seed": 2718,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.0015844032623848236,
+        "subset_mean": 0.0014606853143651279,
+        "subset_sd": 0.0011361076356944456,
+        "subset_q025": 0.0,
+        "subset_q975": 0.004132660790142556,
+        "subset_maximum": 0.0065150469706831025
+      },
+      "0.99": {
+        "population": 0.004588752487401545,
+        "subset_mean": 0.002906573707272935,
+        "subset_sd": 0.002157842260527459,
+        "subset_q025": 0.0,
+        "subset_q975": 0.008278326838958322,
+        "subset_maximum": 0.01315166569910675
+      }
+    }
+  },
+  {
+    "model": "regime_historical",
+    "seed": 31415,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.001639624951561,
+        "subset_mean": 0.0017092034189939162,
+        "subset_sd": 0.001446541362015112,
+        "subset_q025": 0.0,
+        "subset_q975": 0.004907988672686613,
+        "subset_maximum": 0.008441768231038108
+      },
+      "0.99": {
+        "population": 0.004789219296371496,
+        "subset_mean": 0.003443396240640034,
+        "subset_sd": 0.0029207438495506034,
+        "subset_q025": 0.0,
+        "subset_q975": 0.009959350168505271,
+        "subset_maximum": 0.021837001430197178
+      }
+    }
+  },
+  {
+    "model": "regime_historical",
+    "seed": 57721,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.0016332721653958778,
+        "subset_mean": 0.0015198416917147778,
+        "subset_sd": 0.0012736839555307095,
+        "subset_q025": 0.0,
+        "subset_q975": 0.004776743506758761,
+        "subset_maximum": 0.005851183168877611
+      },
+      "0.99": {
+        "population": 0.004837355949901191,
+        "subset_mean": 0.003086541110026211,
+        "subset_sd": 0.002537521813457297,
+        "subset_q025": 0.0,
+        "subset_q975": 0.009737109709933203,
+        "subset_maximum": 0.014139818092931635
+      }
+    }
+  },
+  {
+    "model": "regime_historical",
+    "seed": 65537,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.0016194104816288262,
+        "subset_mean": 0.0016545269652260917,
+        "subset_sd": 0.0013935610341998545,
+        "subset_q025": 0.0,
+        "subset_q975": 0.004916960898195742,
+        "subset_maximum": 0.007619319822692751
+      },
+      "0.99": {
+        "population": 0.004818021576232464,
+        "subset_mean": 0.003315760066719424,
+        "subset_sd": 0.0027405616621359007,
+        "subset_q025": 0.0,
+        "subset_q975": 0.009928901593549866,
+        "subset_maximum": 0.01570679615440751
+      }
+    }
+  },
+  {
+    "model": "jump_down",
+    "seed": 1729,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.04273037922497644,
+        "subset_mean": 0.04194005648619475,
+        "subset_sd": 0.005183575369657831,
+        "subset_q025": 0.034090979489114104,
+        "subset_q975": 0.054056091095542796,
+        "subset_maximum": 0.06356545812915099
+      },
+      "0.99": {
+        "population": 0.053658717407158434,
+        "subset_mean": 0.04742953578065633,
+        "subset_sd": 0.008181689837217638,
+        "subset_q025": 0.034289763255124756,
+        "subset_q975": 0.062087006382350374,
+        "subset_maximum": 0.0794850023345981
+      }
+    }
+  },
+  {
+    "model": "jump_down",
+    "seed": 2718,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.04286268216152395,
+        "subset_mean": 0.04193566115277338,
+        "subset_sd": 0.00473046080807137,
+        "subset_q025": 0.034484497764308605,
+        "subset_q975": 0.05248531300658074,
+        "subset_maximum": 0.05461410607115759
+      },
+      "0.99": {
+        "population": 0.05384284644155053,
+        "subset_mean": 0.0475545312104633,
+        "subset_sd": 0.007931107666042478,
+        "subset_q025": 0.03556671651895037,
+        "subset_q975": 0.05701009208017103,
+        "subset_maximum": 0.07168803686663028
+      }
+    }
+  },
+  {
+    "model": "jump_down",
+    "seed": 31415,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.042659953274386354,
+        "subset_mean": 0.04223429567717589,
+        "subset_sd": 0.004915087005545203,
+        "subset_q025": 0.03537034560241769,
+        "subset_q975": 0.05224292212865099,
+        "subset_maximum": 0.06134439179041834
+      },
+      "0.99": {
+        "population": 0.05360034098783465,
+        "subset_mean": 0.04765628197574026,
+        "subset_sd": 0.007938416987525945,
+        "subset_q025": 0.03769824076389412,
+        "subset_q975": 0.056913764203551806,
+        "subset_maximum": 0.08046635540579117
+      }
+    }
+  },
+  {
+    "model": "jump_down",
+    "seed": 57721,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.04227279606105846,
+        "subset_mean": 0.04119996027470829,
+        "subset_sd": 0.004699576189699532,
+        "subset_q025": 0.03423340498726527,
+        "subset_q975": 0.05212294346382641,
+        "subset_maximum": 0.05348022837967109
+      },
+      "0.99": {
+        "population": 0.053570165420084304,
+        "subset_mean": 0.04625204066439867,
+        "subset_sd": 0.007981704903210563,
+        "subset_q025": 0.03445214115513749,
+        "subset_q975": 0.05691121099418828,
+        "subset_maximum": 0.07000231450472116
+      }
+    }
+  },
+  {
+    "model": "jump_down",
+    "seed": 65537,
+    "steps": 2160,
+    "sample_n": 64,
+    "repetitions": 256,
+    "population_n": 100000,
+    "meaning": "random subsets of the new empirical population; not old paths or market calibration uncertainty",
+    "cvar": {
+      "0.95": {
+        "population": 0.04265526163645765,
+        "subset_mean": 0.04133169379409632,
+        "subset_sd": 0.0045353034780965485,
+        "subset_q025": 0.034810853836582674,
+        "subset_q975": 0.0512213622664137,
+        "subset_maximum": 0.056533361612880154
+      },
+      "0.99": {
+        "population": 0.05390861476485323,
+        "subset_mean": 0.04687162706089233,
+        "subset_sd": 0.00786578276758201,
+        "subset_q025": 0.03618684073486042,
+        "subset_q975": 0.05693844089778355,
+        "subset_maximum": 0.07943766240293126
+      }
+    }
+  }
+]

@@ -127,8 +127,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-381460\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-381460\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-381460\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-381460\\paper",
     "model": "gbm",
     "seed": 1729,
     "steps": 168
@@ -284,8 +284,8 @@
       "reported_equity_difference": "3.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-431545\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-431545\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-431545\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-431545\\paper",
     "model": "gbm",
     "seed": 1729,
     "steps": 168
@@ -463,8 +463,8 @@
       "reported_equity_difference": "2.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-546883\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-546883\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-546883\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-546883\\paper",
     "model": "gbm",
     "seed": 1729,
     "steps": 168
@@ -631,8 +631,8 @@
       "reported_equity_difference": "5.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-590381\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-590381\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-590381\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-590381\\paper",
     "model": "gbm",
     "seed": 1729,
     "steps": 168
@@ -765,8 +765,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-928371\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-928371\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-928371\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-928371\\paper",
     "model": "gbm",
     "seed": 1729,
     "steps": 168
@@ -911,8 +911,8 @@
       "reported_equity_difference": "1.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-951833\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-951833\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-951833\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-1729-168\\paper-audits\\path-951833\\paper",
     "model": "gbm",
     "seed": 1729,
     "steps": 168
@@ -1045,8 +1045,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-97085\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-97085\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-97085\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-97085\\paper",
     "model": "gbm",
     "seed": 2718,
     "steps": 168
@@ -1213,8 +1213,8 @@
       "reported_equity_difference": "-6.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-141739\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-141739\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-141739\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-141739\\paper",
     "model": "gbm",
     "seed": 2718,
     "steps": 168
@@ -1347,8 +1347,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-199925\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-199925\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-199925\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-199925\\paper",
     "model": "gbm",
     "seed": 2718,
     "steps": 168
@@ -1526,8 +1526,8 @@
       "reported_equity_difference": "5.20000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-717741\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-717741\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-717741\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-717741\\paper",
     "model": "gbm",
     "seed": 2718,
     "steps": 168
@@ -1683,8 +1683,8 @@
       "reported_equity_difference": "-5.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-763213\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-763213\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-763213\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-763213\\paper",
     "model": "gbm",
     "seed": 2718,
     "steps": 168
@@ -1829,8 +1829,8 @@
       "reported_equity_difference": "-8.00E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-975917\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-975917\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-975917\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-2718-168\\paper-audits\\path-975917\\paper",
     "model": "gbm",
     "seed": 2718,
     "steps": 168
@@ -1975,8 +1975,8 @@
       "reported_equity_difference": "4.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-133554\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-133554\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-133554\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-133554\\paper",
     "model": "gbm",
     "seed": 31415,
     "steps": 168
@@ -2132,8 +2132,8 @@
       "reported_equity_difference": "-1.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-190799\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-190799\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-190799\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-190799\\paper",
     "model": "gbm",
     "seed": 31415,
     "steps": 168
@@ -2278,8 +2278,8 @@
       "reported_equity_difference": "3.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-274685\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-274685\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-274685\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-274685\\paper",
     "model": "gbm",
     "seed": 31415,
     "steps": 168
@@ -2424,8 +2424,8 @@
       "reported_equity_difference": "-1.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-498194\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-498194\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-498194\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-498194\\paper",
     "model": "gbm",
     "seed": 31415,
     "steps": 168
@@ -2603,8 +2603,8 @@
       "reported_equity_difference": "4.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-872469\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-872469\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-872469\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-872469\\paper",
     "model": "gbm",
     "seed": 31415,
     "steps": 168
@@ -2760,8 +2760,8 @@
       "reported_equity_difference": "8.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-954446\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-954446\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-954446\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-31415-168\\paper-audits\\path-954446\\paper",
     "model": "gbm",
     "seed": 31415,
     "steps": 168
@@ -2906,8 +2906,8 @@
       "reported_equity_difference": "2.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-210430\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-210430\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-210430\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-210430\\paper",
     "model": "gbm",
     "seed": 57721,
     "steps": 168
@@ -3063,8 +3063,8 @@
       "reported_equity_difference": "-1.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-300438\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-300438\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-300438\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-300438\\paper",
     "model": "gbm",
     "seed": 57721,
     "steps": 168
@@ -3197,8 +3197,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-315497\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-315497\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-315497\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-315497\\paper",
     "model": "gbm",
     "seed": 57721,
     "steps": 168
@@ -3365,8 +3365,8 @@
       "reported_equity_difference": "-2.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-715278\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-715278\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-715278\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-715278\\paper",
     "model": "gbm",
     "seed": 57721,
     "steps": 168
@@ -3499,8 +3499,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-860513\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-860513\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-860513\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-860513\\paper",
     "model": "gbm",
     "seed": 57721,
     "steps": 168
@@ -3678,8 +3678,8 @@
       "reported_equity_difference": "-4.40000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-996070\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-996070\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-996070\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-57721-168\\paper-audits\\path-996070\\paper",
     "model": "gbm",
     "seed": 57721,
     "steps": 168
@@ -3812,8 +3812,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-381516\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-381516\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-381516\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-381516\\paper",
     "model": "gbm",
     "seed": 65537,
     "steps": 168
@@ -3958,8 +3958,8 @@
       "reported_equity_difference": "8.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-423414\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-423414\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-423414\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-423414\\paper",
     "model": "gbm",
     "seed": 65537,
     "steps": 168
@@ -4115,8 +4115,8 @@
       "reported_equity_difference": "7.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-609335\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-609335\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-609335\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-609335\\paper",
     "model": "gbm",
     "seed": 65537,
     "steps": 168
@@ -4249,8 +4249,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-760522\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-760522\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-760522\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-760522\\paper",
     "model": "gbm",
     "seed": 65537,
     "steps": 168
@@ -4383,8 +4383,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-861015\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-861015\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-861015\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-861015\\paper",
     "model": "gbm",
     "seed": 65537,
     "steps": 168
@@ -4551,8 +4551,8 @@
       "reported_equity_difference": "3.60000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-974820\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-974820\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-974820\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\gbm-65537-168\\paper-audits\\path-974820\\paper",
     "model": "gbm",
     "seed": 65537,
     "steps": 168
@@ -4685,8 +4685,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-307479\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-307479\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-307479\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-307479\\paper",
     "model": "moving_block_bootstrap",
     "seed": 1729,
     "steps": 168
@@ -4842,8 +4842,8 @@
       "reported_equity_difference": "3.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-456742\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-456742\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-456742\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-456742\\paper",
     "model": "moving_block_bootstrap",
     "seed": 1729,
     "steps": 168
@@ -4988,8 +4988,8 @@
       "reported_equity_difference": "-6.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-691501\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-691501\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-691501\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-691501\\paper",
     "model": "moving_block_bootstrap",
     "seed": 1729,
     "steps": 168
@@ -5167,8 +5167,8 @@
       "reported_equity_difference": "4.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-709560\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-709560\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-709560\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-709560\\paper",
     "model": "moving_block_bootstrap",
     "seed": 1729,
     "steps": 168
@@ -5324,8 +5324,8 @@
       "reported_equity_difference": "-1.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-774304\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-774304\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-774304\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-774304\\paper",
     "model": "moving_block_bootstrap",
     "seed": 1729,
     "steps": 168
@@ -5458,8 +5458,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-789019\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-789019\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-789019\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-1729-168\\paper-audits\\path-789019\\paper",
     "model": "moving_block_bootstrap",
     "seed": 1729,
     "steps": 168
@@ -5592,8 +5592,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-108867\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-108867\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-108867\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-108867\\paper",
     "model": "moving_block_bootstrap",
     "seed": 2718,
     "steps": 168
@@ -5749,8 +5749,8 @@
       "reported_equity_difference": "-8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-326067\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-326067\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-326067\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-326067\\paper",
     "model": "moving_block_bootstrap",
     "seed": 2718,
     "steps": 168
@@ -5895,8 +5895,8 @@
       "reported_equity_difference": "6.00E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-385613\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-385613\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-385613\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-385613\\paper",
     "model": "moving_block_bootstrap",
     "seed": 2718,
     "steps": 168
@@ -6052,8 +6052,8 @@
       "reported_equity_difference": "-8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-526472\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-526472\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-526472\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-526472\\paper",
     "model": "moving_block_bootstrap",
     "seed": 2718,
     "steps": 168
@@ -6231,8 +6231,8 @@
       "reported_equity_difference": "8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-722796\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-722796\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-722796\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-722796\\paper",
     "model": "moving_block_bootstrap",
     "seed": 2718,
     "steps": 168
@@ -6421,8 +6421,8 @@
       "reported_equity_difference": "6.4000000001E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-726876\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-726876\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-726876\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-2718-168\\paper-audits\\path-726876\\paper",
     "model": "moving_block_bootstrap",
     "seed": 2718,
     "steps": 168
@@ -6555,8 +6555,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-72076\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-72076\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-72076\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-72076\\paper",
     "model": "moving_block_bootstrap",
     "seed": 31415,
     "steps": 168
@@ -6689,8 +6689,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-90228\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-90228\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-90228\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-90228\\paper",
     "model": "moving_block_bootstrap",
     "seed": 31415,
     "steps": 168
@@ -6835,8 +6835,8 @@
       "reported_equity_difference": "-8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-316758\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-316758\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-316758\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-316758\\paper",
     "model": "moving_block_bootstrap",
     "seed": 31415,
     "steps": 168
@@ -7025,8 +7025,8 @@
       "reported_equity_difference": "-2.80000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-411458\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-411458\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-411458\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-411458\\paper",
     "model": "moving_block_bootstrap",
     "seed": 31415,
     "steps": 168
@@ -7159,8 +7159,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-525666\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-525666\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-525666\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-525666\\paper",
     "model": "moving_block_bootstrap",
     "seed": 31415,
     "steps": 168
@@ -7327,8 +7327,8 @@
       "reported_equity_difference": "3.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-919908\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-919908\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-919908\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-31415-168\\paper-audits\\path-919908\\paper",
     "model": "moving_block_bootstrap",
     "seed": 31415,
     "steps": 168
@@ -7473,8 +7473,8 @@
       "reported_equity_difference": "-7.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-585751\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-585751\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-585751\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-585751\\paper",
     "model": "moving_block_bootstrap",
     "seed": 57721,
     "steps": 168
@@ -7663,8 +7663,8 @@
       "reported_equity_difference": "4.00000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-612481\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-612481\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-612481\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-612481\\paper",
     "model": "moving_block_bootstrap",
     "seed": 57721,
     "steps": 168
@@ -7820,8 +7820,8 @@
       "reported_equity_difference": "3.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-734868\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-734868\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-734868\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-734868\\paper",
     "model": "moving_block_bootstrap",
     "seed": 57721,
     "steps": 168
@@ -7954,8 +7954,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-820904\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-820904\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-820904\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-820904\\paper",
     "model": "moving_block_bootstrap",
     "seed": 57721,
     "steps": 168
@@ -8122,8 +8122,8 @@
       "reported_equity_difference": "1.6000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-824972\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-824972\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-824972\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-824972\\paper",
     "model": "moving_block_bootstrap",
     "seed": 57721,
     "steps": 168
@@ -8268,8 +8268,8 @@
       "reported_equity_difference": "-2.00E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-919271\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-919271\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-919271\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-57721-168\\paper-audits\\path-919271\\paper",
     "model": "moving_block_bootstrap",
     "seed": 57721,
     "steps": 168
@@ -8414,8 +8414,8 @@
       "reported_equity_difference": "-4.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-215054\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-215054\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-215054\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-215054\\paper",
     "model": "moving_block_bootstrap",
     "seed": 65537,
     "steps": 168
@@ -8571,8 +8571,8 @@
       "reported_equity_difference": "8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-287973\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-287973\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-287973\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-287973\\paper",
     "model": "moving_block_bootstrap",
     "seed": 65537,
     "steps": 168
@@ -8705,8 +8705,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-471701\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-471701\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-471701\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-471701\\paper",
     "model": "moving_block_bootstrap",
     "seed": 65537,
     "steps": 168
@@ -8862,8 +8862,8 @@
       "reported_equity_difference": "4.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-485205\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-485205\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-485205\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-485205\\paper",
     "model": "moving_block_bootstrap",
     "seed": 65537,
     "steps": 168
@@ -9041,8 +9041,8 @@
       "reported_equity_difference": "-4.80000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-495681\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-495681\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-495681\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-495681\\paper",
     "model": "moving_block_bootstrap",
     "seed": 65537,
     "steps": 168
@@ -9187,8 +9187,8 @@
       "reported_equity_difference": "-1.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-950682\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-950682\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-950682\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\moving_block_bootstrap-65537-168\\paper-audits\\path-950682\\paper",
     "model": "moving_block_bootstrap",
     "seed": 65537,
     "steps": 168
@@ -9366,8 +9366,8 @@
       "reported_equity_difference": "7.2000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-151539\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-151539\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-151539\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-151539\\paper",
     "model": "regime_historical",
     "seed": 1729,
     "steps": 168
@@ -9512,8 +9512,8 @@
       "reported_equity_difference": "2.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-337377\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-337377\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-337377\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-337377\\paper",
     "model": "regime_historical",
     "seed": 1729,
     "steps": 168
@@ -9646,8 +9646,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-384341\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-384341\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-384341\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-384341\\paper",
     "model": "regime_historical",
     "seed": 1729,
     "steps": 168
@@ -9792,8 +9792,8 @@
       "reported_equity_difference": "6.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-679409\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-679409\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-679409\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-679409\\paper",
     "model": "regime_historical",
     "seed": 1729,
     "steps": 168
@@ -9926,8 +9926,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-832571\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-832571\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-832571\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-832571\\paper",
     "model": "regime_historical",
     "seed": 1729,
     "steps": 168
@@ -10116,8 +10116,8 @@
       "reported_equity_difference": "3.60000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-872394\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-872394\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-872394\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-1729-168\\paper-audits\\path-872394\\paper",
     "model": "regime_historical",
     "seed": 1729,
     "steps": 168
@@ -10273,8 +10273,8 @@
       "reported_equity_difference": "-5.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-80178\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-80178\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-80178\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-80178\\paper",
     "model": "regime_historical",
     "seed": 2718,
     "steps": 168
@@ -10407,8 +10407,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-86891\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-86891\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-86891\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-86891\\paper",
     "model": "regime_historical",
     "seed": 2718,
     "steps": 168
@@ -10541,8 +10541,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-118210\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-118210\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-118210\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-118210\\paper",
     "model": "regime_historical",
     "seed": 2718,
     "steps": 168
@@ -10675,8 +10675,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-231190\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-231190\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-231190\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-231190\\paper",
     "model": "regime_historical",
     "seed": 2718,
     "steps": 168
@@ -10854,8 +10854,8 @@
       "reported_equity_difference": "8.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-497663\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-497663\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-497663\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-497663\\paper",
     "model": "regime_historical",
     "seed": 2718,
     "steps": 168
@@ -11011,8 +11011,8 @@
       "reported_equity_difference": "-8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-915797\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-915797\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-915797\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-2718-168\\paper-audits\\path-915797\\paper",
     "model": "regime_historical",
     "seed": 2718,
     "steps": 168
@@ -11168,8 +11168,8 @@
       "reported_equity_difference": "7.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-237884\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-237884\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-237884\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-237884\\paper",
     "model": "regime_historical",
     "seed": 31415,
     "steps": 168
@@ -11314,8 +11314,8 @@
       "reported_equity_difference": "8.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-384331\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-384331\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-384331\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-384331\\paper",
     "model": "regime_historical",
     "seed": 31415,
     "steps": 168
@@ -11448,8 +11448,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-627886\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-627886\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-627886\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-627886\\paper",
     "model": "regime_historical",
     "seed": 31415,
     "steps": 168
@@ -11594,8 +11594,8 @@
       "reported_equity_difference": "9.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-692425\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-692425\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-692425\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-692425\\paper",
     "model": "regime_historical",
     "seed": 31415,
     "steps": 168
@@ -11751,8 +11751,8 @@
       "reported_equity_difference": "-3.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-830657\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-830657\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-830657\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-830657\\paper",
     "model": "regime_historical",
     "seed": 31415,
     "steps": 168
@@ -11930,8 +11930,8 @@
       "reported_equity_difference": "-2.80000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-935270\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-935270\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-935270\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-31415-168\\paper-audits\\path-935270\\paper",
     "model": "regime_historical",
     "seed": 31415,
     "steps": 168
@@ -12064,8 +12064,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-368731\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-368731\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-368731\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-368731\\paper",
     "model": "regime_historical",
     "seed": 57721,
     "steps": 168
@@ -12243,8 +12243,8 @@
       "reported_equity_difference": "6.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-372273\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-372273\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-372273\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-372273\\paper",
     "model": "regime_historical",
     "seed": 57721,
     "steps": 168
@@ -12377,8 +12377,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-488313\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-488313\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-488313\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-488313\\paper",
     "model": "regime_historical",
     "seed": 57721,
     "steps": 168
@@ -12523,8 +12523,8 @@
       "reported_equity_difference": "-8.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-621389\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-621389\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-621389\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-621389\\paper",
     "model": "regime_historical",
     "seed": 57721,
     "steps": 168
@@ -12680,8 +12680,8 @@
       "reported_equity_difference": "8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-752504\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-752504\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-752504\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-752504\\paper",
     "model": "regime_historical",
     "seed": 57721,
     "steps": 168
@@ -12814,8 +12814,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-953016\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-953016\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-953016\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-57721-168\\paper-audits\\path-953016\\paper",
     "model": "regime_historical",
     "seed": 57721,
     "steps": 168
@@ -12948,8 +12948,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-349977\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-349977\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-349977\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-349977\\paper",
     "model": "regime_historical",
     "seed": 65537,
     "steps": 168
@@ -13082,8 +13082,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-396597\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-396597\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-396597\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-396597\\paper",
     "model": "regime_historical",
     "seed": 65537,
     "steps": 168
@@ -13272,8 +13272,8 @@
       "reported_equity_difference": "-3.60000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-625989\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-625989\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-625989\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-625989\\paper",
     "model": "regime_historical",
     "seed": 65537,
     "steps": 168
@@ -13418,8 +13418,8 @@
       "reported_equity_difference": "2.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-845110\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-845110\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-845110\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-845110\\paper",
     "model": "regime_historical",
     "seed": 65537,
     "steps": 168
@@ -13575,8 +13575,8 @@
       "reported_equity_difference": "-1.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-968116\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-968116\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-968116\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-968116\\paper",
     "model": "regime_historical",
     "seed": 65537,
     "steps": 168
@@ -13732,8 +13732,8 @@
       "reported_equity_difference": "4.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-999668\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-999668\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-999668\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\regime_historical-65537-168\\paper-audits\\path-999668\\paper",
     "model": "regime_historical",
     "seed": 65537,
     "steps": 168
@@ -13889,8 +13889,8 @@
       "reported_equity_difference": "-4.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-57455\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-57455\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-57455\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-57455\\paper",
     "model": "jump_down",
     "seed": 1729,
     "steps": 168
@@ -14035,8 +14035,8 @@
       "reported_equity_difference": "4.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-90245\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-90245\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-90245\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-90245\\paper",
     "model": "jump_down",
     "seed": 1729,
     "steps": 168
@@ -14214,8 +14214,8 @@
       "reported_equity_difference": "2.00000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-208406\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-208406\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-208406\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-208406\\paper",
     "model": "jump_down",
     "seed": 1729,
     "steps": 168
@@ -14371,8 +14371,8 @@
       "reported_equity_difference": "-8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-245319\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-245319\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-245319\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-245319\\paper",
     "model": "jump_down",
     "seed": 1729,
     "steps": 168
@@ -14572,8 +14572,8 @@
       "reported_equity_difference": "-4.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-704243\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-704243\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-704243\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-704243\\paper",
     "model": "jump_down",
     "seed": 1729,
     "steps": 168
@@ -14729,8 +14729,8 @@
       "reported_equity_difference": "-3.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-736797\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-736797\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-736797\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-1729-168\\paper-audits\\path-736797\\paper",
     "model": "jump_down",
     "seed": 1729,
     "steps": 168
@@ -14875,8 +14875,8 @@
       "reported_equity_difference": "2.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-32626\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-32626\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-32626\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-32626\\paper",
     "model": "jump_down",
     "seed": 2718,
     "steps": 168
@@ -15043,8 +15043,8 @@
       "reported_equity_difference": "-4.80000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-141039\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-141039\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-141039\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-141039\\paper",
     "model": "jump_down",
     "seed": 2718,
     "steps": 168
@@ -15200,8 +15200,8 @@
       "reported_equity_difference": "-8.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-167051\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-167051\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-167051\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-167051\\paper",
     "model": "jump_down",
     "seed": 2718,
     "steps": 168
@@ -15379,8 +15379,8 @@
       "reported_equity_difference": "-6.40000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-432291\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-432291\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-432291\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-432291\\paper",
     "model": "jump_down",
     "seed": 2718,
     "steps": 168
@@ -15536,8 +15536,8 @@
       "reported_equity_difference": "-1.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-560746\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-560746\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-560746\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-560746\\paper",
     "model": "jump_down",
     "seed": 2718,
     "steps": 168
@@ -15682,8 +15682,8 @@
       "reported_equity_difference": "-6.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-949249\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-949249\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-949249\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-2718-168\\paper-audits\\path-949249\\paper",
     "model": "jump_down",
     "seed": 2718,
     "steps": 168
@@ -15816,8 +15816,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-57011\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-57011\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-57011\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-57011\\paper",
     "model": "jump_down",
     "seed": 31415,
     "steps": 168
@@ -15962,8 +15962,8 @@
       "reported_equity_difference": "-8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-117080\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-117080\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-117080\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-117080\\paper",
     "model": "jump_down",
     "seed": 31415,
     "steps": 168
@@ -16108,8 +16108,8 @@
       "reported_equity_difference": "1.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-185820\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-185820\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-185820\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-185820\\paper",
     "model": "jump_down",
     "seed": 31415,
     "steps": 168
@@ -16287,8 +16287,8 @@
       "reported_equity_difference": "-5.20000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-363287\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-363287\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-363287\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-363287\\paper",
     "model": "jump_down",
     "seed": 31415,
     "steps": 168
@@ -16433,8 +16433,8 @@
       "reported_equity_difference": "3.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-438900\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-438900\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-438900\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-438900\\paper",
     "model": "jump_down",
     "seed": 31415,
     "steps": 168
@@ -16612,8 +16612,8 @@
       "reported_equity_difference": "9.2000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-971753\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-971753\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-971753\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-31415-168\\paper-audits\\path-971753\\paper",
     "model": "jump_down",
     "seed": 31415,
     "steps": 168
@@ -16758,8 +16758,8 @@
       "reported_equity_difference": "5.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-138930\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-138930\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-138930\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-138930\\paper",
     "model": "jump_down",
     "seed": 57721,
     "steps": 168
@@ -16937,8 +16937,8 @@
       "reported_equity_difference": "-4.00000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-227019\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-227019\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-227019\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-227019\\paper",
     "model": "jump_down",
     "seed": 57721,
     "steps": 168
@@ -17083,8 +17083,8 @@
       "reported_equity_difference": "4.40E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-239315\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-239315\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-239315\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-239315\\paper",
     "model": "jump_down",
     "seed": 57721,
     "steps": 168
@@ -17229,8 +17229,8 @@
       "reported_equity_difference": "2.80E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-645380\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-645380\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-645380\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-645380\\paper",
     "model": "jump_down",
     "seed": 57721,
     "steps": 168
@@ -17363,8 +17363,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-713328\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-713328\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-713328\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-713328\\paper",
     "model": "jump_down",
     "seed": 57721,
     "steps": 168
@@ -17553,8 +17553,8 @@
       "reported_equity_difference": "2.0000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-811135\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-811135\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-811135\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-57721-168\\paper-audits\\path-811135\\paper",
     "model": "jump_down",
     "seed": 57721,
     "steps": 168
@@ -17687,8 +17687,8 @@
       "reported_equity_difference": "0.0",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-108149\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-108149\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-108149\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-108149\\paper",
     "model": "jump_down",
     "seed": 65537,
     "steps": 168
@@ -17833,8 +17833,8 @@
       "reported_equity_difference": "-8.0E-15",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-260744\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-260744\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-260744\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-260744\\paper",
     "model": "jump_down",
     "seed": 65537,
     "steps": 168
@@ -17990,8 +17990,8 @@
       "reported_equity_difference": "1.60E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-694223\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-694223\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-694223\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-694223\\paper",
     "model": "jump_down",
     "seed": 65537,
     "steps": 168
@@ -18180,8 +18180,8 @@
       "reported_equity_difference": "2.4000000000E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-769020\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-769020\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-769020\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-769020\\paper",
     "model": "jump_down",
     "seed": 65537,
     "steps": 168
@@ -18359,8 +18359,8 @@
       "reported_equity_difference": "-2.00E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-871110\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-871110\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-871110\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-871110\\paper",
     "model": "jump_down",
     "seed": 65537,
     "steps": 168
@@ -18505,8 +18505,8 @@
       "reported_equity_difference": "1.20E-14",
       "funding": "NOT_SIMULATED"
     },
-    "prices_file": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-898392\\prices.npy",
-    "paper_directory": "D:\\Code\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-898392\\paper",
+    "prices_file": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-898392\\prices.npy",
+    "paper_directory": "T:\\FactorLab-mc05-f06\\local-results\\formal-168\\jump_down-65537-168\\paper-audits\\path-898392\\paper",
     "model": "jump_down",
     "seed": 65537,
     "steps": 168

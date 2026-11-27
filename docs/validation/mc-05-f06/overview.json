@@ -42,5 +42,93 @@
     "zero_fill_probability": 0.21382459999999998,
     "var99": 0.0224612567207687,
     "cvar99": 0.026207261260475994
+  },
+  {
+    "steps": 720,
+    "model": "gbm",
+    "n": 100000,
+    "seeds": 5,
+    "mean_return": -0.00012143301065075396,
+    "loss_probability": 0.29705,
+    "zero_fill_probability": 0.387878,
+    "var99": 0.006790885097429022,
+    "cvar99": 0.008657952187133635
+  },
+  {
+    "steps": 720,
+    "model": "moving_block_bootstrap",
+    "n": 100000,
+    "seeds": 5,
+    "mean_return": -0.00016896285186271368,
+    "loss_probability": 0.278396,
+    "zero_fill_probability": 0.46109999999999995,
+    "var99": 0.00641606804376843,
+    "cvar99": 0.008460745276151264
+  },
+  {
+    "steps": 720,
+    "model": "regime_historical",
+    "n": 100000,
+    "seeds": 5,
+    "mean_return": 0.0006669019834754488,
+    "loss_probability": 0.087382,
+    "zero_fill_probability": 0.576304,
+    "var99": 0.003146521734516115,
+    "cvar99": 0.00468886057071162
+  },
+  {
+    "steps": 720,
+    "model": "jump_down",
+    "n": 100000,
+    "seeds": 5,
+    "mean_return": -0.011931585327290302,
+    "loss_probability": 0.750606,
+    "zero_fill_probability": 0.21353,
+    "var99": 0.03809802132231588,
+    "cvar99": 0.04506326912634333
+  },
+  {
+    "steps": 2160,
+    "model": "gbm",
+    "n": 100000,
+    "seeds": 5,
+    "mean_return": -0.000330332857199968,
+    "loss_probability": 0.31174999999999997,
+    "zero_fill_probability": 0.38912800000000003,
+    "var99": 0.011166324159228583,
+    "cvar99": 0.013954861702950488
+  },
+  {
+    "steps": 2160,
+    "model": "moving_block_bootstrap",
+    "n": 100000,
+    "seeds": 5,
+    "mean_return": -0.00047320067077352387,
+    "loss_probability": 0.30281199999999997,
+    "zero_fill_probability": 0.4593679999999999,
+    "var99": 0.010770095195484618,
+    "cvar99": 0.01379778716231301
+  },
+  {
+    "steps": 2160,
+    "model": "regime_historical",
+    "n": 100000,
+    "seeds": 5,
+    "mean_return": 0.0023436994153174973,
+    "loss_probability": 0.03767,
+    "zero_fill_probability": 0.574778,
+    "var99": 0.002849742202591883,
+    "cvar99": 0.0047665947926259986
+  },
+  {
+    "steps": 2160,
+    "model": "jump_down",
+    "n": 100000,
+    "seeds": 5,
+    "mean_return": -0.016454902465935985,
+    "loss_probability": 0.75592,
+    "zero_fill_probability": 0.21435200000000001,
+    "var99": 0.051502519898401565,
+    "cvar99": 0.05371613700429623
   }
 ]
