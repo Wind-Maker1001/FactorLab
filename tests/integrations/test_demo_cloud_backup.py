@@ -781,9 +781,15 @@ def test_external_mailbox_writer_contention_refuses_snapshot(tmp_path):
     assert not list(root.iterdir())
 
 
-def test_scheduled_external_mailbox_stops_all_writers(tmp_path):
+@pytest.mark.parametrize('embedded', [False, True])
+def test_scheduled_mailbox_backup_stops_all_writers(tmp_path, embedded):
     state = _seed_execute_state(tmp_path / 'state')
     mailbox = _seed_external_mailbox(tmp_path)
+    if embedded:
+        recovered_path = state / storage._TASK_MAILBOX
+        storage._root(recovered_path.parent, create=True)
+        mailbox.replace(recovered_path)
+        mailbox = None
     root = _make_private_dir(tmp_path / 'backups')
 
     class Runner(_FakeRunner):

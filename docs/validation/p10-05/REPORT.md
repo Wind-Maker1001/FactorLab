@@ -2,6 +2,54 @@
 
 目标 `origin/main` 为 `864671649626993bce84629dc9f64d3cc4e3f015`。现场操作于 2026-11-27 开始，报告更新至 2026-11-28（Asia/Shanghai）。[机读证据](evidence.json) 使用 UTC 时间和脱敏的模拟账户回执。
 
+## R02 双向接管演练
+
+计划内灾备验收：`DISASTER_RECOVERY_ACCEPTED`。该结论覆盖源端可封存、最终内部账本可取得的双向交接；不代表非计划永久源盘丢失后可以发布执行。只有周期副本且无法取得最后内部状态时，即使官方现金和持仓吻合，也不能证明暂停命令、预算预留和内部划转完整，恢复必须维持隔离，不能把 GET 追赶当作完整内部增量日志。
+
+### 传输与恢复指标
+
+四次接管均使用源端停止写入后的最终快照，内部账本 RPO 为 0。RTO 以维护开始至留存健康观测计算；维护中断以源端确认停止至同一健康观测计算。下表两者为观测上界，包含操作员与核查时间，不将 `take_over` 调用耗时或副本年龄冒充 RTO/RPO。
+
+| 方向 / 市场 | 最终快照字节 | rsync 发送 / 接收字节 | 拉取秒 | 接管命令秒 | RTO 上界秒 | 中断上界秒 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 马来西亚 → 日本 / Binance | 30,568,499 | 43,085 / 68,125 | 4.198 | 2.910 | 79.204 | 76.978 |
+| 马来西亚 → 日本 / Alpaca | 844,330,922 | 209,275 / 7,825 | 120.998 | 136.150 | 650.078 | 628.807 |
+| 日本 → 马来西亚 / Binance | 30,601,278 | 48,841 / 84,739 | 5.017 | 7.037 | 872.884 | 869.884 |
+| 日本 → 马来西亚 / Alpaca | 844,335,015 | 214,108 / 17,065 | 85.022 | 119.978 | 848.903 | 834.903 |
+
+精确时间、快照摘要、隔离证明绑定与双向对账回执见机读证据。反向健康观测分别为 20:22:38.883677 UTC 和 20:22:14.902769 UTC，晚于服务启动，因此表中不声称为首次健康时间。
+
+### 回切配置与回归
+
+只读核对 systemd 的完整覆盖链：Binance 执行、备份、健康、策略部署均使用 `/var/lib/factorlab-demo/execute-state-r01-return`；Observer 的执行健康文件和 TaskMailbox 也位于该根。Alpaca 执行、备份、健康均使用 `/var/lib/factorlab-alpaca-paper/r01-return`。原封存根不再作为运行入口。
+
+C07 在内置 `external/task-mailbox/tasks.sqlite3` 存在时也执行既有辅助写入者停机与恢复流程，外置路径行为保留。内置/外置两个回归均通过，连同 contention 定向测试为 3 项通过；受影响备份测试文件全量 28 项通过。长期 SOAK 与 Alpaca 自然周调仓继续观察，不阻塞本次代码合并。
+
+正向接管已完成。Binance 日本侧于 2026-11-27 19:55:26 UTC 返回 `published_for_execution=true`，32 次官方 GET、零 POST/DELETE，现金和持仓残差为零，累计 POST=147、名义额 917.5849000 USDT、UNKNOWN=0。首次健康记录为 19:55:58 UTC。Alpaca 日本侧于 20:04:24 UTC 返回 `published_for_execution=true`，11 次官方请求，现金残差为零、预算核验通过、无阻断项；20:07:10 UTC 的心跳确认账户恢复、交易流连接和 `healthy=true`，原 V69 保持 `WAITING_NEXT_WEEK`。
+
+马来西亚两市场原源根均保留最终封存标记。反向快照 `backup-20261127T200820Z` 从日本当前账本捕获，Binance 为 30,601,278 字节，Alpaca 为 844,335,015 字节。回切目标分别为 `/var/lib/factorlab-demo/execute-state-r01-return` 与 `/var/lib/factorlab-alpaca-paper/r01-return`，不覆盖原封存根。Binance 于 20:11:06 UTC 完成反向发布，32 次 GET、零 POST/DELETE，现金与持仓残差为零，预算连续且累计 POST=147。Alpaca 于 20:15:41 UTC 完成反向发布，11 次官方请求、现金残差为零、预算验证通过、18 个成交回执无未归属订单。马来西亚 Binance、Alpaca 和 Observer 均已 enabled/running 且自动重启数为零，两个市场的备份、健康和部署 timers 已恢复。日本两市场执行者和 Observer 均已持久屏蔽、PID=0，两个异地接收 timers 已恢复。最终回切后的目标根分别为 `/var/lib/factorlab-demo/execute-state-r01-return` 与 `/var/lib/factorlab-alpaca-paper/r01-return`。现运行所有权为马来西亚，日本为灾备。原封存根和反向回切根均保留。日本反向封存前，直接安装在 `/etc/systemd/system` 的相关 unit 定义移至 `/usr/local/lib/systemd/system`，保留定义并允许持久 mask。
+
+## R02 异地复制与 Azure 权限诊断
+
+马来西亚继续运行三组件同版 `80d22fa…`，日本的账户执行与邮箱生产单元保持屏蔽。此次维护沿用 R01 的同版 SOAK 窗口，周期备份造成的单市场中断单独记录。
+
+### 托管标识和磁盘授权
+
+从 `factorlab-demo-01` 的 IMDS 重新获取 ARM 令牌。令牌 `xms_mirid` 与本机 VM 资源 ID 一致，`aud` 为 `https://management.azure.com/`。租户内主体的 `oid` 为 `56156a74-7cd4-472c-9f64-518c15171a62`，应用的 `appid` 为 `c2401c28-6907-4cef-8199-69cdb5d4b202`，对应 Portal 显示的两个 ID。磁盘级 Reader 对 VM 父资源的直接 `Microsoft.Compute/virtualMachines/read` 请求返回 403，因此标识关联证据来自 VM 的 IMDS、令牌声明和角色分配的 `principalId`。 [Microsoft 令牌声明](https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference)
+
+| OS 托管磁盘作用域 | ARM 角色列表首次结果 | 磁盘读取 |
+| --- | --- | --- |
+| `rg-factorlab-demo/.../disks/factorlab-demo-01_OsDisk_1_d6ababe136934b179efa38e60ffd1790` | HTTP 200，Reader，主体是上述 `oid`，角色分配为 `f5f3b39c…` | HTTP 403，`AuthorizationFailed`，操作 `Microsoft.Compute/disks/read` |
+| `factorlab-test/.../disks/factorlab-arm-01_disk1_cba5a31311974d3daeecbc5bf5c54c70` | HTTP 200，Reader，主体是上述 `oid`，角色分配为 `22ced243…` | HTTP 200，`EncryptionAtRestWithPlatformKey` |
+
+马来西亚磁盘的 IMDS 资源 ID 与角色分配返回的完整磁盘作用域按 Azure 资源 ID 比较一致。用分配记录中的规范大小写请求同一磁盘也返回 `AuthorizationFailed`。有限复查时，马来西亚的角色列表由 200 变为 403，Compute 读取持续 403。重新请求 IMDS 仍得到签发时间相同的令牌。现有证据确认了主体和角色范围，Azure 实际授权结果仍不一致。最后一次磁盘读请求的 Azure 请求 ID 是 `63b93abd-3b5f-4b3e-a836-0c9649cbd3f9`。完整资源路径、Azure 错误正文和请求 ID 保存在主节点的私有运维记录。配置保持现有磁盘级 Reader。 [Azure RBAC 传播与排查](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting)
+
+### 日本首次复制
+
+Azure 管理员随后用 Cloud Shell 读取了马来西亚实体磁盘，返回的资源 ID 与 IMDS 一致，加密类型为 `EncryptionAtRestWithPlatformKey`。两地已有控制面静态加密证据，托管身份在马来西亚的 403 单独保留为 IAM 诊断记录。管理员查询没有改动 IAM。
+
+两市场的接收 unit 已在日本校验并原子发布首份副本，设定各保留两份。Binance 快照 30,523,283 字节，rsync 实收 1,640,786 字节，完整过程 6.675 秒。Alpaca 快照 844,318,466 字节，rsync 实收 90,711,811 字节，完整过程 90.900 秒。接收 timer 已启用，分别在每小时 UTC :45 与 :55 执行。
+
 ## R01 存量 V69 迁移
 
 在原分支和 PR #277 上从 `53549906c8e08f807c53d57ad45774d243910c97` 继续。活动 V69 的包源码、配置、模型身份字段、策略声明和证据维持原值。变化项是 `LoadedStrategy.runtime_identity()` 所覆盖的执行器源码。旧程序首次绑定时保存了整个策略运行绑定，所以新版在进入实例恢复前会拒绝该摘要。

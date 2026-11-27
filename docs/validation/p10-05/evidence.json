@@ -157,10 +157,181 @@
       "forward_rsync_list_verified": true,
       "reverse_rsync_list_verified": true,
       "japan_writers_masked": true,
-      "snapshot_pull_enabled": false,
-      "replication_bytes": null,
-      "forward_takeover": null,
-      "failback": null,
+      "snapshot_pull_enabled": true,
+      "replication_bytes": {
+        "forward": {
+          "binance": {
+            "snapshot": "backup-20261127T195442Z",
+            "snapshot_bytes": 30568499,
+            "rsync_sent_bytes": 43085,
+            "rsync_received_bytes": 68125,
+            "elapsed_seconds": 4.198474058997817
+          },
+          "alpaca": {
+            "snapshot": "backup-20261127T195642Z",
+            "snapshot_bytes": 844330922,
+            "rsync_sent_bytes": 209275,
+            "rsync_received_bytes": 7825,
+            "elapsed_seconds": 120.99758185300743
+          }
+        },
+        "reverse": {
+          "binance": {
+            "snapshot": "backup-20261127T200820Z",
+            "snapshot_bytes": 30601278,
+            "rsync_received_bytes": 84739,
+            "elapsed_seconds": 5.016984691959806,
+            "rsync_sent_bytes": 48841
+          },
+          "alpaca": {
+            "snapshot": "backup-20261127T200820Z",
+            "snapshot_bytes": 844335015,
+            "rsync_received_bytes": 17065,
+            "elapsed_seconds": 85.02160077297594,
+            "rsync_sent_bytes": 214108
+          }
+        }
+      },
+      "forward_takeover": {
+        "binance": {
+          "published_for_execution": true,
+          "snapshot": "backup-20261127T195442Z",
+          "snapshot_sha256": "d07e498f29b5bf3db2ae5abcc85fa88dbf50b6fc46fb6d27c1c624eb075859c2",
+          "captured_at": "2026-11-27T19:54:42.286521+00:00",
+          "checked_at": "2026-11-27T19:55:26.068376+00:00",
+          "requests": {
+            "GET": 32,
+            "POST": 0,
+            "DELETE": 0
+          },
+          "cash_residual": "0",
+          "positions": 0,
+          "open_orders": 0,
+          "unknown": 0,
+          "budget_verified": true,
+          "takeover_command_seconds": 2.909933521,
+          "snapshot_age_at_publication_seconds": 43.781855,
+          "rpo_seconds": 0,
+          "maintenance_started_at": "2026-11-27T19:54:39.023446969+00:00",
+          "source_stopped_at": "2026-11-27T19:54:41.250111950+00:00",
+          "healthy_observed_at": "2026-11-27T19:55:58.227644+00:00",
+          "rto_seconds_upper_bound": 79.204198,
+          "maintenance_interruption_seconds_upper_bound": 76.977533,
+          "fence": {
+            "mechanism": "source-sealed-and-units-masked",
+            "source_machine": "27516a8bf5fa47d6a29121212bb96c80",
+            "target": {
+              "machine_id": "69b9ba7649a5473d8fc4fc77bc6933ce",
+              "state_root": "/var/lib/factorlab-demo/execute-state"
+            },
+            "snapshot_sha256": "d07e498f29b5bf3db2ae5abcc85fa88dbf50b6fc46fb6d27c1c624eb075859c2"
+          },
+          "missing_internal_coverage": []
+        },
+        "alpaca": {
+          "published_for_execution": true,
+          "snapshot": "backup-20261127T195642Z",
+          "snapshot_sha256": "52a549f0856900377350795ead44062d1fd073a9bd1abb5e14fe048e5b82f328",
+          "captured_at": "2026-11-27T19:56:42.768811+00:00",
+          "checked_at": "2026-11-27T20:04:24.244656+00:00",
+          "requests": {
+            "official": 11
+          },
+          "cash_residual": "0",
+          "budget_verified": true,
+          "blockers": [],
+          "takeover_command_seconds": 136.14957507597865,
+          "snapshot_age_at_publication_seconds": 461.475845,
+          "rpo_seconds": 0,
+          "maintenance_started_at": "2026-11-27T19:56:20.345422896+00:00",
+          "source_stopped_at": "2026-11-27T19:56:41.616515168+00:00",
+          "healthy_observed_at": "2026-11-27T20:07:10.423390+00:00",
+          "rto_seconds_upper_bound": 650.077968,
+          "maintenance_interruption_seconds_upper_bound": 628.806875,
+          "fence": {
+            "mechanism": "source-sealed-and-units-masked",
+            "source_machine": "27516a8bf5fa47d6a29121212bb96c80",
+            "target": {
+              "machine_id": "69b9ba7649a5473d8fc4fc77bc6933ce",
+              "state_root": "/var/lib/factorlab-alpaca-paper/execute-state"
+            },
+            "snapshot_sha256": "52a549f0856900377350795ead44062d1fd073a9bd1abb5e14fe048e5b82f328"
+          },
+          "missing_internal_coverage": []
+        }
+      },
+      "failback": {
+        "binance": {
+          "published_for_execution": true,
+          "snapshot": "backup-20261127T200820Z",
+          "snapshot_sha256": "47bdef1cd9f177978531121d8ad867ef59ab9f99adf353afc750cb201a50d313",
+          "captured_at": "2026-11-27T20:08:20.388511+00:00",
+          "checked_at": "2026-11-27T20:11:06.415766+00:00",
+          "requests": {
+            "GET": 32,
+            "POST": 0,
+            "DELETE": 0
+          },
+          "cash_residual": "0",
+          "positions": 0,
+          "open_orders": 0,
+          "unknown": 0,
+          "budget_verified": true,
+          "target_state": "/var/lib/factorlab-demo/execute-state-r01-return",
+          "takeover_command_seconds": 7.037254953,
+          "snapshot_age_at_publication_seconds": 166.027255,
+          "rpo_seconds": 0,
+          "maintenance_started_at": "2026-11-27T20:08:06+00:00",
+          "source_stopped_at": "2026-11-27T20:08:09+00:00",
+          "healthy_observed_at": "2026-11-27T20:22:38.883677+00:00",
+          "rto_seconds_upper_bound": 872.883677,
+          "maintenance_interruption_seconds_upper_bound": 869.883677,
+          "fence": {
+            "mechanism": "source-sealed-and-units-masked",
+            "source_machine": "69b9ba7649a5473d8fc4fc77bc6933ce",
+            "target": {
+              "machine_id": "27516a8bf5fa47d6a29121212bb96c80",
+              "state_root": "/var/lib/factorlab-demo/execute-state-r01-return"
+            },
+            "snapshot_sha256": "47bdef1cd9f177978531121d8ad867ef59ab9f99adf353afc750cb201a50d313"
+          },
+          "missing_internal_coverage": []
+        },
+        "alpaca": {
+          "published_for_execution": true,
+          "snapshot": "backup-20261127T200820Z",
+          "snapshot_sha256": "5a5f02544c8178c7e2b8ba00d6101ba0a7b831c6e0daf1e0701141039217bd15",
+          "captured_at": "2026-11-27T20:08:23.270938+00:00",
+          "checked_at": "2026-11-27T20:15:41.688334+00:00",
+          "requests": {
+            "official": 11
+          },
+          "cash_residual": "0",
+          "budget_verified": true,
+          "blockers": [],
+          "fills": 18,
+          "unowned_orders": 0,
+          "target_state": "/var/lib/factorlab-alpaca-paper/r01-return",
+          "takeover_command_seconds": 119.97845262801275,
+          "snapshot_age_at_publication_seconds": 438.417395,
+          "rpo_seconds": 0,
+          "maintenance_started_at": "2026-11-27T20:08:06+00:00",
+          "source_stopped_at": "2026-11-27T20:08:20+00:00",
+          "healthy_observed_at": "2026-11-27T20:22:14.902769+00:00",
+          "rto_seconds_upper_bound": 848.902769,
+          "maintenance_interruption_seconds_upper_bound": 834.902769,
+          "fence": {
+            "mechanism": "source-sealed-and-units-masked",
+            "source_machine": "69b9ba7649a5473d8fc4fc77bc6933ce",
+            "target": {
+              "machine_id": "27516a8bf5fa47d6a29121212bb96c80",
+              "state_root": "/var/lib/factorlab-alpaca-paper/r01-return"
+            },
+            "snapshot_sha256": "5a5f02544c8178c7e2b8ba00d6101ba0a7b831c6e0daf1e0701141039217bd15"
+          },
+          "missing_internal_coverage": []
+        }
+      },
       "final_azure_encryption_query": {
         "observed_at": "2026-11-27T19:18:25.765016+00:00",
         "result": {
@@ -216,10 +387,107 @@
         "/etc/factorlab-dr/contracts/binance-r01.json",
         "/etc/factorlab-dr/contracts/alpaca-r01.json"
       ],
-      "cross_region_rpo_seconds": null,
-      "cross_region_rto_seconds": null,
-      "cross_region_ledger_difference": null,
-      "reserved_disk_for_two_alpaca_copies_plus_staging_at_actual_size": 2532955398
+      "cross_region_rpo_seconds": {
+        "forward": {
+          "binance": 0,
+          "alpaca": 0
+        },
+        "reverse": {
+          "binance": 0,
+          "alpaca": 0
+        }
+      },
+      "cross_region_rto_seconds": {
+        "forward": {
+          "binance": {
+            "upper_bound": 79.204198
+          },
+          "alpaca": {
+            "upper_bound": 650.077968
+          }
+        },
+        "reverse": {
+          "binance": {
+            "upper_bound": 872.883677
+          },
+          "alpaca": {
+            "upper_bound": 848.902769
+          }
+        }
+      },
+      "cross_region_ledger_difference": {
+        "forward": {
+          "binance": {
+            "cash": "0",
+            "positions": 0,
+            "unknown": 0
+          },
+          "alpaca": {
+            "cash": "0",
+            "blockers": []
+          }
+        },
+        "reverse": {
+          "binance": {
+            "cash": "0",
+            "positions": 0,
+            "unknown": 0
+          },
+          "alpaca": {
+            "cash": "0",
+            "blockers": []
+          }
+        }
+      },
+      "reserved_disk_for_two_alpaca_copies_plus_staging_at_actual_size": 2532955398,
+      "acceptance_status": "DISASTER_RECOVERY_ACCEPTED",
+      "permanent_source_disk_loss_limit": "This acceptance covers planned, fenced handover and verified snapshots only; it does not establish recovery from permanent loss of the source disk or from state changes after the final snapshot without a trusted incremental ledger.",
+      "maintenance_interruption_seconds": {
+        "forward": {
+          "binance": {
+            "upper_bound": 76.977533
+          },
+          "alpaca": {
+            "upper_bound": 628.806875
+          }
+        },
+        "reverse": {
+          "binance": {
+            "upper_bound": 869.883677
+          },
+          "alpaca": {
+            "upper_bound": 834.902769
+          }
+        }
+      },
+      "service_configuration_consistency": {
+        "malaysia_return_roots": {
+          "binance": "/var/lib/factorlab-demo/execute-state-r01-return",
+          "alpaca": "/var/lib/factorlab-alpaca-paper/r01-return"
+        },
+        "malaysia_executors": "enabled/running",
+        "malaysia_observer": "enabled/running",
+        "malaysia_backup_health_deploy_timers": "enabled",
+        "japan_executors_and_observer": "masked/inactive",
+        "japan_offsite_timers": "enabled"
+      },
+      "measurement_definitions": {
+        "rpo": "Zero internal-ledger loss for planned fenced final-snapshot handover; snapshot age is reported separately, not as data loss.",
+        "rto": "Upper bound from maintenance start to retained healthy observation, including operator and verification time.",
+        "maintenance_interruption": "Upper bound from confirmed stopped source to retained healthy observation; reverse source stop uses second-resolution systemd journal.",
+        "takeover_command": "Elapsed take_over invocation, not complete RTO."
+      },
+      "configuration_verified_at": "2026-11-27T20:22:38.883677+00:00",
+      "configuration_verification": "Read both markets execution, backup, health and Binance strategy-deploy/Observer effective drop-in chains; final overrides resolve to the independent return roots. No runtime changes during engineering closeout.",
+      "local_regression": {
+        "targeted": "3 passed, 25 deselected",
+        "mailbox_cases": [
+          "external",
+          "embedded"
+        ],
+        "full_affected_file": "28 passed"
+      },
+      "acceptance_scope": "Planned final-snapshot handover and reverse handover only; long-running SOAK and natural Alpaca rebalance remain observation, not merge blockers."
     },
     "resources": {
       "sample_during_alpaca_backup": {
