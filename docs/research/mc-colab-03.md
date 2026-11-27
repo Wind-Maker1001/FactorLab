@@ -245,6 +245,12 @@ completion and attempts bounded salvage after execution failure. Release runs
 in cleanup; record server-confirmed release and final usage even if execution
 failed. `recover --job ...` and `release --job ...` use the controller's existing
 release path; `download --job ...` requests the retained remote result files.
+Official CLI session state is private controller data stored under
+`~/.local/state/factorlab-colab/sessions/<session>/`, not alongside Windows
+artifacts on `/mnt/<drive>`. CLI storage is initialized before paid allocation:
+DrvFS inherited permissions can prevent the CLI's SQLite lock from opening even
+when artifact files themselves are writable. Keep that native session directory
+until server-side release has been confirmed; it can contain runtime credentials.
 
 A batch publishes `report.json` plus `samples.npz`. At batch level the NPZ is an
 artifact-byte bundle (`uint8-npz-v1`), not directly the task's terminal samples.

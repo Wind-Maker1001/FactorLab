@@ -44,10 +44,46 @@ prior performance study. Dependencies actually loaded were NumPy 2.3.5,
 SciPy 1.16.3 and, on GPU, CuPy 14.2.0. GPU research used RTX 2070 (8 GiB),
 with no concurrent research GPU benchmark and process-owned GPU windows.
 The cold grid observation itself illustrates why kernel throughput alone is
-not a placement model. Corrected cloud acceptance is pending.
+not a placement model.
 
-TODO: Complete integrated tests and real installed-wheel CPU/CUDA/cloud runs,
-then replace pending statuses with measured evidence in this report.
+The Windows → WSL → official CLI batch at commit `38c4444` completed all three
+registered workloads on NVIDIA L4 (23034 MiB), using one allocation and one
+installation. GBM and Bootstrap each used 1M paths × 252 steps; static grid
+used 100k paths × 168 steps. Fresh-worker times were respectively 7.436,
+5.176 and 4.274 s. Distinct PIDs 1081, 1116 and 1143 loaded Python 3.13.16,
+NumPy 2.3.5, SciPy 1.16.3 and CuPy 14.0.1 from the installed wheel environment.
+All outputs were retrieved and unpacked. The official server listing confirmed
+no active sessions after release, with zero assignments and 0 CU/h.
+[Compact cloud evidence](cloud-acceptance.json).
+
+Controller lifecycle was 263.067 s: deployment 85.845 s, remote execution and
+bundling 37.072 s, download 7.604 s and release 11.885 s; the remaining
+120.660 s covers allocation, probes and other control overhead. Remote batch
+work before final bundling was 16.960 s. At the observed 2.33 CU/h, the entire
+controller wall-time proxy is 0.170 CU; it is not exact billable runtime duration.
+The rounded balance remained 198.88 CU during this successful attempt, which
+must not be interpreted as free compute or finalized billing. Including the
+prior recovery's 0.15 CU observed balance change, the conservative combined
+observation-plus-wall-time proxy is approximately 0.320 CU, below 10 CU.
+
+Batching paid the 85.845 s deployment once rather than three times. Holding
+this measured deployment duration constant, separate fresh installations would
+add 171.690 s (about 0.111 CU at 2.33 CU/h), before any repeated allocation,
+probe, transfer or release overhead. This is a lifecycle counterfactual, not a
+measured three-single-job comparison. Local RTX 2070 fresh workers totaled
+19.133 s for these workloads; cloud task workers totaled 16.885 s but its full
+263.067 s lifecycle dominates this small batch. These measurements support
+keeping such immediately executable work local rather than selecting cloud
+from kernel speed alone.
+
+The installed-wheel auto/registered-benchmark batch also succeeded: the
+1000-path GBM task selected CPU conservatively (2.434 s fresh worker), and the
+registered reliability benchmark completed on CPU in 49.258 s. Total batch
+work was 51.819 s. The native-session-storage fix passed 44 focused controller
+and admission tests in 4.16 s. The subsequent combined batch, dispatch,
+selection, process-tree, admission and controller suite passed 152 tests in
+8.26 s with zero skips. Explicit Linux account-lock acceptance passed both
+tests in 3.65 s, including competing controllers and lock release after crash.
 
 ## Placement evidence
 
@@ -74,6 +110,11 @@ reported no active sessions; usage was 0 CU/h with zero assignments and a
 to this round's 10 CU envelope. The controller now stores session state under
 its native Linux home directory and initializes CLI storage before allocation,
 so a storage failure cannot first create a paid runtime.
+
+The next allocation attempt at commit `38c4444` passed native session-storage
+preflight, but the official assignment endpoint returned Service Unavailable.
+Cleanup verified no active server sessions, zero assignments and 0 CU/h;
+the rounded balance stayed 198.88 CU. No experiments ran in this attempt.
 Record actual hardware, initial/final account balance, observed active rate,
 deployment/execution/download/release times, retained results and server-side
 release confirmation. Rounded balance differences and rate-times-wall estimates
