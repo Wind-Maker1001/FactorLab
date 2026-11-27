@@ -4,8 +4,41 @@ The Linux controller `tools/research/colab_job.py` uses the official
 [Google Colab CLI](https://github.com/googlecolab/google-colab-cli), pinned to
 `google-colab-cli==0.8.0`. Follow the upstream
 [colab-operator skill](https://github.com/googlecolab/google-colab-cli/blob/main/skills/colab-operator/SKILL.md)
-for authentication and session operations. Windows controls the Linux host over
-OpenSSH; neither Windows Colab support nor WSL is required.
+for authentication and session operations. On Windows, the preferred research
+controller is an on-demand WSL2 Linux environment; the official CLI runs inside
+Linux, not natively on Windows. An independent Linux host reached over OpenSSH
+is also supported. Keep research control separate from trading execution.
+The small shared Azure Standard B2ats v2 deployment has **not passed routine
+coexistence qualification**; its optional SSH deployment capability is not a
+prerequisite for accepting the independent controller tool.
+
+## On-demand WSL2 control
+
+Use an existing Linux distribution with systemd and Python >=3.12. Keep the CLI
+virtual environment, controller scripts, jobs and ADC inside its Linux home,
+not a trading service directory. Authorize Google independently in WSL; do not
+copy another host's ADC file. Run the same submit/status/logs/recover commands
+below through `wsl.exe -d <distribution> -- <linux-python> <controller> ...`.
+Copy all three `colab_*.py` scripts together. Research dependencies and simulations
+still execute on Colab, not WSL.
+
+If Windows uses a localhost-only proxy, NAT-mode WSL cannot reach that listener
+through the Windows gateway. Mirrored networking can expose the existing
+localhost proxy to WSL; changing networking requires an explicitly scheduled
+WSL restart. Set `HTTPS_PROXY`/`HTTP_PROXY` to the working Linux-reachable proxy
+before authorization and submission. The submit command copies standard
+uppercase/lowercase proxy environment variables into the transient unit by
+name, without including their values in the systemd-run command line. Proxy
+configuration is not a credential-transfer mechanism.
+
+WSL is needed only while controlling a job. Keep a WSL foreground session open
+through completion and release: systemd services alone do not guarantee WSL
+instance lifetime. Closing a terminal is not cancellation, and terminating WSL
+is not cleanup. After the task is released, the foreground session can exit;
+no research controller daemon or permanent WSL keepalive is installed. Never
+use `wsl --shutdown` while another workload uses a distribution. After an
+unexpected host/WSL shutdown, start WSL and invoke `recover` before submitting
+another job.
 
 ## Host setup
 

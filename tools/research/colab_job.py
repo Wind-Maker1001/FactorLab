@@ -262,6 +262,9 @@ def main():
                    "--property=CPUQuota=25%", "--property=CPUWeight=10",
                    f"--property=RuntimeMaxSec={args.timeout}", "--property=TimeoutStopSec=150",
                    f"--property=ExecStopPost={cleanup}",
+                   *[f"--setenv={name}" for name in
+                     ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY",
+                      "http_proxy", "https_proxy", "all_proxy", "no_proxy") if name in os.environ],
                    *base, "run", "--job", str(root)]
         subprocess.run(command, check=True)
         print(json.dumps({"job": str(root), "unit": session}))

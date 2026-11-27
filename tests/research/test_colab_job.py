@@ -257,3 +257,25 @@ def test_resources_summary(tmp_path, monkeypatch):
     measurement.error = OSError("procfs read failed")
     with pytest.raises(RuntimeError, match="Resource sampling failed"):
         measurement.finish()
+
+
+def test_submit_forwards_proxy_by_name_without_exposing_value(tmp_path, monkeypatch):
+    import os
+    import shutil
+    import sys
+    wheel = tmp_path / "factorlab-0.1.0-py3-none-any.whl"
+    wheel.touch()
+    script = tmp_path / "research.py"
+    script.touch()
+    monkeypatch.setenv("HTTPS_PROXY", "http://private-proxy:10808")
+    monkeypatch.setattr(os, "getuid", lambda: 1000, raising=False)
+    monkeypatch.setattr(shutil, "which", lambda _: "/isolated/bin/colab")
+    monkeypatch.setattr(sys, "argv", ["colab_job.py", "submit", "--job", str(tmp_path / "job"),
+        "--wheel", str(wheel), "--script", str(script), "--commit", "a" * 40, "--budget-cu", "2"])
+    def run(command, **kwargs):
+        assert "--setenv=HTTPS_PROXY" in command
+        assert not any("private-proxy" in argument for argument in command)
+        assert command[-3] == "run"
+        return subprocess.CompletedProcess(command, 0)
+    monkeypatch.setattr(module.subprocess, "run", run)
+    module.main()

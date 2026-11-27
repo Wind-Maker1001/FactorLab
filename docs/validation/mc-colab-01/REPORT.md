@@ -218,6 +218,28 @@ a non-trading Linux controller if isolation cannot be demonstrated. Do not
 increase controller limits, upgrade the VM, or change trading services to
 resolve this issue.
 
+### Deployment qualification versus controller acceptance
+
+The preferred deployment is now an on-demand local Windows → WSL2 → official
+Colab CLI control path. Azure remains an optional Linux deployment, with its
+small shared-host routine coexistence qualification **not passed**. That host
+qualification is separate from the correctness and engineering acceptance of
+the independent research controller. No Azure upgrade, new server purchase or
+trading-service change is required by this deployment choice. Local WSL must
+remain alive during a task and release; it need not remain running between jobs.
+Local Google ADC authorization is independent of Azure credentials.
+
+Local minimal evidence: WSL2 Linux with systemd PID 1 and Python 3.14.10 ran
+official CLI 0.8.0. The final local regression suite passed **24 tests in 0.30
+seconds**, including proxy propagation without embedding values in argv.
+A real transient systemd unit acquired the account lock and exported cgroup
+resource evidence; a separate transient unit confirmed the proxy environment
+arrived intact. Mirrored networking reached the Google OAuth endpoint through
+the existing Windows localhost proxy after NAT direct access had timed out.
+Browser ADC consent remains the next interactive step before an authenticated
+account-query/remote-task claim can be made. No Colab runtime was allocated
+by these local environment tests.
+
 ### Concurrency and regression evidence
 
 A nonblocking, per-control-identity account flock covers preflight through
