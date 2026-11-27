@@ -4,6 +4,7 @@ from collections import defaultdict
 from contextlib import closing
 from datetime import datetime, timezone
 from decimal import Decimal
+from itertools import groupby
 import json
 from pathlib import Path
 from time import perf_counter
@@ -11,6 +12,7 @@ from time import perf_counter
 from factorlab.errors import DataQualityError
 from factorlab.integrations.binance.market import _decimal
 from factorlab.trading.contracts import ZERO
+from .account import AccountPositionConflict
 from .adapter import _to_ms, funding_event_id
 from .demo_cli import open_session
 from .demo_cloud_runtime import durable_state
@@ -30,13 +32,16 @@ _ANCHOR = "disaster_recovery_anchor"
 _EVIDENCE = "disaster_recovery_evidence"
 _ORDER_LIMIT = 1000
 _HISTORY_PAGE_BUDGET = 64
+_MAX_ACCOUNT_ATTEMPTS = 3
 # The documented three calendar months can be shorter than 90 days.
 _TRADE_RETENTION_MS = 84 * 24 * 3600 * 1000
 
 
-def _anchor(adapter, since):
+def _anchor(adapter, since, *, restore_id):
     anchor = load_state(adapter.db, _ANCHOR)
-    if anchor is not None and anchor["snapshot_since"] == since.isoformat():
+    if anchor is not None and anchor.get("restore_id") == restore_id:
+        if anchor["snapshot_since"] != since.isoformat():
+            raise SafetyBlocked("cannot change the recovery watermark of an existing restore")
         return anchor
     row = adapter.db.execute(
         "SELECT payload,updated_at FROM futures_recovery_state WHERE scope='account_baseline'"
@@ -45,10 +50,9 @@ def _anchor(adapter, since):
         raise SafetyBlocked("the backup has no reconciled Binance wallet or position baseline")
     payload, updated = row
     baseline = json.loads(payload)
-    # Earlier snapshots recorded the commit time. Report that boundary explicitly.
     observed_at = baseline.get("observed_at", updated)
-    anchor = dict(snapshot_since=since.isoformat(), baseline=baseline, observed_at=observed_at,
-                  official_observation_time="observed_at" in baseline)
+    anchor = dict(snapshot_since=since.isoformat(), restore_id=restore_id, baseline=baseline,
+                  observed_at=observed_at)
     with adapter.store.transaction():
         save_state(adapter.db, _ANCHOR, anchor, adapter.clock().isoformat())
     return anchor
@@ -102,6 +106,7 @@ def _refresh_archived_orders(adapter, trades):
     by_order = defaultdict(list)
     for row in trades:
         by_order[row["symbol"], str(row["orderId"])].append(row)
+    refreshed = False
     for (symbol, order_id), rows in by_order.items():
         archived = adapter.db.execute(
             "SELECT client_order_id FROM futures_order_recovery "
@@ -112,9 +117,53 @@ def _refresh_archived_orders(adapter, trades):
             booked = _recorded_trades(adapter, client_id)
             if any(booked.get(row["id"]) != _trade_value(row) for row in rows):
                 adapter.query_order(client_id)
+                refreshed = True
+    return refreshed
 
 
-def _history_evidence(adapter, runtime, anchor, orders, trades, income, baseline_ms):
+def _window_residual(events, observed, window, update_ms=None):
+    """Find an exact economic boundary using an independently sampled field."""
+    start, end = window
+    if update_ms is not None:
+        if type(update_ms) is not int or not 0 <= update_ms <= end:
+            return None, False
+    after = sum((amount for at, amount in events if at > end), ZERO)
+    candidates = [after]
+    overlap = sorted(((at, amount) for at, amount in events if start <= at <= end), reverse=True)
+    for _, group in groupby(overlap, key=lambda event: event[0]):
+        change = sum((amount for _, amount in group), ZERO)
+        if change:
+            candidates.append(candidates[-1] + change)
+    if candidates.count(observed) == 1:
+        return ZERO, True
+    return observed - after, False
+
+
+def _economic_evidence(baseline, current, position_events, cash_events):
+    windows = baseline.get("read_windows")
+    if not windows:
+        return dict(unproven_baseline=True, position_residual={}, cash_residual=None)
+    position_deltas, wallet_delta = baseline_deltas(baseline, current)
+    wallet_residual, wallet_proved = _window_residual(
+        cash_events, wallet_delta, windows["account"], baseline["wallet_update_ms"])
+    position_residual = {}
+    unproved_positions = set()
+    for endpoint, updates in zip(("account", "position_risk"), baseline["position_updates"], strict=True):
+        last_updates = {symbol: at for symbol, side, at in updates if side == "BOTH"}
+        for symbol in position_deltas.keys() | position_events.keys() | last_updates.keys():
+            residual, proved = _window_residual(
+                position_events.get(symbol, ()), position_deltas.get(symbol, ZERO),
+                windows[endpoint], last_updates.get(symbol))
+            if not proved:
+                unproved_positions.add(symbol)
+                if residual not in (ZERO, None):
+                    position_residual[symbol] = str(residual)
+    return dict(unproven_baseline=False, position_residual=position_residual,
+                cash_residual=None if wallet_residual is None else str(wallet_residual),
+                unproved_wallet=not wallet_proved, unproved_positions=sorted(unproved_positions))
+
+
+def _history_evidence(adapter, runtime, baseline, current, orders, trades, income, start_ms):
     """Compare official activity with pre-restore economic state and original intents."""
     journal = {(symbol, order_id): client_id for client_id, symbol, order_id in adapter.db.execute(
         "SELECT client_order_id,symbol,exchange_order_id FROM futures_order_recovery"
@@ -123,10 +172,10 @@ def _history_evidence(adapter, runtime, anchor, orders, trades, income, baseline
         (row["symbol"], str(row["orderId"]))) != row["clientOrderId"]]
     unowned_trades = []
     conflicting_trades = []
+    missing_trade_receipts = []
     known_trades = {}
-    position_delta = defaultdict(Decimal)
-    expected_trade_cash = ZERO
-    income_by_trade = {}
+    position_events = defaultdict(list)
+    trade_cash = {}
     for row in trades:
         value, at, side, position_side, realized = _trade_value(row)
         symbol, trade_id, order_id, qty, _, commission, currency = value
@@ -137,49 +186,58 @@ def _history_evidence(adapter, runtime, anchor, orders, trades, income, baseline
         if client_id not in known_trades:
             known_trades[client_id] = _recorded_trades(adapter, client_id)
         order = adapter.order(client_id)
-        if (known_trades[client_id].get(trade_id) != (value, at, side, position_side, realized)
-                or side != order.intent.side.value or position_side != "BOTH" or currency != "USDT"):
+        if side != order.intent.side.value or position_side != "BOTH" or currency != "USDT":
+            conflicting_trades.append(row)
+            continue
+        recorded = known_trades[client_id].get(trade_id)
+        if recorded is None:
+            missing_trade_receipts.append(row)
+            continue
+        if recorded != (value, at, side, position_side, realized):
             conflicting_trades.append(row)
             continue
         fee = Decimal(commission)
-        income_by_trade["COMMISSION", symbol, str(trade_id), currency] = -fee
-        income_by_trade["REALIZED_PNL", symbol, str(trade_id), currency] = realized
-        if at > baseline_ms:
-            expected_trade_cash += realized - fee
-            position_delta[symbol] += Decimal(qty) if side == "BUY" else -Decimal(qty)
+        trade_cash["COMMISSION", symbol, str(trade_id), currency] = (at, -fee)
+        trade_cash["REALIZED_PNL", symbol, str(trade_id), currency] = (at, realized)
+        position_events[symbol].append((at, Decimal(qty) if side == "BUY" else -Decimal(qty)))
 
     funding = {event.event_id: event for event in adapter.funding_events()}
     conflicting_funding = []
+    missing_funding_receipts = []
     flows = defaultdict(list)
+    cash_events = []
     for row in income.rows:
         kind, amount = row["incomeType"], _decimal(row["income"])
         if kind == "FUNDING_FEE":
             key = funding_event_id(kind, canonical_tran_id(row["tranId"]))
             event = funding.get(key)
-            if (event is None or event.asset != "USDT" or event.amount != amount or event.symbol != row["symbol"]
+            if event is None:
+                missing_funding_receipts.append(row)
+            elif (event.asset != "USDT" or event.amount != amount or event.symbol != row["symbol"]
                     or event.asset != row["asset"] or _to_ms(event.event_time) != row["time"]):
                 conflicting_funding.append(row)
-        elif row["time"] >= baseline_ms and amount != ZERO:
+            else:
+                cash_events.append((row["time"], amount))
+        elif amount:
             flows[kind, row["symbol"], str(row.get("tradeId", "")), row["asset"]].append(row)
-    unowned_income = [row for key, rows in flows.items()
-                      if sum((_decimal(row["income"]) for row in rows), ZERO) != income_by_trade.get(key)
-                      for row in rows]
-    current = account_baseline(adapter.facts)
-    observed_positions, observed_cash = baseline_deltas(anchor["baseline"], current)
-    expected_positions = {key: value for key, value in position_delta.items() if value != ZERO}
-    position_residual = {key: str(observed_positions.get(key, ZERO) - expected_positions.get(key, ZERO))
-                         for key in observed_positions.keys() | expected_positions.keys()
-                         if observed_positions.get(key, ZERO) != expected_positions.get(key, ZERO)}
-    funding_cash = adapter._confirmed_funding_usdt(adapter.facts.observed_at) - _decimal(
-        anchor["baseline"]["funding_usdt"])
-    cash_residual = observed_cash - expected_trade_cash - funding_cash
+    unowned_income = []
+    for key, rows in flows.items():
+        amounts = [(row["time"], _decimal(row["income"])) for row in rows]
+        expected = trade_cash.get(key)
+        if expected is not None and sum((amount for _, amount in amounts), ZERO) == expected[1]:
+            del trade_cash[key]
+            cash_events.extend(amounts)
+        else:
+            unowned_income.extend(row for row in rows if row["time"] >= start_ms)
+    cash_events.extend(trade_cash.values())
     unconfirmed_dispatches = [key for key, in runtime.db.execute(
         "SELECT client_id FROM dispatches WHERE method='POST' AND receipt IS NULL")
         if adapter.db.execute("SELECT 1 FROM futures_orders WHERE id=?", (key,)).fetchone() is None]
     return dict(unowned_orders=unowned_orders, unowned_trades=unowned_trades,
                 conflicting_trades=conflicting_trades, conflicting_funding=conflicting_funding,
+                missing_trade_receipts=missing_trade_receipts, missing_funding_receipts=missing_funding_receipts,
                 unowned_income=unowned_income, unconfirmed_dispatches=unconfirmed_dispatches,
-                position_residual=position_residual, cash_residual=str(cash_residual))
+                **_economic_evidence(baseline, current, position_events, cash_events))
 
 
 def _budget(runtime, balances):
@@ -200,14 +258,9 @@ def _budget(runtime, balances):
                 remaining_notional=str(remaining_notional), remaining_loss=str(remaining_loss))
 
 
-def _reconcile(session, runtime, *, since):
+def _read_history(session, facts, *, baseline, start_ms, end_ms, snapshot_ms):
     adapter = session.adapter
-    anchor = _anchor(adapter, since)
-    baseline_ms = _to_ms(datetime.fromisoformat(anchor["observed_at"]))
-    snapshot_ms = _to_ms(since)
-    start_ms = min(baseline_ms, snapshot_ms)
-    end_ms = _to_ms(adapter.facts.observed_at)
-    if max(snapshot_ms, baseline_ms) > end_ms or end_ms - start_ms >= _TRADE_RETENTION_MS:
+    if snapshot_ms > end_ms or start_ms > end_ms or end_ms - start_ms >= _TRADE_RETENTION_MS:
         raise SafetyBlocked("Binance recovery baseline outside authoritative trade and income retention")
     order_start = max(start_ms, end_ms - UNFILLED_CANCEL_RETENTION_SECONDS * 1000 + 1)
     orders = []
@@ -217,8 +270,9 @@ def _reconcile(session, runtime, *, since):
     with session.client.recover_get_clock():
         income = adapter.income_window(start_time=start_ms, end_time=end_ms, max_pages=_HISTORY_PAGE_BUDGET)
         symbols = (set(session.gateway.state.instruments)
-                   | {row["symbol"] for row in adapter.facts.open_orders}
-                   | {symbol for symbol, _ in adapter.facts.confirmed_position_amounts()}
+                   | {row["symbol"] for row in facts.open_orders}
+                   | {symbol for symbol, _ in facts.confirmed_position_amounts()}
+                   | {symbol for symbol, _, _ in baseline["positions"]}
                    | {row["symbol"] for row in income.rows if row["symbol"]})
         for symbol in sorted(symbols):
             orders.extend(_orders(adapter, symbol, order_start, end_ms, pages=order_pages))
@@ -229,35 +283,89 @@ def _reconcile(session, runtime, *, since):
                 max_pages=_HISTORY_PAGE_BUDGET - trade_pages)
             trades.extend(rows)
             trade_pages += count
-        _refresh_archived_orders(adapter, trades)
     history = dict(start_ms=start_ms, end_ms=end_ms, order_start_ms=order_start,
                    complete_unfilled_order_history=order_start <= snapshot_ms,
-                   baseline_observed_at=anchor["observed_at"],
-                   official_observation_time=anchor["official_observation_time"],
                    symbols=sorted(symbols), order_pages=order_pages[0], trade_pages=trade_pages,
                    income_pages=income.pages, order_count=len(orders), trade_count=len(trades))
-    try:
-        outcome = session.recover()
-    except (DataQualityError, SafetyBlocked, TimeoutError) as error:
-        evidence = dict(reconciled=False, history=history, error=str(error),
-                        orders=orders, trades=trades, income=list(income.rows))
-    else:
+    return history, orders, trades, income
+
+
+def _account_signature(facts, baseline):
+    # A zero net quantity or cash change can still advance an official update watermark.
+    orders = sorted((row["symbol"], row["clientOrderId"], row.get("orderId"),
+                     row.get("status"), row.get("executedQty"), row.get("updateTime")) for row in facts.open_orders)
+    return (baseline["wallet"], baseline["positions"], baseline["wallet_update_ms"],
+            baseline["position_updates"], orders)
+
+
+def _reconcile(session, runtime, *, since, restore_id):
+    adapter = session.adapter
+    anchor = _anchor(adapter, since, restore_id=restore_id)
+    baseline = anchor["baseline"]
+    source_windows = baseline.get("read_windows")
+    discovery_ms = (min(window[0] for window in source_windows.values()) if source_windows
+                    else _to_ms(datetime.fromisoformat(anchor["observed_at"])))
+    snapshot_ms = _to_ms(since)
+    start_ms = min(discovery_ms, snapshot_ms)
+    for attempt in range(1, _MAX_ACCOUNT_ATTEMPTS + 1):
+        try:
+            outcome = session.recover()
+        except AccountPositionConflict as error:
+            evidence = dict(reconciled=False, error=str(error), attempts=attempt)
+            continue
+        except (DataQualityError, SafetyBlocked, TimeoutError) as error:
+            evidence = dict(reconciled=False, error=str(error), attempts=attempt)
+            break
+
+        facts = adapter.facts
+        current = account_baseline(facts)
+        final_windows = current["read_windows"]
+        quiet_from = min(window[0] for window in final_windows.values())
+        end_ms = max(window[1] for window in final_windows.values())
+        history, orders, trades, income = _read_history(
+            session, facts, baseline=baseline, start_ms=start_ms, end_ms=end_ms, snapshot_ms=snapshot_ms)
+        history.update(baseline_observed_at=anchor["observed_at"], baseline_read_windows=source_windows,
+                       final_read_windows=final_windows, quiet_from_ms=quiet_from)
+        # An active/terminal transition during the account reads does not
+        # belong to a closed recovery round, even if the net economics agree.
+        overlapping = (any(row["time"] >= quiet_from for row in trades)
+                       or any(row["time"] >= quiet_from for row in income.rows)
+                       or any(row["updateTime"] >= quiet_from for row in orders))
         newer_order_facts = adapter.db.execute(
-            "SELECT count(*) FROM futures_order_recovery WHERE julianday(exchange_updated_at)>julianday(?)",
-            (datetime.fromtimestamp(end_ms / 1000, timezone.utc).isoformat(),),
+            "SELECT count(*) FROM futures_order_recovery WHERE julianday(exchange_updated_at)>=julianday(?)",
+            (datetime.fromtimestamp(quiet_from / 1000, timezone.utc).isoformat(),),
         ).fetchone()[0]
-        anomalies = _history_evidence(adapter, runtime, anchor, orders, trades, income, baseline_ms)
-        reconciled = (outcome["reconciled"] and not outcome["unknown"]
-                      and not newer_order_facts and history["complete_unfilled_order_history"]
-                      and Decimal(anomalies["cash_residual"]) == ZERO
+        with session.client.recover_get_clock():
+            refreshed = _refresh_archived_orders(adapter, trades)
+            try:
+                readback = adapter.read_facts()
+            except AccountPositionConflict:
+                readback = None
+        changed = (readback is None
+                   or _account_signature(facts, current) != _account_signature(readback, account_baseline(readback)))
+        anomalies = _history_evidence(
+            adapter, runtime, baseline, current, orders, trades, income, discovery_ms)
+        if anomalies["missing_funding_receipts"] and attempt < _MAX_ACCOUNT_ATTEMPTS:
+            # The normal recovery fetch precedes the completed account/history read.
+            with session.client.recover_get_clock():
+                adapter.sync_funding(end_time=end_ms)
+        unstable = (overlapping or newer_order_facts or refreshed or changed
+                    or anomalies["missing_trade_receipts"] or anomalies["missing_funding_receipts"])
+        residual = anomalies["cash_residual"]
+        reconciled = (outcome["reconciled"] and not outcome["unknown"] and not unstable
+                      and history["complete_unfilled_order_history"]
+                      and residual is not None and Decimal(residual) == ZERO
                       and not any(value for key, value in anomalies.items() if key != "cash_residual"))
-        budget = _budget(runtime, outcome["balances"])
-        budget["verified"] = budget["verified"] and history["official_observation_time"]
-        evidence = dict(reconciled=reconciled, history=history, anomalies=anomalies,
-                        unknown=outcome["unknown"], newer_order_facts=newer_order_facts, budget=budget,
+        budget = _budget(runtime, (facts if readback is None else readback).usdt())
+        budget["verified"] = budget["verified"] and reconciled
+        evidence = dict(reconciled=reconciled, history=history, anomalies=anomalies, attempts=attempt,
+                        final_account_unstable=bool(unstable), unknown=outcome["unknown"],
+                        newer_order_facts=newer_order_facts, budget=budget,
                         risk_budget_available=budget["available"],
                         open_orders=len(outcome["open_orders"]), positions=len(outcome["positions"]),
                         funding_event_count=outcome["funding"]["event_count"])
+        if not unstable:
+            break
     with adapter.store.transaction():
         save_state(adapter.db, _EVIDENCE, evidence, adapter.clock().isoformat())
     return evidence
@@ -274,8 +382,15 @@ def catch_up(root, *, since):
             raise SafetyBlocked("Binance catch-up requires a quarantined restored state")
         store = DemoFileCredentialStore(root=root)
         with closing(DemoRuntime(root)) as runtime:
-            with open_session(root, store, runtime, requests, require_bound_configuration=True) as (session, _):
-                result = _reconcile(session, runtime, since=since)
+            for attempt in range(_MAX_ACCOUNT_ATTEMPTS):
+                try:
+                    with open_session(root, store, runtime, requests, require_bound_configuration=True) as (session, _):
+                        result = _reconcile(session, runtime, since=since, restore_id=marker.get("restore_id"))
+                except AccountPositionConflict:
+                    if attempt == _MAX_ACCOUNT_ATTEMPTS - 1:
+                        raise
+                else:
+                    break
             default = "RUNNING" if runtime.continuous_authorization() is not None else "READ_ONLY"
             return dict(result, desired=durable_state(root, runtime, default=default), requests=dict(requests),
                         elapsed_seconds=perf_counter() - started)

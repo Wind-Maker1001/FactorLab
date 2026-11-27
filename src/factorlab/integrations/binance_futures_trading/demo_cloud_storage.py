@@ -13,6 +13,7 @@ import shutil
 import sqlite3
 import stat
 import tempfile
+from uuid import uuid4
 
 from .protocol import SafetyBlocked
 
@@ -321,8 +322,12 @@ def _snapshot(root, destination, databases, *, quarantine, task_mailbox=None, me
         binding = root / 'binding.json'
         if binding.exists():
             atomic_json(staging / 'binding.json', _binding(binding))
-        if quarantine or ((root / _QUARANTINE).exists() and not (metadata and metadata['final_target'])):
-            atomic_json(staging / _QUARANTINE, {'version': 1, 'reason': 'restored-state-requires-GET-only-recovery'})
+        source_marker = root / _QUARANTINE
+        if quarantine or (source_marker.exists() and not (metadata and metadata['final_target'])):
+            reason = 'restored-state-requires-GET-only-recovery'
+            marker = json.loads(source_marker.read_bytes()) if source_marker.exists() else {}
+            restore_id = marker.get('restore_id') if marker.get('reason') == reason else uuid4().hex
+            atomic_json(staging / _QUARANTINE, {'version': 1, 'reason': reason, 'restore_id': restore_id})
         atomic_json(staging / _BACKUP_MANIFEST, dict(version=1,
             databases=sorted((_TASK_MAILBOX if path == task_mailbox else path.relative_to(root)).as_posix()
                              for path in databases), binding=binding.exists()))
