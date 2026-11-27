@@ -1,6 +1,7 @@
 """Serial V2 instance turns inside the existing Demo Execute owner."""
 import json
 
+from factorlab.time_utils import utc_instant
 from factorlab.trading.storage import decode
 from .protocol import ExchangeError, SafetyBlocked
 
@@ -101,7 +102,6 @@ class DemoInstanceOwner:
         """Persist a mailbox target using an already qualified instance allocation."""
         from decimal import Decimal
         from factorlab.trading.realtime import identity
-        from .tradfi_schedule import utc_instant
         candidates = []
         for raw, in self.execution.store.db.execute(
                 "SELECT payload FROM events WHERE id LIKE 'demo:instance:%'"):
@@ -116,7 +116,7 @@ class DemoInstanceOwner:
         decision_id = 'demo:decision:' + identity((binding['instance_id'], package_id, task['task_id']))
         existing = self.execution.store.db.execute(
             'SELECT completed,payload FROM demo_instance_outbox WHERE id=?', (decision_id,)).fetchone()
-        expired = utc_instant(task['valid_until']) <= self.session._now()
+        expired = utc_instant(task['valid_until']) <= utc_instant(self.session._now())
         if existing is not None:
             saved = decode(json.loads(existing[1]))
             if saved['receipt']['input_identity'] != identity(task):
@@ -244,8 +244,7 @@ class DemoInstanceOwner:
             accepted = decode(json.loads(raw))
             task = accepted.get('receipt', {}).get('event', {}).get('task')
             if task is not None:
-                from .tradfi_schedule import utc_instant
-                if utc_instant(task['valid_until']) <= now:
+                if utc_instant(task['valid_until']) <= utc_instant(now):
                     self._expire_task(decision_id, accepted)
                     continue
             symbols = {intent.instrument_id for intent in accepted['intents']}

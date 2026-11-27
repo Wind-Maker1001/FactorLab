@@ -184,13 +184,20 @@ class MarketWorker:
         client = MarketDataClient(Credentials(self.config.key_id, self.config.secret_key),
                                   feed=self.feed, attempts=1)
         db = sqlite3.connect(self.root / 'market-stream.sqlite3')
+        db.execute('PRAGMA journal_mode=WAL')
+        db.execute('PRAGMA synchronous=NORMAL')
         db.executescript('''
             CREATE TABLE IF NOT EXISTS events (
                 id INTEGER PRIMARY KEY, received_at TEXT NOT NULL, channel TEXT NOT NULL,
                 symbol TEXT NOT NULL, payload TEXT NOT NULL);
+            CREATE INDEX IF NOT EXISTS events_received_at ON events(received_at);
             CREATE TABLE IF NOT EXISTS gaps (
                 start TEXT NOT NULL, end TEXT NOT NULL, rows INTEGER NOT NULL);
         ''')
+        # Retain a bounded 7-day rolling window of raw stream observations to prevent unbounded disk growth.
+        cutoff = (now() - timedelta(days=7)).isoformat()
+        with db:
+            db.execute('DELETE FROM events WHERE received_at < ?', (cutoff,))
         row = db.execute('SELECT end FROM gaps ORDER BY rowid DESC LIMIT 1').fetchone()
         last = datetime.fromisoformat(row[0]) if row else now() - timedelta(minutes=5)
 

@@ -42,8 +42,11 @@ class DecisionJournal:
                      restored_state=identity(previous), at=controller.clock()))
 
     def _count(self, suffix):
-        return sum(key.startswith(self.prefix + suffix) for key, in
-                   self.controller.store.db.execute('SELECT id FROM events'))
+        prefix = self.prefix + suffix
+        upper = prefix[:-1] + chr(ord(prefix[-1]) + 1)
+        return self.controller.store.db.execute(
+            'SELECT COUNT(*) FROM events WHERE id >= ? AND id < ?', (prefix, upper)
+        ).fetchone()[0]
 
     def _read(self, key):
         raw = self.controller.store.event_payload(key)
@@ -67,10 +70,13 @@ class DecisionJournal:
         self.controller.store.record_metadata(key, dict(parts=parts, sha256=identity(payload)))
 
     def _latest(self):
-        for key, in self.controller.store.db.execute('SELECT id FROM events ORDER BY rowid DESC'):
-            if key.startswith(self.prefix + 'event:') and ':part:' not in key:
-                return self._read(key)['decision']['state']
-        return {}
+        prefix = self.prefix + 'event:'
+        upper = prefix[:-1] + chr(ord(prefix[-1]) + 1)
+        row = self.controller.store.db.execute(
+            "SELECT id FROM events WHERE id >= ? AND id < ? AND instr(id, ':part:') = 0 ORDER BY rowid DESC LIMIT 1",
+            (prefix, upper),
+        ).fetchone()
+        return self._read(row[0])['decision']['state'] if row is not None else {}
 
     def decide(self, event):
         if (event['symbol'] != self.symbol or event['kind'] not in self.spec.data_types

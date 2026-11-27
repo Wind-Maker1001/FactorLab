@@ -1,13 +1,127 @@
 """Synthetic, long-only grid state machine; no exchange connectivity."""
 from dataclasses import asdict, dataclass
-from datetime import date
+from datetime import date, datetime
 import math
+import re
 
-import pandas as pd
-
-from factorlab.backtest.execution import PositionBook
-from factorlab.backtest.fees import FeeRule, FeeSchedule
 from factorlab.errors import ConfigurationError
+
+_ISO_FRAC_RE = re.compile(r"[.,](\d+)$")
+_EPOCH = datetime(1970, 1, 1)
+
+
+class _NaiveTimestamp(datetime):
+    """Timezone-free datetime subclass preserving nanosecond precision without pandas."""
+
+    __slots__ = ("nanosecond",)
+
+    def __new__(
+        cls, year, month, day, hour=0, minute=0, second=0, microsecond=0,
+        tzinfo=None, fold=0, nanosecond=0,
+    ):
+        obj = super().__new__(cls, year, month, day, hour, minute, second, microsecond, tzinfo, fold=fold)
+        obj.nanosecond = int(nanosecond)
+        return obj
+
+    def isoformat(self, sep="T", timespec="auto") -> str:
+        if not self.nanosecond or timespec != "auto":
+            return super().isoformat(sep=sep, timespec=timespec)
+        return f"{super().isoformat(sep=sep, timespec='seconds')}.{self.microsecond:06d}{self.nanosecond:03d}"
+
+    def _ns_pair(self, other):
+        if isinstance(other, datetime):
+            if other.tzinfo is not None:
+                return NotImplemented
+            return (
+                (self.year, self.month, self.day, self.hour, self.minute, self.second, self.microsecond, self.nanosecond),
+                (other.year, other.month, other.day, other.hour, other.minute, other.second, other.microsecond, int(getattr(other, "nanosecond", 0))),
+            )
+        return NotImplemented
+
+    def __eq__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] == pair[1]
+
+    def __ne__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] != pair[1]
+
+    def __lt__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] < pair[1]
+
+    def __le__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] <= pair[1]
+
+    def __gt__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] > pair[1]
+
+    def __ge__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] >= pair[1]
+
+    def __reduce_ex__(self, _protocol):
+        # datetime's packed pickle state omits the subclass's nanosecond slot.
+        fields = (self.year, self.month, self.day, self.hour, self.minute, self.second,
+                  self.microsecond, self.tzinfo, self.fold, self.nanosecond)
+        return type(self), fields
+
+    def __hash__(self):
+        if self.nanosecond == 0:
+            return super().__hash__()
+        # Match pandas.Timestamp's epoch nanoseconds without going through a float.
+        delta = self - _EPOCH
+        whole_seconds = delta.days * 86_400 + delta.seconds
+        return hash((whole_seconds * 1_000_000 + delta.microseconds) * 1_000 + self.nanosecond)
+
+
+def _make_naive_timestamp(dt: datetime, nanosecond: int = 0) -> _NaiveTimestamp:
+    return _NaiveTimestamp(
+        dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.microsecond,
+        fold=dt.fold, nanosecond=nanosecond,
+    )
+
+
+def _parse_naive_timestamp(value) -> _NaiveTimestamp:
+    if value is None or isinstance(value, bool):
+        raise ValueError("invalid timestamp")
+    if isinstance(value, _NaiveTimestamp):
+        return value
+    if isinstance(value, datetime):
+        if value.tzinfo is not None:
+            raise ValueError("timezone-free timestamp required")
+        return _make_naive_timestamp(value, int(getattr(value, "nanosecond", 0)))
+    if isinstance(value, str):
+        text = value.strip()
+        if not text or text.lower() in {"nat", "nan", "none"}:
+            raise ValueError("invalid timestamp")
+        if text.endswith(("Z", "z")):
+            raise ValueError("timezone-free timestamp required")
+        try:
+            parsed = datetime.fromisoformat(text)
+        except ValueError:
+            parsed = None
+        if parsed is not None:
+            if parsed.tzinfo is not None:
+                raise ValueError("timezone-free timestamp required")
+            match = _ISO_FRAC_RE.search(text)
+            if match is not None:
+                frac = match.group(1)
+                if len(frac) > 9 and any(ch != "0" for ch in frac[9:]):
+                    raise ValueError("unsupported sub-nanosecond timestamp precision")
+                padded = (frac + "000000000")[:9]
+                return _make_naive_timestamp(parsed.replace(microsecond=int(padded[:6])), int(padded[6:9]))
+            return _make_naive_timestamp(parsed, 0)
+    try:
+        import pandas as pd
+    except ModuleNotFoundError as exc:
+        raise ValueError(f"invalid timestamp: {value!r}") from exc
+    ts = pd.Timestamp(value)
+    if pd.isna(ts) or ts.tzinfo is not None:
+        raise ValueError("timezone-free timestamp required")
+    return _make_naive_timestamp(ts, int(ts.nanosecond))
 
 
 @dataclass(frozen=True)
@@ -96,7 +210,9 @@ class GridStrategy:
     symbol = "SYNTHETIC"
     active_states = {"OPEN", "PARTIALLY_FILLED"}
 
-    def __init__(self, config: GridConfig, fees: FeeSchedule | None = None):
+    def __init__(self, config: GridConfig, fees=None):
+        from factorlab.backtest.execution import PositionBook
+        from factorlab.backtest.fees import FeeRule, FeeSchedule
         self.config = config
         self.fees_schedule = fees or FeeSchedule([FeeRule(
             date(1900, 1, 1), commission_bps=config.fee_bps,
@@ -311,9 +427,12 @@ class GridStrategy:
             raise ConfigurationError("unsupported event action")
         if action == "cancel" and event["order_id"] not in self.orders:
             raise ConfigurationError("unknown cancel order")
-        timestamp = pd.Timestamp(event["time"])
+        try:
+            timestamp = _parse_naive_timestamp(event["time"])
+        except (TypeError, ValueError) as exc:
+            raise ConfigurationError("events must have ordered timezone-free times") from exc
         price, volume = event["price"], event["volume"]
-        if pd.isna(timestamp) or timestamp.tzinfo is not None or (self.time is not None and timestamp < pd.Timestamp(self.time)):
+        if self.time is not None and timestamp < _parse_naive_timestamp(self.time):
             raise ConfigurationError("events must have ordered timezone-free times")
         if not math.isfinite(price) or price <= 0 or type(volume) is not int or volume < 0:
             raise ConfigurationError("invalid event price or volume")
@@ -412,6 +531,7 @@ class GridStrategy:
 
     @classmethod
     def replay(cls, payload):
+        from factorlab.backtest.fees import FeeRule, FeeSchedule
         strategy = cls(GridConfig(**payload["config"]), FeeSchedule(FeeRule(**r) for r in payload["fee_rules"]))
         for event in payload["inputs"]:
             strategy.on_event(event)
