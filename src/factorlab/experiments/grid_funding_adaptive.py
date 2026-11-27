@@ -23,12 +23,10 @@ from decimal import Decimal
 import hashlib
 import json
 import math
+import statistics
 from pathlib import Path
 from typing import Any
 import urllib.request
-
-import numpy as np
-import pandas as pd
 
 from factorlab.experiments.grid_fifo import (
     D,
@@ -72,6 +70,8 @@ def validate_hourly_timeline(
     values: Any, *, start: datetime | None = None, end: datetime | None = None,
 ) -> pd.DatetimeIndex:
     """Reject malformed hours in source order; never sort, deduplicate or fill."""
+    import pandas as pd
+
     stamps = [pd.Timestamp(v) for v in values]
     if not stamps or any(pd.isna(t) or t.tzinfo is None for t in stamps):
         raise ValueError("Complete timezone-aware UTC hourly timeline required")
@@ -599,14 +599,12 @@ def causal_realized_vol_1h(closes: list[float], window: int, fallback_vol: float
     """Hourly log-return standard deviation using only strictly past closes."""
     if len(closes) < 3:
         return fallback_vol
-    tail = closes[-(window + 1) :]
-    arr = np.asarray(tail, dtype=float)
-    if np.any(arr <= 0):
+    tail = [float(close) for close in closes[-(window + 1):]]
+    if len(tail) < 3 or any(not math.isfinite(close) or close <= 0 for close in tail):
         return fallback_vol
-    rets = np.diff(np.log(arr))
-    if len(rets) < 2:
-        return fallback_vol
-    vol = float(np.std(rets, ddof=1))
+    log_prices = [math.log(close) for close in tail]
+    returns = [current - previous for previous, current in zip(log_prices, log_prices[1:])]
+    vol = statistics.stdev(returns)
     return vol if math.isfinite(vol) and vol > 1e-8 else fallback_vol
 
 
@@ -770,6 +768,8 @@ def fetch_binance_usdm_klines_1h(
     endpoint: str = "klines",
 ) -> list[dict[str, Any]]:
     """Fetch complete 1h klines from Binance USDM public REST (read-only, no key)."""
+    import pandas as pd
+
     start_ms = int(start_utc.timestamp() * 1000)
     end_ms = int(end_utc.timestamp() * 1000) - 1
     rows: list[dict[str, Any]] = []
@@ -838,6 +838,8 @@ def fetch_binance_usdm_funding(
 
 
 def load_funding_csv(csv_path: Path) -> list[tuple[datetime, Decimal, Decimal, str]]:
+    import pandas as pd
+
     df = pd.read_csv(csv_path)
     events = []
     for row in df.itertuples(index=False):
@@ -853,6 +855,9 @@ def load_and_audit_r10_dataset(
     allow_network_supplement: bool = True,
 ) -> tuple[list[dict[str, Any]], list[tuple[datetime, Decimal, Decimal, str]], dict[str, Any]]:
     """Load certified R04B + corroborated R07 + post-R07 continuous 1h dataset and audit it."""
+    import numpy as np
+    import pandas as pd
+
     from factorlab.experiments.grid_empirical import load_hourly
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
@@ -1149,6 +1154,8 @@ def compute_funding_overlay_series(
     - Constant hourly funding bps stress (e.g. Demo 22.9669 bps/h).
     - Dynamic regime-switch hourly funding ``(switch_hour, pre_bps_h, post_bps_h)``.
     """
+    import pandas as pd
+
     if constant_hourly_bps is not None or regime_switch_bps is not None:
         events = synthetic_hourly_funding_events(
             nav_df["date"], nav_df["close"], constant_hourly_bps=constant_hourly_bps,
@@ -1188,6 +1195,9 @@ def compute_equal_bh_benchmark(
     regime_switch_bps: tuple[int, float, float] | None = None,
 ) -> dict[str, float]:
     """Compute equal-quantity (0.04) Buy-and-Hold over the exact same window and funding regime."""
+    import numpy as np
+    import pandas as pd
+
     closes = np.asarray([float(b["close"]) for b in bars], dtype=float)
     p0 = closes[0]
     gross_series = qty * (closes - p0)
@@ -1284,6 +1294,8 @@ def run_paired_window(
     cleanup_dir: bool = False,
 ) -> dict[str, Any]:
     """Run one strategy arm on one window using the authoritative Paper engine and compute full metrics."""
+    import pandas as pd
+
     from factorlab.experiments.grid_paper import run_experiment
     from factorlab.experiments.grid_lifecycle import lifecycle_metrics
     anchor = float(bars[0]["close"])
@@ -1544,6 +1556,8 @@ def run_paired_window_multi_overlay(
     cleanup_dir: bool = True,
 ) -> dict[str, dict[str, Any]]:
     """Run one funding-independent arm (Strategy A or C) once and evaluate multiple funding overlays identically."""
+    import pandas as pd
+
     from factorlab.experiments.grid_paper import run_experiment
     from factorlab.experiments.grid_lifecycle import lifecycle_metrics
     if strategy_id.startswith("B"):

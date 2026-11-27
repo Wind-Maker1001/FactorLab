@@ -70,3 +70,28 @@ def test_invalid_allocation_never_enters_mailbox(tmp_path, changes):
         mailbox.submit(replace(task(), **changes))
     assert mailbox.outstanding() == []
     mailbox.close()
+
+def test_mailbox_preserves_nanosecond_payload_and_receipt_identity(tmp_path):
+    offered = replace(task(), observed_at='2026-11-30T09:30:01.123456900-05:00',
+                      valid_until='2026-11-30T14:30:01.123456901Z')
+    payload = offered.payload()
+    assert payload['observed_at'] == '2026-11-30T14:30:01.123456900+00:00'
+    assert payload['valid_until'] == '2026-11-30T14:30:01.123456901+00:00'
+    with pytest.raises(ValueError, match='expire after'):
+        replace(offered, valid_until='2026-11-30T14:30:01.123456899Z').payload()
+    with pytest.raises(ValueError, match='timezone-aware'):
+        replace(offered, observed_at='2026-11-30T14:30:01.123456900').payload()
+
+    from contextlib import closing
+    path = tmp_path / 'tasks.sqlite3'
+    with closing(TaskMailbox(path)) as mailbox:
+        mailbox.submit(offered)
+        mailbox.receipt(offered.task_id, recorded_at='2026-11-30T14:30:02.000000001Z',
+                        status='COMPLETED', detail={'journal': 'batch:1'})
+        original = mailbox.snapshot()
+        assert original[0]['recorded_at'] == '2026-11-30T14:30:02.000000001+00:00'
+    with closing(TaskMailbox(path)) as mailbox:
+        assert mailbox.submit(replace(offered, observed_at=payload['observed_at'])) == 'COMPLETED'
+        mailbox.receipt(offered.task_id, recorded_at='2026-11-30T14:30:03Z',
+                        status='COMPLETED', detail={'journal': 'batch:1'})
+        assert mailbox.snapshot() == original

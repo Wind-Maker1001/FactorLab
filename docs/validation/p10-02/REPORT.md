@@ -1,7 +1,7 @@
 # P10-02：FactorLab 执行端轻量化及 ARM64 跨架构适配验证报告
 
-> **状态**：已完成依赖审计、轻量化优化、PR #268 Codex Review（P1/P2 及二轮管道清理 P2）修复、同步 `origin/main`（`59dbcad`，含 PR #264 / P10-11）并按接口语义完成冲突集成与 x64/ARM64 联合验证；未修改或升级马来西亚生产模拟主机，未自动合并 PR。  
-> **开发分支**：`perf/p10-02-lightweight-arm64`（独立 worktree，已合入最新 `origin/main` `59dbcad`，PR #268）  
+> **状态**：已修复 PR #268 的 one-shot 隔离、并发、管道清理、纳秒精度和最小环境邮箱执行问题，并完成 Windows x64 最小环境业务验收。原生 Linux x64 / ARM64 的同场景与逐字节对照由 PR 检查发布。
+> **开发分支**：`perf/p10-02-lightweight-arm64`（原独立 worktree，PR #268，修复基于 `108dc07`，包含 #264 / P10-11 和 #267 / P10-01）
 > **证据归档目录**：`docs/validation/p10-02/evidence/`
 
 ---
@@ -92,6 +92,26 @@
 | Alpaca Native V69 8 资产 252 日组合决策 | 全部 8 资产浮点目标权重、4 笔调仓单（`JPM`, `GE`, `TQQQ`, `QQQ`）`adjusted_quantity`、周状态 | 预先定义浮点容差 `atol=1e-12, rtol=1e-12`（用于容忍不同 CPU 架构 BLAS/libm 末位舍入） | **实测最大绝对偏差 `0.0`**（4 向逐位一致） |
 
 ---
+
+### 3.3 PR #268 P2 最小 Binance 环境邮箱验收
+
+审查命中的依赖链是 Execute 的邮箱解析进入 `tradfi_schedule`，随即加载 pandas 和交易日历。现在 `PortfolioTask`、`TaskMailbox`、传统组合接收和派发、动态组合接受和过期恢复统一使用标准库 UTC 时间工具。它以 UTC datetime 和纳秒余数排序，继续写入原有 `+00:00` 格式及 0、6 或 9 位小数。Observer 继续用原来的 pandas 交易日历挑选自然周首个交易日。
+
+沿 Execute 的策略恢复路径发现，V2 自适应网格也会间接进入 pandas / numpy。研究端数据处理现在按需导入这些包，恢复和出决策时用标准库计算样本波动率。实验记录器按需加载，避免从实验包入口引入研究数据构建器。
+
+复现命令从仓库根目录执行。先建两个全新的 venv，把 `requirements/execution-binance.txt` 和 `requirements/execution-tradfi.txt` 分别装进 Execute 和 Observer，并设置 `PYTHONPATH=src`。用 Execute 的解释器运行 `python -m tools.ci.binance_mailbox_acceptance <observer-python>`。脚本通过真实 Observer 调度和派发函数写入共享 SQLite，Execute 通过正式 Demo HTTP 客户端对接 loopback 交易所，使用隔离的临时账本和合成凭据。
+
+| 场景 | Windows x64 / CPython 3.13.9 实测 |
+| --- | --- |
+| Observer 自然周任务和 QQQ/SPY 验收任务 | 两批各写入一笔 QQQUSDT 和一笔 SPYUSDT，使用原订单 ID 恢复并在到期后清理。一条仍在排队的验收任务过期后直接拒绝。 |
+| 动态 BTC 任务 | 一笔在途单重启后按原 ID 对账并撤销。另一笔按 `0.04 @ 150` 成交，邮箱写入 `COMPLETED`。 |
+| 时间戳与 SQLite | 读取由旧 pandas 序列化生成的带 1 ns 有效期任务，重投命中原身份。关闭并重开执行账本和邮箱后，已完成任务及终态回执保持幂等。 |
+| HTTP 与最小安装 | 6 次订单 POST、5 次原订单 DELETE。Execute venv 只有锁文件列出的运行期包，`pip check` 通过，业务运行期间无 pandas / numpy 导入尝试。 |
+| 其他延迟导入 | 资金费网格和波动率网格均在纯执行环境中恢复并处理首条观察。 |
+
+定向回归在 Windows x64 上两批分别通过 70 和 44 例。前者覆盖 Observer 调度、组合消费者、动态过期、V2 自适应网格实盘形态的离线测试，以及 one-shot、双层并发和管道清理。后者覆盖新增邮箱纳秒边界、实例宿主、QQQ/SPY 持久化、P10-11 外部策略和统一策略部署。
+
+[PR #268 检查](https://github.com/Wind-Maker1001/FactorLab/pull/268/checks) 的 `Lightweight Binance mailbox` 在原生 Linux x64 和 ARM64 上各自创建两套新环境，运行同一个脚本。随后 `Lightweight Binance mailbox parity` 对照两个证据文件中的回执、原订单 ID、数量、价格和状态。
 
 ## 四、已实施的轻量化优化与 PR #268 Codex Review 修复说明
 
