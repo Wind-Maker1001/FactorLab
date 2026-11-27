@@ -1,13 +1,40 @@
 """Synthetic, long-only grid state machine; no exchange connectivity."""
 from dataclasses import asdict, dataclass
-from datetime import date
+from datetime import date, datetime
 import math
 
-import pandas as pd
-
-from factorlab.backtest.execution import PositionBook
-from factorlab.backtest.fees import FeeRule, FeeSchedule
 from factorlab.errors import ConfigurationError
+
+
+def _parse_naive_timestamp(value):
+    if value is None or isinstance(value, bool):
+        raise ValueError("invalid timestamp")
+    if isinstance(value, datetime):
+        if value.tzinfo is not None:
+            raise ValueError("timezone-free timestamp required")
+        return value
+    if isinstance(value, str):
+        text = value.strip()
+        if not text or text.lower() in {"nat", "nan", "none"}:
+            raise ValueError("invalid timestamp")
+        if text.endswith(("Z", "z")):
+            raise ValueError("timezone-free timestamp required")
+        try:
+            parsed = datetime.fromisoformat(text)
+        except ValueError:
+            parsed = None
+        if parsed is not None:
+            if parsed.tzinfo is not None:
+                raise ValueError("timezone-free timestamp required")
+            return parsed
+    try:
+        import pandas as pd
+    except ModuleNotFoundError as exc:
+        raise ValueError(f"invalid timestamp: {value!r}") from exc
+    ts = pd.Timestamp(value)
+    if pd.isna(ts) or ts.tzinfo is not None:
+        raise ValueError("timezone-free timestamp required")
+    return ts.to_pydatetime()
 
 
 @dataclass(frozen=True)
@@ -96,7 +123,9 @@ class GridStrategy:
     symbol = "SYNTHETIC"
     active_states = {"OPEN", "PARTIALLY_FILLED"}
 
-    def __init__(self, config: GridConfig, fees: FeeSchedule | None = None):
+    def __init__(self, config: GridConfig, fees=None):
+        from factorlab.backtest.execution import PositionBook
+        from factorlab.backtest.fees import FeeRule, FeeSchedule
         self.config = config
         self.fees_schedule = fees or FeeSchedule([FeeRule(
             date(1900, 1, 1), commission_bps=config.fee_bps,
@@ -311,9 +340,12 @@ class GridStrategy:
             raise ConfigurationError("unsupported event action")
         if action == "cancel" and event["order_id"] not in self.orders:
             raise ConfigurationError("unknown cancel order")
-        timestamp = pd.Timestamp(event["time"])
+        try:
+            timestamp = _parse_naive_timestamp(event["time"])
+        except (TypeError, ValueError) as exc:
+            raise ConfigurationError("events must have ordered timezone-free times") from exc
         price, volume = event["price"], event["volume"]
-        if pd.isna(timestamp) or timestamp.tzinfo is not None or (self.time is not None and timestamp < pd.Timestamp(self.time)):
+        if self.time is not None and timestamp < _parse_naive_timestamp(self.time):
             raise ConfigurationError("events must have ordered timezone-free times")
         if not math.isfinite(price) or price <= 0 or type(volume) is not int or volume < 0:
             raise ConfigurationError("invalid event price or volume")
@@ -412,6 +444,7 @@ class GridStrategy:
 
     @classmethod
     def replay(cls, payload):
+        from factorlab.backtest.fees import FeeRule, FeeSchedule
         strategy = cls(GridConfig(**payload["config"]), FeeSchedule(FeeRule(**r) for r in payload["fee_rules"]))
         for event in payload["inputs"]:
             strategy.on_event(event)

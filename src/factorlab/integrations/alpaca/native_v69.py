@@ -226,6 +226,8 @@ class NativeWeeklyExecution(WeeklyExecution):
         return super().prepare(service, window, at, facts, corporate_evidence=corporate_evidence)
 
     def close(self):
+        for strategy in self.loaded.values():
+            strategy.close()
         self.view.close()
         if self.owns_deployments:
             self.deployments.close()

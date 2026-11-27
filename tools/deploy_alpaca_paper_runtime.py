@@ -22,9 +22,10 @@ def deploy(args):
         subprocess.run(['git', '-C', str(repo), 'archive', '-o', str(bundle), revision], check=True)
         subprocess.run(['scp', '-q', '-i', args.key, str(bundle),
                         f'{args.user}@{args.host}:{remote}/'], check=True)
+    python_arg = getattr(args, 'python', None) or 'auto'
     subprocess.run(ssh + [f'tar -xf {remote}/release.tar -C {remote} tools/install_alpaca_paper_runtime.sh && '
                           f'sudo sh {remote}/tools/install_alpaca_paper_runtime.sh {remote}/release.tar '
-                          f'{revision} /opt/factorlab/python/cpython-3.13-linux-x86_64-gnu/bin/python3'], check=True)
+                          f'{revision} {python_arg}'], check=True)
     if args.credential_file:
         from factorlab.integrations.alpaca.market_data.client import Credentials
         credentials = Credentials.from_dpapi(args.credential_file)
@@ -53,6 +54,7 @@ def main():
     parser.add_argument('--user', default='azureuser')
     parser.add_argument('--key', required=True)
     parser.add_argument('--credential-file')
+    parser.add_argument('--python', default='auto')
     deploy(parser.parse_args())
 
 

@@ -4,9 +4,6 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Protocol
 
-import pandas as pd
-
-from factorlab.strategies.dual_ma import crossover_indicators
 from .contracts import utc
 
 
@@ -111,6 +108,8 @@ class DualMAStrategy:
             raise ValueError('bar deployment mismatch')
         direction, target, status = 'HOLD', None, 'INSUFFICIENT_DATA'
         if len(bars) >= self.history_limit:
+            import pandas as pd
+            from factorlab.strategies.dual_ma import crossover_indicators
             _, _, buy, sell = crossover_indicators(pd.Series([float(b.close) for b in bars]), 5, 20)
             status = 'SIGNAL' if buy.iloc[-1] or sell.iloc[-1] else 'NO_SIGNAL'
             if buy.iloc[-1]:

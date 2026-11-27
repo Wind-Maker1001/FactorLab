@@ -12,9 +12,6 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from factorlab.backtest.execution import ExecutionBacktestConfig
-from factorlab.backtest.fees import FeeSchedule
-from factorlab.backtest.target import run_target_positions
 from factorlab.data.schema import normalize_symbol
 from factorlab.errors import ConfigurationError, SchemaError
 
@@ -148,6 +145,9 @@ def run_software_backtest(bars, calendar, config=None, *, fee_schedule=None, cor
     if not np.allclose(ratio, ratio.iloc[0], rtol=1e-10, atol=1e-12):
         raise SchemaError("corporate-action/variable adjustment ratio requires qualified execution ledger")
     signals = moving_average_signals(frame, calendar, config)
+    from factorlab.backtest.execution import ExecutionBacktestConfig
+    from factorlab.backtest.fees import FeeSchedule
+    from factorlab.backtest.target import run_target_positions
     execution = ExecutionBacktestConfig(initial_cash=config.initial_cash, board_lot=config.board_lot)
     fees = fee_schedule or FeeSchedule.a_share_default()
     result = run_target_positions(signals, frame, research, execution, fees)
@@ -166,12 +166,18 @@ def run_integrated_software_backtest(bars, calendar, dividend_plan, config=None,
     This separate API does not change the old runner/CLI admission refusals.
     Adjustment inputs remain unqualified signal inputs, not a PIT/HFQ claim.
     """
+    from factorlab.backtest.execution import ExecutionBacktestConfig
+    from factorlab.backtest.fees import FeeSchedule
+    from factorlab.backtest.target import run_target_positions
     from factorlab.data.corporate_actions.execution_evidence import DividendExecutionPlan
     if not isinstance(dividend_plan, DividendExecutionPlan):
         raise SchemaError("typed dividend execution plan required")
     config = config or DualMAConfig()
     frame, research = prepare_inputs(bars, calendar, config)
     signals = moving_average_signals(frame, calendar, config)
+    from factorlab.backtest.execution import ExecutionBacktestConfig
+    from factorlab.backtest.fees import FeeSchedule
+    from factorlab.backtest.target import run_target_positions
     execution = ExecutionBacktestConfig(initial_cash=config.initial_cash, board_lot=config.board_lot)
     fees = fee_schedule or FeeSchedule.a_share_default()
     strategy = run_target_positions(signals, frame, research, execution, fees, dividend_plan=dividend_plan)

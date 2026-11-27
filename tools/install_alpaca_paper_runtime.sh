@@ -1,9 +1,13 @@
 #!/bin/sh
 set -eu
-# Usage: sudo sh install_alpaca_paper_runtime.sh BUNDLE FULL_COMMIT PYTHON
+# Usage: sudo sh install_alpaca_paper_runtime.sh BUNDLE FULL_COMMIT [PYTHON|auto]
 bundle=$1
 revision=$2
-python=$3
+python=${3:-auto}
+if [ "$python" = "auto" ] || [ -z "$python" ]; then
+    arch=$(uname -m)
+    python="/opt/factorlab/python/cpython-3.13-linux-${arch}-gnu/bin/python3"
+fi
 case "$revision" in *[!0-9a-f]*|'') printf 'full commit required\n' >&2; exit 78;; esac
 [ "${#revision}" = 40 ]
 base=/opt/factorlab-alpaca
@@ -17,8 +21,9 @@ install -d -o root -g root -m 700 /etc/factorlab-alpaca-paper
 install -d -o root -g root -m 755 "$base/releases" "$release/source"
 tar -xf "$bundle" -C "$release/source"
 "$python" -m venv "$release/venv"
-"$release/venv/bin/python" -m pip install -r "$release/source/requirements/alpaca-paper-linux-py313.lock.txt"
+"$release/venv/bin/python" -m pip install --only-binary=:all: -r "$release/source/requirements/alpaca-paper-linux-py313.lock.txt"
 "$release/venv/bin/python" -m pip install --no-deps "$release/source"
+"$release/venv/bin/python" -m pip check
 "$release/venv/bin/python" -m pip freeze > "$release/dependencies.txt"
 printf '%s\n' "$revision" > "$release/revision"
 printf '#!/bin/sh\nexec %s/venv/bin/python -m factorlab.integrations.alpaca.cloud_runtime run --revision %s\n' "$release" "$revision" > "$release/run"

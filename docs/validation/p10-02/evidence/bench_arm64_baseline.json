@@ -1,0 +1,479 @@
+{
+  "timestamp_utc": "2026-11-26T15:23:08.721329+00:00",
+  "platform": {
+    "machine": "aarch64",
+    "python": "3.13.18"
+  },
+  "sys_mem_start": {
+    "mem_total_mb": 944.15,
+    "mem_avail_mb": 617.85,
+    "mem_free_mb": 193.63,
+    "swap_total_mb": 2048.0,
+    "swap_used_mb": 25.54
+  },
+  "cold_imports": [
+    {
+      "module": "factorlab",
+      "wall_ms": 3.17,
+      "cpu_ms": 3.17,
+      "rss_mb": 16.32,
+      "pss_mb": 10.22,
+      "hwm_mb": 16.32,
+      "swap_mb": 0.0,
+      "minflt": 1685,
+      "majflt": 0,
+      "loaded_modules": 63,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.trading",
+      "wall_ms": 20.79,
+      "cpu_ms": 20.8,
+      "rss_mb": 18.73,
+      "pss_mb": 12.51,
+      "hwm_mb": 18.73,
+      "swap_mb": 0.0,
+      "minflt": 2246,
+      "majflt": 0,
+      "loaded_modules": 90,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.strategies.loader",
+      "wall_ms": 589.45,
+      "cpu_ms": 757.16,
+      "rss_mb": 143.59,
+      "pss_mb": 136.39,
+      "hwm_mb": 143.59,
+      "swap_mb": 0.0,
+      "minflt": 20128,
+      "majflt": 0,
+      "loaded_modules": 1062,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "scipy",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.strategies.worker",
+      "wall_ms": 574.26,
+      "cpu_ms": 741.57,
+      "rss_mb": 142.77,
+      "pss_mb": 135.69,
+      "hwm_mb": 142.77,
+      "swap_mb": 0.0,
+      "minflt": 19977,
+      "majflt": 0,
+      "loaded_modules": 1053,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "scipy",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.strategies.decision_runtime",
+      "wall_ms": 633.84,
+      "cpu_ms": 801.46,
+      "rss_mb": 145.45,
+      "pss_mb": 138.24,
+      "hwm_mb": 145.45,
+      "swap_mb": 0.0,
+      "minflt": 20714,
+      "majflt": 0,
+      "loaded_modules": 1110,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "scipy",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.strategies.grid_execution",
+      "wall_ms": 590.31,
+      "cpu_ms": 758.01,
+      "rss_mb": 143.54,
+      "pss_mb": 136.35,
+      "hwm_mb": 143.54,
+      "swap_mb": 0.0,
+      "minflt": 20244,
+      "majflt": 0,
+      "loaded_modules": 1063,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "scipy",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.strategies.adaptive_grid_v2",
+      "wall_ms": 617.61,
+      "cpu_ms": 784.73,
+      "rss_mb": 145.75,
+      "pss_mb": 138.55,
+      "hwm_mb": 145.75,
+      "swap_mb": 0.0,
+      "minflt": 20667,
+      "majflt": 0,
+      "loaded_modules": 1110,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "scipy",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.integrations.binance_futures_trading.demo_grid_supervisor",
+      "wall_ms": 641.72,
+      "cpu_ms": 809.4,
+      "rss_mb": 147.42,
+      "pss_mb": 140.22,
+      "hwm_mb": 147.42,
+      "swap_mb": 0.0,
+      "minflt": 21045,
+      "majflt": 0,
+      "loaded_modules": 1139,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "scipy",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.integrations.binance_futures_trading.demo_instance_owner",
+      "wall_ms": 397.22,
+      "cpu_ms": 480.78,
+      "rss_mb": 111.54,
+      "pss_mb": 104.37,
+      "hwm_mb": 111.54,
+      "swap_mb": 0.0,
+      "minflt": 15395,
+      "majflt": 0,
+      "loaded_modules": 696,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.integrations.binance_futures_trading.tradfi_cloud",
+      "wall_ms": 395.19,
+      "cpu_ms": 475.6,
+      "rss_mb": 111.78,
+      "pss_mb": 104.6,
+      "hwm_mb": 111.78,
+      "swap_mb": 0.0,
+      "minflt": 15473,
+      "majflt": 0,
+      "loaded_modules": 700,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.integrations.alpaca.cloud_runtime",
+      "wall_ms": 641.64,
+      "cpu_ms": 809.3,
+      "rss_mb": 150.84,
+      "pss_mb": 143.64,
+      "hwm_mb": 150.84,
+      "swap_mb": 0.0,
+      "minflt": 21260,
+      "majflt": 0,
+      "loaded_modules": 1156,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "scipy",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.integrations.alpaca.strategy_instances",
+      "wall_ms": 659.16,
+      "cpu_ms": 826.84,
+      "rss_mb": 151.38,
+      "pss_mb": 144.18,
+      "hwm_mb": 151.38,
+      "swap_mb": 0.0,
+      "minflt": 21268,
+      "majflt": 0,
+      "loaded_modules": 1162,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "scipy",
+        "pyarrow"
+      ]
+    }
+  ],
+  "warmup_peak": {
+    "wall_ms": 8524.19,
+    "cpu_ms": 8412.39,
+    "reread_3x_ms": 188.3,
+    "rss_mb": 168.76,
+    "hwm_mb": 168.76,
+    "disk_kb": 840.5,
+    "minflt": 24229,
+    "majflt": 0
+  },
+  "dual_market_observer": {
+    "single_market": {
+      "binance_execute": {
+        "pid": 13029,
+        "rss_mb": 148.91,
+        "hwm_mb": 148.91,
+        "pss_mb": 141.62,
+        "swap_mb": 0.0
+      },
+      "alpaca_runtime": {
+        "pid": 13032,
+        "rss_mb": 156.66,
+        "hwm_mb": 156.66,
+        "pss_mb": 149.37,
+        "swap_mb": 0.0
+      }
+    },
+    "dual_before_sys": {
+      "mem_total_mb": 944.15,
+      "mem_avail_mb": 632.67,
+      "mem_free_mb": 207.39,
+      "swap_total_mb": 2048.0,
+      "swap_used_mb": 25.54
+    },
+    "dual_peak_sum_rss_mb": 425.6,
+    "dual_peak_sum_pss_mb": 285.77,
+    "dual_peak_sum_hwm_mb": 425.6,
+    "dual_min_sys_avail_mb": 436.85,
+    "dual_max_sys_swap_mb": 25.6,
+    "dual_last_sample": {
+      "procs": {
+        "binance_execute": {
+          "pid": 13035,
+          "rss_mb": 148.89,
+          "hwm_mb": 148.89,
+          "pss_mb": 100.25,
+          "swap_mb": 0.0
+        },
+        "alpaca_runtime": {
+          "pid": 13036,
+          "rss_mb": 156.16,
+          "hwm_mb": 156.16,
+          "pss_mb": 107.06,
+          "swap_mb": 0.0
+        },
+        "tradfi_observer": {
+          "pid": 13037,
+          "rss_mb": 120.55,
+          "hwm_mb": 120.55,
+          "pss_mb": 78.46,
+          "swap_mb": 0.0
+        }
+      },
+      "sum_rss_mb": 425.6,
+      "sum_pss_mb": 285.77,
+      "sum_hwm_mb": 425.6,
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 436.93,
+        "mem_free_mb": 33.03,
+        "swap_total_mb": 2048.0,
+        "swap_used_mb": 25.6
+      }
+    }
+  },
+  "scaling_ladder": [
+    {
+      "instances": 3,
+      "ticks": 3,
+      "init_ms": 2550.35,
+      "total_wall_ms": 10228.03,
+      "self_cpu_ms": 286.11,
+      "child_cpu_ms": 11733.22,
+      "decision_latency": {
+        "count": 9,
+        "mean_ms": 842.11,
+        "p50_ms": 840.08,
+        "p95_ms": 866.08,
+        "p99_ms": 866.08,
+        "max_ms": 866.08
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 2526.86,
+        "p50_ms": 2531.17,
+        "p95_ms": 2534.92,
+        "p99_ms": 2534.92,
+        "max_ms": 2534.92
+      },
+      "parent_rss_mb": 148.91,
+      "parent_pss_mb": 141.62,
+      "parent_hwm_mb": 148.91,
+      "parent_swap_mb": 0.0,
+      "max_live_children": 0,
+      "peak_combined_rss_mb": 148.95,
+      "peak_combined_pss_mb": 141.65,
+      "min_sys_avail_mb": 525.67,
+      "max_sys_swap_mb": 25.6,
+      "db_kb": 288.0,
+      "self_majflt": 0,
+      "child_majflt": 0,
+      "fits_1m_cycle": true
+    },
+    {
+      "instances": 6,
+      "ticks": 3,
+      "init_ms": 4846.19,
+      "total_wall_ms": 19446.06,
+      "self_cpu_ms": 537.24,
+      "child_cpu_ms": 22589.09,
+      "decision_latency": {
+        "count": 18,
+        "mean_ms": 805.47,
+        "p50_ms": 804.93,
+        "p95_ms": 815.63,
+        "p99_ms": 815.63,
+        "max_ms": 815.63
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 4833.77,
+        "p50_ms": 4825.06,
+        "p95_ms": 4862.54,
+        "p99_ms": 4862.54,
+        "max_ms": 4862.54
+      },
+      "parent_rss_mb": 149.68,
+      "parent_pss_mb": 142.38,
+      "parent_hwm_mb": 149.68,
+      "parent_swap_mb": 0.0,
+      "max_live_children": 0,
+      "peak_combined_rss_mb": 149.71,
+      "peak_combined_pss_mb": 142.42,
+      "min_sys_avail_mb": 512.19,
+      "max_sys_swap_mb": 26.3,
+      "db_kb": 412.0,
+      "self_majflt": 0,
+      "child_majflt": 0,
+      "fits_1m_cycle": true
+    },
+    {
+      "instances": 12,
+      "ticks": 3,
+      "init_ms": 9798.2,
+      "total_wall_ms": 39112.67,
+      "self_cpu_ms": 1024.93,
+      "child_cpu_ms": 45474.54,
+      "decision_latency": {
+        "count": 36,
+        "mean_ms": 811.37,
+        "p50_ms": 806.92,
+        "p95_ms": 839.24,
+        "p99_ms": 842.89,
+        "max_ms": 842.89
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 9738.3,
+        "p50_ms": 9697.1,
+        "p95_ms": 9860.74,
+        "p99_ms": 9860.74,
+        "max_ms": 9860.74
+      },
+      "parent_rss_mb": 151.66,
+      "parent_pss_mb": 144.36,
+      "parent_hwm_mb": 151.66,
+      "parent_swap_mb": 0.0,
+      "max_live_children": 0,
+      "peak_combined_rss_mb": 151.69,
+      "peak_combined_pss_mb": 144.4,
+      "min_sys_avail_mb": 504.19,
+      "max_sys_swap_mb": 26.3,
+      "db_kb": 668.0,
+      "self_majflt": 0,
+      "child_majflt": 0,
+      "fits_1m_cycle": true
+    },
+    {
+      "instances": 24,
+      "ticks": 3,
+      "init_ms": 19429.51,
+      "total_wall_ms": 77855.25,
+      "self_cpu_ms": 2241.96,
+      "child_cpu_ms": 90536.8,
+      "decision_latency": {
+        "count": 72,
+        "mean_ms": 809.81,
+        "p50_ms": 808.54,
+        "p95_ms": 823.94,
+        "p99_ms": 843.22,
+        "max_ms": 843.22
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 19439.31,
+        "p50_ms": 19425.99,
+        "p95_ms": 19559.29,
+        "p99_ms": 19559.29,
+        "max_ms": 19559.29
+      },
+      "parent_rss_mb": 154.75,
+      "parent_pss_mb": 147.45,
+      "parent_hwm_mb": 154.75,
+      "parent_swap_mb": 0.0,
+      "max_live_children": 0,
+      "peak_combined_rss_mb": 154.78,
+      "peak_combined_pss_mb": 147.49,
+      "min_sys_avail_mb": 498.07,
+      "max_sys_swap_mb": 26.3,
+      "db_kb": 1160.0,
+      "self_majflt": 0,
+      "child_majflt": 0,
+      "fits_1m_cycle": true
+    }
+  ],
+  "recovery_burst_sqlite": {
+    "backfill_120bars_recovery_ms": 3080.49,
+    "burst_120orders_total_ms": 3411.15,
+    "burst_order_latency": {
+      "count": 120,
+      "mean_ms": 15.34,
+      "p50_ms": 14.82,
+      "p95_ms": 19.31,
+      "p99_ms": 21.78,
+      "max_ms": 21.94
+    },
+    "journal_300decisions_latency": {
+      "count": 300,
+      "mean_ms": 13.97,
+      "p50_ms": 13.22,
+      "p95_ms": 17.74,
+      "p99_ms": 20.16,
+      "max_ms": 21.39
+    },
+    "db_kb": 532.0,
+    "backup_ms": 62.22,
+    "backup_verify_ms": 1.93,
+    "log_2000lines_rotate_ms": 47.92,
+    "log_rotations": 1,
+    "rss_mb": 150.39,
+    "hwm_mb": 150.39
+  },
+  "sys_mem_end": {
+    "mem_total_mb": 944.15,
+    "mem_avail_mb": 627.64,
+    "mem_free_mb": 212.94,
+    "swap_total_mb": 2048.0,
+    "swap_used_mb": 25.6
+  }
+}

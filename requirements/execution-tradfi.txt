@@ -1,0 +1,10 @@
+# Minimal cross-architecture TradFi observer & US exchange-calendar scheduling dependencies (CPython 3.13 Linux x86_64 & aarch64).
+exchange_calendars==4.13.3
+korean_lunar_calendar==0.4.0
+numpy==2.3.5
+pandas==2.3.3
+pyluach==2.3.0
+python-dateutil==4.0.0
+pytz==2026.6
+toolz==1.2.0
+tzdata==2026.6
