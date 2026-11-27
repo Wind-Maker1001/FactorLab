@@ -519,10 +519,10 @@ class DeploymentStore:
 
 
 class DeploymentController:
-    def __init__(self, store, adapter, *, load_strategy=None):
+    def __init__(self, store, adapter, *, load_strategy=None, load_sources=None):
         if not store.legacy and load_strategy is None:
             raise ValueError('V2 deployment requires an isolated strategy loader')
-        self.store, self.adapter, self.load_strategy = store, adapter, load_strategy
+        self.store, self.adapter, self.load_strategy, self.load_sources = store, adapter, load_strategy, load_sources
 
     def _complete_activation(self):
         callback = self.store.activation_callback()
@@ -590,16 +590,30 @@ class DeploymentController:
             if artifact_refresh:
                 old_manifest = s.manifest(switch['old'])
                 new_manifest = s.manifest(switch['new'])
-                old_strategy = self.load_strategy(switch['old'])
-                new_strategy = old_strategy if switch['new'] == switch['old'] else self.load_strategy(switch['new'])
-                verify_artifact_refresh_packages(
-                    old_manifest,
-                    new_manifest,
-                    old_sources=old_strategy.sources,
-                    new_sources=new_strategy.sources,
-                    direction='rollback' if switch['phase'] == 'ROLLBACK' else 'upgrade',
-                )
-                prepared_strategy = new_strategy
+                direction = 'rollback' if switch['phase'] == 'ROLLBACK' else 'upgrade'
+                verify_artifact_refresh_manifests(old_manifest, new_manifest, direction=direction)
+                if self.load_sources is not None:
+                    # Validate hash-checked sources via pure AST BEFORE importing/loading any candidate strategy.
+                    old_sources = self.load_sources(switch['old'])
+                    new_sources = old_sources if switch['new'] == switch['old'] else self.load_sources(switch['new'])
+                    verify_artifact_refresh_packages(
+                        old_manifest,
+                        new_manifest,
+                        old_sources=old_sources,
+                        new_sources=new_sources,
+                        direction=direction,
+                    )
+                else:
+                    old_strategy = self.load_strategy(switch['old'])
+                    new_strategy = old_strategy if switch['new'] == switch['old'] else self.load_strategy(switch['new'])
+                    verify_artifact_refresh_packages(
+                        old_manifest,
+                        new_manifest,
+                        old_sources=old_strategy.sources,
+                        new_sources=new_strategy.sources,
+                        direction=direction,
+                    )
+                    prepared_strategy = new_strategy
             if facts['positions'] and not artifact_refresh:
                 if switch['policy'] == 'reduce_only' and switch['phase'] != 'ROLLBACK':
                     a.reduce(switch['id'], switch['new'])

@@ -1123,13 +1123,18 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
     assert host.store.cash('paper-p1-refresh', 'V179_TREND') == cash_w2
     assert len(server.posts) == posts_before_bad
 
-    # 5b. Smuggled executable Python statement inside model_artifact.py -> rejected by AST validator!
+    # 5b. Smuggled executable Python statement inside model_artifact.py -> rejected by pure-AST validator
+    #     BEFORE any worker subprocess is spawned or candidate module is imported (zero execution!).
+    smuggle_sentinel = tmp_path / 'smuggled-executed.txt'
     smuggle_src = tmp_path / 'smuggle-src'
     smuggle_src.mkdir()
     oct_release = releases / pkg_oct['package_id']
     (smuggle_src / 'strategy.py').write_bytes((oct_release / 'strategy.py').read_bytes())
     (smuggle_src / 'model_artifact.py').write_bytes(
-        (dump_artifact_python_module(art_nov) + '\n_SMUGGLED_EXEC = 1\n').encode('utf-8')
+        (
+            dump_artifact_python_module(art_nov)
+            + f'\nopen({str(smuggle_sentinel)!r}, "w").write("EXECUTED")\n'
+        ).encode('utf-8')
     )
     smuggle_manifest = dict(pkg_oct)
     smuggle_manifest.pop('package_id')
@@ -1142,15 +1147,22 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
     )
     pkg_smuggled = build_package(smuggle_src, smuggle_manifest, tmp_path / 'v179-smuggled.zip')
     install_package(tmp_path / 'v179-smuggled.zip', releases)
+    # Even direct LoadedStrategy.from_strategy_package rejects BEFORE spawning worker / importing module.
+    with pytest.raises(ValueError, match='model artifact module'):
+        LoadedStrategy.from_strategy_package(releases / pkg_smuggled['package_id'], trusted=True)
+    assert not smuggle_sentinel.exists()
     host.views['V179_TREND'].request(
         pkg_smuggled,
         model_refresh_candidate(b_v179, pkg_smuggled, expected_active=pkg_oct['package_id'], selection_id='bad-ast'),
     )
     host.tick(service, win_w2, clock(), adapter.read_account_details())
+    assert not smuggle_sentinel.exists()
+    assert pkg_smuggled['package_id'] not in host.loaded
     assert host.views['V179_TREND'].pending()['phase'] == 'ROLLBACK'
     host.tick(service, win_w2, clock(), adapter.read_account_details())
     assert host.views['V179_TREND'].pending() is None
     assert host.views['V179_TREND'].snapshot()['active'] == pkg_oct['package_id']
+    assert not smuggle_sentinel.exists()
     assert len(server.posts) == posts_before_bad
 
     # --- Step 6: Compatible model rollback (pkg_oct -> pkg_sep) while holding positions ---

@@ -222,6 +222,45 @@ def load_package(path, *, qualify=None):
     return m
 
 
+def load_package_sources(path, *, qualify=None):
+    """Verify installed release hashes and read sources without importing or executing any code."""
+    root = Path(path).resolve()
+    m = load_package(root, qualify=qualify)
+    sources = {name: (root / name).read_text(encoding='utf-8') for name in sorted(m['files'])}
+    return m, sources
+
+
+def verify_packaged_model_artifact(manifest, sources):
+    """Pure-AST, zero-execution verification of a package's declared model_artifact source file."""
+    validate_manifest(manifest)
+    if 'model_artifact' not in manifest:
+        raise ValueError('package has no declared model_artifact metadata')
+    ma = manifest['model_artifact']
+    artifact_file = ma['file']
+    if artifact_file not in sources:
+        raise ValueError('missing declared model_artifact source file')
+    raw_text = sources[artifact_file]
+    expected_hash = manifest['files'][artifact_file]
+    lf_hash = sha256(raw_text.encode('utf-8')).hexdigest()
+    crlf_hash = sha256(raw_text.replace('\r\n', '\n').replace('\n', '\r\n').encode('utf-8')).hexdigest()
+    if expected_hash not in {lf_hash, crlf_hash}:
+        raise ValueError('model_artifact source digest mismatch')
+    kind = ma['kind']
+    if kind == 'qlib_v100_monthly_ridge':
+        from .qlib_blend_ridge import extract_frozen_artifact_from_module_source
+        art = extract_frozen_artifact_from_module_source(raw_text)
+        if art['artifact_sha256'] != ma['artifact_sha256']:
+            raise ValueError('model_artifact artifact_sha256 mismatch')
+        if art['covered_start'] != ma['covered_start'] or art['covered_end'] != ma['covered_end']:
+            raise ValueError('model_artifact coverage metadata mismatch')
+        if 'omit_sndk' in ma and bool(art['omit_sndk']) != bool(ma['omit_sndk']):
+            raise ValueError('model_artifact omit_sndk mismatch')
+        if 'fitted_months' in ma and len(art['models']) != int(ma['fitted_months']):
+            raise ValueError('model_artifact fitted_months mismatch')
+        return art
+    raise ValueError(f'unsupported model_artifact kind: {kind!r}')
+
+
 def verify_artifact_refresh_manifests(old_manifest, new_manifest, *, direction='upgrade'):
     """Verify two V2 manifests differ ONLY in their declared frozen model artifact and metadata."""
     if direction not in {'upgrade', 'rollback'}:
@@ -284,35 +323,11 @@ def verify_artifact_refresh_packages(
 ):
     """Full manifest + pure-AST frozen artifact payload compatibility check (zero code execution)."""
     verify_artifact_refresh_manifests(old_manifest, new_manifest, direction=direction)
-    old_ma, new_ma = old_manifest['model_artifact'], new_manifest['model_artifact']
-    artifact_file = old_ma['file']
-    if artifact_file not in old_sources or artifact_file not in new_sources:
-        raise ValueError('incompatible artifact_refresh: missing model artifact source file')
-    for label, src_map, manifest in (('old', old_sources, old_manifest), ('new', new_sources, new_manifest)):
-        raw_text = src_map[artifact_file]
-        expected_hash = manifest['files'][artifact_file]
-        lf_hash = sha256(raw_text.encode('utf-8')).hexdigest()
-        crlf_hash = sha256(raw_text.replace('\r\n', '\n').replace('\n', '\r\n').encode('utf-8')).hexdigest()
-        if expected_hash not in {lf_hash, crlf_hash}:
-            raise ValueError(f'incompatible artifact_refresh: {label} model artifact source digest mismatch')
-
-    kind = old_ma['kind']
+    old_art = verify_packaged_model_artifact(old_manifest, old_sources)
+    new_art = verify_packaged_model_artifact(new_manifest, new_sources)
+    kind = old_manifest['model_artifact']['kind']
     if kind == 'qlib_v100_monthly_ridge':
-        from .qlib_blend_ridge import (
-            extract_frozen_artifact_from_module_source,
-            verify_ridge_artifact_compatibility,
-        )
-        old_art = extract_frozen_artifact_from_module_source(old_sources[artifact_file])
-        new_art = extract_frozen_artifact_from_module_source(new_sources[artifact_file])
-        for label, art, ma in (('old', old_art, old_ma), ('new', new_art, new_ma)):
-            if art['artifact_sha256'] != ma['artifact_sha256']:
-                raise ValueError(f'incompatible artifact_refresh: {label} artifact_sha256 mismatch')
-            if art['covered_start'] != ma['covered_start'] or art['covered_end'] != ma['covered_end']:
-                raise ValueError(f'incompatible artifact_refresh: {label} coverage metadata mismatch')
-            if 'omit_sndk' in ma and bool(art['omit_sndk']) != bool(ma['omit_sndk']):
-                raise ValueError(f'incompatible artifact_refresh: {label} omit_sndk mismatch')
-            if 'fitted_months' in ma and len(art['models']) != int(ma['fitted_months']):
-                raise ValueError(f'incompatible artifact_refresh: {label} fitted_months mismatch')
+        from .qlib_blend_ridge import verify_ridge_artifact_compatibility
         verify_ridge_artifact_compatibility(old_art, new_art, direction=direction)
     else:
         raise ValueError(f'unsupported model_artifact kind for artifact_refresh: {kind!r}')

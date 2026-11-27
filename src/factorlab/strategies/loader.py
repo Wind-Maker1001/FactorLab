@@ -81,7 +81,14 @@ class LoadedStrategy:
         """Load a verified S03 StrategyPackage using the S01 isolated worker process."""
         if trusted is not True:
             raise ValueError('explicit trusted=True is required for Python strategy code')
-        from .package import digest, load_package, package_entrypoint_file, validate_manifest, manifest_spec
+        from .package import (
+            digest,
+            load_package,
+            manifest_spec,
+            package_entrypoint_file,
+            validate_manifest,
+            verify_packaged_model_artifact,
+        )
         root = Path(release_dir).resolve()
         installed = load_package(root, qualify=qualify)
         if manifest is not None:
@@ -108,6 +115,9 @@ class LoadedStrategy:
         ))
         instance.sources = {name: (root / name).read_text(encoding='utf-8') for name in sorted(installed['files'])}
         instance.code_sha256 = sha256(json.dumps(instance.sources, sort_keys=True).encode()).hexdigest()
+        # Validate declared frozen model_artifact strictly via pure AST BEFORE spawning any worker or importing code.
+        if 'model_artifact' in installed:
+            verify_packaged_model_artifact(installed, instance.sources)
         instance.spec = read_spec(instance._call('describe'))
         if isinstance(instance.spec, StrategySpecV2) != (installed['interface'] == V2):
             raise ValueError('strategy/package protocol mismatch')

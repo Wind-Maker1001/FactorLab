@@ -6,6 +6,7 @@ from uuid import uuid4
 from factorlab.strategies.decision_runtime import InstanceDecisionRuntime
 from factorlab.strategies.deployment import DeploymentController, DeploymentStore
 from factorlab.strategies.loader import LoadedStrategy
+from factorlab.strategies.package import load_package_sources
 from factorlab.trading.portfolio_execution import PortfolioStore
 from .http import AlpacaError
 from .adapter import OrderNotFound
@@ -104,7 +105,15 @@ class StrategyInstances:
     def attach(self, owner, package, account):
         self._bind(owner, package, account)
         deployment = AlpacaDeployment(self.instances[owner], self.views[owner], boot_id=self.boot_id)
-        self.controllers[owner] = DeploymentController(self.views[owner], deployment, load_strategy=self.load)
+        self.controllers[owner] = DeploymentController(
+            self.views[owner],
+            deployment,
+            load_strategy=self.load,
+            load_sources=self.load_sources,
+        )
+
+    def load_sources(self, package_id):
+        return load_package_sources(self.releases / package_id)[1]
 
     def load(self, package_id):
         if package_id not in self.loaded:
