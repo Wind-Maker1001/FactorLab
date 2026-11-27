@@ -188,6 +188,7 @@ class Position:
     entry_price: Decimal
     mark_price: Decimal
     quote_currency: str
+    available_quantity: Decimal | None = None
 
 
 @dataclass(frozen=True)
@@ -209,6 +210,15 @@ class AccountSnapshot:
     open_orders: tuple[OrderSnapshot, ...]
     observed_at: datetime
     reconciled: bool = False
+    official_equity: Decimal | None = None
+    official_cash: Decimal | None = None
+    official_available: Decimal | None = None
+    initial_margin: Decimal | None = None
+    unrealized_pnl: Decimal | None = None
+    cumulative_external_cash_flow: Decimal | None = None
+    official_order_ids: tuple[str, ...] | None = None
+    official_observed_at: datetime | None = None
+    official_positions: tuple[Position, ...] | None = None
 
     def __post_init__(self):
         utc(self.observed_at)

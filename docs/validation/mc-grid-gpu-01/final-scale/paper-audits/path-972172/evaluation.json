@@ -1,0 +1,557 @@
+{
+  "context": {
+    "benchmark_id": "endowment-no-trade",
+    "calendar": [
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+    ],
+    "dataset_id": "af55729c59c93265bb8734f72bcaac1b68a5035c419c71524735a2b7274fe5af",
+    "frequency": "daily",
+    "holding_days": 1,
+    "label": "not_used",
+    "label_id": "not_used",
+    "periods_per_year": 365,
+    "risk_free_rate": 0.0,
+    "source_kind": "SYNTHETIC",
+    "stage": "HISTORICAL_TEST",
+    "universe_id": "BINANCE:USDM:NVDAUSDT"
+  },
+  "evidence": [
+    "NO LIVE MONEY",
+    "PIT_UNVERIFIED",
+    "HFQ_UNVERIFIED",
+    "FORMAL_ADMISSION_BLOCKED"
+  ],
+  "financial_evidence": false,
+  "kind": "portfolio",
+  "metadata": {},
+  "metrics": {
+    "annualized_return": {
+      "reason": "",
+      "status": "OK",
+      "value": -0.010132052349067444
+    },
+    "annualized_volatility": {
+      "reason": "",
+      "status": "OK",
+      "value": 0.0035147948421022906
+    },
+    "average_holdings": {
+      "reason": "",
+      "status": "OK",
+      "value": 0.625
+    },
+    "benchmark_return": {
+      "reason": "",
+      "status": "OK",
+      "value": 0.0
+    },
+    "calmar_ratio": {
+      "reason": "",
+      "status": "OK",
+      "value": -18.46327345216684
+    },
+    "cumulative_return": {
+      "reason": "",
+      "status": "OK",
+      "value": -0.0002231801537713185
+    },
+    "excess_return": {
+      "reason": "",
+      "status": "OK",
+      "value": -0.0002231801537713185
+    },
+    "information_ratio": {
+      "reason": "",
+      "status": "OK",
+      "value": -2.8958114056761133
+    },
+    "maximum_drawdown": {
+      "reason": "",
+      "status": "OK",
+      "value": -0.0005487679297669912
+    },
+    "number_of_trades": {
+      "reason": "",
+      "status": "OK",
+      "value": 1.0
+    },
+    "portfolio_turnover": {
+      "reason": "",
+      "status": "OK",
+      "value": 0.01990181412812
+    },
+    "sharpe_ratio": {
+      "reason": "",
+      "status": "OK",
+      "value": -2.895811405676113
+    },
+    "sortino_ratio": {
+      "reason": "",
+      "status": "OK",
+      "value": -3.309811328702634
+    },
+    "total_transaction_cost": {
+      "reason": "",
+      "status": "OK",
+      "value": 0.019894653771248
+    },
+    "tracking_error": {
+      "reason": "",
+      "status": "OK",
+      "value": 0.0035147948421022906
+    },
+    "win_rate": {
+      "reason": "",
+      "status": "OK",
+      "value": 0.375
+    }
+  },
+  "name": "geometric",
+  "receipts": {
+    "benchmark": "3fe4db9a9fa0836de5342cd825827a128d0830662af0939833e8373c5a4f5959"
+  },
+  "schema_version": 1,
+  "tables": {
+    "daily": {
+      "data": [
+        {
+          "available": 897.789132,
+          "benchmark_nav": 1.0,
+          "benchmark_return": 0.0,
+          "cash": 1000.0,
+          "close": 206.753166,
+          "committed": 102.210868,
+          "date": "2026-11-15T00:00:00.000",
+          "drawdown": 0.0,
+          "equity": 1000.0,
+          "expiry_reseeds": 0,
+          "fee": 0.0,
+          "holdings": 0,
+          "index": 0,
+          "inventory": 0.0,
+          "net_exposure": 0.0,
+          "range_rebuilds": 0,
+          "realized_gross": 0.0,
+          "reseed_pending": false,
+          "slippage": 0.0,
+          "state": "RUNNING",
+          "state_reason": null,
+          "strategy_nav": 1.0,
+          "strategy_return": 0.0,
+          "transaction_cost": 0.0,
+          "turnover": 0.0,
+          "unrealized": 0.0
+        },
+        {
+          "available": 897.789132,
+          "benchmark_nav": 1.0,
+          "benchmark_return": 0.0,
+          "cash": 1000.0,
+          "close": 201.674406,
+          "committed": 102.210868,
+          "date": "2026-11-16T00:00:00.000",
+          "drawdown": 0.0,
+          "equity": 1000.0,
+          "expiry_reseeds": 0,
+          "fee": 0.0,
+          "holdings": 0,
+          "index": 1,
+          "inventory": 0.0,
+          "net_exposure": 0.0,
+          "range_rebuilds": 0,
+          "realized_gross": 0.0,
+          "reseed_pending": false,
+          "slippage": 0.0,
+          "state": "RUNNING",
+          "state_reason": null,
+          "strategy_nav": 1.0,
+          "strategy_return": 0.0,
+          "transaction_cost": 0.0,
+          "turnover": 0.0,
+          "unrealized": 0.0
+        },
+        {
+          "available": 897.789132,
+          "benchmark_nav": 1.0,
+          "benchmark_return": 0.0,
+          "cash": 1000.0,
+          "close": 202.804626,
+          "committed": 102.210868,
+          "date": "2026-11-17T00:00:00.000",
+          "drawdown": 0.0,
+          "equity": 1000.0,
+          "expiry_reseeds": 0,
+          "fee": 0.0,
+          "holdings": 0,
+          "index": 2,
+          "inventory": 0.0,
+          "net_exposure": 0.0,
+          "range_rebuilds": 0,
+          "realized_gross": 0.0,
+          "reseed_pending": false,
+          "slippage": 0.0,
+          "state": "RUNNING",
+          "state_reason": null,
+          "strategy_nav": 1.0,
+          "strategy_return": 0.0,
+          "transaction_cost": 0.0,
+          "turnover": 0.0,
+          "unrealized": 0.0
+        },
+        {
+          "available": 898.3215307462,
+          "benchmark_nav": 1.0,
+          "benchmark_return": 0.0,
+          "cash": 999.9920392743,
+          "close": 200.310433,
+          "committed": 101.6705085281,
+          "date": "2026-11-18T00:00:00.000",
+          "drawdown": 0.0001823726,
+          "equity": 1000.1212684462,
+          "expiry_reseeds": 0,
+          "fee": 0.0079607257,
+          "holdings": 1,
+          "index": 3,
+          "inventory": 0.1,
+          "net_exposure": 20.0310433,
+          "range_rebuilds": 0,
+          "realized_gross": 0.0,
+          "reseed_pending": false,
+          "slippage": 0.0119339281,
+          "state": "RUNNING",
+          "state_reason": null,
+          "strategy_nav": 1.0001212684,
+          "strategy_return": 0.0001212684,
+          "transaction_cost": 0.0198946538,
+          "turnover": 0.0199018141,
+          "unrealized": 0.1292291719
+        },
+        {
+          "available": 980.0902251462,
+          "benchmark_nav": 1.0,
+          "benchmark_return": 0.0,
+          "cash": 999.9920392743,
+          "close": 201.217408,
+          "committed": 19.9018141281,
+          "date": "2026-11-19T00:00:00.000",
+          "drawdown": 0.0005080487,
+          "equity": 1000.2119659462,
+          "expiry_reseeds": 0,
+          "fee": 0.0,
+          "holdings": 1,
+          "index": 4,
+          "inventory": 0.1,
+          "net_exposure": 20.1217408,
+          "range_rebuilds": 0,
+          "realized_gross": 0.0,
+          "reseed_pending": false,
+          "slippage": 0.0,
+          "state": "RUNNING",
+          "state_reason": null,
+          "strategy_nav": 1.0002119659,
+          "strategy_return": 9.06865e-05,
+          "transaction_cost": 0.0,
+          "turnover": 0.0,
+          "unrealized": 0.2199266719
+        },
+        {
+          "available": 980.0902251462,
+          "benchmark_nav": 1.0,
+          "benchmark_return": 0.0,
+          "cash": 999.9920392743,
+          "close": 202.355414,
+          "committed": 19.9018141281,
+          "date": "2026-11-20T00:00:00.000",
+          "drawdown": 0.00039433,
+          "equity": 1000.3257665462,
+          "expiry_reseeds": 0,
+          "fee": 0.0,
+          "holdings": 1,
+          "index": 5,
+          "inventory": 0.1,
+          "net_exposure": 20.2355414,
+          "range_rebuilds": 0,
+          "realized_gross": 0.0,
+          "reseed_pending": false,
+          "slippage": 0.0,
+          "state": "RUNNING",
+          "state_reason": null,
+          "strategy_nav": 1.0003257665,
+          "strategy_return": 0.0001137765,
+          "transaction_cost": 0.0,
+          "turnover": 0.0,
+          "unrealized": 0.3337272719
+        },
+        {
+          "available": 980.0902251462,
+          "benchmark_nav": 1.0,
+          "benchmark_return": 0.0,
+          "cash": 999.9920392743,
+          "close": 197.926618,
+          "committed": 19.9018141281,
+          "date": "2026-11-21T00:00:00.000",
+          "drawdown": 0.0008368908,
+          "equity": 999.8828869462,
+          "expiry_reseeds": 0,
+          "fee": 0.0,
+          "holdings": 1,
+          "index": 6,
+          "inventory": 0.1,
+          "net_exposure": 19.7926618,
+          "range_rebuilds": 0,
+          "realized_gross": 0.0,
+          "reseed_pending": false,
+          "slippage": 0.0,
+          "state": "RUNNING",
+          "state_reason": null,
+          "strategy_nav": 0.9998828869,
+          "strategy_return": -0.0004427354,
+          "transaction_cost": 0.0,
+          "turnover": 0.0,
+          "unrealized": -0.1091523281
+        },
+        {
+          "available": 980.0902251462,
+          "benchmark_nav": 1.0,
+          "benchmark_return": 0.0,
+          "cash": 999.9920392743,
+          "close": 196.865947,
+          "committed": 19.9018141281,
+          "date": "2026-11-22T00:00:00.000",
+          "drawdown": 0.0009428816,
+          "equity": 999.7768198462,
+          "expiry_reseeds": 0,
+          "fee": 0.0,
+          "holdings": 1,
+          "index": 7,
+          "inventory": 0.1,
+          "net_exposure": 19.6865947,
+          "range_rebuilds": 0,
+          "realized_gross": 0.0,
+          "reseed_pending": false,
+          "slippage": 0.0,
+          "state": "RUNNING",
+          "state_reason": null,
+          "strategy_nav": 0.9997768198,
+          "strategy_return": -0.0001060795,
+          "transaction_cost": 0.0,
+          "turnover": 0.0,
+          "unrealized": -0.2152194281
+        }
+      ],
+      "schema": {
+        "fields": [
+          {
+            "name": "index",
+            "type": "integer"
+          },
+          {
+            "name": "date",
+            "type": "datetime"
+          },
+          {
+            "name": "close",
+            "type": "number"
+          },
+          {
+            "name": "state",
+            "type": "string"
+          },
+          {
+            "name": "state_reason",
+            "type": "string"
+          },
+          {
+            "name": "expiry_reseeds",
+            "type": "integer"
+          },
+          {
+            "name": "range_rebuilds",
+            "type": "integer"
+          },
+          {
+            "name": "reseed_pending",
+            "type": "boolean"
+          },
+          {
+            "name": "unrealized",
+            "type": "number"
+          },
+          {
+            "name": "realized_gross",
+            "type": "number"
+          },
+          {
+            "name": "net_exposure",
+            "type": "number"
+          },
+          {
+            "name": "equity",
+            "type": "number"
+          },
+          {
+            "name": "cash",
+            "type": "number"
+          },
+          {
+            "name": "inventory",
+            "type": "number"
+          },
+          {
+            "name": "committed",
+            "type": "number"
+          },
+          {
+            "name": "available",
+            "type": "number"
+          },
+          {
+            "name": "drawdown",
+            "type": "number"
+          },
+          {
+            "name": "transaction_cost",
+            "type": "number"
+          },
+          {
+            "name": "fee",
+            "type": "number"
+          },
+          {
+            "name": "slippage",
+            "type": "number"
+          },
+          {
+            "name": "turnover",
+            "type": "number"
+          },
+          {
+            "name": "holdings",
+            "type": "integer"
+          },
+          {
+            "name": "strategy_nav",
+            "type": "number"
+          },
+          {
+            "name": "benchmark_nav",
+            "type": "number"
+          },
+          {
+            "name": "strategy_return",
+            "type": "number"
+          },
+          {
+            "name": "benchmark_return",
+            "type": "number"
+          }
+        ],
+        "pandas_version": "1.4.0",
+        "primaryKey": [
+          "index"
+        ]
+      }
+    },
+    "trades": {
+      "data": [
+        {
+          "cumulative_fee": "0.0079607256512480",
+          "cumulative_filled_quantity": "0.10",
+          "estimated_budget_cost": 0.0199018141,
+          "event_id": "paper:6",
+          "event_time": "2026-11-18T06:59:59.999999+00:00",
+          "executed_shares": 0.1,
+          "execution_date": "2026-11-18T00:00:00.000",
+          "execution_price": 199.0181412812,
+          "fee": 0.0079607257,
+          "grid_level": 4,
+          "index": 0,
+          "order_id": "research-00000005",
+          "side": "BUY",
+          "slippage": 0.0119339281,
+          "trade_notional": 19.9018141281,
+          "transaction_cost": 0.0198946538
+        }
+      ],
+      "schema": {
+        "fields": [
+          {
+            "name": "index",
+            "type": "integer"
+          },
+          {
+            "name": "execution_date",
+            "type": "datetime"
+          },
+          {
+            "name": "event_time",
+            "type": "string"
+          },
+          {
+            "name": "order_id",
+            "type": "string"
+          },
+          {
+            "name": "event_id",
+            "type": "string"
+          },
+          {
+            "name": "cumulative_filled_quantity",
+            "type": "string"
+          },
+          {
+            "name": "cumulative_fee",
+            "type": "string"
+          },
+          {
+            "name": "side",
+            "type": "string"
+          },
+          {
+            "name": "grid_level",
+            "type": "integer"
+          },
+          {
+            "name": "executed_shares",
+            "type": "number"
+          },
+          {
+            "name": "execution_price",
+            "type": "number"
+          },
+          {
+            "name": "trade_notional",
+            "type": "number"
+          },
+          {
+            "name": "fee",
+            "type": "number"
+          },
+          {
+            "name": "slippage",
+            "type": "number"
+          },
+          {
+            "name": "transaction_cost",
+            "type": "number"
+          },
+          {
+            "name": "estimated_budget_cost",
+            "type": "number"
+          }
+        ],
+        "pandas_version": "1.4.0",
+        "primaryKey": [
+          "index"
+        ]
+      }
+    }
+  }
+}

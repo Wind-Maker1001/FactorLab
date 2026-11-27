@@ -1,0 +1,34 @@
+{
+  "outcomes": [
+    {
+      "status": "SUCCEEDED",
+      "resources": {
+        "sample_interval_seconds": 0.05,
+        "samples": 4,
+        "rss_peak_bytes": 163110912,
+        "cpu_peak_core_equivalents": 1.1067470850528422,
+        "cpu_seconds": 0.109375,
+        "device_used_peak_bytes": null,
+        "device_memory_scope": "whole CUDA device, includes other processes",
+        "gpu": null,
+        "peak_meaning": "sampled lower bound on instantaneous peak"
+      }
+    }
+  ],
+  "workers": 1,
+  "wall_seconds": 1.948700100008864,
+  "child_inclusive_memory": {
+    "sample_interval_seconds": 0.05,
+    "samples": 31,
+    "rss_peak_bytes": 333946880,
+    "cpu_peak_core_equivalents": 0.5007531328501783,
+    "cpu_seconds": 0.34375,
+    "device_used_peak_bytes": null,
+    "device_memory_scope": "whole CUDA device, includes other processes",
+    "gpu": null,
+    "peak_meaning": "sampled lower bound on instantaneous peak"
+  },
+  "child_cpu_seconds": 0.015625,
+  "completed_paths": 600,
+  "scope": "aggregate child jobs including startup, sampling and external statistics"
+}

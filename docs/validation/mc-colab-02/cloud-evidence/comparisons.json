@@ -1,0 +1,402 @@
+{
+  "statistics": [
+    {
+      "cell": {
+        "name": "gbm-pilot",
+        "model": "gbm",
+        "n_paths": 100000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 1024,
+        "gpu_memory_limit_mb": 1024
+      },
+      "contrasts": {
+        "var_0.95": {
+          "gpu_minus_cpu": 7.723015502830721e-05,
+          "family_interval_95": [
+            -0.002508802380454329,
+            0.0026632626905109436
+          ]
+        },
+        "cvar_0.95": {
+          "gpu_minus_cpu": -3.870689730678389e-06,
+          "family_interval_95": [
+            -0.0017461642953514702,
+            0.0017384229158901134
+          ]
+        },
+        "var_0.99": {
+          "gpu_minus_cpu": -0.0008060419346639369,
+          "family_interval_95": [
+            -0.0038009637887549946,
+            0.0021888799194271207
+          ]
+        },
+        "cvar_0.99": {
+          "gpu_minus_cpu": -0.0006532066388241775,
+          "family_interval_95": [
+            -0.005435623078781183,
+            0.004129209801132828
+          ]
+        },
+        "loss_probability": {
+          "gpu_minus_cpu": 0.0001140000000000585,
+          "family_interval_95": [
+            -0.0027881593445674806,
+            0.0030161593445675976
+          ]
+        },
+        "drawdown_breach_probability": {
+          "gpu_minus_cpu": 0.0007500000000001394,
+          "family_interval_95": [
+            -0.0017035137412624263,
+            0.003203513741262705
+          ]
+        },
+        "drawdown_0.5": {
+          "gpu_minus_cpu": 0.00010700688393860958,
+          "family_interval_95": [
+            -0.0003388989630269258,
+            0.000552912730904145
+          ]
+        },
+        "drawdown_0.95": {
+          "gpu_minus_cpu": -0.00011935755120767721,
+          "family_interval_95": [
+            -0.0022377273485314816,
+            0.001999012246116127
+          ]
+        },
+        "drawdown_0.99": {
+          "gpu_minus_cpu": -0.0005828150448488612,
+          "family_interval_95": [
+            -0.0028454895435565046,
+            0.0016798594538587823
+          ]
+        }
+      },
+      "method": "unpaired Welch, Bonferroni across nine metrics within cell",
+      "equivalence_status": "NO_BUSINESS_MARGIN_SPECIFIED"
+    },
+    {
+      "cell": {
+        "name": "bootstrap-pilot",
+        "model": "moving_block_bootstrap",
+        "n_paths": 100000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 1024,
+        "gpu_memory_limit_mb": 1024
+      },
+      "contrasts": {
+        "var_0.95": {
+          "gpu_minus_cpu": 0.0005615878451883383,
+          "family_interval_95": [
+            -0.0013948425347548891,
+            0.0025180182251315656
+          ]
+        },
+        "cvar_0.95": {
+          "gpu_minus_cpu": 0.0009091005846688649,
+          "family_interval_95": [
+            -0.0013167670219954891,
+            0.003134968191333219
+          ]
+        },
+        "var_0.99": {
+          "gpu_minus_cpu": 0.001122758138361768,
+          "family_interval_95": [
+            -0.0027809147848969584,
+            0.005026431061620495
+          ]
+        },
+        "cvar_0.99": {
+          "gpu_minus_cpu": 0.0022264921347514566,
+          "family_interval_95": [
+            -0.0030805482516555174,
+            0.0075335325211584305
+          ]
+        },
+        "loss_probability": {
+          "gpu_minus_cpu": 0.0007380000000001274,
+          "family_interval_95": [
+            -0.002801086830126965,
+            0.00427708683012722
+          ]
+        },
+        "drawdown_breach_probability": {
+          "gpu_minus_cpu": -2.399999999991298e-05,
+          "family_interval_95": [
+            -0.004395884525814545,
+            0.004347884525814719
+          ]
+        },
+        "drawdown_0.5": {
+          "gpu_minus_cpu": 0.0001624045726877632,
+          "family_interval_95": [
+            -0.0007482191794027742,
+            0.0010730283247783006
+          ]
+        },
+        "drawdown_0.95": {
+          "gpu_minus_cpu": 0.0006520840182593357,
+          "family_interval_95": [
+            -0.0011760110678256791,
+            0.0024801791043443508
+          ]
+        },
+        "drawdown_0.99": {
+          "gpu_minus_cpu": 0.0011115509689067493,
+          "family_interval_95": [
+            -0.0015337019661584989,
+            0.0037568039039719975
+          ]
+        }
+      },
+      "method": "unpaired Welch, Bonferroni across nine metrics within cell",
+      "equivalence_status": "NO_BUSINESS_MARGIN_SPECIFIED"
+    },
+    {
+      "cell": {
+        "name": "gbm-8assets",
+        "model": "gbm",
+        "n_paths": 100000,
+        "n_steps": 252,
+        "assets": 8,
+        "batch_size": 1024,
+        "gpu_memory_limit_mb": 1024
+      },
+      "contrasts": {
+        "var_0.95": {
+          "gpu_minus_cpu": -0.000292300288541103,
+          "family_interval_95": [
+            -0.002101317169982679,
+            0.0015167165929004733
+          ]
+        },
+        "cvar_0.95": {
+          "gpu_minus_cpu": 0.00025698002344778925,
+          "family_interval_95": [
+            -0.0016038643999359828,
+            0.0021178244468315613
+          ]
+        },
+        "var_0.99": {
+          "gpu_minus_cpu": 0.0005219087517657206,
+          "family_interval_95": [
+            -0.0016952526923723335,
+            0.0027390701959037747
+          ]
+        },
+        "cvar_0.99": {
+          "gpu_minus_cpu": 0.0015568512868553985,
+          "family_interval_95": [
+            -0.0010635080891179668,
+            0.004177210662828764
+          ]
+        },
+        "loss_probability": {
+          "gpu_minus_cpu": -0.0006939999999999724,
+          "family_interval_95": [
+            -0.005422154826653936,
+            0.004034154826653991
+          ]
+        },
+        "drawdown_breach_probability": {
+          "gpu_minus_cpu": -5.600000000001437e-05,
+          "family_interval_95": [
+            -0.0031328336970038,
+            0.0030208336970037712
+          ]
+        },
+        "drawdown_0.5": {
+          "gpu_minus_cpu": -0.0002345743461433375,
+          "family_interval_95": [
+            -0.0005520677799790582,
+            8.291908769238323e-05
+          ]
+        },
+        "drawdown_0.95": {
+          "gpu_minus_cpu": -9.829822943704936e-05,
+          "family_interval_95": [
+            -0.0012848383441880376,
+            0.001088241885313939
+          ]
+        },
+        "drawdown_0.99": {
+          "gpu_minus_cpu": 0.00025869879760909154,
+          "family_interval_95": [
+            -0.001709872055321884,
+            0.002227269650540067
+          ]
+        }
+      },
+      "method": "unpaired Welch, Bonferroni across nine metrics within cell",
+      "equivalence_status": "NO_BUSINESS_MARGIN_SPECIFIED"
+    },
+    {
+      "cell": {
+        "name": "bootstrap-8assets",
+        "model": "moving_block_bootstrap",
+        "n_paths": 100000,
+        "n_steps": 252,
+        "assets": 8,
+        "batch_size": 1024,
+        "gpu_memory_limit_mb": 1024
+      },
+      "contrasts": {
+        "var_0.95": {
+          "gpu_minus_cpu": 3.180369583724585e-05,
+          "family_interval_95": [
+            -0.0015864466655001993,
+            0.001650054057174691
+          ]
+        },
+        "cvar_0.95": {
+          "gpu_minus_cpu": 0.00023384790421859813,
+          "family_interval_95": [
+            -0.0018758058311579623,
+            0.0023435016395951585
+          ]
+        },
+        "var_0.99": {
+          "gpu_minus_cpu": 0.0003015459469146442,
+          "family_interval_95": [
+            -0.00271420487990945,
+            0.0033172967737387384
+          ]
+        },
+        "cvar_0.99": {
+          "gpu_minus_cpu": 0.0009310018267943976,
+          "family_interval_95": [
+            -0.0021114591455412553,
+            0.003973462799130051
+          ]
+        },
+        "loss_probability": {
+          "gpu_minus_cpu": 0.0015440000000000453,
+          "family_interval_95": [
+            -0.0025372122777945014,
+            0.005625212277794592
+          ]
+        },
+        "drawdown_breach_probability": {
+          "gpu_minus_cpu": 5.000000000000837e-05,
+          "family_interval_95": [
+            -0.0020956255408146715,
+            0.0021956255408146883
+          ]
+        },
+        "drawdown_0.5": {
+          "gpu_minus_cpu": 5.3708664168664044e-05,
+          "family_interval_95": [
+            -0.00033102866096546875,
+            0.00043844598930279684
+          ]
+        },
+        "drawdown_0.95": {
+          "gpu_minus_cpu": -0.00016716314671741395,
+          "family_interval_95": [
+            -0.0010956788851454607,
+            0.0007613525917106328
+          ]
+        },
+        "drawdown_0.99": {
+          "gpu_minus_cpu": 0.0008266374858312275,
+          "family_interval_95": [
+            -0.0014312271637903894,
+            0.0030845021354528445
+          ]
+        }
+      },
+      "method": "unpaired Welch, Bonferroni across nine metrics within cell",
+      "equivalence_status": "NO_BUSINESS_MARGIN_SPECIFIED"
+    }
+  ],
+  "performance": [
+    {
+      "cell": {
+        "name": "gbm-pilot",
+        "model": "gbm",
+        "n_paths": 100000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 1024,
+        "gpu_memory_limit_mb": 1024
+      },
+      "cpu_workers": 1,
+      "gpu_workers": 1,
+      "cold_cpu_median_seconds": 3.442755764000026,
+      "cold_gpu_median_seconds": 1.8960507890000144,
+      "measured_cold_choice": "gpu",
+      "cpu_median_seconds": 2.250106761500035,
+      "gpu_median_seconds": 0.07964434949997212,
+      "observed_speedup": 28.25193219138318,
+      "measured_steady_choice": "gpu",
+      "scope": "runner including exact summary; excludes external reliability analysis"
+    },
+    {
+      "cell": {
+        "name": "bootstrap-pilot",
+        "model": "moving_block_bootstrap",
+        "n_paths": 100000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 1024,
+        "gpu_memory_limit_mb": 1024
+      },
+      "cpu_workers": 1,
+      "gpu_workers": 1,
+      "cold_cpu_median_seconds": 2.5937665259999676,
+      "cold_gpu_median_seconds": 1.950462257999959,
+      "measured_cold_choice": "gpu",
+      "cpu_median_seconds": 1.3821777655000176,
+      "gpu_median_seconds": 0.10850139050000962,
+      "observed_speedup": 12.738802324380304,
+      "measured_steady_choice": "gpu",
+      "scope": "runner including exact summary; excludes external reliability analysis"
+    },
+    {
+      "cell": {
+        "name": "gbm-8assets",
+        "model": "gbm",
+        "n_paths": 100000,
+        "n_steps": 252,
+        "assets": 8,
+        "batch_size": 1024,
+        "gpu_memory_limit_mb": 1024
+      },
+      "cpu_workers": 1,
+      "gpu_workers": 1,
+      "cold_cpu_median_seconds": 9.848045515999956,
+      "cold_gpu_median_seconds": 2.0541040990000283,
+      "measured_cold_choice": "gpu",
+      "cpu_median_seconds": 8.63040289349999,
+      "gpu_median_seconds": 0.272721131499992,
+      "observed_speedup": 31.645523198118017,
+      "measured_steady_choice": "gpu",
+      "scope": "runner including exact summary; excludes external reliability analysis"
+    },
+    {
+      "cell": {
+        "name": "bootstrap-8assets",
+        "model": "moving_block_bootstrap",
+        "n_paths": 100000,
+        "n_steps": 252,
+        "assets": 8,
+        "batch_size": 1024,
+        "gpu_memory_limit_mb": 1024
+      },
+      "cpu_workers": 1,
+      "gpu_workers": 1,
+      "cold_cpu_median_seconds": 2.59469509500002,
+      "cold_gpu_median_seconds": 2.016207164999969,
+      "measured_cold_choice": "gpu",
+      "cpu_median_seconds": 1.3475646630000142,
+      "gpu_median_seconds": 0.17252905299997678,
+      "observed_speedup": 7.810653565693632,
+      "measured_steady_choice": "gpu",
+      "scope": "runner including exact summary; excludes external reliability analysis"
+    }
+  ]
+}

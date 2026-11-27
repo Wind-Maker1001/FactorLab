@@ -62,7 +62,7 @@ def test_reduction_uses_historical_inventory_and_boundary_stays_unresolved(tmp_p
     fill = OrderEvent('reduce-one', 'exchange-one', OrderStatus.FILLED, D('.02'), D(100),
                       when, 'official', 'reduction')
     with store.transaction():
-        store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
+        store.db.execute('INSERT INTO portfolio_orders (id,plan,payload) VALUES (?,?,?)',
                          ('reduce-one', 'one', dumps(dict(record=record))))
         store.db.execute('INSERT INTO portfolio_confirmations VALUES (?,?,?)',
                          ('paper', fill.event_id, dumps(fill)))

@@ -1,0 +1,68 @@
+         452494 function calls (344816 primitive calls) in 3.650 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1653 to 60 due to restriction <60>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    3.655    3.655 profile_grid_batch.py:21(replay)
+        1    0.001    0.001    3.651    3.651 grid_monte_carlo.py:100(evaluate_path)
+        1    0.013    0.013    3.608    3.608 grid_paper.py:90(run_experiment)
+      181    0.006    0.000    3.318    0.018 grid_execution.py:1072(_paper_command)
+      181    0.003    0.000    3.242    0.018 control.py:86(_atomic)
+      169    0.002    0.000    3.003    0.018 grid_execution.py:886(observe_paper)
+     1146    2.977    0.003    2.977    0.003 {method 'execute' of 'sqlite3.Connection' objects}
+      761    0.002    0.000    2.919    0.004 {built-in method builtins.next}
+      364    0.004    0.000    2.916    0.008 storage.py:231(transaction)
+      188    0.001    0.000    2.911    0.015 contextlib.py:145(__exit__)
+      181    0.004    0.000    0.216    0.001 grid_execution.py:1077(apply)
+        6    0.000    0.000    0.190    0.032 grid_execution.py:964(submit_paper)
+        3    0.049    0.016    0.107    0.036 storage.py:198(__init__)
+     1111    0.004    0.000    0.101    0.000 storage.py:184(dumps)
+      182    0.002    0.000    0.084    0.000 storage.py:340(save)
+     1838    0.002    0.000    0.082    0.000 dataclasses.py:1338(asdict)
+        5    0.000    0.000    0.081    0.016 grid_execution.py:911(cancel_paper)
+      542    0.004    0.000    0.081    0.000 grid_execution.py:650(deployment)
+      725    0.002    0.000    0.080    0.000 grid_execution.py:46(_fingerprint)
+24677/1838    0.031    0.000    0.077    0.000 dataclasses.py:1362(_asdict_inner)
+61538/3501    0.060    0.000    0.074    0.000 storage.py:39(encode)
+     3530    0.008    0.000    0.073    0.000 encoder.py:183(encode)
+      169    0.001    0.000    0.068    0.000 grid_paper.py:200(match)
+        1    0.000    0.000    0.064    0.064 grid_execution.py:903(fill_paper)
+      182    0.013    0.000    0.063    0.000 storage.py:254(_dumps_paper_state)
+     3324    0.061    0.000    0.061    0.000 encoder.py:205(iterencode)
+      182    0.001    0.000    0.060    0.000 grid_execution.py:772(_paper_deployment)
+      181    0.002    0.000    0.059    0.000 grid_execution.py:915(_bind_admission)
+      181    0.006    0.000    0.049    0.000 grid_execution.py:827(_write_checkpoint)
+      181    0.001    0.000    0.043    0.000 grid_execution.py:775(_read_checkpoint)
+        3    0.042    0.014    0.042    0.014 {method 'close' of 'sqlite3.Connection' objects}
+      362    0.005    0.000    0.041    0.000 grid_execution.py:746(_authority)
+      365    0.005    0.000    0.032    0.000 storage.py:155(_clone_paper_state)
+23836/365    0.024    0.000    0.026    0.000 storage.py:133(_clone_runtime)
+        1    0.000    0.000    0.026    0.026 grid_lifecycle.py:17(lifecycle_metrics)
+        1    0.000    0.000    0.025    0.025 research.py:214(portfolio)
+      184    0.001    0.000    0.023    0.000 storage.py:325(load)
+4405/3861    0.011    0.000    0.022    0.000 copy.py:119(deepcopy)
+      188    0.003    0.000    0.022    0.000 grid_execution.py:125(_project_paper_account)
+       14    0.000    0.000    0.020    0.001 frame.py:698(__init__)
+        1    0.000    0.000    0.018    0.018 grid_empirical.py:68(summarize)
+        5    0.000    0.000    0.018    0.004 readers.py:868(read_csv)
+        5    0.000    0.000    0.018    0.004 readers.py:583(_read)
+        7    0.000    0.000    0.018    0.003 _decorators.py:325(wrapper)
+46066/45707    0.014    0.000    0.017    0.000 {built-in method builtins.isinstance}
+        1    0.000    0.000    0.016    0.016 portfolio.py:24(calculate_portfolio_metrics)
+      169    0.010    0.000    0.016    0.000 grid_execution.py:149(_observation)
+     1844    0.009    0.000    0.015    0.000 dataclasses.py:1308(fields)
+        5    0.000    0.000    0.014    0.003 readers.py:1907(read)
+50545/50485    0.014    0.000    0.014    0.000 {built-in method builtins.getattr}
+      169    0.003    0.000    0.014    0.000 grid_execution.py:577(_observe)
+       16    0.013    0.001    0.013    0.001 {built-in method _io.open}
+  150/145    0.002    0.000    0.013    0.000 series.py:392(__init__)
+      206    0.007    0.000    0.012    0.000 paper.py:248(read_account)
+        2    0.000    0.000    0.012    0.006 generic.py:3819(to_csv)
+        8    0.000    0.000    0.012    0.001 construction.py:423(dict_to_mgr)
+        2    0.000    0.000    0.012    0.006 format.py:965(to_csv)
+        2    0.000    0.000    0.012    0.006 csvs.py:246(save)
+        1    0.000    0.000    0.010    0.010 generic.py:1420(aggregate)
+      181    0.002    0.000    0.010    0.000 grid_execution.py:256(_stage)
+
+

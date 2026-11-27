@@ -1,0 +1,18 @@
+{
+  "shapes": [
+    [
+      1000000
+    ],
+    [
+      1000000
+    ]
+  ],
+  "finite": true,
+  "terminal_mean": 1.083394011678252,
+  "theoretical_mean": 1.0832870676749586,
+  "mean_standard_error": 0.00021884215126058236,
+  "mean_z": 0.4886810090159944,
+  "drawdown_min": 0.04156111462586776,
+  "drawdown_max": 0.6156498838469672,
+  "drawdown_over_20pct": 0.373209
+}

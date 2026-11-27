@@ -262,14 +262,36 @@ class MonteCarloRunner:
     def __init__(self, config=MonteCarloConfig()):
         self.config = config
 
-    def run(self, inputs):
+    def run(self, inputs, *, output_directory=None, profile=False):
+        """Optionally retain samples on disk or collect synchronized phase timings.
+
+        Profiling changes synchronization and is not a throughput measurement.
+        The output directory must not exist; disk-backed mode forbids full paths.
+        """
+        if output_directory is not None and self.config.save_full_paths:
+            raise ValueError('disk-backed output does not retain full paths')
         started = perf_counter()
+        phases = {}
+        phase_started = started
+        def mark(name):
+            nonlocal phase_started
+            if profile:
+                if synchronize is not None:
+                    synchronize()
+                now = perf_counter()
+                phases[name] = phases.get(name, 0.) + now - phase_started
+                phase_started = now
+        synchronize = None
         c = self.config
         data, assets, sample_hash, input_receipt = _prepare(c, inputs)
+        mark('input_preparation')
         resolved = resolve_compute((BackendCapability(Device.GPU, "cupy-cuda", _gpu_probe),
             BackendCapability(Device.CPU, "numpy", lambda _: BackendStatus(True, version=np.__version__, runtime_available=True))), c.compute)
         gpu = resolved.device == Device.GPU
         xp = import_module("cupy") if gpu else np
+        if gpu and profile:
+            synchronize = xp.cuda.get_current_stream().synchronize
+        mark('device_initialization')
         pool = xp.cuda.MemoryPool() if gpu else None
         budget = c.compute.gpu_memory_limit_mb * 1024**2 if c.compute.gpu_memory_limit_mb is not None else None
         if gpu and budget is not None:
@@ -286,19 +308,25 @@ class MonteCarloRunner:
             batch = min(batch, (planning_budget - persistent) // per_path)
             if batch < 1:
                 raise ComputeMemoryError("GPU budget cannot fit one Monte Carlo path")
-        terminal = np.empty(c.n_paths)
-        drawdowns = np.empty(c.n_paths)
+        if output_directory is None:
+            terminal, drawdowns = np.empty(c.n_paths), np.empty(c.n_paths)
+        else:
+            from .storage import allocate_outputs
+            terminal, drawdowns = allocate_outputs(output_directory, c.n_paths)
+        mark('output_allocation')
         paths = np.empty((c.n_paths, c.n_steps + 1)) if c.save_full_paths else None
         asset_paths = np.empty((c.n_paths, c.n_steps + 1, n)) if c.save_full_paths else None
         def simulate():
             peak_pool = 0
             with xp.cuda.using_allocator(pool.malloc) if gpu else nullcontext():
                 arrays = {k: xp.asarray(v) for k, v in data.items() if k not in {"timestamps", "available_at", "as_of", "correlation"}}
+                mark('host_to_device' if gpu else 'input_views')
                 rng = xp.random.RandomState(c.seed)
                 def host(a):
                     return xp.asnumpy(a) if gpu else a
                 reducer = _cuda_reducer(xp) if gpu else None
                 offsets = xp.arange(c.n_steps, dtype=xp.int64)
+                mark('rng_and_kernel_setup')
                 for begin in range(0, c.n_paths, batch):
                     end = min(begin + batch, c.n_paths)
                     size = end - begin
@@ -322,10 +350,12 @@ class MonteCarloRunner:
                         reducer(((size + 127) // 128,), (128,), (gross,
                             np.int64(size), np.int64(c.n_steps), np.float64(c.initial_value),
                             wealth, mdd, nav, np.int32(paths is not None)))
+                        mark('generation_and_reduction')
                         terminal[begin:end], drawdowns[begin:end] = host(wealth), host(mdd)
                         if paths is not None:
                             paths[begin:end] = host(nav)
                         del wealth, mdd, nav
+                        mark('device_to_host')
                     else:
                         nav = np.cumprod(gross, axis=0) * c.initial_value
                         peak = np.maximum.accumulate(nav, axis=0)
@@ -336,6 +366,7 @@ class MonteCarloRunner:
                             paths[begin:end, 0] = c.initial_value
                             paths[begin:end, 1:] = nav.T
                         del nav, peak
+                        mark('generation_and_reduction')
                     if paths is not None:
                         asset_paths[begin:end, 0] = data["initial_prices"]
                         prices = xp.cumprod(1 + returns, axis=0) * arrays["initial_prices"]
@@ -357,10 +388,23 @@ class MonteCarloRunner:
         finally:
             if gpu:
                 pool.free_all_blocks()
-        if not np.isfinite(terminal).all() or not np.isfinite(drawdowns).all():
-            raise FloatingPointError("simulation produced nonfinite wealth")
-        losses = 1 - terminal / c.initial_value
-        var, cvar = _loss_tail(losses, c.confidence)
+        mark('simulation_cleanup')
+        if output_directory is None:
+            if not np.isfinite(terminal).all() or not np.isfinite(drawdowns).all():
+                raise FloatingPointError("simulation produced nonfinite wealth")
+            losses = 1 - terminal / c.initial_value
+            var, cvar = _loss_tail(losses, c.confidence)
+            summary = dict(var=var, cvar=cvar,
+                terminal_quantiles={q: float(np.quantile(terminal, q)) for q in c.quantiles},
+                drawdown_quantiles={q: float(np.quantile(drawdowns, q)) for q in c.quantiles},
+                loss_probability=float(np.mean(losses > 0)),
+                drawdown_breach_probability=float(np.mean(drawdowns > c.drawdown_threshold)))
+        else:
+            from .storage import disk_summary
+            summary = disk_summary(terminal, drawdowns, output_directory,
+                initial=c.initial_value, confidence=c.confidence, quantiles=c.quantiles,
+                threshold=c.drawdown_threshold)
+        mark('result_statistics')
         evidence = resolved.to_dict()
         evidence["execution"] = {"backend": resolved.backend, "batch_size": batch,
             "private_pool_limit_enforced": bool(gpu and budget is not None),
@@ -390,11 +434,13 @@ class MonteCarloRunner:
             "assumptions": ["RISK_SCENARIO_ONLY", "NOT_EVENT_DRIVEN_EXECUTION",
                 "constant GBM parameters or stationary resampled historical blocks",
                 "sampling uncertainty excludes model uncertainty"]}
-        return MonteCarloResult(terminal, drawdowns,
-            {q: float(np.quantile(terminal, q)) for q in c.quantiles},
-            {q: float(np.quantile(drawdowns, q)) for q in c.quantiles}, var, cvar,
-            float(np.mean(losses > 0)), float(np.mean(drawdowns > c.drawdown_threshold)),
-            metadata, paths, asset_paths)
+        if profile:
+            metadata['phase_seconds'] = phases
+            metadata['phase_timing_scope'] = 'synchronized profiling; not steady throughput'
+        if output_directory is not None:
+            metadata['sample_storage'] = 'float64_npy_memmap_exact_heapsort'
+        return MonteCarloResult(terminal_values=terminal, maximum_drawdowns=drawdowns,
+            metadata=metadata, portfolio_paths=paths, asset_paths=asset_paths, **summary)
 
     def record(self, result, tracker, experiment_id, run_id, *, code, command, environment=None, qualification="SYNTHETIC"):
         """Append to a matching, caller-created experiment; preserve actual provenance."""

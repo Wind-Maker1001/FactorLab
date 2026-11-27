@@ -1,0 +1,68 @@
+name: FactorLab disaster recovery offline
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/disaster-recovery.yml'
+      - 'deploy/systemd/**'
+      - 'src/factorlab/integrations/**'
+      - 'tests/integrations/test_*disaster_recovery.py'
+      - 'tests/integrations/test_offsite_backup.py'
+      - 'tools/ci/disaster_recovery_portability.py'
+permissions:
+  contents: read
+env:
+  PYTHONPATH: src
+jobs:
+  x64:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r requirements/py314-core.txt 'pytest>=8.3.5,<9' websockets==16.1.1
+      - name: Restore, transport and ledger fault scenarios
+        run: >-
+          python -m pytest -q
+          tests/integrations/test_disaster_recovery.py
+          tests/integrations/test_binance_disaster_recovery.py
+          tests/integrations/test_alpaca_disaster_recovery.py
+          tests/integrations/test_offsite_backup.py
+          tests/integrations/test_demo_cloud_storage.py
+          tests/integrations/test_alpaca_cloud_runtime.py
+      - name: Publish the x64 SQLite bytes
+        run: |
+          test "$(uname -m)" = x86_64
+          python tools/ci/disaster_recovery_portability.py export --root "$RUNNER_TEMP/dr" --revision "$GITHUB_SHA"
+          tar -C "$RUNNER_TEMP/dr" -cf "$RUNNER_TEMP/dr-portable.tar" binance alpaca
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: disaster-recovery-x64
+          path: ${{ runner.temp }}/dr-portable.tar
+          if-no-files-found: error
+          retention-days: 3
+  arm64:
+    needs: x64
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - run: python -m pip install numpy==2.3.4 pandas==2.3.3 tzdata==2026.4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: disaster-recovery-x64
+          path: ${{ runner.temp }}
+      - name: Restore the exact x64 snapshot bytes on native ARM64
+        run: |
+          test "$(uname -m)" = aarch64
+          mkdir -m 700 "$RUNNER_TEMP/dr"
+          tar -C "$RUNNER_TEMP/dr" -xf "$RUNNER_TEMP/dr-portable.tar"
+          python tools/ci/disaster_recovery_portability.py restore --root "$RUNNER_TEMP/dr"

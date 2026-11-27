@@ -1,0 +1,14 @@
+{
+  "protocol": "MC-COLAB-02-v1",
+  "seeds": [104729, 130363, 155921, 181081, 205019],
+  "timing_repeats": 1,
+  "bootstrap_resamples": 199,
+  "input_seed": 1729,
+  "host_memory_budget_mb": 16384,
+  "budget_seconds": 300,
+  "blas_threads": 1,
+  "cells": [
+    {"name": "gbm-10m", "model": "gbm", "n_paths": 10000000, "n_steps": 252, "assets": 1, "batch_size": 4096, "gpu_memory_limit_mb": 4096},
+    {"name": "gbm-100m", "model": "gbm", "n_paths": 100000000, "n_steps": 252, "assets": 1, "batch_size": 4096, "gpu_memory_limit_mb": 4096}
+  ]
+}

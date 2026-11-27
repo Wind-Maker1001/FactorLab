@@ -1,0 +1,48 @@
+{
+  "outcomes": [
+    {
+      "status": "SUCCEEDED",
+      "resources": {
+        "sample_interval_seconds": 0.05,
+        "samples": 55,
+        "rss_peak_bytes": 173842432,
+        "cpu_peak_core_equivalents": 1.2359184394904765,
+        "cpu_seconds": 3.265625,
+        "device_used_peak_bytes": null,
+        "device_memory_scope": "whole CUDA device, includes other processes",
+        "gpu": null,
+        "peak_meaning": "sampled lower bound on instantaneous peak"
+      }
+    },
+    {
+      "status": "SUCCEEDED",
+      "resources": {
+        "sample_interval_seconds": 0.05,
+        "samples": 55,
+        "rss_peak_bytes": 175562752,
+        "cpu_peak_core_equivalents": 1.242349117942881,
+        "cpu_seconds": 3.296875,
+        "device_used_peak_bytes": null,
+        "device_memory_scope": "whole CUDA device, includes other processes",
+        "gpu": null,
+        "peak_meaning": "sampled lower bound on instantaneous peak"
+      }
+    }
+  ],
+  "workers": 2,
+  "wall_seconds": 6.229239399952348,
+  "child_inclusive_memory": {
+    "sample_interval_seconds": 0.05,
+    "samples": 82,
+    "rss_peak_bytes": 521396224,
+    "cpu_peak_core_equivalents": 0.4145304531418975,
+    "cpu_seconds": 1.390625,
+    "device_used_peak_bytes": null,
+    "device_memory_scope": "whole CUDA device, includes other processes",
+    "gpu": null,
+    "peak_meaning": "sampled lower bound on instantaneous peak"
+  },
+  "child_cpu_seconds": 6.234375,
+  "completed_paths": 600000,
+  "scope": "aggregate child jobs including startup, sampling and external statistics"
+}

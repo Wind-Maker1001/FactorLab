@@ -43,7 +43,7 @@ class AlpacaDeployment:
                      if order.intent.client_order_id not in tracked]
         holdings = store.holdings(instance.binding['account_id'], instance.binding['instance_id'])
         return dict(reconciled=account.reconciled, unknown=unknown, untracked_orders=untracked,
-                    orders=owned, positions=[dict(symbol=symbol, quantity=quantity)
+                    orders=owned, positions=[dict(symbol=symbol, quantity=str(quantity))
                         for symbol, quantity in holdings.items() if quantity])
 
     def watermark(self):
@@ -65,7 +65,10 @@ class AlpacaDeployment:
         if self.market_service is not None:
             self.instance.data.qualify(self.market_service, spec)
         allocation = self.instance.allocation(self.instance.runner.adapter.recover())
-        self.instance.data.assets.qualify(spec, self.instance.binding, allocation)
+        binding = self.instance.binding
+        basis = self.instance.runner.store.allocation_basis(binding['account_id'], binding['instance_id'])
+        allocation['capital'] = basis['capital']
+        self.instance.data.assets.qualify(spec, binding, allocation)
         if self.instance.runner.executor.capital_policy.is_configured(self.instance.binding['account_id']):
             self.instance.runner.executor.capital_policy.qualify(spec, self.instance.binding, allocation)
 

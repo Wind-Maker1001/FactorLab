@@ -578,8 +578,15 @@ class LoadedStrategy:
 
     @classmethod
     def _from_strategy_package(cls, release_dir, manifest, *, timeout, qualify):
-        from .package import (digest, read_package, package_entrypoint_file, validate_manifest,
-                              manifest_spec, model_identity)
+        from .package import (
+            digest,
+            manifest_spec,
+            model_identity,
+            package_entrypoint_file,
+            read_package,
+            validate_manifest,
+            verify_packaged_model_artifact,
+        )
         root = Path(release_dir).resolve()
         installed, payload = read_package(root, qualify=qualify)
         if manifest is not None:
@@ -620,6 +627,9 @@ class LoadedStrategy:
         instance.sources = {name: data.decode('utf-8').replace('\r\n', '\n').replace('\r', '\n')
                             for name, data in sorted(payload.items())}
         instance.code_sha256 = sha256(json.dumps(instance.sources, sort_keys=True).encode()).hexdigest()
+        # Validate declared frozen model_artifact strictly via pure AST BEFORE spawning any worker or importing code.
+        if 'model_artifact' in installed:
+            verify_packaged_model_artifact(installed, instance.sources)
         instance.spec = read_spec(instance._call('describe'))
         try:
             if isinstance(instance.spec, StrategySpecV2) != (installed['interface'] == V2):

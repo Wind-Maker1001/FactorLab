@@ -22,6 +22,10 @@ def number(row, key):
     return None if value is None else _decimal(value)
 
 
+class AccountPositionConflict(DataQualityError):
+    """Account Information and Position Risk observed different quantities."""
+
+
 @dataclass(frozen=True)
 class AccountFacts:
     """Raw authenticated read results, not public funding forecasts."""
@@ -39,6 +43,7 @@ class AccountFacts:
     can_trade: bool | None = None
     quantitative: QuantitativeObservation | None = None
     read_started_monotonic: float | None = None
+    read_windows: dict[str, tuple[int, int]] | None = None
 
     def usdt(self):
         matches = [asset for asset in self.assets if asset.get('asset') == 'USDT']
@@ -64,8 +69,10 @@ class AccountFacts:
             return {key: value for key, value in amounts.items() if value}
 
         account = nonzero(self.positions)
-        if not self.source_complete or account != nonzero(self.risk):
+        if not self.source_complete:
             raise DataQualityError('incomplete or conflicting positions')
+        if account != nonzero(self.risk):
+            raise AccountPositionConflict('incomplete or conflicting positions')
         return account
 
     def open_order_identities(self):
@@ -122,5 +129,12 @@ class AccountFacts:
                 complete = False
                 continue
             positions.append(Position(row['symbol'], quantity, row['entry_price'], row['mark_price'], 'USDT'))
+        equity = values['marginBalance']
+        unrealized = values['unrealizedProfit']
+        if equity is None and total is not None and unrealized is not None:
+            equity = total + unrealized
         return AccountSnapshot(Market.BINANCE_USDM, self.account_id, assets, tuple(positions), tuple(orders),
-                               self.observed_at, reconciled and complete)
+            self.observed_at, reconciled and complete, official_equity=equity, official_cash=total,
+            official_available=available, initial_margin=values['initialMargin'],
+            unrealized_pnl=unrealized, official_order_ids=tuple(
+                row['clientOrderId'] for row in self.open_orders))

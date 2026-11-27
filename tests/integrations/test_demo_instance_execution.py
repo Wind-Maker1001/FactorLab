@@ -59,13 +59,15 @@ def test_cancel_accepted_unsubmitted_child_retires_original_public_order(tmp_pat
 
 
 def test_quantity_delta_receipt_replay_keeps_original_intents():
+    from factorlab.trading.portfolio_execution import PortfolioStore
     adapter, gateway, controller, _ = setup()
+    capital = PortfolioStore(':memory:')
     session = SimpleNamespace(adapter=adapter, controller=controller,
         symbol_context=lambda symbol:SimpleNamespace(rules=gateway.rules),
         _fresh_book=lambda **kwargs:dict(askPrice=D(100),bidPrice=D(100)),
         limit_price=lambda *args:D(100))
     admissions = []
-    executor = SimpleNamespace(store=SimpleNamespace(allocation=lambda *args: None), capital_policy=SimpleNamespace(
+    executor = SimpleNamespace(store=capital, capital_policy=SimpleNamespace(
         qualify=lambda *args: admissions.append(args) or
             dict(allocation_id='funded-one', capital=D(7), initial_cash=D(7))))
     execution = DemoInstanceExecutionAdapter(session, executor=executor)
@@ -105,9 +107,10 @@ def test_quantity_delta_receipt_replay_keeps_original_intents():
         from datetime import datetime, timezone
         calls = []
         execution.executor = SimpleNamespace(
-            store=SimpleNamespace(allocation=lambda account, instance:
-                dict(allocation_id='funded-one', capital=D(7))),
+            store=capital,
             create=lambda **kwargs: calls.append(kwargs) or 'shared-plan')
+        capital.db.execute('INSERT INTO portfolio_allocations VALUES (?,?,?,?,?)',
+                           (adapter.account_id, 'one', 'funded-one', '7', '7'))
         decision_id = controller.store.db.execute('SELECT id FROM demo_instance_outbox').fetchone()[0]
         now = datetime.now(timezone.utc)
         assert execution.prepare_plan(decision_id, now=now) == 'shared-plan'
@@ -125,5 +128,6 @@ def test_quantity_delta_receipt_replay_keeps_original_intents():
         with pytest.raises(SafetyBlocked, match='existing shared capital allocation'):
             execution.prepare_plan(decision_id, now=now)
     finally:
+        capital.close()
         controller.store.close()
         adapter.store.close()

@@ -96,16 +96,18 @@ def create(runner, owner, weights, event):
 
 
 def advance(runner, identity):
+    now = runner.clock()
     return runner.run_once(identity,
-        quotes={symbol: ExecutionQuote(symbol, D(100), D(100), NOW, NOW,
+        quotes={symbol: ExecutionQuote(symbol, D(100), D(100), now, now,
             'test-session', 'offline-http') for symbol in ('AAPL', 'MSFT')},
         rules={symbol: InstrumentRules(D('.001'), D(1), time_in_force='DAY') for symbol in ('AAPL', 'MSFT')})
 
 
 def fill_plan(runner, store, official, identity):
-    advance(runner, identity)
+    result = advance(runner, identity)
     for order in store.orders(identity):
         client_id = order['record'].snapshot.intent.client_order_id
+        assert client_id in official.orders, result
         if official.orders[client_id]['status'] != 'filled':
             official.fill(client_id)
     assert advance(runner, identity).phase == 'COMPLETE'

@@ -1,0 +1,21 @@
+[Unit]
+Description=FactorLab Alpaca Paper coherent backup
+RequiresMountsFor=/var/lib/factorlab-alpaca-paper /var/backups/factorlab-alpaca-paper
+OnFailure=factorlab-dr-failure@alpaca-backup.service
+
+[Service]
+Type=oneshot
+RuntimeDirectory=factorlab-alpaca-backup
+RuntimeDirectoryMode=0700
+Environment=FACTORLAB_ALPACA_STATE_ROOT=/var/lib/factorlab-alpaca-paper
+ExecStart=/opt/factorlab-alpaca/current/venv/bin/python -m factorlab.integrations.disaster_recovery schedule-alpaca --state-root ${FACTORLAB_ALPACA_STATE_ROOT} --backup-root /var/backups/factorlab-alpaca-paper --release /opt/factorlab-alpaca/current --recovery-file ${RUNTIME_DIRECTORY}/restart.json
+ExecStopPost=/opt/factorlab-alpaca/current/venv/bin/python -m factorlab.integrations.disaster_recovery finish-alpaca-backup --state-root ${FACTORLAB_ALPACA_STATE_ROOT} --recovery-file ${RUNTIME_DIRECTORY}/restart.json
+TimeoutStartSec=12min
+TimeoutStopSec=3min
+UMask=0077
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+InaccessiblePaths=-/etc/factorlab-alpaca-paper -/etc/factorlab-demo
+ReadWritePaths=/var/lib/factorlab-alpaca-paper /var/backups/factorlab-alpaca-paper

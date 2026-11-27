@@ -1,0 +1,101 @@
+{
+  "account_id": "research-grid",
+  "buy_hold": false,
+  "capital": "1000",
+  "config": {
+    "atr_multiplier": 1,
+    "atr_window": 72,
+    "breakout": "pause",
+    "budget": null,
+    "center_rule": "last_close",
+    "expiry_reseed_interval": 100,
+    "expiry_reseed_limit": 0,
+    "fee_bps": 4,
+    "initial_cash": 1000.0,
+    "initial_inventory": 0,
+    "initial_price": 204.34,
+    "levels": 8,
+    "lower": 163.472,
+    "max_cash_committed": 1000,
+    "max_drawdown": 0.2,
+    "max_inventory": 100,
+    "max_turnover": 10,
+    "min_rebuild_interval": 72,
+    "minimum_price": 0.01,
+    "minimum_quantity": 1,
+    "mode": "geometric",
+    "order_ttl": 100,
+    "quantity": 10,
+    "rebuild_threshold": 2,
+    "slippage_bps": 6,
+    "upper": 245.208
+  },
+  "data_identity": null,
+  "dataset_id": "a365db569216e8147588da8630c6ff35db88ab1e449cdd80404b381656933be4",
+  "deterministic": true,
+  "fee_estimate": [
+    {
+      "buy_fee_bps": 0.0,
+      "commission_bps": 4.0,
+      "effective_from": "1900-01-01",
+      "effective_to": null,
+      "minimum_commission_cny": 0.0,
+      "sell_fee_bps": 0.0,
+      "slippage_bps": 6.0,
+      "stamp_duty_bps": 0.0,
+      "transfer_fee_bps": 0.0
+    }
+  ],
+  "fee_rate": "0.0004",
+  "instrument_id": "BINANCE:USDM:NVDAUSDT",
+  "interval": "1h",
+  "market": "BINANCE_USDM",
+  "max_exit_quantity": null,
+  "no_trade": false,
+  "participation": "1",
+  "provenance": {
+    "code": {
+      "commit": "5a1be4d34f6222c186937bea3ac7c90b9d675a14",
+      "git_diff_sha256": "ccf584b0d48f9f7f9dfad5623774cef0f578d7493bbba448918772ef157a3687",
+      "git_dirty": true,
+      "tree": "849437edb647c05754a84ae5793919a4fa100967"
+    },
+    "environment": {
+      "package_versions": {
+        "PyYAML": "6.0.4",
+        "akshare": null,
+        "baostock": null,
+        "lightgbm": "4.6.0",
+        "matplotlib": "3.10.9",
+        "numpy": "2.3.5",
+        "pandas": "2.3.3",
+        "pyarrow": "22.0.0",
+        "pytest": "8.4.2",
+        "scikit-learn": "1.7.2",
+        "scipy": "1.16.3",
+        "tzdata": "2026.6",
+        "xgboost": "2.1.4"
+      },
+      "platform": "Windows-11-10.0.26340-SP0",
+      "python_executable": "D:\\Code\\FactorLab-worktrees\\mc-grid-gpu-01\\.venv\\Scripts\\python.exe",
+      "python_version": "3.13.9"
+    }
+  },
+  "reference_budget": null,
+  "rules": {
+    "min_notional": "5",
+    "min_quantity": "0.01",
+    "quantity_unit": "0.01",
+    "step_size": "0.01",
+    "tick_size": "0.01"
+  },
+  "scenario": "CLOSE_ONLY_SCENARIO",
+  "schema_version": 1,
+  "slippage": "0.0006",
+  "synthetic_capacity": "0.10",
+  "window": {
+    "bars": 169,
+    "end": "2026-11-22T00:00:00+00:00",
+    "start": "2026-11-15T00:00:00+00:00"
+  }
+}

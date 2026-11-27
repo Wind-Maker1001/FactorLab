@@ -46,6 +46,8 @@ alpaca-data = [
     "websockets>=15,<17", "exchange-calendars>=4.11,<5",
 ]
 monte-carlo-cuda = ["cupy-cuda13x[ctk]>=14,<15"]
+monte-carlo-benchmark = ["psutil>=5.9,<8", "nvidia-ml-py>=12,<14"]
+monte-carlo-native = ["ziglang>=0.15,<0.16"]
 
 [project.scripts]
 factorlab = "factorlab.cli:main"
@@ -64,4 +66,4 @@ addopts = '-ra -m "not network"'
 markers = ["network: external services excluded from offline acceptance", "integration: crosses subsystems", "slow: long running"]
 
 [tool.setuptools.package-data]
-factorlab = ["resources/*.yaml", "console/static/*.html", "console/static/*.css", "console/static/*.js"]
+factorlab = ["resources/*.yaml", "console/static/*.html", "console/static/*.css", "console/static/*.js", "research/grid_simulation/*.cu"]

@@ -1,0 +1,5 @@
+{
+  "baseline_commit": "5a1be4d34f6222c186937bea3ac7c90b9d675a14",
+  "working_tree_status": " M pyproject.toml\n M src/factorlab/research/monte_carlo/__init__.py\n?? configs/research/mc_colab_02.json\n?? configs/research/mc_colab_02_crossover.json\n?? configs/research/mc_colab_02_reliability.json\n?? configs/research/mc_colab_02_scale.json\n?? docs/research/mc-colab-02.md\n?? docs/validation/mc-colab-02/\n?? src/factorlab/experiments/mc_colab_benchmark.py\n?? src/factorlab/research/monte_carlo/storage.py\n?? tests/research/test_mc_colab_benchmark.py\n?? tools/research/run_mc_colab_benchmark.py\n",
+  "source_snapshot": "retained in original local experiment directory; not bundled"
+}

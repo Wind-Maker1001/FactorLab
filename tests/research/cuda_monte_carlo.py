@@ -89,6 +89,25 @@ def test_real_cuda_saved_paths_and_degenerate_gbm(cuda):
     np.testing.assert_allclose(result.asset_paths[:, -1, 0], 100 * np.exp(-.1 * cfg.dt * cfg.n_steps))
 
 
+def test_real_cuda_benchmark_fixed_input_and_profile(cuda):
+    cfg = MonteCarloConfig(n_paths=13, n_steps=7, batch_size=5)
+    inputs = MonteCarloInput(weights=[.4, .6], drift=[.03, .06], volatility=[0., 0.])
+    cpu = MonteCarloRunner(cfg).run(inputs)
+    gpu = MonteCarloRunner(replace(cfg, compute=ComputeConfig(device='gpu'))).run(
+        inputs, profile=True)
+    np.testing.assert_allclose(cpu.terminal_values, gpu.terminal_values,
+        rtol=1e-10, atol=1e-12)
+    np.testing.assert_allclose(cpu.maximum_drawdowns, gpu.maximum_drawdowns,
+        rtol=1e-10, atol=1e-12)
+    assert gpu.metadata['compute']['execution']['backend'] == 'cupy-cuda'
+    phases = gpu.metadata['phase_seconds']
+    assert {'device_initialization', 'host_to_device', 'generation_and_reduction',
+        'device_to_host', 'result_statistics'} <= phases.keys()
+    assert all(np.isfinite(value) and value >= 0 for value in phases.values())
+    assert gpu.metadata['phase_timing_scope'] == 'synchronized profiling; not steady throughput'
+    assert 'phase_seconds' not in cpu.metadata
+
+
 def test_real_cuda_impossible_budget(cuda):
     dates = np.datetime64('1800-01-01') + np.arange(70000)
     data = MonteCarloInput(weights=[.5, .5], historical_returns=np.zeros((70000, 2)),

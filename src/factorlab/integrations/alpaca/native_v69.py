@@ -49,13 +49,19 @@ class NativeExecution:
         if self.owner.runner.executor.capital_policy.is_configured(binding['account_id']):
             self.owner.runner.executor.capital_policy.qualify(spec, binding, allocation)
 
+    @staticmethod
+    def plan_id(receipt):
+        inputs = receipt['event']['context']['bridge_inputs']
+        session = inputs['session']
+        return plan_identity(inputs['account_id'], 'V69_CAUSAL', session, session)
+
     def execute(self, receipt):
         owner = self.owner
         if receipt['binding'] != owner.view.binding():
             raise ValueError('native V69 receipt binding mismatch')
         original = receipt['decision']['state']['original']
         inputs = dict(receipt['event']['context']['bridge_inputs'], decision=original)
-        identity = plan_identity(inputs['account_id'], 'V69_CAUSAL', inputs['session'], inputs['session'])
+        identity = self.plan_id(receipt)
         if not owner.store.db.execute('SELECT 1 FROM portfolio_plans WHERE id=?', (identity,)).fetchone():
             account = owner.adapter.recover()
             inventory = (owner.runner.executor.projection(account, 'V69_CAUSAL')
@@ -166,9 +172,7 @@ class NativeWeeklyExecution(WeeklyExecution):
     def dispatch(self, event):
         receipt = self.runtime.decide(event)
         original = receipt['decision']['state']['original']
-        inputs = event['context']['bridge_inputs']
-        self.identity = (None if original['weights'] is None else
-            plan_identity(inputs['account_id'], 'V69_CAUSAL', inputs['session'], inputs['session']))
+        self.identity = None if original['weights'] is None else self.runtime.adapter.plan_id(receipt)
         return original
 
     def decide(self, context, checkpoint, *, bridge_inputs):

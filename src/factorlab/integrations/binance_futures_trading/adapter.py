@@ -1,11 +1,12 @@
 """Persistent offline execution adapter implementing the shared one-way contract."""
 from concurrent.futures import ThreadPoolExecutor, wait
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import hashlib
 import json
+from math import ceil, floor
 
 from factorlab.errors import DataQualityError
 from factorlab.integrations.binance.market import _decimal, symbol_name
@@ -32,8 +33,12 @@ from .rules import order_parameters
 
 ACCOUNT_READ_SECONDS = 5
 ACCOUNT_PATH = '/fapi/v3/account'
-ACCOUNT_PATHS = (ACCOUNT_PATH, '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
-                 '/fapi/v1/openOrders', '/fapi/v1/symbolConfig')
+POSITION_RISK_PATH = '/fapi/v3/positionRisk'
+OPEN_ORDERS_PATH = '/fapi/v1/openOrders'
+ACCOUNT_PATHS = (ACCOUNT_PATH, POSITION_RISK_PATH, '/fapi/v1/positionSide/dual',
+                 OPEN_ORDERS_PATH, '/fapi/v1/symbolConfig')
+_RECOVERY_READS = {ACCOUNT_PATH: 'account', POSITION_RISK_PATH: 'position_risk',
+                   OPEN_ORDERS_PATH: 'open_orders'}
 ACCOUNT_PERMISSION_PATH = '/fapi/v2/account'
 QUANTITATIVE_PATH = '/fapi/v1/apiTradingStatus'
 
@@ -543,6 +548,48 @@ class FuturesAdapter:
             complete=True,
         )
 
+    def risk_account(self, account):
+        """Attach covered official wallet transfers, not strategy allocations."""
+        from factorlab.trading.cash_flow import cash_flow_checkpoint
+        from .recovery import EXCHANGE_HISTORY_RETENTION_SECONDS
+
+        end_ms = _to_ms(account.observed_at)
+        row = self.db.execute("SELECT detail FROM futures_income_coverage WHERE scope='CAPITAL_TRANSFER'").fetchone()
+        previous = None if row is None else decode(json.loads(row[0]))
+        overlap = timedelta(milliseconds=INCOME_OVERLAP_MS)
+        start = (account.observed_at if previous is None else previous['through']) - overlap
+        if previous is not None and (account.observed_at < previous['through'] or
+                account.observed_at - start > timedelta(seconds=EXCHANGE_HISTORY_RETENTION_SECONDS)):
+            return replace(account, cumulative_external_cash_flow=None)
+        try:
+            window = self.income_window(start_time=start, end_time=end_ms)
+        except (ExchangeError, OutcomeUnknown):
+            return replace(account, cumulative_external_cash_flow=None)
+        if not window.complete:
+            return replace(account, cumulative_external_cash_flow=None)
+        records = []
+        for entry in window.rows:
+            time_ms, kind, amount, asset, _, tran_id, _, _ = validate_income_row(entry)
+            if kind == 'TRANSFER' and asset == 'USDT':
+                records.append((kind + ':' + tran_id, instant(time_ms), amount))
+            elif kind not in {'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR',
+                              'WELCOME_BONUS', 'COMMISSION_REBATE', 'API_REBATE',
+                              'REFERRAL_KICKBACK', 'CONTEST_REWARD', 'DELIVERED_SETTELMENT',
+                              'DELISTING_SETTLEMENT', 'FEE_RETURN', 'AUTO_EXCHANGE'}:
+                return replace(account, cumulative_external_cash_flow=None)
+        # Exchange timestamps have millisecond precision.
+        end = instant(end_ms)
+        start = instant(_to_ms(start))
+        state = cash_flow_checkpoint(previous, records, start=start, end=end, retain_from=end - overlap)
+        context = nullcontext() if self.db.in_transaction else self.store.transaction()
+        with context:
+            self.db.execute('INSERT INTO futures_income_coverage VALUES(?,?,?,?,?,?) '
+                'ON CONFLICT(scope) DO UPDATE SET covered_from_ms=excluded.covered_from_ms, '
+                'covered_through_ms=excluded.covered_through_ms, complete=excluded.complete, '
+                'updated_at=excluded.updated_at, detail=excluded.detail',
+                ('CAPITAL_TRANSFER', _to_ms(state['origin']), end_ms, 1, end.isoformat(), dumps(state)))
+        return replace(account, cumulative_external_cash_flow=state['total'])
+
     def funding_events(self):
         """Return persisted confirmed funding events ordered by exchange time and tranId."""
         rows = self.db.execute(
@@ -826,10 +873,13 @@ class FuturesAdapter:
         started = self.client.monotonic()
         observed_at = self.clock()
         error = None
+        read_windows = {}
         try:
-            with self._account_reads(observed_at, started, parallel=parallel, sync_funding=sync_funding) as read:
+            with self._account_reads(observed_at, started, read_windows,
+                                     parallel=parallel, sync_funding=sync_funding) as read:
                 facts = self._assemble_facts(observed_at, started, read)
             if parallel:
+                facts = replace(facts, read_windows=read_windows)
                 facts.confirmed_position_amounts()
                 facts.open_order_identities()
                 self._require_fresh_account_read(observed_at, started, self.clock())
@@ -848,7 +898,7 @@ class FuturesAdapter:
         return facts
 
     @contextmanager
-    def _account_reads(self, observed_at, started, *, parallel, sync_funding):
+    def _account_reads(self, observed_at, started, read_windows, *, parallel, sync_funding):
         if not parallel:
             def read(path):
                 payload = self.client.request('GET', path)
@@ -864,13 +914,18 @@ class FuturesAdapter:
 
         def fetch(path):
             reader = self.client.account_reader(window)
+            stage = _RECOVERY_READS.get(path)
+            before = None if stage is None else reader.demo_time(allow_refresh=False)
             payload = reader.request('GET', path)
+            bounds = None
+            if before is not None:
+                after = reader.demo_time(allow_refresh=False)
+                bounds = (floor(before.lower_ms), ceil(after.upper_ms))
+            permission = None
             if path == ACCOUNT_PATH:
-                permission = None
                 if not early_permission and isinstance(payload, dict) and 'canTrade' not in payload:
                     permission = reader.request('GET', ACCOUNT_PERMISSION_PATH)
-                return payload, permission
-            return payload
+            return payload, permission, bounds
 
         endpoints = (*ACCOUNT_PATHS, QUANTITATIVE_PATH)
         if early_permission:
@@ -890,8 +945,10 @@ class FuturesAdapter:
             def read(path):
                 if path == ACCOUNT_PERMISSION_PATH and not early_permission:
                     return pending[ACCOUNT_PATH].result()[1]
-                result = pending[path].result()
-                return result[0] if path == ACCOUNT_PATH else result
+                payload, _, bounds = pending[path].result()
+                if bounds is not None:
+                    read_windows[_RECOVERY_READS[path]] = bounds
+                return payload
 
             yield read
 

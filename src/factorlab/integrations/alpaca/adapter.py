@@ -1,5 +1,7 @@
 """Official Paper execution and restart recovery; no local fill authority."""
-from datetime import datetime, timezone
+from contextlib import nullcontext
+from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from urllib.parse import quote
 
@@ -16,6 +18,7 @@ from .storage import AlpacaStore
 
 D = Decimal
 Z = D("0")
+CORPORATE_ACTIVITY_TYPES = frozenset({'DIV', 'DIVNRA', 'DIVFEE', 'SSP', 'SSO', 'REORG'})
 STATUS = {
     "new": S.SUBMITTED, "accepted": S.SUBMITTED, "pending_new": S.SUBMITTED,
     "accepted_for_bidding": S.SUBMITTED, "pending_cancel": S.SUBMITTED,
@@ -162,7 +165,13 @@ class AlpacaAdapter:
         needing execution-exact cash flows use read_order_executions instead.
         """
         self._apply(self._lookup(client_order_id), emit=False)
-        row = self.store.order(client_order_id)[1]
+        return self.stored_order_details(client_order_id)
+
+    def stored_order_details(self, client_order_id):
+        return self._order_details(self.store.order(client_order_id)[1])
+
+    @staticmethod
+    def _order_details(row):
         return {"client_order_id": row["client_order_id"], "exchange_order_id": row["id"],
                 "status": order_status(row), "filled_quantity": D(row["filled_qty"]),
                 "filled_avg_price": D(row["filled_avg_price"]) if row["filled_avg_price"] else None,
@@ -187,14 +196,62 @@ class AlpacaAdapter:
         return rows
 
     def read_account(self):
-        facts = self.read_account_details()
+        return self._snapshot(self.read_account_details())
+
+    def risk_account(self, account):
+        """Read official external cash activities independently of sleeve transfers."""
+        import json
+        from factorlab.trading.cash_flow import cash_flow_checkpoint
+        from factorlab.trading.storage import decode, dumps
+
+        saved = self.store.get('external_cash_flow')
+        previous = None if saved is None else decode(saved)
+        end = account.official_observed_at or account.observed_at
+        if previous is not None and end < previous['through']:
+            return replace(account, cumulative_external_cash_flow=None)
+        # Non-trade activities expose settlement dates, not execution timestamps.
+        overlap = timedelta(days=7)
+        reference = end if previous is None else previous['through']
+        start = (reference - overlap).replace(hour=0, minute=0, second=0, microsecond=0)
+        try:
+            rows = self._activity_pages('/v2/account/activities',
+                                        {'after': start.isoformat(), 'until': end.isoformat()})
+        except AlpacaError:
+            return replace(account, cumulative_external_cash_flow=None)
+        records = []
+        for row in rows:
+            kind = row['activity_type']
+            if kind in {'JNL', 'JNLC', 'JNLS', 'ACATS'}:
+                # Journal corrections and in-kind transfers cannot be valued as
+                # external cash from the activity type alone.
+                return replace(account, cumulative_external_cash_flow=None)
+            if kind not in {'CSD', 'CSW', 'ACATC'}:
+                continue
+            date = row['date']
+            at = instant(date + 'T00:00:00Z' if len(date) == 10 else date)
+            if start <= at <= end:
+                records.append((row['id'], at, D(row['net_amount'])))
+        state = cash_flow_checkpoint(previous, records, start=start, end=end,
+                                     retain_from=(end - overlap).replace(
+                                         hour=0, minute=0, second=0, microsecond=0))
+        context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
+        with context:
+            self.store.put('external_cash_flow', json.loads(dumps(state)))
+        return replace(account, cumulative_external_cash_flow=state['total'])
+
+    def _snapshot(self, facts, *, recovered_orders=None):
         rows = self._positions()
         orders, reserved = [], Z
-        for _, (intent, row, uncertain, price) in self.store.orders():
+        official_ids = set()
+        if recovered_orders is None:
+            recovered_orders = self.store.orders()
+        for _, (intent, row, uncertain, price) in recovered_orders:
             if self.store.get("rejection:" + intent.client_order_id) is not None and row is None:
                 continue
             if row is not None and order_status(row) in TERMINAL and not uncertain:
                 continue
+            if row is not None and order_status(row) not in TERMINAL:
+                official_ids.add(intent.client_order_id)
             quantity = D(row["filled_qty"]) if row else Z
             status = S.UNKNOWN if uncertain else order_status(row)
             orders.append(OrderSnapshot(intent, status, quantity, Z, row["id"] if row else None, uncertain))
@@ -203,10 +260,16 @@ class AlpacaAdapter:
         return AccountSnapshot(Market.ALPACA_US_EQUITY, facts.account_id,
                                (AssetBalance("USD", facts.cash, reserved),),
                                tuple(Position(p["symbol"], D(p["qty"]), D(p["avg_entry_price"]),
-                                              D(p["current_price"]), "USD") for p in rows),
-                               tuple(orders), facts.observed_at, self.reconciled)
+                                              D(p["current_price"]), "USD",
+                                              None if p.get("qty_available") is None else D(p["qty_available"]))
+                                     for p in rows),
+                               tuple(orders), facts.observed_at, self.reconciled,
+                               official_equity=facts.equity, official_cash=facts.cash,
+                               official_available=min(facts.cash, facts.buying_power),
+                               initial_margin=facts.initial_margin,
+                               official_order_ids=tuple(sorted(official_ids)))
 
-    def _admission(self, intent, price, account, facts):
+    def _admission(self, intent, price, account, facts, *, enforce_sellable=False):
         if facts.status != "ACTIVE" or facts.account_blocked or facts.trading_blocked:
             self._reject("ACCOUNT_BLOCKED")
         unresolved = any(uncertain and self.store.get("rejection:" + key) is None
@@ -219,7 +282,11 @@ class AlpacaAdapter:
             owned = sum((p.quantity for p in account.positions if p.instrument_id == intent.instrument_id), Z)
             reserved = sum((o.intent.quantity - o.cumulative_filled_quantity for o in account.open_orders
                             if o.intent.instrument_id == intent.instrument_id and o.intent.side == Side.SELL), Z)
-            if intent.quantity > owned - reserved:
+            available = None
+            if enforce_sellable:
+                available = next((p.available_quantity for p in account.positions
+                                  if p.instrument_id == intent.instrument_id), None)
+            if intent.quantity > owned - reserved or (available is not None and intent.quantity > available):
                 self._reject("INSUFFICIENT_INVENTORY")
             return
         amount = intent.quantity * price
@@ -248,7 +315,7 @@ class AlpacaAdapter:
         if sum(exposures.values(), Z) + amount > min(self.limits.account_budget, facts.equity):
             self._reject("ACCOUNT_BUDGET_LIMIT")
 
-    def submit_order(self, intent, *, reservation_price=None):
+    def submit_order(self, intent, *, reservation_price=None, risk_admission=None):
         old = self.store.order(intent.client_order_id)
         if old:
             if old[0] != intent:
@@ -259,10 +326,11 @@ class AlpacaAdapter:
         if price is None or not isinstance(price, D) or not price.is_finite() or price <= 0:
             raise ValueError("market orders require an explicit positive reservation_price")
         # REST refresh before admission includes orders placed outside this process.
-        self.recover()
-        account, facts = self.read_account(), self.read_account_details()
+        account, facts = self.recover(with_details=True)
+        if risk_admission is not None:
+            risk_admission(account)
         with self.store.transaction():
-            self._admission(intent, price, account, facts)
+            self._admission(intent, price, account, facts, enforce_sellable=risk_admission is not None)
             now = datetime.now(timezone.utc).timestamp()
             recent = [t for t in self.store.get("submissions") or [] if now - t < 60]
             if len(recent) >= self.limits.orders_per_minute:
@@ -306,15 +374,18 @@ class AlpacaAdapter:
             return self.query_order(client_order_id)
         return self._apply(row, activities=())
 
-    def read_activities(self):
-        return self._activity_pages('/v2/account/activities/FILL', {})
+    def read_activities(self, *, after=None):
+        filters = {} if after is None else {'after': after}
+        return self._activity_pages('/v2/account/activities/FILL', filters)
+
+    def read_account_activities(self, *, after):
+        return self._activity_pages('/v2/account/activities', {'after': after})
 
     def read_corporate_activities(self, *, after):
         """Official nontrade receipts; dividend qty is eligibility, not new shares."""
         # Paper rejects SSP as a query filter despite documenting it as a receipt type.
-        rows = self._activity_pages('/v2/account/activities', {'after': after})
-        return tuple(row for row in rows if row['activity_type'] in {
-            'DIV', 'DIVNRA', 'DIVFEE', 'SSP', 'SSO', 'REORG'})
+        rows = self.read_account_activities(after=after)
+        return tuple(row for row in rows if row['activity_type'] in CORPORATE_ACTIVITY_TYPES)
 
     def _activity_pages(self, path, filters):
         rows, token = [], None
@@ -332,10 +403,12 @@ class AlpacaAdapter:
             token = next_token
         raise ValueError("activity pagination budget exceeded")
 
-    def _all_orders(self):
+    def _all_orders(self, *, after=None, status='all'):
         rows, until = [], None
         for _ in range(10000):
-            params = {"status": "all", "limit": 500, "direction": "desc", "nested": "false"}
+            params = {"status": status, "limit": 500, "direction": "desc", "nested": "false"}
+            if after is not None:
+                params['after'] = after
             if until:
                 params["until"] = until
             page = self.http.request("GET", "/v2/orders", params=params)
@@ -356,15 +429,22 @@ class AlpacaAdapter:
             until = next_until
         raise ValueError("order pagination budget exceeded")
 
-    def recover(self):
+    def recover(self, *, after=None, with_details=False, with_orders=False):
+        """Recover the account, optionally using a restored ledger's history floor."""
         self.reconciled = False
         self.read_account_details()
-        activities = self.read_activities()
+        filters = {} if after is None else {'after': after}
+        activities = self.read_activities(**filters)
         with self.store.transaction():
             for activity in activities:
                 self.store.activity(activity)
-        for row in self._all_orders():
+        rows = self._all_orders(**filters)
+        if after is not None:
+            # An order submitted before the floor can remain open for days.
+            rows.extend(self._all_orders(status='open'))
+        for row in rows:
             self._apply(row, activities=(), emit=False)
+        absent = set()
         for key, (_, row, uncertain, _) in self.store.orders():
             if row is None and self.store.get("rejection:" + key) is not None:
                 continue
@@ -373,18 +453,31 @@ class AlpacaAdapter:
                     self._apply(self._lookup(key), activities=(), emit=False)
                 except OrderNotFound:
                     # Absence is not proof a timed-out POST cannot still arrive.
-                    pass
-        activities = self.read_activities()
+                    absent.add(key)
+        activities = self.read_activities(**filters)
         with self.store.transaction():
             for row in activities:
                 self.store.activity(row)
-        totals = {}
+        if after is not None:
+            # A fill of an older order can arrive inside the activity window even
+            # if the order is already terminal by the time we list open orders.
+            known = {row['id'] for _, (_, row, _, _) in self.store.orders() if row is not None}
+            for order_id in sorted({row['order_id'] for row in activities} - known):
+                path = '/v2/orders/' + quote(order_id, safe='')
+                row = self.http.request('GET', path)
+                if row['id'] != order_id:
+                    raise ValueError('Alpaca requested exchange order identity mismatch')
+                self._apply(row, activities=(), emit=False)
+        totals, executions = {}, {}
         for row in self.store.activities():
             key = row["order_id"]
             qty, amount = totals.get(key, (Z, Z))
             totals[key] = qty + D(row["qty"]), amount + D(row["qty"]) * D(row["price"])
+            if with_orders:
+                executions.setdefault(key, []).append(row)
         complete = True
-        for key, (_, row, uncertain, _) in self.store.orders():
+        orders = self.store.orders()
+        for key, (_, row, uncertain, _) in orders:
             if row is None and self.store.get("rejection:" + key) is not None:
                 continue
             if uncertain or row is None:
@@ -397,6 +490,19 @@ class AlpacaAdapter:
                 if abs(amount - qty * D(row["filled_avg_price"] or "0")) > qty * D("0.0001"):
                     complete = False
         self.reconciled = complete
+        if with_orders:
+            by_client_id = dict(orders)
+            def read_order(client_id):
+                saved = by_client_id.get(client_id)
+                if client_id in absent or saved is None or saved[1] is None or saved[2]:
+                    raise OrderNotFound(404)
+                row = saved[1]
+                return self._order_details(row), executions.get(row["id"], ())
+            facts = self.read_account_details()
+            return self._snapshot(facts, recovered_orders=orders), read_order
+        if with_details:
+            facts = self.read_account_details()
+            return self._snapshot(facts), facts
         return self.read_account()
 
     def on_trade_update(self, message):
