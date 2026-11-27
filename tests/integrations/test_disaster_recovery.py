@@ -59,6 +59,22 @@ def test_snapshot_restores_the_referenced_strategy_package_without_credentials(s
     assert 'paper-secret.json' not in verified['files']
 
 
+def test_wal_snapshot_remains_self_contained_after_restore(source, tmp_path):
+    with closing(sqlite3.connect(source / 'runtime.sqlite3')) as db:
+        db.execute('PRAGMA journal_mode=WAL')
+        db.execute("INSERT INTO allocations VALUES ('wal-owner', '12')")
+        db.commit()
+
+        snapshot = storage.recovery_snapshot(source, tmp_path / 'backup', 'binance', REVISION)
+        restored = storage.restore_state(snapshot, tmp_path / 'restore')
+
+        storage.verify_snapshot(snapshot)
+        assert not list(snapshot.glob('runtime.sqlite3-*'))
+        assert db.execute('PRAGMA journal_mode').fetchone() == ('wal',)
+    with closing(sqlite3.connect(restored / 'runtime.sqlite3')) as db:
+        assert db.execute("SELECT cash FROM allocations WHERE owner='wal-owner'").fetchone() == ('12',)
+
+
 def test_stale_internal_state_remains_read_only_after_clean_official_facts(source, tmp_path, monkeypatch):
     snapshot = storage.recovery_snapshot(source, tmp_path / 'backup', 'binance', REVISION)
     # An internal cash transfer leaves the same exchange balance.

@@ -1,0 +1,688 @@
+{
+  "schema_version": 1,
+  "repo_revision_requested": "864671649626993bce84629dc9f64d3cc4e3f015",
+  "captured_at_utc": "2026-11-27T18:43:59.040316+00:00",
+  "status": {
+    "deployment": "DEPLOYMENT_BLOCKED",
+    "dual_market": "PARTIAL",
+    "resource": "RESOURCE_ACCEPTED",
+    "resource_scope": "observed mixed revision workload",
+    "disaster_recovery": "NOT_VERIFIED"
+  },
+  "deployment": {
+    "malaysia": {
+      "vm": "factorlab-demo-01",
+      "region": "MalaysiaWest",
+      "sku": "Standard_B2ats_v2",
+      "architecture": "x86_64",
+      "python": "3.13.18",
+      "before": {
+        "binance": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+        "alpaca": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+        "tradfi_observer": "12335ebd56fda7a2d0e709176806d96e3e7b7b67"
+      },
+      "current": {
+        "binance": "864671649626993bce84629dc9f64d3cc4e3f015",
+        "alpaca": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+        "tradfi_observer": "864671649626993bce84629dc9f64d3cc4e3f015"
+      },
+      "timers": [
+        "factorlab-alpaca-backup.timer",
+        "factorlab-alpaca-paper-health.timer",
+        "factorlab-demo-backup.timer",
+        "factorlab-demo-daily-report.timer",
+        "factorlab-demo-health.timer",
+        "factorlab-demo-strategy-deploy.timer",
+        "factorlab-demo-tradfi-health.timer"
+      ],
+      "backup_module_overlay": "/opt/factorlab/p10-05-staging/src",
+      "retained_unit_archive": "/root/p10-05/prior-factorlab-units.tar",
+      "latest_alpaca_start": {
+        "attempted_revision": "864671649626993bce84629dc9f64d3cc4e3f015",
+        "exit_status": 78,
+        "error": "instance runtime identity changed",
+        "changed_fields": [
+          "runtime_sha256"
+        ],
+        "same_fields": [
+          "code_commit",
+          "code_sha256",
+          "configuration",
+          "entrypoint",
+          "evidence_sha256",
+          "package_id",
+          "protocol",
+          "spec"
+        ],
+        "rollback_revision": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+        "rollback_uses_current_ledger": true,
+        "v69_active_package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5"
+      }
+    },
+    "japan": {
+      "vm": "factorlab-arm-01",
+      "region": "JapanEast",
+      "sku": "Standard_B2pts_v2",
+      "architecture": "aarch64",
+      "python": "3.13.18",
+      "installed": {
+        "binance": "864671649626993bce84629dc9f64d3cc4e3f015",
+        "alpaca": "864671649626993bce84629dc9f64d3cc4e3f015",
+        "tradfi_observer": "864671649626993bce84629dc9f64d3cc4e3f015"
+      },
+      "running_execution_revision": null,
+      "unit_states": {
+        "factorlab-demo-execute": "masked",
+        "factorlab-alpaca-paper": "masked",
+        "factorlab-demo-tradfi-observer": "masked"
+      },
+      "main_pids": [
+        0,
+        0,
+        0
+      ],
+      "read_only_official_accounts": [
+        {
+          "market": "binance",
+          "signed_get": true,
+          "wallet": "4999.41385672",
+          "equity": "4999.41385672",
+          "open_orders": 1
+        },
+        {
+          "market": "alpaca",
+          "signed_get": true,
+          "cash": "100000.05",
+          "equity": "100000.05",
+          "positions": 0,
+          "open_orders": 0,
+          "market_open": true,
+          "next_open": "2026-11-30T09:30:00-05:00"
+        }
+      ]
+    },
+    "target_requirements": {
+      "binance": [
+        "tzdata==2026.6",
+        "websockets==16.1.1"
+      ],
+      "alpaca": [
+        "numpy==2.3.5",
+        "pandas==2.3.3",
+        "pyarrow==22.0.0",
+        "python-dateutil==4.0.0",
+        "pytz==2026.6",
+        "tzdata==2026.6",
+        "websockets==16.1.1"
+      ],
+      "tradfi_observer": [
+        "exchange_calendars==4.13.3",
+        "korean_lunar_calendar==0.4.0",
+        "numpy==2.3.5",
+        "pandas==2.3.3",
+        "pyluach==2.3.0",
+        "python-dateutil==4.0.0",
+        "pytz==2026.6",
+        "toolz==1.2.0",
+        "tzdata==2026.6"
+      ],
+      "binance_heavy_imports_seen": []
+    }
+  },
+  "backup": {
+    "binance_preupgrade": {
+      "name": "backup-20261127T150003Z",
+      "bytes": 30024749,
+      "databases": 14,
+      "integrity_passed": true,
+      "isolated_restore_passed": true,
+      "downtime_seconds": 6.589
+    },
+    "alpaca_preupgrade": {
+      "name": "backup-20261127T150614Z",
+      "bytes": 574585452,
+      "databases": 6,
+      "integrity_passed": true,
+      "isolated_restore_passed": true,
+      "downtime_seconds": 128.95397868700093,
+      "isolated_restore_seconds": 83.70169869501842
+    },
+    "binance_postupgrade": {
+      "backup": "backup-20261127T152324Z",
+      "status": "SUCCEEDED",
+      "bytes": 30101395,
+      "completed_at": "2026-11-27T15:23:57.852917+00:00",
+      "downtime": 4.534,
+      "drill": true,
+      "binance_ready": true,
+      "alpaca_healthy": true,
+      "alpaca_pid": 1158622,
+      "alpaca_revision": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+      "offsite_manifest_verified": true,
+      "manifest": {
+        "market": "binance",
+        "revision": "864671649626993bce84629dc9f64d3cc4e3f015",
+        "captured_at": "2026-11-27T15:23:30.858418+00:00",
+        "final_target": null,
+        "command_elapsed_seconds": 0.32182071200804785,
+        "files": 28
+      }
+    }
+  },
+  "execution": {
+    "binance": {
+      "official_endpoint": "https://demo-fapi.binance.com",
+      "signed_order_and_trade_get": {
+        "states": {
+          "p10-05-20261127-open": {
+            "status": "COMPLETED",
+            "at": "2026-11-27T15:15:10.928355+00:00"
+          },
+          "p10-05-20261127-close": {
+            "status": "COMPLETED",
+            "at": "2026-11-27T15:16:28.855525+00:00"
+          }
+        },
+        "orders": [
+          {
+            "orderId": 66762421,
+            "clientOrderId": "pf6f730c08ea671a673b6c96625d7d74",
+            "symbol": "QQQUSDT",
+            "side": "BUY",
+            "status": "FILLED",
+            "executedQty": "0.01",
+            "avgPrice": "641.6300000",
+            "updateTime": 1795792466166,
+            "reduceOnly": false,
+            "task_id": "p10-05-20261127-open",
+            "fills": [
+              {
+                "qty": "0.01",
+                "price": "641.63000",
+                "commission": "0.00256652",
+                "commissionAsset": "USDT",
+                "realizedPnl": "0",
+                "time": 1795792466166
+              }
+            ]
+          },
+          {
+            "orderId": 66637963,
+            "clientOrderId": "pf7615bd24b4e39fbbe38342e2b3a853",
+            "symbol": "SPYUSDT",
+            "side": "BUY",
+            "status": "FILLED",
+            "executedQty": "0.01",
+            "avgPrice": "723.4500000",
+            "updateTime": 1795792488303,
+            "reduceOnly": false,
+            "task_id": "p10-05-20261127-open",
+            "fills": [
+              {
+                "qty": "0.01",
+                "price": "723.45000",
+                "commission": "0.00289380",
+                "commissionAsset": "USDT",
+                "realizedPnl": "0",
+                "time": 1795792488303
+              }
+            ]
+          },
+          {
+            "orderId": 66762885,
+            "clientOrderId": "pf0d4cf8e5d0caa2d77a11450548f233",
+            "symbol": "QQQUSDT",
+            "side": "SELL",
+            "status": "FILLED",
+            "executedQty": "0.01",
+            "avgPrice": "642.0500000",
+            "updateTime": 1795792563827,
+            "reduceOnly": true,
+            "task_id": "p10-05-20261127-close",
+            "fills": [
+              {
+                "qty": "0.01",
+                "price": "642.05000",
+                "commission": "0.00256820",
+                "commissionAsset": "USDT",
+                "realizedPnl": "0.00420000",
+                "time": 1795792563827
+              }
+            ]
+          },
+          {
+            "orderId": 66638303,
+            "clientOrderId": "pf733ba245e8c252ff51594c6e703ffe",
+            "symbol": "SPYUSDT",
+            "side": "SELL",
+            "status": "FILLED",
+            "executedQty": "0.01",
+            "avgPrice": "723.4900000",
+            "updateTime": 1795792570375,
+            "reduceOnly": true,
+            "task_id": "p10-05-20261127-close",
+            "fills": [
+              {
+                "qty": "0.01",
+                "price": "723.49000",
+                "commission": "0.00289396",
+                "commissionAsset": "USDT",
+                "realizedPnl": "0.00039999",
+                "time": 1795792570375
+              }
+            ]
+          }
+        ],
+        "wallet": "4999.40753423",
+        "equity": "4999.40753423",
+        "positions": [],
+        "funding": [
+          {
+            "symbol": "NVDAUSDT",
+            "income": "0.00415117",
+            "asset": "USDT",
+            "time": 1795687200000
+          },
+          {
+            "symbol": "NVDAUSDT",
+            "income": "0.00268948",
+            "asset": "USDT",
+            "time": 1795690800000
+          },
+          {
+            "symbol": "NVDAUSDT",
+            "income": "0.00367163",
+            "asset": "USDT",
+            "time": 1795694400000
+          },
+          {
+            "symbol": "NVDAUSDT",
+            "income": "0.00077941",
+            "asset": "USDT",
+            "time": 1795705200000
+          },
+          {
+            "symbol": "NVDAUSDT",
+            "income": "-0.00080041",
+            "asset": "USDT",
+            "time": 1795773600000
+          }
+        ]
+      },
+      "natural_grid": {
+        "grid_interval_seconds": 60,
+        "same_resting_order_found_after_restart": true,
+        "official_order_readback": {
+          "orderId": 196451740,
+          "clientOrderId": "fl-d7345f8795464a65-g-00047-00000001",
+          "symbol": "NVDAUSDT",
+          "side": "BUY",
+          "status": "CANCELED",
+          "executedQty": "0.00",
+          "updateTime": 1795793944007
+        },
+        "later_official_cancellations": [
+          {
+            "orderId": 196464661,
+            "clientOrderId": "fl-d7345f8795464a65-g-00048-00000001",
+            "symbol": "NVDAUSDT",
+            "status": "CANCELED",
+            "executedQty": "0",
+            "updateTime": 1795798503979
+          },
+          {
+            "orderId": 196484291,
+            "clientOrderId": "fl-d7345f8795464a65-g-00049-00000002",
+            "symbol": "NVDAUSDT",
+            "status": "CANCELED",
+            "executedQty": "0",
+            "updateTime": 1795804624261
+          }
+        ]
+      },
+      "public_websocket_probe": {
+        "received_event": "kline",
+        "symbol": "NVDAUSDT"
+      },
+      "mailbox": {
+        "status_counts": {
+          "COMPLETED": 4
+        },
+        "receipts": 13
+      },
+      "actual_fees_usdt": "0.01092248",
+      "wallet_before": "4999.41385672",
+      "wallet_after": "4999.40753423"
+    },
+    "alpaca": {
+      "official_endpoint": "https://paper-api.alpaca.markets",
+      "official_get": {
+        "market": "alpaca",
+        "signed_get": true,
+        "cash": "100000.05",
+        "equity": "100000.05",
+        "positions": 0,
+        "open_orders": 0,
+        "fills_since_maintenance_start": 0,
+        "market_open": true,
+        "next_open": "2026-11-30T09:30:00-05:00"
+      },
+      "after_rollback_trade_stream": "CONNECTED",
+      "after_rollback_market_stream": "CONNECTED",
+      "v69": {
+        "frequency": "natural-week",
+        "name": "v69-original",
+        "reason": null,
+        "state": "WAITING_NEXT_WEEK"
+      },
+      "next_natural_window_utc": "2026-11-30T14:30:00Z",
+      "target_runtime_fills_observed": 0
+    },
+    "capital_and_risk": {
+      "binance_budget_before_acceptance": {
+        "posts": 141,
+        "notional": "878.4848000"
+      },
+      "binance_budget_after_acceptance": {
+        "consumed": {
+          "posts": 145,
+          "submitted_notional": "905.7905000"
+        },
+        "max_loss": "250",
+        "opening_equity": "5000.00000000",
+        "remaining_notional": "499094.2095000",
+        "remaining_posts": 99855,
+        "state": "RUNNING",
+        "total_notional": "500000",
+        "total_orders": 100000
+      },
+      "binance_budget_continued": {
+        "consumed": {
+          "posts": 147,
+          "submitted_notional": "917.5849000"
+        },
+        "max_loss": "250",
+        "opening_equity": "5000.00000000",
+        "remaining_notional": "499082.4151000",
+        "remaining_posts": 99853,
+        "state": "RUNNING",
+        "total_notional": "500000",
+        "total_orders": 100000
+      },
+      "alpaca_configured_dynamic_capital_accounts": 0,
+      "online_dynamic_transfers_or_external_cash_events_tested": false,
+      "online_partial_fill_observed": false,
+      "online_multiple_same_symbol_instances_tested": false,
+      "offline_suites": [
+        {
+          "scope": "recovery fixtures, adaptive grid, dynamic capital, pending capital and portfolio risk NAV",
+          "passed": 48
+        },
+        {
+          "scope": "V179/V182 runtime and lightweight ARM64 regressions",
+          "passed": 34
+        },
+        {
+          "scope": "snapshot restore and cloud storage regression after deployment hotfix",
+          "passed": 19
+        }
+      ]
+    }
+  },
+  "disaster_recovery": {
+    "japan_os_disk_type": "Azure Managed Disk",
+    "azure_control_plane_disk_encryption_read_http": 403,
+    "restricted_rsync_list_success": {
+      "binance": true,
+      "alpaca": true
+    },
+    "pull_timers": {
+      "binance": "hourly at :45 UTC",
+      "alpaca": "hourly at :55 UTC",
+      "enabled": false
+    },
+    "local_binance_periodic_recovery": {
+      "node": "factorlab-demo-01",
+      "source_capture_utc": "2026-11-27T15:23:30.858418+00:00",
+      "elapsed_seconds": 11.237001892994158,
+      "official_catch_up_seconds": 10.22290160000557,
+      "approved_for_execution": false,
+      "reconciled": false,
+      "budget_verified": false,
+      "requests": {
+        "GET": 44,
+        "POST": 0,
+        "DELETE": 0
+      },
+      "cash_residual": "0",
+      "position_residual": {},
+      "unowned_order_count": 2,
+      "missing_internal_coverage": [
+        "allocation and capital transfers",
+        "cumulative order and loss budget changes",
+        "stop, pause and halt changes",
+        "strategy deployment, decisions, cursors and exit obligations",
+        "TaskMailbox producers and acknowledgements"
+      ]
+    },
+    "replication_bytes": null,
+    "replication_seconds": null,
+    "japan_ledger_catch_up_seconds": null,
+    "takeover_published": false,
+    "failback_published": false,
+    "cross_region_rpo_seconds": null,
+    "cross_region_rto_seconds": null,
+    "cross_region_interruption_seconds": null,
+    "cross_region_ledger_difference": null,
+    "local_alpaca_periodic_recovery": {
+      "node": "factorlab-demo-01",
+      "market": "alpaca",
+      "captured_at": "2026-11-27T15:06:56.132774+00:00",
+      "published_for_execution": false,
+      "elapsed_seconds": 77.34445664600935,
+      "ledger": {
+        "reconciled": false,
+        "blockers": [
+          "OFFICIAL_CASH_ANCHOR_MISSING"
+        ],
+        "nontrade_receipts": 0,
+        "cash_residual": null,
+        "api_requests": 9,
+        "budget_verified": true
+      }
+    }
+  },
+  "resources": {
+    "azure_metrics_query_http": 403,
+    "worker_limit_per_execution_host": 1,
+    "worker_limit_concurrent_on_vm": 2,
+    "observed_worker_processes_reference_sample": 0,
+    "worker_peak_pss_kib": null,
+    "decision_latency_sample_seconds": null,
+    "malaysia_before": {
+      "captured_at_utc": "2026-11-27T14:57:29Z",
+      "vmem_kib": {
+        "binance": {
+          "Rss": 38536,
+          "Pss": 31331,
+          "Swap": 99500
+        },
+        "alpaca": {
+          "Rss": 42560,
+          "Pss": 35853,
+          "Swap": 80192
+        },
+        "tradfi_observer": {
+          "Rss": 25512,
+          "Pss": 18660,
+          "Swap": 48668
+        }
+      },
+      "alpaca_market_bytes": 564289536,
+      "tradfi_observer_bytes": 32387072
+    },
+    "malaysia_continued": {
+      "captured_at": "2026-11-27T18:43:59.040316+00:00",
+      "soak_elapsed_seconds": 12001.187399,
+      "services": {
+        "factorlab-demo-execute": {
+          "MainPID": "1160117",
+          "NRestarts": "0",
+          "ExecMainStartTimestamp": "Fri 2026-11-27 15:23:31 UTC",
+          "MemoryPeak": "92151808",
+          "CPUUsageNSec": "442555588000",
+          "ActiveState": "active",
+          "python": "/opt/factorlab/releases/864671649626993bce84629dc9f64d3cc4e3f015/venv/bin/python",
+          "mem_kib": {
+            "Rss": 49132,
+            "Pss": 40899,
+            "Swap": 23600
+          }
+        },
+        "factorlab-alpaca-paper": {
+          "MainPID": "1158622",
+          "NRestarts": "0",
+          "ExecMainStartTimestamp": "Fri 2026-11-27 15:19:29 UTC",
+          "MemoryPeak": "404688896",
+          "CPUUsageNSec": "236953528000",
+          "ActiveState": "active",
+          "python": "/opt/factorlab-alpaca/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python",
+          "mem_kib": {
+            "Rss": 38936,
+            "Pss": 31054,
+            "Swap": 88520
+          }
+        },
+        "factorlab-demo-tradfi-observer": {
+          "MainPID": "1160142",
+          "NRestarts": "0",
+          "ExecMainStartTimestamp": "Fri 2026-11-27 15:23:39 UTC",
+          "MemoryPeak": "122187776",
+          "CPUUsageNSec": "10335754000",
+          "ActiveState": "active",
+          "python": "/opt/factorlab/tradfi-observer/current/venv/bin/python",
+          "mem_kib": {
+            "Rss": 28096,
+            "Pss": 19956,
+            "Swap": 38436
+          }
+        }
+      },
+      "mem_kib": {
+        "MemTotal": 908368,
+        "MemAvailable": 498808,
+        "SwapTotal": 2097148,
+        "SwapFree": 1591380
+      },
+      "disk_free_bytes": 32221679616,
+      "files_bytes": {
+        "alpaca_market": 707502080,
+        "tradfi_observer": 34967552
+      },
+      "journal": "Archived and active journals take up 507.5M in the file system.",
+      "oom_events": 0,
+      "binance": {
+        "status": "RUNNING",
+        "nav_usdt": "4999.40753423",
+        "positions": [],
+        "open_orders": [],
+        "account_recovered": true,
+        "unknown_count": 0,
+        "requests": {
+          "DELETE": 3,
+          "GET": 41514,
+          "POST": 2
+        },
+        "request_failure_rate": 0.00019267358685966137,
+        "last_valid_market_at": "2026-11-27T18:43:56.667000+00:00",
+        "global_budget": {
+          "consumed": {
+            "posts": 147,
+            "submitted_notional": "917.5849000"
+          },
+          "max_loss": "250",
+          "opening_equity": "5000.00000000",
+          "remaining_notional": "499082.4151000",
+          "remaining_posts": 99853,
+          "state": "RUNNING",
+          "total_notional": "500000",
+          "total_orders": 100000
+        },
+        "api_errors": {
+          "CLOCK_SKEW": 4,
+          "STALE_ACCOUNT": 2,
+          "ORDER_NOT_FOUND": 2
+        }
+      },
+      "alpaca": {
+        "healthy": true,
+        "account_recovered": true,
+        "revision": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+        "trade_stream": "CONNECTED",
+        "market": {
+          "error": null,
+          "last_event_at": "2026-11-27T18:43:00.176114+00:00",
+          "last_rest_at": "2026-11-27T18:43:35.569672+00:00",
+          "recoveries": 128,
+          "state": "CONNECTED"
+        },
+        "schedule": {
+          "due": false,
+          "execution_session": "2026-11-23",
+          "market_open": false,
+          "next_open": "2026-11-30T14:30:00+00:00",
+          "signal_cutoff": "2026-11-20",
+          "week": "2026-11-23"
+        },
+        "strategy": {
+          "frequency": "natural-week",
+          "name": "v69-original",
+          "reason": null,
+          "state": "WAITING_NEXT_WEEK"
+        },
+        "execution": {
+          "enabled": true,
+          "state": "IDLE",
+          "task": null
+        }
+      },
+      "tradfi": {
+        "observed_at": "2026-11-27T18:43:55.592129+00:00",
+        "market_error": null,
+        "disconnects": 0,
+        "recoveries": 0,
+        "execution_status": "COMPLETED"
+      }
+    },
+    "malaysia_release_and_baseline_disk_bytes": {
+      "alpaca_market": 580317184,
+      "tradfi_observations": 32870400,
+      "binance_release": 44291002,
+      "alpaca_release": 520658228,
+      "observer_release": 186885156,
+      "binance_backup_root": 471635438,
+      "alpaca_backup_root": 1843277772,
+      "journald": 562036736
+    }
+  },
+  "soak": {
+    "scope": "healthy mixed-revision runtime",
+    "t0_utc": "2026-11-27T15:23:57.852917+00:00",
+    "status_as_of_utc": "2026-11-27T18:43:59.040316+00:00",
+    "observed_seconds": 12001.187399,
+    "SOAK_24H": {
+      "status": "IN_PROGRESS_MIXED_REVISION",
+      "eligible_at_utc": "2026-11-28T15:23:57.852Z"
+    },
+    "SOAK_72H": {
+      "status": "IN_PROGRESS_MIXED_REVISION",
+      "eligible_at_utc": "2026-11-30T15:23:57.852Z"
+    },
+    "SOAK_7D": {
+      "status": "IN_PROGRESS_MIXED_REVISION",
+      "eligible_at_utc": "2026-12-04T15:23:57.852Z"
+    },
+    "target_revision_all_three_components": "NOT_STARTED",
+    "natural_first_week_session_observed": false
+  }
+}
