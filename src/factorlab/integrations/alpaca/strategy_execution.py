@@ -3,6 +3,7 @@ from decimal import Decimal as D
 
 from factorlab.strategies.protocol import read_decision, validate_binding
 from factorlab.trading.contracts import TERMINAL
+from factorlab.trading.portfolio_execution import plan_identity
 from factorlab.trading.storage import decode, dumps
 from hashlib import sha256
 from dataclasses import asdict
@@ -65,6 +66,17 @@ class AlpacaDecisionExecution:
         if child['uncertain'] or child['record'].snapshot.status not in TERMINAL:
             raise TimeoutError('instance cancellation awaits original-order reconciliation')
 
+    @staticmethod
+    def plan_key(receipt):
+        return (receipt['event']['context']['execution_session'],
+                receipt['package_id'] + ':' + receipt['event_id'])
+
+    @classmethod
+    def plan_id(cls, receipt):
+        binding = receipt['binding']
+        session, rebalance_id = cls.plan_key(receipt)
+        return plan_identity(binding['account_id'], binding['instance_id'], session, rebalance_id)
+
     def execute(self, receipt):
         binding = receipt['binding']
         validate_binding(binding)
@@ -94,9 +106,9 @@ class AlpacaDecisionExecution:
             symbol: D(str(factor))
             for symbol, factor in self.spec.execution.get('economic_multipliers', {}).items()
         }
+        session, rebalance_id = self.plan_key(receipt)
         self.executor.create(account_id=binding['account_id'], strategy_id=binding['instance_id'],
-            strategy_version=self.spec.version, trading_session=event['context']['execution_session'],
-            rebalance_id=receipt['package_id'] + ':' + receipt['event_id'],
+            strategy_version=self.spec.version, trading_session=session, rebalance_id=rebalance_id,
             weights=weights, owned_symbols=(tuple(intent.instrument_id for intent, _ in direct)
                 if direct is not None else tuple(weights if deltas is None else deltas)), now=self.clock(),
             economic_multipliers=multipliers or None,

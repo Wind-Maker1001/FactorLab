@@ -155,6 +155,7 @@ def build_portfolio_report(
     initial_capital: Decimal | None = None,
     corporate_actions: Sequence[Mapping] = (),
     quote_currency: str = 'USD',
+    fees_in_basis: bool = True,
 ) -> PortfolioReport:
     """Report one accounting interval from explicit owned basis and broker facts.
 
@@ -246,7 +247,10 @@ def build_portfolio_report(
         owned = inventory.get(intent.instrument_id, OwnedPosition(ZERO, ZERO))
         pnl = ZERO
         if intent.side == Side.BUY:
-            updated = OwnedPosition(owned.quantity + quantity, owned.cost_basis + amount + fee)
+            updated = OwnedPosition(owned.quantity + quantity,
+                                    owned.cost_basis + amount + (fee if fees_in_basis else ZERO))
+            if not fees_in_basis:
+                pnl = -fee
         else:
             if quantity > owned.quantity:
                 raise ValueError("sell exceeds explicitly owned inventory")
@@ -292,8 +296,8 @@ def build_portfolio_report(
         raise ValueError('duplicate settlement cash balance')
     cash = settlement[0].total if settlement else ZERO
     available = settlement[0].available if settlement else ZERO
-    decimal_value(cash, "official cash")
-    decimal_value(available, "available cash")
+    signed_decimal_value(cash, "report cash")
+    signed_decimal_value(available, "report available cash")
     if len({item.adjustment_id for item in adjustments}) != len(adjustments):
         raise ValueError("duplicate research adjustment")
     adjustment = sum((item.amount for item in adjustments), ZERO)

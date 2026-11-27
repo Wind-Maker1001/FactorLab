@@ -26,6 +26,7 @@ class DemoInstanceOwner:
             store, quote_currency='USDT', clock=session._now)
         execution = DemoInstanceExecutionAdapter(session, executor=executor)
         owner = cls(session, execution)
+        executor.capital.pending_commitments = execution.pending_commitments
         def admitted_capability(intent, ownership):
             authorization, guard = capability(intent, ownership)
             def admitted_guard(method, params, plan):
@@ -36,6 +37,10 @@ class DemoInstanceOwner:
             return authorization, admitted_guard
         executor.adapter.capability = admitted_capability
         return owner
+
+    @property
+    def capital(self):
+        return self.execution.executor.capital
 
     def attach(self, runtime, deployment):
         view = runtime.store
@@ -51,6 +56,9 @@ class DemoInstanceOwner:
     def before_decision(self, instance_id):
         runtime, deployment = self.instances[instance_id]
         view = runtime.store
+        binding = view.binding()
+        if self.execution.executor.store.capital_balance(binding['account_id'], instance_id)[3]:
+            return False
         if view.pending() is not None or view.activation_callback() is not None:
             deployment.step()
             return False
@@ -103,27 +111,35 @@ class DemoInstanceOwner:
             raise SafetyBlocked('task requires one qualified instance allocation')
         configured = candidates[0]
         binding = configured['binding']
-        budget = Decimal(task['equity_usdt'])
-        if (budget > configured['allocation']['budget_usdt']
-                or not set(task['weights']) <= set(configured['symbols'])):
-            raise SafetyBlocked('task exceeds funded instance declaration')
-        receipt = dict(binding=binding, package_id='mailbox-target-v1', event_id=task['task_id'],
-            input_identity=identity(task), event=dict(task=task),
-            decision=dict(kind='target_weights', targets={symbol: Decimal(weight) * budget /
-                configured['allocation']['budget_usdt'] for symbol, weight in task['weights'].items()},
-                orders=[], cancellations=[], state={}))
-        decision_id = 'demo:decision:' + identity((binding['instance_id'], receipt['package_id'], receipt['event_id']))
+        package_id = 'mailbox-target-v1'
+        decision_id = 'demo:decision:' + identity((binding['instance_id'], package_id, task['task_id']))
         existing = self.execution.store.db.execute(
-            'SELECT completed FROM demo_instance_outbox WHERE id=?', (decision_id,)).fetchone()
-        if existing is None and utc_instant(task['valid_until']) <= self.session._now():
-            return 'REJECTED', dict(reason='EXPIRED', journal=decision_id)
+            'SELECT completed,payload FROM demo_instance_outbox WHERE id=?', (decision_id,)).fetchone()
+        expired = utc_instant(task['valid_until']) <= self.session._now()
         if existing is not None:
-            self.execution.execute(receipt)
+            saved = decode(json.loads(existing[1]))
+            if saved['receipt']['input_identity'] != identity(task):
+                raise SafetyBlocked('decision identity has conflicting content')
             if existing[0]:
-                return ('REJECTED' if existing[0] == 2 else 'COMPLETED'), dict(journal=decision_id)
-        if utc_instant(task['valid_until']) <= self.session._now():
-            return 'RECONCILING', dict(reason='EXPIRED_INFLIGHT', journal=decision_id)
-        if existing is None:
+                result = dict(journal=decision_id)
+                if 'rejection_reason' in saved:
+                    result['reason'] = saved['rejection_reason']
+                return ('REJECTED' if existing[0] == 2 else 'COMPLETED'), result
+            if expired:
+                return 'RECONCILING', dict(reason='EXPIRED_INFLIGHT', journal=decision_id)
+        else:
+            if expired:
+                return 'REJECTED', dict(reason='EXPIRED', journal=decision_id)
+            budget = Decimal(task['equity_usdt'])
+            allocation = self.execution.executor.store.allocation(binding['account_id'], binding['instance_id'])
+            available = allocation['capital']
+            if (budget > available or available <= 0
+                    or not set(task['weights']) <= set(configured['symbols'])):
+                raise SafetyBlocked('task exceeds funded instance declaration')
+            receipt = dict(binding=binding, package_id=package_id, event_id=task['task_id'],
+                input_identity=identity(task), event=dict(task=task),
+                decision=dict(kind='target_weights', targets={symbol: Decimal(weight)
+                    for symbol, weight in task['weights'].items()}, orders=[], cancellations=[], state={}))
             self.execution.execute(receipt)
         return 'ACCEPTED', dict(journal=decision_id)
 
@@ -137,15 +153,26 @@ class DemoInstanceOwner:
         from factorlab.trading.portfolio_execution import ExecutionQuote, InstrumentRules
         from factorlab.errors import DataQualityError
         from .demo_market_feed import FeedPaused
+        from factorlab.trading.capital_cli import process_command
+        process_command(self.capital, self.session.adapter.account_id)
         ready = {instance_id: self.before_decision(instance_id)
                  for instance_id in tuple(self.instances)}
         pending = self.execution.store.db.execute(
             'SELECT id,payload FROM demo_instance_outbox WHERE completed=0').fetchall()
         accepted = {decision_id: decode(json.loads(raw)) for decision_id, raw in pending}
-        eligible = set(accepted)
-        if ready:
-            eligible = {decision_id for decision_id, decision in accepted.items()
-                        if ready.get(decision['receipt']['binding']['instance_id'], True)}
+        capital = self.execution.executor.store
+        retired, eligible = [], set()
+        for decision_id, decision in accepted.items():
+            binding = decision['receipt']['binding']
+            instance = binding['instance_id']
+            if capital.capital_balance(binding['account_id'], instance)[3]:
+                retired.append((decision_id,))
+            elif ready.get(instance, True):
+                eligible.add(decision_id)
+        if retired:
+            with self.execution.store.transaction():
+                self.execution.store.db.executemany(
+                    'UPDATE demo_instance_outbox SET completed=2 WHERE id=?', retired)
         if not eligible:
             return {}
         symbols = {intent.instrument_id for decision_id in eligible

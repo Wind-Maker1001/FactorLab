@@ -191,3 +191,15 @@ Band (V48/V50: MA28, 21日波动带 0.5*vol, QQQ>MA63 约束, 市场宽度>=2/3 
 - **合并后联合回归结果**：
   - Python 3.13.9 全量套件（`test_external_strategy`、`test_s04_package_failures`、`test_alpaca_v179_v182_runtime`、`test_alpaca_instance_switch`、`test_strategy_management_v2`、`test_strategy_management_recovery`、`test_v179_v182_equivalence`、`test_p10_04_external_validation`、`test_v69_equivalence`）：**116 passed, 0 failed**。
   - Python 3.14 分发构建、清单巡检与 23 项归档攻击拒绝扫描全部通过。
+
+## 12. P10-07 动态资本联合集成
+
+集成基线：P10-03 `fc5acdb1982730122720c3ab1834b8239d048b21`，合入 main 的 P10-07 合并提交 `5a1be4d34f6222c186937bea3ac7c90b9d675a14`。保留原生策略、静态工件校验与兼容带仓月度更新，以及动态资本、计划级承诺、订单预留与重启恢复。
+
+带仓模型更新联合用例已通过（Python 3.13，1 passed）：追加 1,000 USD、撤回 500 USD，切换及激活中断重启后当前资本保持 10,500 USD，原 allocation_id、持仓、资金事件与流量调整绩效保持正确，V69 的资金和持仓不变。未生成子单的买入计划在切换前阻止撤资，部署对账将其明确持久终止，保留原请求且不新增订单；未确认／部分成交订单继续阻塞切换。新增用例首次在测试断言处失败：`allocation_basis` 按合同保留初始 10,000 USD，而非当前 10,500 USD；修正断言后复验通过，分别验证不可变资格基准和当前运行资本。扩大 Alpaca 相邻回归已通过（Python 3.13，22 passed），覆盖 V179/V182 与 V69 共存、动态资本、待执行资金承诺、部署切换与资本管理；新增联合场景另行复验通过。
+
+已完成：Python 3.14 的 Alpaca 待执行承诺、策略执行与资本命令恢复套件 12 passed；Python 3.13 的原生信号／独立执行等价、无状态重启及跨月边界定向套件 8 passed。原生信号与独立执行等价仅对受影响路径复验，不无条件重跑全部历史研究。
+
+本地独立代码审查已完成，未报告可确认的问题。审查对象为 P10-03 `fc5acdb1982730122720c3ab1834b8239d048b21` 合入 main `5a1be4d34f6222c186937bea3ac7c90b9d675a14` 后的未提交工作树；审查标识 `aa67659f036d069bf`（high）。范围涵盖三个 Alpaca 集成文件、包加载与部署的兼容工件更新门禁、初始资本资格与当前资本执行的区分，以及资本／会计／执行和 Binance 宿主相关删除行为。特别检查终态订单门禁、计划级承诺、正式订单预留、恢复及实例隔离。此记录为本地独立审查，不是远端 Codex 回执；最终提交身份将在提交后关联。
+
+TODO: 在远端 Codex 额度恢复后，对本轮最终 HEAD 补充远端复审。

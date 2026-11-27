@@ -47,8 +47,7 @@ def adopt_allocation(executor, *, account_id, strategy_id, allocation_id, capita
         initial_cash = current_cash - store.cash_flow(account_id, strategy_id)
         if initial_cash < ZERO:
             raise ValueError('existing postings imply a negative initial cash contribution')
-        allocated = sum((Decimal(amount) for amount, in store.db.execute(
-            'SELECT capital FROM portfolio_allocations WHERE account=?', (account_id,))), ZERO)
+        allocated = store.allocated_capital(account_id)
         policy = store.db.execute('SELECT budget FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
         if allocated + capital > official_equity or (policy is not None and allocated + capital > Decimal(policy[0])):
             raise ValueError('adoption exceeds account capital budget')

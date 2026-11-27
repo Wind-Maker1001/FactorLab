@@ -980,6 +980,25 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
             break
     assert host.state['instances']['V69_CAUSAL']['state'] == 'WEEK_COMPLETE'
     assert host.state['instances']['V179_TREND']['state'] == 'RUNNING'
+    account_id = b_v179['account_id']
+    owner = b_v179['instance_id']
+    native_cash = host.store.cash(account_id, 'V69_CAUSAL')
+    native_holdings = dict(host.store.holdings(account_id, 'V69_CAUSAL'))
+    cash_before_funding = host.store.cash(account_id, owner)
+    for event_id, source, destination, amount in (
+        ('monthly-model-contribution', None, owner, D('1000')),
+        ('monthly-model-withdrawal', owner, None, D('500')),
+    ):
+        change = host.capital.change(account_id=account_id, event_id=event_id,
+            source=source, destination=destination, amount=amount)
+        assert change.status == 'COMPLETE' and change.applied == amount
+    assert host.store.cash(account_id, owner) == cash_before_funding + D('500')
+    assert host.store.allocation_basis(account_id, owner)['capital'] == D('10000')
+    assert host.store.allocation(account_id, owner)['capital'] == D('10500')
+    history_before = list(host.capital.history(account_id))
+    performance_before = host.capital.performance(account_id, owner)
+    assert performance_before['returns'].capital_in == D('1000')
+    assert performance_before['returns'].capital_out == D('500')
     holdings_before = dict(host.store.holdings('paper-p1-refresh', 'V179_TREND'))
     cash_before = host.store.cash('paper-p1-refresh', 'V179_TREND')
     ckpt_before = dict(host.views['V179_TREND'].checkpoint())
@@ -989,6 +1008,20 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
     assert len([s for s, q in holdings_before.items() if q > 0]) >= 2
     assert ckpt_before['checkpoint']['last_week'] == [2026, 40]
     assert ckpt_before['checkpoint']['last_ridge_month'] == '2026-09'
+
+    pending_plan = host.runner.executor.create(account_id=account_id, strategy_id=owner,
+        strategy_version=host.instances[owner].spec.version,
+        trading_session='2026-09-28', rebalance_id='before-monthly-refresh',
+        weights={}, owned_symbols=('AAPL',), quantity_deltas={'AAPL': D('1')},
+        now=tick_clock())
+    pending_request = host.store.plan(pending_plan)['request']
+    assert host.pending_commitments(account_id) == {owner: None}
+    blocked_withdrawal = host.capital.change(account_id=account_id,
+        event_id='withdraw-before-monthly-reconciliation', source=owner, destination=None,
+        amount=D('1'))
+    assert blocked_withdrawal.status == 'INSUFFICIENT_CAPITAL'
+    assert blocked_withdrawal.applied == 0
+    history_before = list(host.capital.history(account_id))
 
     # --- Step 2: Order-reconciliation boundary (unconfirmed/untracked & open partial orders MUST block refresh) ---
     # 2a. Simulate an untracked broker open order -> reconcile() reports untracked_orders -> MUST block!
@@ -1058,6 +1091,22 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
     assert host.store.cash('paper-p1-refresh', 'V179_TREND') == cash_before
     assert host.views['V179_TREND'].checkpoint() == ckpt_before
     assert host.views['V179_TREND'].snapshot()['watermark'] == watermark_before
+    allocation = host.instances[owner].allocation(adapter.recover())
+    assert allocation['allocation_id'] == b_v179['allocation_id']
+    assert allocation['capital'] == D('10500')
+    assert host.instances[owner].runtime.adapter.allocation['capital'] == D('10000')
+    settled_plan = host.store.plan(pending_plan)
+    assert settled_plan['phase'] == 'COMPLETE' and settled_plan['abandoned']
+    assert settled_plan['request'] == pending_request
+    assert host.store.orders(pending_plan) == []
+    assert list(host.capital.history(account_id)) == history_before
+    performance_after = host.capital.performance(account_id, owner)
+    for key in ('realized_pnl', 'unrealized_pnl', 'execution_fees', 'funding', 'corporate_cash_flow'):
+        assert performance_after[key] == performance_before[key]
+    for key in ('initial_capital', 'capital_in', 'capital_out', 'absolute_pnl', 'twr'):
+        assert getattr(performance_after['returns'], key) == getattr(performance_before['returns'], key)
+    assert host.store.cash(account_id, 'V69_CAUSAL') == native_cash
+    assert host.store.holdings(account_id, 'V69_CAUSAL') == native_holdings
 
     # --- Step 4: Next natural-week open (2026-10-05) uses NEW 2026-10 model; old decisions retain pkg_sep ---
     clock_state[0] = datetime(2026, 10, 5, 13, 35, 0, tzinfo=timezone.utc)
