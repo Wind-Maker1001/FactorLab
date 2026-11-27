@@ -1,0 +1,1085 @@
+{
+  "captured_at_utc": "2026-11-26T15:36:02.607889+00:00",
+  "deployment_sha": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+  "observation_windows": {
+    "t0_utc": "2026-11-26T15:36:02.607889+00:00",
+    "window_24h_ends_utc": "2026-11-27T15:36:02.607889+00:00",
+    "window_72h_ends_utc": "2026-11-29T15:36:02.607889+00:00",
+    "window_7d_ends_utc": "2026-12-03T15:36:02.607889+00:00",
+    "status": "IN_PROGRESS_NOT_YET_ELAPSED"
+  },
+  "host": {
+    "hostname": "factorlab-demo-01",
+    "kernel": "7.0.0-1020-azure",
+    "arch": "x86_64",
+    "uptime": "15:36:02 up 3 days, 23:58,  1 user,  load average: 1.20, 1.78, 1.17",
+    "memory_free_m": "total        used        free      shared  buff/cache   available\nMem:             887         482           9           3         420         404\nSwap:           2047         522        1525",
+    "disk_root": {
+      "total_bytes": 65445814272,
+      "used_bytes": 29005422592,
+      "free_bytes": 36423614464
+    },
+    "disk_usage_percent": 44.32,
+    "dir_sizes": {
+      "/opt/factorlab": "14G",
+      "/opt/factorlab-alpaca": "4.6G",
+      "/var/lib/factorlab-demo": "83M",
+      "/var/lib/factorlab-alpaca-paper": "499M",
+      "/var/lib/factorlab-tradfi-observer": "21M",
+      "/var/backups/factorlab-demo": "366M",
+      "/var/backups/factorlab-alpaca-paper": "667M",
+      "/var/log": "1.1G"
+    },
+    "process_resources": [
+      "PID USER     %CPU %MEM   RSS    VSZ     ELAPSED COMMAND",
+      " 767167 factorl+  5.1  3.7 34468 1110760      03:22 python",
+      "    202 root      0.0  3.0 27332 289004  3-23:58:30 multipathd",
+      " 767635 factorl+  1.5  2.5 23136 1939616      01:56 python",
+      " 767202 factorl+  0.6  2.1 19248 437192       03:15 python",
+      " 577019 syslog    0.1  2.0 18584 779864    20:11:44 mdsd",
+      " 577693 azureme+  0.3  1.9 17936 1540360   20:11:02 MetricsExtensio",
+      "   8699 root      0.0  1.7 15572  84388  3-22:43:03 systemd-journal",
+      "   1308 root      0.0  1.5 14368 412968  3-23:58:17 python3",
+      " 577989 azureot+  0.3  1.5 13860 1430300   20:10:02 azureotelcollec",
+      " 768319 root      1.0  1.4 12828  31812       00:07 python3",
+      " 768238 azureus+  1.9  1.2 11456  20192       00:09 systemd",
+      "      1 root      0.0  1.1 10764  23076  3-23:58:31 systemd",
+      " 768232 root      0.1  1.1 10500  14748       00:09 sshd",
+      " 577812 root      0.0  1.1 10336 1939928   20:11:02 telegraf"
+    ],
+    "journal_usage": "Archived and active journals take up 161.1M in the file system."
+  },
+  "systemd": {
+    "factorlab-demo-execute.service": {
+      "MainPID": "767167",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python ; argv[]=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_grid_supervisor start --execute ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:32:47 UTC] ; stop_time=[n/a] ; pid=767167 ; code=(null) ; status=0/0 }",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "factorlab-demo-health.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python ; argv[]=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime monitor ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:35:39 UTC] ; stop_time=[Thu 2026-11-26 15:35:41 UTC] ; pid=768125 ; code=exited ; status=0 }",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "factorlab-demo-health.timer": {
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "waiting"
+    },
+    "factorlab-demo-daily-report.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python ; argv[]=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_runtime report --write-report --markdown ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:33:38 UTC] ; stop_time=[Thu 2026-11-26 15:33:41 UTC] ; pid=767445 ; code=exited ; status=0 }",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "factorlab-demo-daily-report.timer": {
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "waiting"
+    },
+    "factorlab-demo-backup.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python ; argv[]=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_cloud_backup run-scheduled --state-root /var/lib/factorlab-demo/execute-state --backup-root /var/backups/factorlab-demo --retention-days 14 --min-valid-copies 1 --recovery-directory /run/factorlab-demo-backup --task-mailbox /var/lib/factorlab-tradfi-observer/task-mailbox/tasks.sqlite3 --drill ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:32:22 UTC] ; stop_time=[Thu 2026-11-26 15:33:36 UTC] ; pid=767046 ; code=exited ; status=0 }",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "factorlab-demo-backup.timer": {
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "waiting"
+    },
+    "factorlab-demo-strategy-deploy.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python ; argv[]=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.azure_strategy_deploy drive --state-root /var/lib/factorlab-demo/execute-state --inbox /var/lib/factorlab-demo/champions --mode hot ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:36:01 UTC] ; stop_time=[Thu 2026-11-26 15:36:03 UTC] ; pid=768234 ; code=exited ; status=0 }",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "factorlab-demo-strategy-deploy.timer": {
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "waiting"
+    },
+    "factorlab-demo-tradfi-observer.service": {
+      "MainPID": "767202",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python ; argv[]=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.tradfi_cloud --state-root /var/lib/factorlab-tradfi-observer --execute-health /var/lib/factorlab-demo/execute-state/cloud-health.json --symbols QQQUSDT SPYUSDT --poll-seconds 30 --task-db /var/lib/factorlab-tradfi-observer/task-mailbox/tasks.sqlite3 ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:32:54 UTC] ; stop_time=[n/a] ; pid=767202 ; code=(null) ; status=0/0 }",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "factorlab-demo-tradfi-health.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python ; argv[]=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.tradfi_cloud --state-root /var/lib/factorlab-tradfi-observer --health ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:35:11 UTC] ; stop_time=[Thu 2026-11-26 15:35:13 UTC] ; pid=767982 ; code=exited ; status=0 }",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "factorlab-demo-tradfi-health.timer": {
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "waiting"
+    },
+    "factorlab-alpaca-paper.service": {
+      "MainPID": "767635",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab-alpaca/current/run ; argv[]=/opt/factorlab-alpaca/current/run ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:34:13 UTC] ; stop_time=[n/a] ; pid=767635 ; code=(null) ; status=0/0 }",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "factorlab-alpaca-paper-health.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecStart": "{ path=/opt/factorlab-alpaca/current/venv/bin/python ; argv[]=/opt/factorlab-alpaca/current/venv/bin/python -m factorlab.integrations.alpaca.cloud_runtime health ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:35:14 UTC] ; stop_time=[Thu 2026-11-26 15:35:15 UTC] ; pid=768004 ; code=exited ; status=0 }",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "factorlab-alpaca-paper-health.timer": {
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "waiting"
+    }
+  },
+  "binance_demo": {
+    "release_path": "{ path=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python ; argv[]=/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/venv/bin/python -m factorlab.integrations.binance_futures_trading.demo_grid_supervisor start --execute ; ignore_errors=no ; start_time=[Thu 2026-11-26 15:32:47 UTC] ; stop_time=[n/a] ; pid=767167 ; code=(null) ; status=0/0 }",
+    "cloud_health": {
+      "account_age_seconds": 1.2285849950276315,
+      "account_recovered": true,
+      "campaign": {
+        "enabled": true,
+        "expires_at": "2026-11-26T18:21:03.644946+00:00",
+        "limits": {
+          "max_loss_usdt": "250",
+          "max_notional_usdt": "7",
+          "max_open_orders": 1,
+          "max_quantity": "0.04",
+          "symbol": "NVDAUSDT"
+        },
+        "post_budget": 4,
+        "posts_consumed": 3,
+        "remaining_posts": 1
+      },
+      "database_bytes": 27475968,
+      "databases": {
+        "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": {
+          "database_bytes": 25628672,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 25628672,
+          "wal_bytes": 0
+        },
+        "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": {
+          "database_bytes": 724992,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 724992,
+          "wal_bytes": 0
+        },
+        "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": {
+          "database_bytes": 24576,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 24576,
+          "wal_bytes": 0
+        },
+        "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": {
+          "database_bytes": 69632,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 69632,
+          "wal_bytes": 0
+        },
+        "grid-preview/grid-supervisor.sqlite3": {
+          "database_bytes": 16384,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 16384,
+          "wal_bytes": 0
+        },
+        "grid-preview/runtime.sqlite3": {
+          "database_bytes": 28672,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 28672,
+          "wal_bytes": 0
+        },
+        "grid-supervisor.sqlite3": {
+          "database_bytes": 172032,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 172032,
+          "wal_bytes": 0
+        },
+        "runtime.sqlite3": {
+          "database_bytes": 339968,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 339968,
+          "wal_bytes": 0
+        },
+        "strategy-deployment.sqlite3": {
+          "database_bytes": 299008,
+          "journal_bytes": 0,
+          "shm_bytes": 32768,
+          "total_bytes": 331776,
+          "wal_bytes": 0
+        },
+        "strategy-dry-run.sqlite3": {
+          "database_bytes": 24576,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 24576,
+          "wal_bytes": 0
+        },
+        "strategy-execute.sqlite3": {
+          "database_bytes": 24576,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 24576,
+          "wal_bytes": 0
+        },
+        "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": {
+          "database_bytes": 53248,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 53248,
+          "wal_bytes": 0
+        },
+        "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": {
+          "database_bytes": 69632,
+          "journal_bytes": 0,
+          "shm_bytes": 0,
+          "total_bytes": 69632,
+          "wal_bytes": 0
+        }
+      },
+      "desired": "RUNNING",
+      "diagnostic": null,
+      "disk_bytes": 65445814272,
+      "disk_free_bytes": 36423577600,
+      "equity": {
+        "availableBalance": "4993.54007223",
+        "initialMargin": "5.93640000",
+        "maintMargin": "0E-8",
+        "marginBalance": "4999.47647223",
+        "openOrderInitialMargin": "5.93640000",
+        "positionInitialMargin": "0E-8",
+        "unrealizedProfit": "0E-8",
+        "walletBalance": "4999.47647223"
+      },
+      "global_budget": {
+        "consumed": {
+          "posts": 125,
+          "submitted_notional": "781.5300000"
+        },
+        "max_loss": "250",
+        "opening_equity": "5000.00000000",
+        "remaining_notional": "499218.4700000",
+        "remaining_posts": 99875,
+        "state": "RUNNING",
+        "total_notional": "500000",
+        "total_orders": 100000
+      },
+      "grid": {
+        "breakout_exit": null,
+        "deployment_id": "fl-d7345f8795464a65-g-0003b",
+        "effective": "RUNNING",
+        "grid_reason": null,
+        "inventory": "0",
+        "last_bar": "2026-11-26 15:36:00+00:00",
+        "live_bar": true,
+        "reason": null,
+        "reservations_count": 0,
+        "running": true,
+        "state": "RUNNING"
+      },
+      "heartbeat_at": 1795707370.9360423,
+      "journals": {
+        "controller": {
+          "allocated_bytes": 25628672,
+          "event_high_watermark": 32773,
+          "files_bytes": {
+            "database": 25628672
+          },
+          "last_transaction_seconds": 0.026648673985619098,
+          "transactions": 172
+        },
+        "protocol": {
+          "allocated_bytes": 724992,
+          "event_high_watermark": 210,
+          "files_bytes": {
+            "database": 724992
+          },
+          "last_transaction_seconds": 0.010826907004229724,
+          "transactions": 237
+        }
+      },
+      "last_exception": "STALE_OR_FUTURE_QUOTE",
+      "last_reconciled_at": "2026-11-26T15:36:10.387379+00:00",
+      "last_recovery_seconds": 0.9305887799710035,
+      "last_valid_market_at": "2026-11-26T15:36:09.371000+00:00",
+      "market_batch_age_seconds": 1.6419789791107178,
+      "mode": "EXECUTE",
+      "nav_usdt": "4999.47647223",
+      "open_orders": [
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-0003b-00000001",
+          "filled_quantity": "0",
+          "order_id": "196095716",
+          "side": "BUY",
+          "status": "NEW",
+          "symbol": "NVDAUSDT"
+        }
+      ],
+      "pid": 767167,
+      "positions": [],
+      "reason": null,
+      "recent_orders": [
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00037-00000001",
+          "exchange_updated_at": "2026-11-25 12:04:04.695000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "146.09000",
+          "order_id": "195680090",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00038-00000001",
+          "exchange_updated_at": "2026-11-25 14:28:06.175000+00:00",
+          "filled_quantity": "0.04",
+          "limit_price": "144.98000",
+          "order_id": "195727991",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00038-00000002",
+          "exchange_updated_at": "2026-11-25 14:31:18.431000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "147.92000",
+          "order_id": "195737138",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00038-00000003",
+          "exchange_updated_at": "2026-11-25 14:31:29.835000+00:00",
+          "filled_quantity": "0.04",
+          "limit_price": "143.22000",
+          "order_id": "195738317",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-00039-00000001",
+          "exchange_updated_at": "2026-11-25 14:59:04.107000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "141.81000",
+          "order_id": "195738545",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-0003a-00000001",
+          "exchange_updated_at": "2026-11-25 15:26:13.494000+00:00",
+          "filled_quantity": "0.04",
+          "limit_price": "143.61000",
+          "order_id": "195745856",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-0003a-00000002",
+          "exchange_updated_at": "2026-11-25 15:29:23.847000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "146.53000",
+          "order_id": "195752086",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-0003a-00000004",
+          "exchange_updated_at": "2026-11-26 15:24:54.471000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "149.51000",
+          "order_id": "196094766",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "CANCELED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-0003a-00000005",
+          "exchange_updated_at": "2026-11-26 15:24:59.123000+00:00",
+          "filled_quantity": "0.04",
+          "limit_price": "149.39000",
+          "order_id": "196095410",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": true,
+          "side": "SELL",
+          "status": "FILLED"
+        },
+        {
+          "client_order_id": "fl-d7345f8795464a65-g-0003b-00000001",
+          "exchange_updated_at": "2026-11-26 15:26:10.579000+00:00",
+          "filled_quantity": "0.00",
+          "limit_price": "148.41000",
+          "order_id": "196095716",
+          "quantity": "0.04",
+          "reconcile_required": false,
+          "reduce_only": false,
+          "side": "BUY",
+          "status": "SUBMITTED"
+        }
+      ],
+      "recovery": {
+        "consecutive_failures": 0,
+        "last_failure_at": "2026-11-26T15:33:59.461614+00:00",
+        "last_failure_reason": "STALE_OR_FUTURE_QUOTE",
+        "last_recovered_at": "2026-11-26T15:34:03.078345+00:00",
+        "recovery_attempts": 1,
+        "startup_recovered": true,
+        "state": "RECOVERED"
+      },
+      "request_failure_rate": 0.0,
+      "requests": {
+        "DELETE": 0,
+        "GET": 717,
+        "POST": 0
+      },
+      "restart_count": 45,
+      "safety_events": {
+        "CLOCK_SKEW": 0,
+        "R13_QUOTE_GAP": 0,
+        "STALE_ACCOUNT": 0,
+        "STALE_POLL": 0
+      },
+      "sidecar_bytes": 32768,
+      "sqlite_integrity_checked_at": 1795707169.9407182,
+      "started_at": 1795707169.9410064,
+      "starts": 46,
+      "state_bytes": 27565755,
+      "status": "RUNNING",
+      "strategy_release": {
+        "active": "legacy-grid",
+        "active_identity": null,
+        "active_protocol": "legacy-grid",
+        "events": [
+          {
+            "at": 1795447526.6496449,
+            "event": "SUCCEEDED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "legacy-grid",
+            "seq": 6,
+            "switch_id": 1,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447531.3154697,
+            "event": "REQUESTED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 7,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447532.4837162,
+            "event": "QUIESCED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 8,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447532.5354218,
+            "event": "SUCCEEDED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 9,
+            "switch_id": 2,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447536.4726553,
+            "event": "REQUESTED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 10,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447538.358302,
+            "event": "QUIESCED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 11,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447538.4102292,
+            "event": "SUCCEEDED",
+            "new": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 12,
+            "switch_id": 3,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447562.134028,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "reason": "STRATEGY_EXCEPTION:ValueError",
+            "seq": 13,
+            "switch_id": 4
+          },
+          {
+            "at": 1795447565.3281448,
+            "event": "ROLLED_BACK",
+            "new": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "old": "2b0a338948e71fb451e7ed00dba9ca07cbea3f5ad1541d6e406d03fa8f299d9b",
+            "seq": 14,
+            "switch_id": 4,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447566.403148,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "reason": "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+            "seq": 15,
+            "switch_id": 5
+          },
+          {
+            "at": 1795447568.2968776,
+            "event": "ROLLED_BACK",
+            "new": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "old": "90b06a6ef9585a13fb9167ae0309b4df037a300568c57aee00adaef83aac6666",
+            "seq": 16,
+            "switch_id": 5,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795447568.6013386,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "reason": "CONFORMANCE_RESTORE_PREVIOUS_STABLE",
+            "seq": 17,
+            "switch_id": 6
+          },
+          {
+            "at": 1795447571.2460508,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "541c31fc66cbcfc625cc8ddcf3bf39a869728867b31accec4f2e60e5f1e3c025",
+            "seq": 18,
+            "switch_id": 6,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795537494.3631723,
+            "event": "REQUESTED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 19,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 23607, \"market\": \"None\"}"
+          },
+          {
+            "at": 1795537497.7330132,
+            "event": "QUIESCED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 20,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 27007, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795537499.5806484,
+            "event": "DRAINING",
+            "reason": "WAIT_TERMINAL_ORDERS",
+            "seq": 21,
+            "switch_id": 7
+          },
+          {
+            "at": 1795537513.383952,
+            "event": "SUCCEEDED",
+            "new": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "old": "legacy-grid",
+            "seq": 22,
+            "switch_id": 7,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795537517.503705,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "reason": "STRATEGY_EXCEPTION:ValueError",
+            "seq": 23,
+            "switch_id": 8
+          },
+          {
+            "at": 1795537520.7636561,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "3588a85c04b9edc5c141605061d75aaaf4ea103593c6b77f4d86420d08ba8baa",
+            "seq": 24,
+            "switch_id": 8,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795538189.931718,
+            "event": "REQUESTED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 25,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27011, \"market\": \"2026-11-24 16:24:00+00:00\"}"
+          },
+          {
+            "at": 1795538195.5632102,
+            "event": "QUIESCED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 26,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27033, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538197.629599,
+            "event": "SUCCEEDED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "legacy-grid",
+            "seq": 27,
+            "switch_id": 9,
+            "watermark": "{\"controller_event\": 27035, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538224.997697,
+            "event": "REQUESTED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 28,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27035, \"market\": \"2026-11-24 16:36:00+00:00\"}"
+          },
+          {
+            "at": 1795538229.5226371,
+            "event": "QUIESCED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 29,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27053, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538230.9457643,
+            "event": "DRAINING",
+            "reason": "WAIT_TERMINAL_ORDERS",
+            "seq": 30,
+            "switch_id": 10
+          },
+          {
+            "at": 1795538236.4945645,
+            "event": "SUCCEEDED",
+            "new": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 31,
+            "switch_id": 10,
+            "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538250.2426474,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "reason": "STRATEGY_EXCEPTION:StrategyWorkerError",
+            "seq": 32,
+            "switch_id": 11
+          },
+          {
+            "at": 1795538254.2052615,
+            "event": "ROLLED_BACK",
+            "new": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "old": "66eed5f99efe89184e950b4c7860b8ccb198c922944663162cdcc7f6172514c4",
+            "seq": 33,
+            "switch_id": 11,
+            "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          },
+          {
+            "at": 1795538262.643538,
+            "event": "ROLLBACK_REQUESTED",
+            "new": "legacy-grid",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "reason": "P8_S04_RESTORE_LEGACY_1",
+            "seq": 34,
+            "switch_id": 12
+          },
+          {
+            "at": 1795538266.8944693,
+            "event": "ROLLED_BACK",
+            "new": "legacy-grid",
+            "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+            "seq": 35,
+            "switch_id": 12,
+            "watermark": "{\"controller_event\": 27062, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+          }
+        ],
+        "id": 1,
+        "previous": null,
+        "stable": "legacy-grid",
+        "switch": {
+          "boot": "",
+          "created": 1795538262.6431358,
+          "id": 12,
+          "mode": "hot",
+          "new": "legacy-grid",
+          "old": "a46d8cb1d5a89b463e1759ad9d7e3d6e484cd2f84641ba43cb01af7658208726",
+          "phase": "ROLLED_BACK",
+          "policy": "wait_flat",
+          "reason": null,
+          "selection": null,
+          "updated": 1795538266.8944473,
+          "watermark": "{\"controller_event\": 27059, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+        },
+        "watermark": "{\"controller_event\": 27062, \"market\": \"2026-11-24 16:37:00+00:00\"}"
+      },
+      "systemd_unit": "factorlab-demo-execute.service",
+      "unknown_count": 0,
+      "unknown_orders": [],
+      "version": 1
+    },
+    "official_account": {
+      "canTrade": true,
+      "totalWalletBalance": "4999.47647223",
+      "totalUnrealizedProfit": "0.00000000",
+      "totalMarginBalance": "4999.47647223",
+      "totalPositionInitialMargin": "0.00000000",
+      "totalOpenOrderInitialMargin": "5.93640000",
+      "availableBalance": "4993.54007223",
+      "positions": [],
+      "open_orders": [
+        {
+          "orderId": 196095716,
+          "symbol": "NVDAUSDT",
+          "status": "NEW",
+          "clientOrderId": "fl-d7345f8795464a65-g-0003b-00000001",
+          "price": "148.41000",
+          "avgPrice": "0",
+          "origQty": "0.04",
+          "executedQty": "0",
+          "cumQuote": "0.0000000",
+          "timeInForce": "GTC",
+          "type": "LIMIT",
+          "reduceOnly": false,
+          "closePosition": false,
+          "side": "BUY",
+          "positionSide": "BOTH",
+          "stopPrice": "0",
+          "workingType": "CONTRACT_PRICE",
+          "priceProtect": false,
+          "origType": "LIMIT",
+          "priceMatch": "NONE",
+          "selfTradePreventionMode": "EXPIRE_MAKER",
+          "goodTillDate": 0,
+          "time": 1795706770579,
+          "strategyType": "",
+          "updateTime": 1795706770579
+        }
+      ],
+      "recent_nvda_orders": [
+        {
+          "orderId": 195738545,
+          "clientOrderId": "fl-d7345f8795464a65-g-00039-00000001",
+          "side": "BUY",
+          "price": "141.81000",
+          "origQty": "0.04",
+          "executedQty": "0",
+          "status": "CANCELED",
+          "reduceOnly": false,
+          "updateTime": 1795618744107
+        },
+        {
+          "orderId": 195745856,
+          "clientOrderId": "fl-d7345f8795464a65-g-0003a-00000001",
+          "side": "BUY",
+          "price": "143.61000",
+          "origQty": "0.04",
+          "executedQty": "0.04",
+          "status": "FILLED",
+          "reduceOnly": false,
+          "updateTime": 1795620373494
+        },
+        {
+          "orderId": 195752086,
+          "clientOrderId": "fl-d7345f8795464a65-g-0003a-00000002",
+          "side": "SELL",
+          "price": "146.53000",
+          "origQty": "0.04",
+          "executedQty": "0",
+          "status": "CANCELED",
+          "reduceOnly": true,
+          "updateTime": 1795620563847
+        },
+        {
+          "orderId": 196094766,
+          "clientOrderId": "fl-d7345f8795464a65-g-0003a-00000004",
+          "side": "SELL",
+          "price": "149.51000",
+          "origQty": "0.04",
+          "executedQty": "0",
+          "status": "CANCELED",
+          "reduceOnly": true,
+          "updateTime": 1795706694471
+        },
+        {
+          "orderId": 196095410,
+          "clientOrderId": "fl-d7345f8795464a65-g-0003a-00000005",
+          "side": "SELL",
+          "price": "149.39000",
+          "origQty": "0.04",
+          "executedQty": "0.04",
+          "status": "FILLED",
+          "reduceOnly": true,
+          "updateTime": 1795706699123
+        },
+        {
+          "orderId": 196095716,
+          "clientOrderId": "fl-d7345f8795464a65-g-0003b-00000001",
+          "side": "BUY",
+          "price": "148.41000",
+          "origQty": "0.04",
+          "executedQty": "0",
+          "status": "NEW",
+          "reduceOnly": false,
+          "updateTime": 1795706770579
+        }
+      ]
+    },
+    "ledgers": {
+      "protocol_order_summary": {
+        "NVDAUSDT:REJECTED:reconcile=False": 2,
+        "NVDAUSDT:FILLED:reconcile=False": 56,
+        "NVDAUSDT:CANCELED:reconcile=False": 54,
+        "QQQUSDT:FILLED:reconcile=False": 4,
+        "SPYUSDT:FILLED:reconcile=False": 4,
+        "QQQUSDT:CANCELED:reconcile=False": 1,
+        "SPYUSDT:CANCELED:reconcile=False": 1,
+        "NVDAUSDT:SUBMITTED:reconcile=False": 1
+      },
+      "protocol_funding_rows": 32,
+      "controller_events": 32773,
+      "static_shared_allocation": "{\"map\":[[\"grid\",[\"NVDAUSDT\"]],[\"portfolio\",[\"QQQUSDT\",\"SPYUSDT\"]],[\"grid_budget\",{\"decimal\":\"7\"}],[\"portfolio_budget\",{\"decimal\":\"20\"}]]}",
+      "runtime_dispatches_by_method": {
+        "DELETE": 56,
+        "POST": 125
+      },
+      "continuous_authorization": {
+        "version": 1,
+        "id": "continuous-6a19fadf65894532bae1459f2be8314c",
+        "state": "RUNNING",
+        "journal_id": "eb66189ca89a5d1f8253a4e35c66bd12",
+        "account_id": "DEMO:FactorLab-Demo:91f3abbe76b43d3fb3b7c83a881ddbac90109ff8ec1201a1dd0cf216660da077",
+        "account_configuration": {
+          "symbol": "NVDAUSDT",
+          "position_mode": "ONE_WAY",
+          "leverage": 1,
+          "margin_type": "CROSSED"
+        },
+        "policy": "nvda-long-inside-limit-v1",
+        "prefix": "fl-d7345f8795464a65",
+        "opening_equity": "5000.00000000",
+        "max_loss": "250",
+        "total_orders": 100000,
+        "total_notional": "500000",
+        "seconds": 10800,
+        "orders": 4,
+        "stop_epoch": "369cc28af3f949ce994ab459c425a0b2",
+        "budget_version": 2
+      },
+      "continuous_account": {
+        "loss": "0.52352777",
+        "exposure": "0",
+        "observed_at": "2026-11-26T15:36:09.784404+00:00"
+      },
+      "strategy_deployment_tables": {
+        "activation_callbacks": 0,
+        "decisions": 0,
+        "deployment": 1,
+        "deployment_bindings": 3,
+        "instance_adoptions": 0,
+        "instance_checkpoints": 0,
+        "instance_decisions": 0,
+        "instance_deployment": 0,
+        "instance_deployment_bindings": 0,
+        "instance_dispatches": 0,
+        "instance_migrations": 0,
+        "instance_runtime_bindings": 0,
+        "instance_strategy_orders": 0,
+        "instance_switch_events": 0,
+        "instance_switches": 0,
+        "packages": 6,
+        "strategy_management_schema": 2,
+        "strategy_orders": 1,
+        "strategy_registry": 1,
+        "switch_events": 35,
+        "switches": 12
+      }
+    }
+  },
+  "alpaca_paper": {
+    "current_release": "/opt/factorlab-alpaca/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+    "previous_release": "/opt/factorlab-alpaca/releases/ea9cbbdd7519e5400df097e5661b0d6c47b6c4da",
+    "health": {
+      "account_recovered": true,
+      "error": null,
+      "execution": {
+        "enabled": true,
+        "state": "IDLE",
+        "task": null
+      },
+      "healthy": true,
+      "heartbeat": "2026-11-26T15:35:53.452726+00:00",
+      "last_recovery_at": "2026-11-26T15:35:38.689821+00:00",
+      "market": {
+        "error": null,
+        "last_event_at": null,
+        "last_rest_at": "2026-11-26T15:35:33.485608+00:00",
+        "recoveries": 3,
+        "state": "CONNECTED"
+      },
+      "market_available": true,
+      "market_rest": {
+        "clock_open": false,
+        "feed": "iex",
+        "fresh_quotes": false,
+        "missing_symbols": [],
+        "received_at": "2026-11-26T15:35:44.592829+00:00"
+      },
+      "mode": "EXECUTE",
+      "pid": 767635,
+      "revision": "12335ebd56fda7a2d0e709176806d96e3e7b7b67",
+      "schedule": {
+        "due": false,
+        "execution_session": "2026-11-23",
+        "market_open": false,
+        "next_open": "2026-11-27T14:30:00+00:00",
+        "signal_cutoff": "2026-11-20",
+        "week": "2026-11-23"
+      },
+      "started_at": "2026-11-26T15:34:24.720993+00:00",
+      "starts": 22,
+      "strategy": {
+        "frequency": "natural-week",
+        "name": "v69-original",
+        "reason": null,
+        "state": "WAITING_NEXT_WEEK"
+      },
+      "trade_stream": "CONNECTED"
+    },
+    "official_account": {
+      "id": "ec3132ce-9768-4c6f-a640-050119d464c4",
+      "account_number": "<REDACTED_PAPER_ACCOUNT_NUMBER>",
+      "status": "ACTIVE",
+      "currency": "USD",
+      "cash": "100000.05",
+      "equity": "100000.05",
+      "buying_power": "200000.1",
+      "portfolio_value": "100000.05",
+      "positions": [],
+      "open_orders": []
+    },
+    "ledgers": {
+      "account_db_counts": {
+        "alpaca_meta": 8,
+        "alpaca_orders": 19,
+        "alpaca_activities": 18
+      },
+      "portfolio_db_counts": {
+        "snapshot": 0,
+        "events": 20,
+        "portfolio_plans": 6,
+        "portfolio_orders": 12,
+        "portfolio_confirmations": 13,
+        "portfolio_allocations": 0,
+        "portfolio_claims": 2,
+        "portfolio_corporate_actions": 0,
+        "capital_accounts": 0,
+        "capital_migrations": 0,
+        "capital_limits": 0,
+        "portfolio_claim_history": 0,
+        "capital_symbols": 0,
+        "capital_symbol_limits": 0,
+        "capital_instances": 0
+      },
+      "deployments_db_counts": {
+        "packages": 1,
+        "deployment": 1,
+        "switches": 0,
+        "switch_events": 0,
+        "strategy_orders": 0,
+        "decisions": 0,
+        "deployment_bindings": 0,
+        "strategy_registry": 2,
+        "instance_deployment": 1,
+        "instance_switches": 0,
+        "instance_switch_events": 0,
+        "instance_deployment_bindings": 0,
+        "instance_strategy_orders": 0,
+        "instance_decisions": 0,
+        "instance_dispatches": 0,
+        "activation_callbacks": 0,
+        "instance_adoptions": 1,
+        "instance_runtime_bindings": 1,
+        "instance_checkpoints": 0,
+        "instance_migrations": 0,
+        "strategy_management_schema": 2
+      },
+      "market_stream_bytes": 521154560
+    }
+  }
+}

@@ -1,0 +1,138 @@
+﻿{
+  "checked_at_utc": "2026-11-26T15:32:01.310542+00:00",
+  "release_file": "/opt/factorlab/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/source/src/factorlab/integrations/binance_futures_trading/demo_symbols.py",
+  "dynamic_symbols": {
+    "NVDAUSDT": {
+      "qualified": true,
+      "leverage": 1,
+      "margin_type": "CROSSED",
+      "tick_size": "0.01000",
+      "step_size": "0.01",
+      "min_qty": "0.01",
+      "min_notional_usdt": "5",
+      "bid": "149.78000",
+      "ask": "149.95000",
+      "mark_price": "150.08292776",
+      "last_funding_rate": "-0.00064119",
+      "hourly_bars_fetched": 26,
+      "grid_7_usdt_affordable": true,
+      "portfolio_20_usdt_affordable": true
+    },
+    "QQQUSDT": {
+      "qualified": true,
+      "leverage": 1,
+      "margin_type": "CROSSED",
+      "tick_size": "0.01000",
+      "step_size": "0.01",
+      "min_qty": "0.01",
+      "min_notional_usdt": "5",
+      "bid": "637.38000",
+      "ask": "637.74000",
+      "mark_price": "638.13742070",
+      "last_funding_rate": "0.00051248",
+      "hourly_bars_fetched": 26,
+      "grid_7_usdt_affordable": true,
+      "portfolio_20_usdt_affordable": true
+    },
+    "SPYUSDT": {
+      "qualified": true,
+      "leverage": 1,
+      "margin_type": "CROSSED",
+      "tick_size": "0.01000",
+      "step_size": "0.01",
+      "min_qty": "0.01",
+      "min_notional_usdt": "5",
+      "bid": "722.34000",
+      "ask": "722.91000",
+      "mark_price": "722.33786503",
+      "last_funding_rate": "0.00093070",
+      "hourly_bars_fetched": 26,
+      "grid_7_usdt_affordable": false,
+      "portfolio_20_usdt_affordable": true
+    },
+    "BTCUSDT": {
+      "qualified": true,
+      "leverage": 20,
+      "margin_type": "CROSSED",
+      "tick_size": "0.10",
+      "step_size": "0.0001",
+      "min_qty": "0.0001",
+      "min_notional_usdt": "50",
+      "bid": "60311.00",
+      "ask": "60392.60",
+      "mark_price": "60321.60530167",
+      "last_funding_rate": "0.00010000",
+      "hourly_bars_fetched": 26,
+      "grid_7_usdt_affordable": false,
+      "portfolio_20_usdt_affordable": false
+    },
+    "ETHUSDT": {
+      "qualified": true,
+      "leverage": 20,
+      "margin_type": "CROSSED",
+      "tick_size": "0.01",
+      "step_size": "0.001",
+      "min_qty": "0.001",
+      "min_notional_usdt": "20",
+      "bid": "1683.89",
+      "ask": "1684.28",
+      "mark_price": "1684.20174419",
+      "last_funding_rate": "0.00010000",
+      "hourly_bars_fetched": 26,
+      "grid_7_usdt_affordable": false,
+      "portfolio_20_usdt_affordable": true
+    }
+  },
+  "adaptive_grids_v2": {
+    "B_FUNDING_SENSITIVE_GRID": {
+      "spec_valid": true,
+      "decision_kind": "orders",
+      "proposed_orders_count": 1,
+      "proposed_orders": [
+        {
+          "side": "BUY",
+          "qty": "0.04",
+          "price": "149.45",
+          "reduce_only": false
+        }
+      ],
+      "checkpoint_persisted": true,
+      "funding_samples_fed": 32
+    },
+    "C_VOL_ADAPTIVE_GRID": {
+      "spec_valid": true,
+      "decision_kind": "orders",
+      "proposed_orders_count": 0,
+      "proposed_orders": [],
+      "checkpoint_persisted": true,
+      "funding_samples_fed": 32
+    }
+  },
+  "capital_policy_verification": {
+    "mode": "SHARED_SAME_DIRECTION",
+    "official_equity_usdt": "4999.47647223",
+    "account_budget_usdt": "27",
+    "grid_allocation_usdt": "7",
+    "portfolio_allocation_usdt": "20",
+    "over_allocation_rejected": "ValueError: allocations exceed static account capital budget",
+    "nvda_shared_owners": [
+      {
+        "account_id": "DEMO:FactorLab-Demo:91f3abbe76b43d3fb3b7c83a881ddbac90109ff8ec1201a1dd0cf216660da077",
+        "symbol": "NVDAUSDT",
+        "strategy_id": "grid-legacy-7",
+        "instance_id": "grid-legacy-7",
+        "allocation_id": "grid-7-usdt",
+        "logical_strategy_id": "grid"
+      },
+      {
+        "account_id": "DEMO:FactorLab-Demo:91f3abbe76b43d3fb3b7c83a881ddbac90109ff8ec1201a1dd0cf216660da077",
+        "symbol": "NVDAUSDT",
+        "strategy_id": "portfolio-20",
+        "instance_id": "portfolio-20",
+        "allocation_id": "portfolio-20-usdt",
+        "logical_strategy_id": "pf"
+      }
+    ],
+    "nvda_default_aggregate_ceiling_usdt": "7"
+  }
+}
