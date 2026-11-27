@@ -1,0 +1,72 @@
+{
+  "protocol": "MC-COLAB-02-v1",
+  "seeds": [
+    104729,
+    130363,
+    155921,
+    181081,
+    205019
+  ],
+  "timing_repeats": 5,
+  "bootstrap_resamples": 199,
+  "input_seed": 1729,
+  "host_memory_budget_mb": 8192,
+  "budget_seconds": 120,
+  "blas_threads": 1,
+  "cells": [
+    {
+      "name": "gbm-100",
+      "model": "gbm",
+      "n_paths": 100,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "gbm-1000",
+      "model": "gbm",
+      "n_paths": 1000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "gbm-10000",
+      "model": "gbm",
+      "n_paths": 10000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "bootstrap-100",
+      "model": "moving_block_bootstrap",
+      "n_paths": 100,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "bootstrap-1000",
+      "model": "moving_block_bootstrap",
+      "n_paths": 1000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "bootstrap-10000",
+      "model": "moving_block_bootstrap",
+      "n_paths": 10000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    }
+  ]
+}

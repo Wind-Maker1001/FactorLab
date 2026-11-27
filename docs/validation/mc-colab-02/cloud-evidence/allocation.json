@@ -1,0 +1,31 @@
+{
+  "commit": "2f9bb3e7fff2d1f94175238cf1d825ea126a3356",
+  "state": "completed",
+  "hardware": {
+    "gpu": "NVIDIA L4, 23034 MiB, 580.82.07",
+    "cpu_count": 12,
+    "python": "3.13.16",
+    "memory": "MemTotal:       55530568 kB\nMemFree:        51202144 kB\nMemAvailable:   53878480 kB\nBuffers:          432108 kB\nCached:          2176380 kB\nSwapCached:            0 kB\nActive:           883920 kB\nInactive:        2305640 kB\nActive(anon):       1512 kB\nInactive(anon):   582060 kB\nActive(file):     882408 kB\nInactive(file):  1723580 kB\nUnevictable:           8 kB\nMlocked:               8 kB\nSwapTotal:             0 kB\nSwapFree:              0 kB\nDirty:               964 kB\nWriteback:             0 kB\nAnonPages:        581308 kB\nMapped:           459824 kB\nShmem:              2472 kB\nKReclaimable:     719696 kB\nSlab:             805544 kB\nSReclaimable:     719696 kB\nSUnreclaim:        85848 kB\nKernelStack:        9552 kB\nPageTables:         8324 kB\nSecPageTables:         0 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    27765284 kB\nCommitted_AS:    4305464 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:       61248 kB\nVmallocChunk:          0 kB\nPercpu:             8960 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:         0 kB\nFilePmdMapped:         0 kB\nCmaTotal:              0 kB\nCmaFree:               0 kB\nUnaccepted:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:      176924 kB\nDirectMap2M:    11354112 kB\nDirectMap1G:    47185920 kB\n"
+  },
+  "cli_version": "Version: 0.8.0",
+  "usage_before": {
+    "balance": 199.35,
+    "rate_per_hour": 0.0,
+    "assignments": 0.0
+  },
+  "usage_allocated": {
+    "balance": 199.35,
+    "rate_per_hour": 2.33,
+    "assignments": 1.0
+  },
+  "usage_after": {
+    "balance": 199.22,
+    "rate_per_hour": 0.0,
+    "assignments": 0.0
+  },
+  "started_at": 1795779562.3550296,
+  "released_at": 1795780159.1818185,
+  "elapsed_seconds": 600.251287233,
+  "released": true,
+  "sessions_after_release": "[colab] No active sessions found on server.\n"
+}

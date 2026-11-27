@@ -1,0 +1,1056 @@
+{
+  "protocol": "MC-COLAB-02-v1",
+  "device": "gpu",
+  "workers": 1,
+  "status": "COMPLETED",
+  "elapsed_seconds": 128.0216791999992,
+  "rows": [
+    {
+      "cell": {
+        "name": "gbm-10m",
+        "model": "gbm",
+        "n_paths": 10000000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 4096,
+        "gpu_memory_limit_mb": 4096
+      },
+      "seed": 104729,
+      "device": "gpu",
+      "repeat": 0,
+      "timing_kind": "cold",
+      "runner_wall_seconds": 5.259527200018056,
+      "external_statistics_seconds": 0.6344124000170268,
+      "paths_per_second": 1901311.5855671724,
+      "path_steps_per_second": 479130519.5629274,
+      "asset_path_steps_per_second": 479130519.5629274,
+      "input_preparation_seconds": 5.809997674077749e-05,
+      "launch_to_first_runner_completion_seconds": 8.700637399975676,
+      "metrics": {
+        "var_0.95": 0.2583411861151286,
+        "cvar_0.95": 0.3160446433715611,
+        "var_0.99": 0.352930635349067,
+        "cvar_0.99": 0.3942478141061667,
+        "loss_probability": 0.4404652,
+        "drawdown_breach_probability": 0.4203446,
+        "drawdown_0.5": 0.1843823972220019,
+        "drawdown_0.95": 0.3379458025263327,
+        "drawdown_0.99": 0.4073306896213948
+      },
+      "intervals": null,
+      "resources": {
+        "sample_interval_seconds": 0.05,
+        "samples": 87,
+        "rss_peak_bytes": 895905792,
+        "cpu_peak_core_equivalents": 1.2751833413248044,
+        "cpu_seconds": 5.125,
+        "device_used_peak_bytes": 2508349440,
+        "device_memory_scope": "whole CUDA device, includes other processes",
+        "gpu": {
+          "name": "NVIDIA GeForce RTX 2070",
+          "uuid": "GPU-2363dc5c-9b8b-af1e-8b7f-f1428c255437",
+          "pci_bus_id": "0000:01:00.0",
+          "driver": "617.42",
+          "total_memory_bytes": 8589934592
+        },
+        "peak_meaning": "sampled lower bound on instantaneous peak"
+      },
+      "engine": {
+        "config": {
+          "model": "gbm",
+          "n_paths": 10000000,
+          "n_steps": 252,
+          "seed": 104729,
+          "dt": 0.003968253968253968,
+          "initial_value": 1.0,
+          "batch_size": 4096,
+          "block_size": 20,
+          "quantiles": [
+            0.01,
+            0.05,
+            0.5,
+            0.95,
+            0.99
+          ],
+          "confidence": 0.95,
+          "drawdown_threshold": 0.2,
+          "save_full_paths": false,
+          "compute": {
+            "device": "gpu",
+            "allow_fallback": false,
+            "gpu_memory_limit_mb": 4096
+          }
+        },
+        "sample_hash": "936418a044a109f2a2e04d98e5e7cd584ab726ec3757c891e094f777a7e3fe3d",
+        "assets": [
+          "0"
+        ],
+        "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+        "compute": {
+          "requested": {
+            "device": "gpu",
+            "allow_fallback": false,
+            "gpu_memory_limit_mb": 4096
+          },
+          "device": "gpu",
+          "backend": "cupy-cuda",
+          "backend_version": "14.2.0",
+          "probe": {
+            "available": true,
+            "reason": null,
+            "version": "14.2.0",
+            "driver_visible": true,
+            "runtime_available": true
+          },
+          "fallback": false,
+          "fallback_reason": null,
+          "gpu_memory_limit_mb": 4096,
+          "gpu_memory_limit_enforced": false,
+          "execution": {
+            "backend": "cupy-cuda",
+            "batch_size": 4096,
+            "private_pool_limit_enforced": true,
+            "private_pool_limit_bytes": 4294967296,
+            "private_pool_peak_bytes": 16585216,
+            "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+            "planned_persistent_bytes": 68656,
+            "planned_bytes_per_path": 53504
+          }
+        },
+        "method_version": 1,
+        "input": {
+          "sample_interval": null,
+          "as_of": null,
+          "correlation_correction": null,
+          "initial_prices": [
+            1.0
+          ],
+          "gbm_parameters": {
+            "drift": [
+              0.05
+            ],
+            "volatility": [
+              0.2
+            ],
+            "correlation": [
+              [
+                1.0
+              ]
+            ]
+          }
+        },
+        "seed": 104729,
+        "rng": "CuPy RandomState/cuRAND XORWOW",
+        "rng_backend": "cupy-cuda",
+        "rng_version": "14.2.0",
+        "python_version": "3.13.9",
+        "numpy_version": "2.3.5",
+        "cuda_runtime_version": 13020,
+        "cuda_driver_version": 13040,
+        "elapsed_seconds": 5.256690600013826,
+        "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+        "risk_definition": {
+          "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+          "horizon_steps": 252,
+          "dt": 0.003968253968253968,
+          "confidence": 0.95,
+          "var_quantile": "linear (Hyndman-Fan type 7)",
+          "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+          "drawdown": "positive fraction below running peak including initial NAV",
+          "breach": "maximum_drawdown strictly greater than threshold",
+          "threshold": 0.2
+        },
+        "portfolio": {
+          "weights": [
+            1.0
+          ],
+          "cash_weight": 0.0,
+          "rebalancing": "each_step",
+          "cash_return": 0,
+          "costs": 0
+        },
+        "assumptions": [
+          "RISK_SCENARIO_ONLY",
+          "NOT_EVENT_DRIVEN_EXECUTION",
+          "constant GBM parameters or stationary resampled historical blocks",
+          "sampling uncertainty excludes model uncertainty"
+        ]
+      },
+      "threadpools": [
+        {
+          "user_api": "blas",
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "prefix": "libscipy_openblas",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\numpy.libs\\libscipy_openblas64_-9e3e5a4229c1ca39f10dc82bba9e2b2b.dll",
+          "version": "0.3.30",
+          "threading_layer": "pthreads",
+          "architecture": "Haswell"
+        },
+        {
+          "user_api": "blas",
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "prefix": "libscipy_openblas",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\scipy.libs\\libscipy_openblas-48c358d105077551cc9cc3ba79387ed5.dll",
+          "version": "0.3.29.dev",
+          "threading_layer": "pthreads",
+          "architecture": "Haswell"
+        },
+        {
+          "user_api": "openmp",
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "vcomp",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\sklearn\\.libs\\vcomp140.dll",
+          "version": null
+        }
+      ],
+      "analytic_reference": {
+        "var_0.95": 0.2584188813849425,
+        "cvar_0.95": 0.3160552827108789,
+        "var_0.99": 0.3529097956539917,
+        "cvar_0.99": 0.39417721386532756,
+        "loss_probability": 0.4403823076297575
+      },
+      "analytic_error": {
+        "var_0.95": -7.76952698139377e-05,
+        "cvar_0.95": -1.0639339317830565e-05,
+        "var_0.99": 2.0839695075269837e-05,
+        "cvar_0.99": 7.060024083915817e-05,
+        "loss_probability": 8.28923702425044e-05
+      }
+    },
+    {
+      "cell": {
+        "name": "gbm-10m",
+        "model": "gbm",
+        "n_paths": 10000000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 4096,
+        "gpu_memory_limit_mb": 4096
+      },
+      "seed": 104729,
+      "device": "gpu",
+      "repeat": 1,
+      "timing_kind": "steady",
+      "runner_wall_seconds": 4.752689600049052,
+      "external_statistics_seconds": 0.5990413000108674,
+      "paths_per_second": 2104071.765994731,
+      "path_steps_per_second": 530226085.03067213,
+      "asset_path_steps_per_second": 530226085.03067213,
+      "input_preparation_seconds": 0.0,
+      "launch_to_first_runner_completion_seconds": null,
+      "metrics": {
+        "var_0.95": 0.2583411861151286,
+        "cvar_0.95": 0.3160446433715611,
+        "var_0.99": 0.352930635349067,
+        "cvar_0.99": 0.3942478141061667,
+        "loss_probability": 0.4404652,
+        "drawdown_breach_probability": 0.4203446,
+        "drawdown_0.5": 0.1843823972220019,
+        "drawdown_0.95": 0.3379458025263327,
+        "drawdown_0.99": 0.4073306896213948
+      },
+      "intervals": null,
+      "resources": {
+        "sample_interval_seconds": 0.05,
+        "samples": 78,
+        "rss_peak_bytes": 896942080,
+        "cpu_peak_core_equivalents": 1.4840600085137894,
+        "cpu_seconds": 4.71875,
+        "device_used_peak_bytes": 2452119552,
+        "device_memory_scope": "whole CUDA device, includes other processes",
+        "gpu": {
+          "name": "NVIDIA GeForce RTX 2070",
+          "uuid": "GPU-2363dc5c-9b8b-af1e-8b7f-f1428c255437",
+          "pci_bus_id": "0000:01:00.0",
+          "driver": "617.42",
+          "total_memory_bytes": 8589934592
+        },
+        "peak_meaning": "sampled lower bound on instantaneous peak"
+      },
+      "engine": {
+        "config": {
+          "model": "gbm",
+          "n_paths": 10000000,
+          "n_steps": 252,
+          "seed": 104729,
+          "dt": 0.003968253968253968,
+          "initial_value": 1.0,
+          "batch_size": 4096,
+          "block_size": 20,
+          "quantiles": [
+            0.01,
+            0.05,
+            0.5,
+            0.95,
+            0.99
+          ],
+          "confidence": 0.95,
+          "drawdown_threshold": 0.2,
+          "save_full_paths": false,
+          "compute": {
+            "device": "gpu",
+            "allow_fallback": false,
+            "gpu_memory_limit_mb": 4096
+          }
+        },
+        "sample_hash": "936418a044a109f2a2e04d98e5e7cd584ab726ec3757c891e094f777a7e3fe3d",
+        "assets": [
+          "0"
+        ],
+        "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+        "compute": {
+          "requested": {
+            "device": "gpu",
+            "allow_fallback": false,
+            "gpu_memory_limit_mb": 4096
+          },
+          "device": "gpu",
+          "backend": "cupy-cuda",
+          "backend_version": "14.2.0",
+          "probe": {
+            "available": true,
+            "reason": null,
+            "version": "14.2.0",
+            "driver_visible": true,
+            "runtime_available": true
+          },
+          "fallback": false,
+          "fallback_reason": null,
+          "gpu_memory_limit_mb": 4096,
+          "gpu_memory_limit_enforced": false,
+          "execution": {
+            "backend": "cupy-cuda",
+            "batch_size": 4096,
+            "private_pool_limit_enforced": true,
+            "private_pool_limit_bytes": 4294967296,
+            "private_pool_peak_bytes": 16585216,
+            "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+            "planned_persistent_bytes": 68656,
+            "planned_bytes_per_path": 53504
+          }
+        },
+        "method_version": 1,
+        "input": {
+          "sample_interval": null,
+          "as_of": null,
+          "correlation_correction": null,
+          "initial_prices": [
+            1.0
+          ],
+          "gbm_parameters": {
+            "drift": [
+              0.05
+            ],
+            "volatility": [
+              0.2
+            ],
+            "correlation": [
+              [
+                1.0
+              ]
+            ]
+          }
+        },
+        "seed": 104729,
+        "rng": "CuPy RandomState/cuRAND XORWOW",
+        "rng_backend": "cupy-cuda",
+        "rng_version": "14.2.0",
+        "python_version": "3.13.9",
+        "numpy_version": "2.3.5",
+        "cuda_runtime_version": 13020,
+        "cuda_driver_version": 13040,
+        "elapsed_seconds": 4.749735099961981,
+        "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+        "risk_definition": {
+          "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+          "horizon_steps": 252,
+          "dt": 0.003968253968253968,
+          "confidence": 0.95,
+          "var_quantile": "linear (Hyndman-Fan type 7)",
+          "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+          "drawdown": "positive fraction below running peak including initial NAV",
+          "breach": "maximum_drawdown strictly greater than threshold",
+          "threshold": 0.2
+        },
+        "portfolio": {
+          "weights": [
+            1.0
+          ],
+          "cash_weight": 0.0,
+          "rebalancing": "each_step",
+          "cash_return": 0,
+          "costs": 0
+        },
+        "assumptions": [
+          "RISK_SCENARIO_ONLY",
+          "NOT_EVENT_DRIVEN_EXECUTION",
+          "constant GBM parameters or stationary resampled historical blocks",
+          "sampling uncertainty excludes model uncertainty"
+        ]
+      },
+      "threadpools": [
+        {
+          "user_api": "blas",
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "prefix": "libscipy_openblas",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\numpy.libs\\libscipy_openblas64_-9e3e5a4229c1ca39f10dc82bba9e2b2b.dll",
+          "version": "0.3.30",
+          "threading_layer": "pthreads",
+          "architecture": "Haswell"
+        },
+        {
+          "user_api": "blas",
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "prefix": "libscipy_openblas",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\scipy.libs\\libscipy_openblas-48c358d105077551cc9cc3ba79387ed5.dll",
+          "version": "0.3.29.dev",
+          "threading_layer": "pthreads",
+          "architecture": "Haswell"
+        },
+        {
+          "user_api": "openmp",
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "vcomp",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\sklearn\\.libs\\vcomp140.dll",
+          "version": null
+        }
+      ],
+      "analytic_reference": {
+        "var_0.95": 0.2584188813849425,
+        "cvar_0.95": 0.3160552827108789,
+        "var_0.99": 0.3529097956539917,
+        "cvar_0.99": 0.39417721386532756,
+        "loss_probability": 0.4403823076297575
+      },
+      "analytic_error": {
+        "var_0.95": -7.76952698139377e-05,
+        "cvar_0.95": -1.0639339317830565e-05,
+        "var_0.99": 2.0839695075269837e-05,
+        "cvar_0.99": 7.060024083915817e-05,
+        "loss_probability": 8.28923702425044e-05
+      }
+    },
+    {
+      "cell": {
+        "name": "gbm-100m",
+        "model": "gbm",
+        "n_paths": 100000000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 4096,
+        "gpu_memory_limit_mb": 4096
+      },
+      "seed": 104729,
+      "device": "gpu",
+      "repeat": 0,
+      "timing_kind": "cold",
+      "runner_wall_seconds": 46.898259399982635,
+      "external_statistics_seconds": 6.149930300016422,
+      "paths_per_second": 2132275.297194442,
+      "path_steps_per_second": 537333374.8929994,
+      "asset_path_steps_per_second": 537333374.8929994,
+      "input_preparation_seconds": 6.930000381544232e-05,
+      "launch_to_first_runner_completion_seconds": 50.2447092999937,
+      "metrics": {
+        "var_0.95": 0.2584199852813761,
+        "cvar_0.95": 0.316058304220799,
+        "var_0.99": 0.35293003880531876,
+        "cvar_0.99": 0.39420860864583085,
+        "loss_probability": 0.44038894,
+        "drawdown_breach_probability": 0.42040799,
+        "drawdown_0.5": 0.18438108458728952,
+        "drawdown_0.95": 0.3379605595815536,
+        "drawdown_0.99": 0.4074026383460901
+      },
+      "intervals": null,
+      "resources": {
+        "sample_interval_seconds": 0.05,
+        "samples": 757,
+        "rss_peak_bytes": 3815870464,
+        "cpu_peak_core_equivalents": 1.2784302429007905,
+        "cpu_seconds": 45.859375,
+        "device_used_peak_bytes": 2317209600,
+        "device_memory_scope": "whole CUDA device, includes other processes",
+        "gpu": {
+          "name": "NVIDIA GeForce RTX 2070",
+          "uuid": "GPU-2363dc5c-9b8b-af1e-8b7f-f1428c255437",
+          "pci_bus_id": "0000:01:00.0",
+          "driver": "617.42",
+          "total_memory_bytes": 8589934592
+        },
+        "peak_meaning": "sampled lower bound on instantaneous peak"
+      },
+      "engine": {
+        "config": {
+          "model": "gbm",
+          "n_paths": 100000000,
+          "n_steps": 252,
+          "seed": 104729,
+          "dt": 0.003968253968253968,
+          "initial_value": 1.0,
+          "batch_size": 4096,
+          "block_size": 20,
+          "quantiles": [
+            0.01,
+            0.05,
+            0.5,
+            0.95,
+            0.99
+          ],
+          "confidence": 0.95,
+          "drawdown_threshold": 0.2,
+          "save_full_paths": false,
+          "compute": {
+            "device": "gpu",
+            "allow_fallback": false,
+            "gpu_memory_limit_mb": 4096
+          }
+        },
+        "sample_hash": "936418a044a109f2a2e04d98e5e7cd584ab726ec3757c891e094f777a7e3fe3d",
+        "assets": [
+          "0"
+        ],
+        "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+        "compute": {
+          "requested": {
+            "device": "gpu",
+            "allow_fallback": false,
+            "gpu_memory_limit_mb": 4096
+          },
+          "device": "gpu",
+          "backend": "cupy-cuda",
+          "backend_version": "14.2.0",
+          "probe": {
+            "available": true,
+            "reason": null,
+            "version": "14.2.0",
+            "driver_visible": true,
+            "runtime_available": true
+          },
+          "fallback": false,
+          "fallback_reason": null,
+          "gpu_memory_limit_mb": 4096,
+          "gpu_memory_limit_enforced": false,
+          "execution": {
+            "backend": "cupy-cuda",
+            "batch_size": 4096,
+            "private_pool_limit_enforced": true,
+            "private_pool_limit_bytes": 4294967296,
+            "private_pool_peak_bytes": 16585216,
+            "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+            "planned_persistent_bytes": 68656,
+            "planned_bytes_per_path": 53504
+          }
+        },
+        "method_version": 1,
+        "input": {
+          "sample_interval": null,
+          "as_of": null,
+          "correlation_correction": null,
+          "initial_prices": [
+            1.0
+          ],
+          "gbm_parameters": {
+            "drift": [
+              0.05
+            ],
+            "volatility": [
+              0.2
+            ],
+            "correlation": [
+              [
+                1.0
+              ]
+            ]
+          }
+        },
+        "seed": 104729,
+        "rng": "CuPy RandomState/cuRAND XORWOW",
+        "rng_backend": "cupy-cuda",
+        "rng_version": "14.2.0",
+        "python_version": "3.13.9",
+        "numpy_version": "2.3.5",
+        "cuda_runtime_version": 13020,
+        "cuda_driver_version": 13040,
+        "elapsed_seconds": 46.85085619997699,
+        "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+        "risk_definition": {
+          "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+          "horizon_steps": 252,
+          "dt": 0.003968253968253968,
+          "confidence": 0.95,
+          "var_quantile": "linear (Hyndman-Fan type 7)",
+          "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+          "drawdown": "positive fraction below running peak including initial NAV",
+          "breach": "maximum_drawdown strictly greater than threshold",
+          "threshold": 0.2
+        },
+        "portfolio": {
+          "weights": [
+            1.0
+          ],
+          "cash_weight": 0.0,
+          "rebalancing": "each_step",
+          "cash_return": 0,
+          "costs": 0
+        },
+        "assumptions": [
+          "RISK_SCENARIO_ONLY",
+          "NOT_EVENT_DRIVEN_EXECUTION",
+          "constant GBM parameters or stationary resampled historical blocks",
+          "sampling uncertainty excludes model uncertainty"
+        ]
+      },
+      "threadpools": [
+        {
+          "user_api": "blas",
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "prefix": "libscipy_openblas",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\numpy.libs\\libscipy_openblas64_-9e3e5a4229c1ca39f10dc82bba9e2b2b.dll",
+          "version": "0.3.30",
+          "threading_layer": "pthreads",
+          "architecture": "Haswell"
+        },
+        {
+          "user_api": "blas",
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "prefix": "libscipy_openblas",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\scipy.libs\\libscipy_openblas-48c358d105077551cc9cc3ba79387ed5.dll",
+          "version": "0.3.29.dev",
+          "threading_layer": "pthreads",
+          "architecture": "Haswell"
+        },
+        {
+          "user_api": "openmp",
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "vcomp",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\sklearn\\.libs\\vcomp140.dll",
+          "version": null
+        }
+      ],
+      "analytic_reference": {
+        "var_0.95": 0.2584188813849425,
+        "cvar_0.95": 0.3160552827108789,
+        "var_0.99": 0.3529097956539917,
+        "cvar_0.99": 0.39417721386532756,
+        "loss_probability": 0.4403823076297575
+      },
+      "analytic_error": {
+        "var_0.95": 1.1038964335963186e-06,
+        "cvar_0.95": 3.0215099200980866e-06,
+        "var_0.99": 2.0243151327037356e-05,
+        "cvar_0.99": 3.139478050329103e-05,
+        "loss_probability": 6.632370242509733e-06
+      }
+    },
+    {
+      "cell": {
+        "name": "gbm-100m",
+        "model": "gbm",
+        "n_paths": 100000000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 4096,
+        "gpu_memory_limit_mb": 4096
+      },
+      "seed": 104729,
+      "device": "gpu",
+      "repeat": 1,
+      "timing_kind": "steady",
+      "runner_wall_seconds": 49.204884200007655,
+      "external_statistics_seconds": 6.7578287000069395,
+      "paths_per_second": 2032318.5721466334,
+      "path_steps_per_second": 512144280.1809516,
+      "asset_path_steps_per_second": 512144280.1809516,
+      "input_preparation_seconds": 0.0,
+      "launch_to_first_runner_completion_seconds": null,
+      "metrics": {
+        "var_0.95": 0.2584199852813761,
+        "cvar_0.95": 0.316058304220799,
+        "var_0.99": 0.35293003880531876,
+        "cvar_0.99": 0.39420860864583085,
+        "loss_probability": 0.44038894,
+        "drawdown_breach_probability": 0.42040799,
+        "drawdown_0.5": 0.18438108458728952,
+        "drawdown_0.95": 0.3379605595815536,
+        "drawdown_0.99": 0.4074026383460901
+      },
+      "intervals": null,
+      "resources": {
+        "sample_interval_seconds": 0.05,
+        "samples": 795,
+        "rss_peak_bytes": 3816062976,
+        "cpu_peak_core_equivalents": 1.5290844080159784,
+        "cpu_seconds": 48.40625,
+        "device_used_peak_bytes": 2183225344,
+        "device_memory_scope": "whole CUDA device, includes other processes",
+        "gpu": {
+          "name": "NVIDIA GeForce RTX 2070",
+          "uuid": "GPU-2363dc5c-9b8b-af1e-8b7f-f1428c255437",
+          "pci_bus_id": "0000:01:00.0",
+          "driver": "617.42",
+          "total_memory_bytes": 8589934592
+        },
+        "peak_meaning": "sampled lower bound on instantaneous peak"
+      },
+      "engine": {
+        "config": {
+          "model": "gbm",
+          "n_paths": 100000000,
+          "n_steps": 252,
+          "seed": 104729,
+          "dt": 0.003968253968253968,
+          "initial_value": 1.0,
+          "batch_size": 4096,
+          "block_size": 20,
+          "quantiles": [
+            0.01,
+            0.05,
+            0.5,
+            0.95,
+            0.99
+          ],
+          "confidence": 0.95,
+          "drawdown_threshold": 0.2,
+          "save_full_paths": false,
+          "compute": {
+            "device": "gpu",
+            "allow_fallback": false,
+            "gpu_memory_limit_mb": 4096
+          }
+        },
+        "sample_hash": "936418a044a109f2a2e04d98e5e7cd584ab726ec3757c891e094f777a7e3fe3d",
+        "assets": [
+          "0"
+        ],
+        "evaluation": "MONTE_CARLO_RISK_SCENARIO_V1",
+        "compute": {
+          "requested": {
+            "device": "gpu",
+            "allow_fallback": false,
+            "gpu_memory_limit_mb": 4096
+          },
+          "device": "gpu",
+          "backend": "cupy-cuda",
+          "backend_version": "14.2.0",
+          "probe": {
+            "available": true,
+            "reason": null,
+            "version": "14.2.0",
+            "driver_visible": true,
+            "runtime_available": true
+          },
+          "fallback": false,
+          "fallback_reason": null,
+          "gpu_memory_limit_mb": 4096,
+          "gpu_memory_limit_enforced": false,
+          "execution": {
+            "backend": "cupy-cuda",
+            "batch_size": 4096,
+            "private_pool_limit_enforced": true,
+            "private_pool_limit_bytes": 4294967296,
+            "private_pool_peak_bytes": 16585216,
+            "budget_scope": "private CuPy allocator pool only; CUDA context, cuRAND and cuBLAS external allocations are not bounded",
+            "planned_persistent_bytes": 68656,
+            "planned_bytes_per_path": 53504
+          }
+        },
+        "method_version": 1,
+        "input": {
+          "sample_interval": null,
+          "as_of": null,
+          "correlation_correction": null,
+          "initial_prices": [
+            1.0
+          ],
+          "gbm_parameters": {
+            "drift": [
+              0.05
+            ],
+            "volatility": [
+              0.2
+            ],
+            "correlation": [
+              [
+                1.0
+              ]
+            ]
+          }
+        },
+        "seed": 104729,
+        "rng": "CuPy RandomState/cuRAND XORWOW",
+        "rng_backend": "cupy-cuda",
+        "rng_version": "14.2.0",
+        "python_version": "3.13.9",
+        "numpy_version": "2.3.5",
+        "cuda_runtime_version": 13020,
+        "cuda_driver_version": 13040,
+        "elapsed_seconds": 49.17824170005042,
+        "reproducibility": "same backend, versions, configuration and batch plan; batch size changes the random sequence",
+        "risk_definition": {
+          "loss": "1 - terminal_nav / initial_nav; negative loss is gain",
+          "horizon_steps": 252,
+          "dt": 0.003968253968253968,
+          "confidence": 0.95,
+          "var_quantile": "linear (Hyndman-Fan type 7)",
+          "cvar": "mean of worst (1-confidence)*n losses with fractional boundary observation",
+          "drawdown": "positive fraction below running peak including initial NAV",
+          "breach": "maximum_drawdown strictly greater than threshold",
+          "threshold": 0.2
+        },
+        "portfolio": {
+          "weights": [
+            1.0
+          ],
+          "cash_weight": 0.0,
+          "rebalancing": "each_step",
+          "cash_return": 0,
+          "costs": 0
+        },
+        "assumptions": [
+          "RISK_SCENARIO_ONLY",
+          "NOT_EVENT_DRIVEN_EXECUTION",
+          "constant GBM parameters or stationary resampled historical blocks",
+          "sampling uncertainty excludes model uncertainty"
+        ]
+      },
+      "threadpools": [
+        {
+          "user_api": "blas",
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "prefix": "libscipy_openblas",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\numpy.libs\\libscipy_openblas64_-9e3e5a4229c1ca39f10dc82bba9e2b2b.dll",
+          "version": "0.3.30",
+          "threading_layer": "pthreads",
+          "architecture": "Haswell"
+        },
+        {
+          "user_api": "blas",
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "prefix": "libscipy_openblas",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\scipy.libs\\libscipy_openblas-48c358d105077551cc9cc3ba79387ed5.dll",
+          "version": "0.3.29.dev",
+          "threading_layer": "pthreads",
+          "architecture": "Haswell"
+        },
+        {
+          "user_api": "openmp",
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "vcomp",
+          "filepath": "D:\\Code\\FactorLab-worktrees\\mc-colab-02\\.venv\\Lib\\site-packages\\sklearn\\.libs\\vcomp140.dll",
+          "version": null
+        }
+      ],
+      "analytic_reference": {
+        "var_0.95": 0.2584188813849425,
+        "cvar_0.95": 0.3160552827108789,
+        "var_0.99": 0.3529097956539917,
+        "cvar_0.99": 0.39417721386532756,
+        "loss_probability": 0.4403823076297575
+      },
+      "analytic_error": {
+        "var_0.95": 1.1038964335963186e-06,
+        "cvar_0.95": 3.0215099200980866e-06,
+        "var_0.99": 2.0243151327037356e-05,
+        "cvar_0.99": 3.139478050329103e-05,
+        "loss_probability": 6.632370242509733e-06
+      }
+    }
+  ],
+  "skipped": [],
+  "failures": [],
+  "environment": {
+    "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26340-SP0",
+    "numpy": "2.3.5",
+    "host": {
+      "cpu": "Intel(R) Core(TM) i7-14700KF",
+      "logical_cpus": 28,
+      "physical_cores": 20,
+      "total_ram_bytes": 68523327488
+    }
+  },
+  "independent_seed_summary": [
+    {
+      "device": "gpu",
+      "cell": {
+        "name": "gbm-10m",
+        "model": "gbm",
+        "n_paths": 10000000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 4096,
+        "gpu_memory_limit_mb": 4096
+      },
+      "seeds": [
+        104729
+      ],
+      "n": 1,
+      "input_sample_hash": "936418a044a109f2a2e04d98e5e7cd584ab726ec3757c891e094f777a7e3fe3d",
+      "reliability_status": "PILOT_ONLY",
+      "metrics": {
+        "var_0.95": {
+          "mean": 0.2583411861151286,
+          "seed_sd": null,
+          "minimum": 0.2583411861151286,
+          "maximum": 0.2583411861151286,
+          "mean_interval_95": null
+        },
+        "cvar_0.95": {
+          "mean": 0.3160446433715611,
+          "seed_sd": null,
+          "minimum": 0.3160446433715611,
+          "maximum": 0.3160446433715611,
+          "mean_interval_95": null
+        },
+        "var_0.99": {
+          "mean": 0.352930635349067,
+          "seed_sd": null,
+          "minimum": 0.352930635349067,
+          "maximum": 0.352930635349067,
+          "mean_interval_95": null
+        },
+        "cvar_0.99": {
+          "mean": 0.3942478141061667,
+          "seed_sd": null,
+          "minimum": 0.3942478141061667,
+          "maximum": 0.3942478141061667,
+          "mean_interval_95": null
+        },
+        "loss_probability": {
+          "mean": 0.4404652,
+          "seed_sd": null,
+          "minimum": 0.4404652,
+          "maximum": 0.4404652,
+          "mean_interval_95": null
+        },
+        "drawdown_breach_probability": {
+          "mean": 0.4203446,
+          "seed_sd": null,
+          "minimum": 0.4203446,
+          "maximum": 0.4203446,
+          "mean_interval_95": null
+        },
+        "drawdown_0.5": {
+          "mean": 0.1843823972220019,
+          "seed_sd": null,
+          "minimum": 0.1843823972220019,
+          "maximum": 0.1843823972220019,
+          "mean_interval_95": null
+        },
+        "drawdown_0.95": {
+          "mean": 0.3379458025263327,
+          "seed_sd": null,
+          "minimum": 0.3379458025263327,
+          "maximum": 0.3379458025263327,
+          "mean_interval_95": null
+        },
+        "drawdown_0.99": {
+          "mean": 0.4073306896213948,
+          "seed_sd": null,
+          "minimum": 0.4073306896213948,
+          "maximum": 0.4073306896213948,
+          "mean_interval_95": null
+        }
+      },
+      "interval_method": "Student t across independent seed estimates; not path bootstrap"
+    },
+    {
+      "device": "gpu",
+      "cell": {
+        "name": "gbm-100m",
+        "model": "gbm",
+        "n_paths": 100000000,
+        "n_steps": 252,
+        "assets": 1,
+        "batch_size": 4096,
+        "gpu_memory_limit_mb": 4096
+      },
+      "seeds": [
+        104729
+      ],
+      "n": 1,
+      "input_sample_hash": "936418a044a109f2a2e04d98e5e7cd584ab726ec3757c891e094f777a7e3fe3d",
+      "reliability_status": "PILOT_ONLY",
+      "metrics": {
+        "var_0.95": {
+          "mean": 0.2584199852813761,
+          "seed_sd": null,
+          "minimum": 0.2584199852813761,
+          "maximum": 0.2584199852813761,
+          "mean_interval_95": null
+        },
+        "cvar_0.95": {
+          "mean": 0.316058304220799,
+          "seed_sd": null,
+          "minimum": 0.316058304220799,
+          "maximum": 0.316058304220799,
+          "mean_interval_95": null
+        },
+        "var_0.99": {
+          "mean": 0.35293003880531876,
+          "seed_sd": null,
+          "minimum": 0.35293003880531876,
+          "maximum": 0.35293003880531876,
+          "mean_interval_95": null
+        },
+        "cvar_0.99": {
+          "mean": 0.39420860864583085,
+          "seed_sd": null,
+          "minimum": 0.39420860864583085,
+          "maximum": 0.39420860864583085,
+          "mean_interval_95": null
+        },
+        "loss_probability": {
+          "mean": 0.44038894,
+          "seed_sd": null,
+          "minimum": 0.44038894,
+          "maximum": 0.44038894,
+          "mean_interval_95": null
+        },
+        "drawdown_breach_probability": {
+          "mean": 0.42040799,
+          "seed_sd": null,
+          "minimum": 0.42040799,
+          "maximum": 0.42040799,
+          "mean_interval_95": null
+        },
+        "drawdown_0.5": {
+          "mean": 0.18438108458728952,
+          "seed_sd": null,
+          "minimum": 0.18438108458728952,
+          "maximum": 0.18438108458728952,
+          "mean_interval_95": null
+        },
+        "drawdown_0.95": {
+          "mean": 0.3379605595815536,
+          "seed_sd": null,
+          "minimum": 0.3379605595815536,
+          "maximum": 0.3379605595815536,
+          "mean_interval_95": null
+        },
+        "drawdown_0.99": {
+          "mean": 0.4074026383460901,
+          "seed_sd": null,
+          "minimum": 0.4074026383460901,
+          "maximum": 0.4074026383460901,
+          "mean_interval_95": null
+        }
+      },
+      "interval_method": "Student t across independent seed estimates; not path bootstrap"
+    }
+  ]
+}

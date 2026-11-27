@@ -26,6 +26,7 @@ pairs = ["statsmodels>=0.14.4,<0.15"]
 binance-equity = ["websockets>=15,<17"]
 alpaca-data = ["websockets>=15,<17", "exchange-calendars>=4.11,<5"]
 monte-carlo-cuda = ["cupy-cuda13x[ctk]>=14,<15"]
+monte-carlo-benchmark = ["psutil>=5.9,<8", "nvidia-ml-py>=12,<14"]
 monte-carlo-native = ["ziglang>=0.15,<0.16"]
 
 [project.scripts]

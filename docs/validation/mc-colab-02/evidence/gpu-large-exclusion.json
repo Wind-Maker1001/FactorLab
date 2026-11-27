@@ -1,0 +1,5 @@
+{
+  "study": "gpu-large",
+  "status": "EXCLUDED_FROM_PERFORMANCE_EVIDENCE",
+  "reason": "A regression-test process was briefly launched during the capacity experiment and immediately stopped. CPU/GPU resource overlap cannot be excluded. Retain this attempt locally and rerun sequentially before publishing capacity timings."
+}
