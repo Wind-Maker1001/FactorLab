@@ -39,6 +39,9 @@ class AlpacaPortfolioAdapter:
         # account recovery, invalidating its inventory/cash admission snapshot.
         return self.adapter.recover()
 
+    def risk_account(self, account):
+        return self.adapter.risk_account(account)
+
     def observe_recovery(self):
         """Import exactly the original orders seen by the account recovery turn."""
         account, read_order = self.adapter.recover(with_orders=True)

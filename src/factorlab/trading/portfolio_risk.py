@@ -11,7 +11,7 @@ from time import perf_counter_ns, thread_time_ns
 
 from factorlab._process_memory import peak_memory_bytes
 
-from .contracts import Market, Side, TERMINAL, ZERO, decimal_value
+from .contracts import Market, OrderSnapshot, Side, TERMINAL, ZERO, decimal_value
 from .control import inventory_effect
 from .storage import decode, dumps
 
@@ -119,7 +119,7 @@ class PortfolioRiskSnapshot:
     def valid(self):
         return self.reconciled and not set(self.missing).intersection({
             'account_age', 'positions', 'ownership', 'orders', 'order_price',
-            'order_ownership', 'economic_multiplier'})
+            'order_ownership', 'economic_multiplier', 'pending_capital'})
 
 
 @dataclass(frozen=True)
@@ -147,6 +147,9 @@ class PortfolioRisk:
         self.store = store
         self.db = store.db
         self.last_calculation = None
+        self.pending_orders = None
+        self.pending_commitments = None
+        self.account_observation = None
 
     def configure(self, account_id, limits, multipliers):
         with self.store.transaction():
@@ -188,7 +191,7 @@ class PortfolioRisk:
         previous = decode(json.loads(saved[0])) if saved else None
         if previous and observed_at < previous['at']:
             return None, None, None
-        if previous and flow is None and previous['flow_adjusted']:
+        if flow is None:
             return None, None, None
         if previous and flow is not None and previous.get('initial_flow') is None:
             # Raw and legacy adjusted observations lack the starting external
@@ -256,10 +259,12 @@ class PortfolioRisk:
         multipliers = {symbol: max(amounts) for symbol, amounts in values.items()}
         return multipliers | configured, ambiguous
 
-    def observe(self, account, currency, now, config, *, orders=None, equity=None):
+    def observe(self, account, currency, now, config, *, orders=None, equity=None, include_pending=True):
+        if self.account_observation is not None:
+            account = self.account_observation(account)
         started, cpu = perf_counter_ns(), thread_time_ns()
         try:
-            return self._observe(account, currency, now, config, orders, equity)
+            return self._observe(account, currency, now, config, orders, equity, include_pending)
         finally:
             cpu_ns, decision_ns = thread_time_ns() - cpu, perf_counter_ns() - started
             rss = peak_memory_bytes()
@@ -267,7 +272,7 @@ class PortfolioRisk:
             log.info('portfolio_risk_calculation account=%s cpu_ns=%d decision_ns=%d process_peak_rss_bytes=%s',
                      account.account_id, cpu_ns, decision_ns, rss)
 
-    def _observe(self, account, currency, now, config, orders, equity):
+    def _observe(self, account, currency, now, config, orders, equity, include_pending):
         limits, configured = config
         account_id = account.account_id
         multipliers, ambiguous = self._multipliers(account_id, configured)
@@ -389,6 +394,19 @@ class PortfolioRisk:
             add(snapshot, owner, order['reservation_price'], order, remote)
         for snapshot in broker.values():
             add(snapshot, None, snapshot.intent.limit_price)
+        if include_pending:
+            priced_owners = set()
+            if self.pending_orders is not None:
+                for owner, intent, price in self.pending_orders(account_id):
+                    priced_owners.add(owner)
+                    if intent.client_order_id not in seen_local and intent.client_order_id not in broker:
+                        add(OrderSnapshot(intent), owner, price)
+            pending_owners = self.store.unprepared_buy_owners(account_id)
+            if self.pending_commitments is not None:
+                pending_owners.update(owner for owner, amount in self.pending_commitments(account_id).items()
+                                      if amount is None or (amount > ZERO and owner not in priced_owners))
+            if pending_owners:
+                missing.add('pending_capital')
         if reflected - (opening.keys() | broker.keys() | seen_local):
             missing.add('orders')
         if ambiguous & positions.keys():
@@ -454,6 +472,8 @@ class PortfolioRisk:
                 concentration[symbol] = exposure / denominator
         if 'positions' in missing:
             market_value = gross = net = projected_gross = None
+        if 'pending_capital' in missing:
+            projected_gross = projected_cash = projected_margin = None
         snapshot = PortfolioRiskSnapshot(account_id, currency, observed_at, account.reconciled,
             equity, cash, available, projected_cash, margin, projected_margin, market_value,
             gross, net, notional, pending, pending_cancel, projected_gross, dict(risk_symbols),
@@ -472,7 +492,7 @@ class PortfolioRisk:
         if opening.symbol in limits.paused_symbols:
             return 'PORTFOLIO_SYMBOL_PAUSED'
         for name in ('account_age', 'reconciliation', 'positions', 'ownership', 'orders',
-                     'order_ownership', 'order_price', 'economic_multiplier'):
+                     'order_ownership', 'order_price', 'economic_multiplier', 'pending_capital'):
             if name in snapshot.missing:
                 return 'PORTFOLIO_RISK_' + name.upper()
         owner = snapshot.logical_strategies.get(logical)

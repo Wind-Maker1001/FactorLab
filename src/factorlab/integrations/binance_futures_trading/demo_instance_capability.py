@@ -39,7 +39,11 @@ class DemoInstanceCapability:
         if authorization is None or authorization['state'] != 'RUNNING':
             raise SafetyBlocked('running cumulative Demo authorization required')
         budget = configured['allocation']['budget_usdt']
+        capital = getattr(session.controller, 'demo_portfolio_store', None)
         notional = intent.quantity * intent.limit_price
+        if capital is not None:
+            current = capital.allocation(binding['account_id'], owner[0])['capital']
+            budget = max(budget, current)
         if not intent.reduce_only and notional > budget:
             raise SafetyBlocked('instance intent exceeds its funded capital')
         seconds = authorization['seconds']
@@ -59,6 +63,10 @@ class DemoInstanceCapability:
             from .demo_instance_exit_budget import DemoInstanceExitBudget
             reservation, consumption = None, ()
             if method == 'POST':
+                if not intent.reduce_only and capital is not None:
+                    current = capital.allocation(binding['account_id'], owner[0])['capital']
+                    if notional > current:
+                        raise SafetyBlocked('instance intent exceeds its current funded capital')
                 if intent.reduce_only:
                     consumption = DemoInstanceExitBudget(session, runtime).consumption(intent, owner)
                 else:

@@ -704,5 +704,7 @@ class ReleaseConsumer:
             state['active_identity'] = strategy_package_identity(manifest) if manifest else None
             result.update(effective='RUNNING' if self.running and not self.reason else 'PAUSED',
                           grid_state='RUNNING', grid_reason=self.reason, reason=self.reason)
+        if self.instance_host is not None:
+            state['instance_runtime'] = dict(self.instance_host.instance_status)
         result['strategy_release'] = state
         return result

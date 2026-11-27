@@ -64,12 +64,12 @@ def test_adjusted_nav_preserves_funded_equity_across_restart(tmp_path):
         assert risk_values(executor, 25, 808, 800) == (D('.04'), D(21), D(21))
 
 
-def test_legacy_raw_history_runs_until_the_first_healthy_known_flow(tmp_path):
+def test_legacy_raw_history_is_unknown_until_the_first_healthy_known_flow(tmp_path):
     with risk_executor(tmp_path / 'risk.sqlite') as executor:
         seed_legacy_history(executor, 1000, adjusted=False)
-        assert risk_values(executor, 1, 900, None) == (D('.1'), D(100), D(100))
+        assert risk_values(executor, 1, 900, None) == (None, None, None)
         assert risk_values(executor, 1.5, 950, 1000, reconciled=False) == (None, None, None)
-        assert risk_values(executor, 1.75, 900, None) == (D('.1'), D(100), D(100))
+        assert risk_values(executor, 1.75, 900, None) == (None, None, None)
 
         assert risk_values(executor, 2, 900, 1000) == (D(0), D(0), None)
         assert risk_values(executor, 3, 1200, 1300) == (D(0), D(0), D(0))

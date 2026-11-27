@@ -1,5 +1,7 @@
 """Official Paper execution and restart recovery; no local fill authority."""
-from datetime import datetime, timezone
+from contextlib import nullcontext
+from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from urllib.parse import quote
 
@@ -192,6 +194,47 @@ class AlpacaAdapter:
     def read_account(self):
         return self._snapshot(self.read_account_details())
 
+    def risk_account(self, account):
+        """Read official external cash activities independently of sleeve transfers."""
+        import json
+        from factorlab.trading.cash_flow import cash_flow_checkpoint
+        from factorlab.trading.storage import decode, dumps
+
+        saved = self.store.get('external_cash_flow')
+        previous = None if saved is None else decode(saved)
+        end = account.official_observed_at or account.observed_at
+        if previous is not None and end < previous['through']:
+            return replace(account, cumulative_external_cash_flow=None)
+        # Non-trade activities expose settlement dates, not execution timestamps.
+        overlap = timedelta(days=7)
+        reference = end if previous is None else previous['through']
+        start = (reference - overlap).replace(hour=0, minute=0, second=0, microsecond=0)
+        try:
+            rows = self._activity_pages('/v2/account/activities',
+                                        {'after': start.isoformat(), 'until': end.isoformat()})
+        except AlpacaError:
+            return replace(account, cumulative_external_cash_flow=None)
+        records = []
+        for row in rows:
+            kind = row['activity_type']
+            if kind in {'JNL', 'JNLC', 'JNLS', 'ACATS'}:
+                # Journal corrections and in-kind transfers cannot be valued as
+                # external cash from the activity type alone.
+                return replace(account, cumulative_external_cash_flow=None)
+            if kind not in {'CSD', 'CSW', 'ACATC'}:
+                continue
+            date = row['date']
+            at = instant(date + 'T00:00:00Z' if len(date) == 10 else date)
+            if start <= at <= end:
+                records.append((row['id'], at, D(row['net_amount'])))
+        state = cash_flow_checkpoint(previous, records, start=start, end=end,
+                                     retain_from=(end - overlap).replace(
+                                         hour=0, minute=0, second=0, microsecond=0))
+        context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
+        with context:
+            self.store.put('external_cash_flow', json.loads(dumps(state)))
+        return replace(account, cumulative_external_cash_flow=state['total'])
+
     def _snapshot(self, facts, *, recovered_orders=None):
         rows = self._positions()
         orders, reserved = [], Z
@@ -280,10 +323,10 @@ class AlpacaAdapter:
             raise ValueError("market orders require an explicit positive reservation_price")
         # REST refresh before admission includes orders placed outside this process.
         account, facts = self.recover(with_details=True)
+        if risk_admission is not None:
+            risk_admission(account)
         with self.store.transaction():
             self._admission(intent, price, account, facts, enforce_sellable=risk_admission is not None)
-            if risk_admission is not None:
-                risk_admission(account)
             now = datetime.now(timezone.utc).timestamp()
             recent = [t for t in self.store.get("submissions") or [] if now - t < 60]
             if len(recent) >= self.limits.orders_per_minute:

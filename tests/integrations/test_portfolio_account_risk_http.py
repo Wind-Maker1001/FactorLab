@@ -111,6 +111,43 @@ def alpaca_snapshot(runner, http):
     return runner.executor.portfolio_risk_snapshot(ACCOUNT, official_equity=http.equity)
 
 
+def test_alpaca_official_cash_activities_adjust_nav_across_restart(tmp_path):
+    class CashHTTP(AlpacaRiskHTTP):
+        unavailable = False
+
+        def __call__(self, method, path, params, body):
+            if self.unavailable and path == '/v2/account/activities':
+                return 503, {'message': 'activity history unavailable'}
+            return super().__call__(method, path, params, body)
+
+    http = CashHTTP()
+    date = wall_clock().date().isoformat()
+    with ExitStack() as stack:
+        runner, store = alpaca_runner(stack, tmp_path, http)
+        setup_pair(runner, store)
+        runner.executor.configure_portfolio_risk(ACCOUNT, PortfolioRiskLimits(max_daily_loss=D(20)))
+        assert alpaca_snapshot(runner, http).daily_loss == 0
+        http.cash = str(D(http.cash) + D(200))
+        http.nontrade = [dict(id='external-in', activity_type='CSD', date=date, net_amount='200')]
+        assert alpaca_snapshot(runner, http).daily_loss == 0
+        http.cash = str(D(http.cash) - D(300))
+        http.nontrade.append(dict(id='external-out', activity_type='CSW', date=date, net_amount='-300'))
+        assert alpaca_snapshot(runner, http).drawdown == 0
+        http.unavailable = True
+        assert alpaca_snapshot(runner, http).daily_loss is None
+        http.unavailable = False
+
+    with ExitStack() as stack:
+        runner, _ = alpaca_runner(stack, tmp_path, http)
+        assert alpaca_snapshot(runner, http).daily_loss == 0
+        http.cash = str(D(http.cash) - D(25))
+        loss = alpaca_snapshot(runner, http)
+        assert loss.daily_loss == D(25)
+        assert loss.drawdown == D('.025')
+        http.nontrade.append(dict(id='ambiguous-journal', activity_type='JNLC', date=date, net_amount='5'))
+        assert alpaca_snapshot(runner, http).daily_loss is None
+
+
 def test_alpaca_concurrent_orders_share_the_account_gross_limit(tmp_path):
     http = AlpacaRiskHTTP()
     with ExitStack() as stack:
@@ -364,6 +401,34 @@ def test_alpaca_tqqq_dividend_and_split_keep_nominal_cash_separate(tmp_path):
         assert store.holdings(ACCOUNT, 'A') == {'TQQQ': D(2)}
 
 
+def test_alpaca_unprepared_buy_is_unknown_risk_but_owned_reduction_remains_legal(tmp_path):
+    http = AlpacaRiskHTTP()
+    with ExitStack() as stack:
+        runner, store = alpaca_runner(stack, tmp_path, http)
+        setup_pair(runner, store)
+        owned = alpaca_direct(runner, 'A', 'AAPL', 'inventory-before-pending', quantity=D('.5'))
+        alpaca_advance(runner, owned)
+        http.fill('inventory-before-pending')
+        alpaca_advance(runner, owned)
+        unprepared = runner.executor.create(account_id=ACCOUNT, strategy_id='B', strategy_version='1',
+            trading_session=SESSION, rebalance_id='pending-msft', weights={}, owned_symbols=['MSFT'],
+            quantity_deltas={'MSFT': D(1)}, now=runner.clock())
+        runner.executor.configure_portfolio_risk(ACCOUNT, PortfolioRiskLimits(max_gross_exposure=D(100)))
+        snapshot = alpaca_snapshot(runner, http)
+        assert 'pending_capital' in snapshot.missing
+        assert snapshot.projected_gross_exposure is None
+        with pytest.raises(ValueError, match='PORTFOLIO_RISK_PENDING_CAPITAL'):
+            alpaca_direct(runner, 'A', 'AAPL', 'opening-before-buy-sizing', quantity=D('.1'))
+        exit_id = alpaca_direct(runner, 'A', 'AAPL', 'exit-before-buy-sizing',
+                                quantity=D('.5'), side=Side.SELL)
+        alpaca_advance(runner, exit_id)
+        http.fill('exit-before-buy-sizing')
+        assert alpaca_advance(runner, exit_id).phase == 'COMPLETE'
+        assert http.post_ids == ['inventory-before-pending', 'exit-before-buy-sizing']
+        runner.executor.abandon(unprepared)
+        assert alpaca_snapshot(runner, http).projected_gross_exposure == ZERO
+
+
 def test_alpaca_stale_quote_cannot_dispatch_reserved_order(tmp_path):
     http = AlpacaRiskHTTP()
     with ExitStack() as stack:
@@ -493,7 +558,6 @@ class BinanceRiskHTTP(FakeTransport):
         super().__init__()
         self.income = []
         self.now = BINANCE_NOW
-        self.cumulative_external_cash_flow = self.cash
 
     def __call__(self, request, timeout):
         response = super().__call__(request, timeout)
@@ -521,11 +585,6 @@ class BinancePortfolioFixture(FuturesAdapter):
         return self.facts
 
     observed_margin_facts = margin_facts
-
-    def read_account(self):
-        # Supply the public capital snapshot field alongside the HTTP account facts.
-        account = super().read_account()
-        return replace(account, cumulative_external_cash_flow=self.client.transport.cumulative_external_cash_flow)
 
     def query_order(self, client_order_id):
         try:
@@ -561,6 +620,35 @@ def binance_advance(executor, identity, http):
     now = executor.clock()
     return executor.run_once(identity, equity=http.cash, now=now,
                              **order_inputs('NVDAUSDT', now, tif='GTC'))
+
+
+def test_binance_official_transfers_overlap_restart_and_retention_gap(tmp_path):
+    http = BinanceRiskHTTP()
+    with ExitStack() as stack:
+        executor = binance_runner(stack, tmp_path, http, lambda: http.now)
+        executor.capital_policy.configure(account_id='offline', currency='USDT',
+                                          budget=D(1000), fee_rate=D(0))
+        executor.configure_portfolio_risk('offline', PortfolioRiskLimits(max_daily_loss=D(20)))
+        assert executor.portfolio_risk_snapshot('offline').daily_loss == 0
+        http.now += timedelta(seconds=1)
+        http.funding_update('200', symbol='', income_type='TRANSFER',
+                            time_ms=int(http.now.timestamp() * 1000))
+        assert executor.portfolio_risk_snapshot('offline').daily_loss == 0
+        http.now += timedelta(seconds=1)
+        http.funding_update('-300', symbol='', income_type='TRANSFER',
+                            time_ms=int(http.now.timestamp() * 1000))
+        assert executor.portfolio_risk_snapshot('offline').drawdown == 0
+
+    with ExitStack() as stack:
+        executor = binance_runner(stack, tmp_path, http, lambda: http.now)
+        assert executor.portfolio_risk_snapshot('offline').daily_loss == 0
+        http.now += timedelta(seconds=1)
+        http.funding_update('-25', time_ms=int(http.now.timestamp() * 1000))
+        loss = executor.portfolio_risk_snapshot('offline')
+        assert loss.daily_loss == D(25)
+        assert loss.drawdown == D('.025')
+        http.now += timedelta(days=91)
+        assert executor.portfolio_risk_snapshot('offline').daily_loss is None
 
 
 def test_binance_official_margin_missing_margin_and_funding_through_http(tmp_path):
@@ -620,8 +708,8 @@ def test_binance_official_margin_missing_margin_and_funding_through_http(tmp_pat
         assert rolling.rolling_loss >= D(25)
         with pytest.raises(ValueError, match='PORTFOLIO_ROLLING_LOSS_LIMIT'):
             binance_direct(executor, 'B', 'binance-rolling-block', quantity=D('.1'))
-        http.cash -= D(100)
-        http.cumulative_external_cash_flow -= D(100)
+        http.funding_update('-100', symbol='', income_type='TRANSFER',
+                            time_ms=int(http.now.timestamp() * 1000))
         withdrawal = executor.portfolio_risk_snapshot('offline', official_equity=http.cash)
         assert withdrawal.official_equity == rolling.official_equity - D(100)
         assert withdrawal.rolling_loss == rolling.rolling_loss

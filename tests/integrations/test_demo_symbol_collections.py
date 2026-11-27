@@ -125,10 +125,13 @@ def test_blocked_symbol_reader_does_not_block_other_symbol_or_owner(tmp_path):
         from dataclasses import replace
         from datetime import datetime, timezone
         from decimal import Decimal
+        from factorlab.trading.portfolio_execution import PortfolioExecutor, PortfolioStore
         from factorlab.trading.storage import PaperStore, dumps
         from factorlab.integrations.binance_futures_trading.demo_instance_owner import DemoInstanceOwner
         from test_binance_demo_execution import intent
         store = PaperStore(tmp_path / 'parallel-owner.sqlite3')
+        capital = PortfolioStore(tmp_path / 'parallel-capital.sqlite3')
+        account_id = 'account'
         store.db.execute('CREATE TABLE demo_instance_outbox (id TEXT, payload TEXT, completed INTEGER)')
         calls = []
         filters = {'LOT_SIZE': {'stepSize': '.001'}, 'MIN_NOTIONAL': {'notional': '20'},
@@ -139,22 +142,27 @@ def test_blocked_symbol_reader_does_not_block_other_symbol_or_owner(tmp_path):
             _fresh_book=lambda payload, **kwargs: dict(payload, time_utc=now,
                 bidPrice=Decimal(payload['bidPrice']), askPrice=Decimal(payload['askPrice'])),
             _now=lambda: now,
-            adapter=SimpleNamespace(read_facts=lambda: SimpleNamespace(account_id='account', usdt=lambda:
+            adapter=SimpleNamespace(account_id=account_id, read_facts=lambda: SimpleNamespace(account_id=account_id, usdt=lambda:
                 {'walletBalance': Decimal(5000), 'unrealizedProfit': Decimal(0)})))
         risk_accounts = []
-        execution = SimpleNamespace(session=session, store=store,
-            executor=SimpleNamespace(enforce_portfolio_risk=risk_accounts.append),
+        executor = PortfolioExecutor(None, capital)
+        executor.enforce_portfolio_risk = risk_accounts.append
+        execution = SimpleNamespace(session=session, store=store, executor=executor,
             advance=lambda decision_id, **kwargs: calls.append(decision_id) or 'WAITING')
         owner = DemoInstanceOwner(session, execution)
         owner.market_sources = sources
         try:
             for decision_id, symbol in [('blocked', 'BTCUSDT'), ('healthy', 'ETHUSDT')]:
+                binding = dict(account_id=account_id, instance_id=decision_id)
+                pending = dict(receipt=dict(binding=binding),
+                               intents=[replace(intent(decision_id), instrument_id=symbol)])
                 store.db.execute('INSERT INTO demo_instance_outbox VALUES(?,?,0)',
-                    (decision_id, dumps(dict(intents=[replace(intent(decision_id), instrument_id=symbol)]))))
+                    (decision_id, dumps(pending)))
             assert owner.poll() == {'healthy': 'WAITING'}
             assert calls == ['healthy']
             assert risk_accounts == ['account']
         finally:
+            capital.close()
             store.close()
         assert not release.is_set()
         sources.require({'ETHUSDT'})

@@ -23,6 +23,9 @@ class DemoPortfolioAdapter:
     def read_account(self):
         return self.session.gateway.read_account()
 
+    def risk_account(self, account):
+        return self.session.adapter.risk_account(account)
+
     def funding_events(self):
         return self.session.adapter.funding_events()
 
@@ -30,7 +33,15 @@ class DemoPortfolioAdapter:
         return self.session.adapter.funding_coverage()
 
     def margin_facts(self):
-        return self.session.adapter.read_facts()
+        return self.session.adapter.read_facts(sync_funding=True)
+
+    def capital_facts(self):
+        session = self.session
+        initial = None
+        if not session._protocol_ids():
+            initial = session.adapter.read_facts()
+        account = session.gateway.recover(session.controller, initial_facts=initial)
+        return account, session.adapter.facts
 
     def observed_margin_facts(self):
         return self.session.adapter.facts

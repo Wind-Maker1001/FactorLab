@@ -1,8 +1,8 @@
 """Persistent offline execution adapter implementing the shared one-way contract."""
 from concurrent.futures import ThreadPoolExecutor, wait
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import hashlib
 import json
@@ -17,7 +17,8 @@ from factorlab.trading.storage import dumps, decode
 from .account import AccountFacts, instant
 from .protocol import (
     Environment, ExchangeError, OutcomeUnknown, SafetyBlocked, OfflineTransport,
-    AccountReadExpired, AccountReadWindow, ReadOnlyNetworkTransport, credential_account_id,
+    AccountReadExpired, AccountReadWindow, ReadOnlyNetworkTransport, TimeCalibrationError,
+    credential_account_id,
 )
 from .recovery import (
     INCOME_MAX_PAGES, INCOME_PAGE_LIMIT, MAX_QUERY_WINDOW_MS, OrderRecoveryClass, OrderRecoveryConfig,
@@ -240,8 +241,7 @@ class FuturesAdapter:
             return self.query_order(intent.client_order_id)
         try:
             row = self.client.request('POST', '/fapi/v1/order', params)
-            return self._confirm_write(row, intent.client_order_id)
-        except DemoWriteRefused:
+        except (DemoWriteRefused, SafetyBlocked, TimeCalibrationError, AccountReadExpired):
             # Only this call's placeholder exists, and the transport never attempted HTTP.
             with self.store.transaction():
                 self.db.execute('DELETE FROM futures_orders WHERE id=?', (intent.client_order_id,))
@@ -267,8 +267,14 @@ class FuturesAdapter:
         except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
             self._uncertain(intent.client_order_id)
             raise OutcomeUnknown('order response unconfirmed; reconcile without resubmitting') from None
+        try:
+            return self._confirm_write(row, intent.client_order_id)
+        except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
+            self._uncertain(intent.client_order_id)
+            raise OutcomeUnknown('order response unconfirmed; reconcile without resubmitting') from None
 
     def cancel_order(self, client_order_id):
+        from .network import DemoWriteRefused
         if not isinstance(self.client.transport, OfflineTransport):
             from .network import demo_network_permitted
             if not demo_network_permitted(self.client) or not self.client.transport._admission:
@@ -281,6 +287,12 @@ class FuturesAdapter:
         try:
             row = self.client.request('DELETE', '/fapi/v1/order',
                                       dict(symbol=order.intent.instrument_id, origClientOrderId=client_order_id))
+        except (DemoWriteRefused, SafetyBlocked, TimeCalibrationError, AccountReadExpired):
+            raise
+        except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
+            self._uncertain(client_order_id)
+            raise OutcomeUnknown('cancel unconfirmed; reconcile fills before releasing risk') from None
+        try:
             return self._confirm_write(row, client_order_id)
         except (OutcomeUnknown, DataQualityError, ValueError, KeyError, TypeError):
             self._uncertain(client_order_id)
@@ -530,6 +542,48 @@ class FuturesAdapter:
             income_type=income_type,
             complete=True,
         )
+
+    def risk_account(self, account):
+        """Attach covered official wallet transfers, not strategy allocations."""
+        from factorlab.trading.cash_flow import cash_flow_checkpoint
+        from .recovery import EXCHANGE_HISTORY_RETENTION_SECONDS
+
+        end_ms = _to_ms(account.observed_at)
+        row = self.db.execute("SELECT detail FROM futures_income_coverage WHERE scope='CAPITAL_TRANSFER'").fetchone()
+        previous = None if row is None else decode(json.loads(row[0]))
+        overlap = timedelta(milliseconds=INCOME_OVERLAP_MS)
+        start = (account.observed_at if previous is None else previous['through']) - overlap
+        if previous is not None and (account.observed_at < previous['through'] or
+                account.observed_at - start > timedelta(seconds=EXCHANGE_HISTORY_RETENTION_SECONDS)):
+            return replace(account, cumulative_external_cash_flow=None)
+        try:
+            window = self.income_window(start_time=start, end_time=end_ms)
+        except (ExchangeError, OutcomeUnknown):
+            return replace(account, cumulative_external_cash_flow=None)
+        if not window.complete:
+            return replace(account, cumulative_external_cash_flow=None)
+        records = []
+        for entry in window.rows:
+            time_ms, kind, amount, asset, _, tran_id, _, _ = validate_income_row(entry)
+            if kind == 'TRANSFER' and asset == 'USDT':
+                records.append((kind + ':' + tran_id, instant(time_ms), amount))
+            elif kind not in {'REALIZED_PNL', 'FUNDING_FEE', 'COMMISSION', 'INSURANCE_CLEAR',
+                              'WELCOME_BONUS', 'COMMISSION_REBATE', 'API_REBATE',
+                              'REFERRAL_KICKBACK', 'CONTEST_REWARD', 'DELIVERED_SETTELMENT',
+                              'DELISTING_SETTLEMENT', 'FEE_RETURN', 'AUTO_EXCHANGE'}:
+                return replace(account, cumulative_external_cash_flow=None)
+        # Exchange timestamps have millisecond precision.
+        end = instant(end_ms)
+        start = instant(_to_ms(start))
+        state = cash_flow_checkpoint(previous, records, start=start, end=end, retain_from=end - overlap)
+        context = nullcontext() if self.db.in_transaction else self.store.transaction()
+        with context:
+            self.db.execute('INSERT INTO futures_income_coverage VALUES(?,?,?,?,?,?) '
+                'ON CONFLICT(scope) DO UPDATE SET covered_from_ms=excluded.covered_from_ms, '
+                'covered_through_ms=excluded.covered_through_ms, complete=excluded.complete, '
+                'updated_at=excluded.updated_at, detail=excluded.detail',
+                ('CAPITAL_TRANSFER', _to_ms(state['origin']), end_ms, 1, end.isoformat(), dumps(state)))
+        return replace(account, cumulative_external_cash_flow=state['total'])
 
     def funding_events(self):
         """Return persisted confirmed funding events ordered by exchange time and tranId."""
