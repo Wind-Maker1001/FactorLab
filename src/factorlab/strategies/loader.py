@@ -127,6 +127,10 @@ class LoadedStrategy:
             instance._model_effective_at = model_effective_at(declaration)
         if 'runtime_profile' in installed:
             instance.manifest['runtime_profile'] = installed['runtime_profile']
+        if installed['interface'] == V2:
+            schedule = installed['requirements']['schedule']
+            if schedule['kind'] == 'calendar':
+                instance.manifest['calendar_timezone'] = schedule['timezone']
         instance.sources = {name: data.decode('utf-8').replace('\r\n', '\n').replace('\r', '\n')
                             for name, data in sorted(payload.items())}
         instance.code_sha256 = sha256(json.dumps(instance.sources, sort_keys=True).encode()).hexdigest()

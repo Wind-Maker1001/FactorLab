@@ -23,6 +23,12 @@ def main():
     # existing worker path. Lightweight packages use audited imports directly.
     if 'model' not in manifest and manifest.get('runtime_profile') != 'lightweight':
         import factorlab.strategies.adapters  # noqa: F401
+        if manifest.get('calendar_timezone') == 'America/New_York':
+            from pandas import Timestamp
+
+            # Pandas resolves system timezone data on the first localization.
+            # Initialize the calendar before restricting strategy file access.
+            Timestamp(2000, 1, 1).tz_localize('America/New_York')
     allowed = (package, source_root, Path(sys.base_prefix).resolve(), Path(sys.prefix).resolve())
     try:
         for requirement in manifest.get('dependencies', ()):
