@@ -252,13 +252,8 @@ def _worker(job):
 
 
 def memory_plan(cell, workers=1, device='cpu'):
-    # Conservative admission estimate, not a measured RSS bound.
-    per_path = 8*((8*cell['assets']+16)*cell['n_steps']+128)+4096
-    working = min(cell['batch_size'] or 4096,cell['n_paths'])*(per_path if device=='cpu' else 32)
-    samples_and_statistics = cell['n_paths']*128
-    return dict(estimated_in_memory_bytes=workers*(working+samples_and_statistics+256*1024**2),
-        estimated_disk_working_bytes=workers*(working+256*1024**2),
-        disk_bytes_per_job=cell['n_paths']*40)
+    from factorlab.experiments.research_workloads import benchmark_memory
+    return benchmark_memory(cell, workers, device)
 
 
 def launch_job(job):
@@ -328,7 +323,7 @@ def run_study(config, output, *, device='cpu', workers=1, statistics=True, profi
     skipped = []
     seeds = config['seeds'][:1] if first_seed_only else config['seeds']
     for cell in config['cells']:
-        memory = memory_plan(cell,workers,device)
+        memory = memory_plan(cell,min(workers, len(seeds)),device)
         budget = config['host_memory_budget_mb']*1024**2
         disk = memory['estimated_in_memory_bytes'] > budget
         if disk and (statistics or memory['estimated_disk_working_bytes'] > budget):

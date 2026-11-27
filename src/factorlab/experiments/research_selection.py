@@ -79,6 +79,20 @@ def _positive(value, name, *, integer=False):
 
 def _memory(task):
     p = task["parameters"]
+    if task['entry'] == 'benchmark' and 'cells' in p:
+        workers = _positive(p['workers'], 'workers', integer=True)
+        from factorlab.experiments.research_workloads import benchmark_memory
+        device = 'cpu' if task['device'] in ('cpu', 'auto') else 'gpu'
+        estimates = [benchmark_memory(cell, workers, device,
+            free_gpu_bytes=task.get('_free_gpu_bytes'),
+            gpu_limit_mb=task.get('gpu_memory_limit_mb')) for cell in p['cells']]
+        budget = task['memory_budget_mb'] * _MIB
+        host = max(e['estimated_disk_working_bytes']
+            if not p['statistics'] and e['estimated_in_memory_bytes'] > budget
+            else e['estimated_in_memory_bytes'] for e in estimates)
+        gpu = max(e['estimated_gpu_bytes'] for e in estimates)
+        return host, gpu, dict(cells=estimates, workers=workers,
+            memory_basis='sequential cells; concurrent seeds of one cell only')
     paths = _positive(p["paths"], "paths", integer=True)
     steps = _positive(p["steps"], "steps", integer=True)
     assets = _positive(p["assets"], "assets", integer=True)
@@ -106,6 +120,8 @@ def _memory(task):
 
 def _report_evidence(task, resources):
     p = task["parameters"]
+    if task['entry'] == 'benchmark' and 'cells' in p:
+        return None
     model = task["entry"] if task["entry"] != "benchmark" else p.get("model")
     matched = (model in ("gbm", "bootstrap") and p["assets"] == 1
                and p["steps"] == 252 and not p.get("save_full_paths", False)
@@ -155,8 +171,20 @@ def select_task(task: dict, resources: dict | None, cloud: dict | None = None) -
     host, gpu, memory = _memory(task)
     resources = probe_resources(include_gpu=choice != "cpu") if resources is None else resources
     local_host = host <= min(budget, resources["host_available_bytes"])
-    eligible = [g for g in resources.get("gpus", [])
-                if local_host and gpu <= min(g["free_memory_bytes"], limit if limit is not None else math.inf)]
+    gpu_workers_ok = task['entry'] != 'benchmark' or task['parameters'].get('requested_workers', 1) == 1
+    eligible = []
+    for candidate in resources.get('gpus', []) if gpu_workers_ok else []:
+        if task['entry'] == 'benchmark' and 'cells' in task['parameters']:
+            try:
+                candidate_host, candidate_gpu, _ = _memory(dict(task, device='local_gpu',
+                    _free_gpu_bytes=candidate['free_memory_bytes']))
+            except RuntimeError:
+                continue
+            fits = candidate_host <= min(budget, resources['host_available_bytes']) and candidate_gpu <= candidate['free_memory_bytes']
+        else:
+            fits = local_host and gpu <= min(candidate['free_memory_bytes'], limit if limit is not None else math.inf)
+        if fits:
+            eligible.append(candidate)
     idle = [g for g in eligible if g["utilization_percent"] < 20]
     evidence = [memory]
     measured = _report_evidence(task, resources)
@@ -186,10 +214,19 @@ def select_task(task: dict, resources: dict | None, cloud: dict | None = None) -
                 if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
                     raise ValueError(f"cloud.{key} must be finite and nonnegative")
             reserved_cost = (cloud["startup_seconds"] + timeout) * cloud["rate_per_hour"] / 3600
-            cloud_ok = (cloud["rate_per_hour"] > 0
+            cloud_host, cloud_gpu = host, gpu
+            cloud_gpu_limit = limit if limit is not None else math.inf
+            if task['entry'] == 'benchmark' and 'cells' in task['parameters']:
+                try:
+                    cloud_host, cloud_gpu, _ = _memory(dict(task, device='colab',
+                        _free_gpu_bytes=cloud['gpu_memory_bytes']))
+                except RuntimeError:
+                    cloud_gpu = math.inf
+                cloud_gpu_limit = math.inf  # Pool caps are applied per cell, excluding CUDA context.
+            cloud_ok = (gpu_workers_ok and cloud["rate_per_hour"] > 0
                         and reserved_cost <= min(cloud["balance_cu"], cloud["budget_cu"])
-                        and host <= min(budget, cloud["host_memory_bytes"])
-                        and gpu <= min(cloud["gpu_memory_bytes"], limit if limit is not None else math.inf))
+                        and cloud_host <= min(budget, cloud["host_memory_bytes"])
+                        and cloud_gpu <= min(cloud["gpu_memory_bytes"], cloud_gpu_limit))
             cloud_error = "cloud memory, positive active rate, balance or authorized CU budget insufficient"
         else:
             cloud_error = "cloud capacity, startup, rate, balance and budget metadata required"
@@ -224,6 +261,14 @@ def select_task(task: dict, resources: dict | None, cloud: dict | None = None) -
     else:
         raise RuntimeError("no authorized placement fits available host/GPU memory and budgets")
 
+    if selected_gpu is not None and task['entry'] == 'benchmark' and 'cells' in task['parameters']:
+        host, gpu, memory = _memory(dict(task, device='local_gpu',
+            _free_gpu_bytes=selected_gpu['free_memory_bytes']))
+        evidence[0] = memory
+    if device == 'colab' and task['entry'] == 'benchmark' and 'cells' in task['parameters']:
+        host, gpu, memory = _memory(dict(task, device='colab',
+            _free_gpu_bytes=cloud['gpu_memory_bytes']))
+        evidence[0] = memory
     seconds = None
     cost = None
     if device == "colab":

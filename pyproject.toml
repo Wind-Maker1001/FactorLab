@@ -51,11 +51,11 @@ monte-carlo-cuda = [
 ]
 monte-carlo-benchmark = [
     "numpy>=1.26.4,<2.4", "pandas>=2.2.3,<3", "scipy>=1.13.1,<1.17",
-    "psutil>=5.9,<8", "nvidia-ml-py>=12,<14",
+    "psutil>=5.9,<8", "nvidia-ml-py>=12,<14", "packaging>=24,<27",
 ]
 monte-carlo-native = [
     "numpy>=1.26.4,<2.4", "pandas>=2.2.3,<3", "scipy>=1.13.1,<1.17",
-    "ziglang>=0.15,<0.16",
+    "ziglang>=0.15,<0.16", "packaging>=24,<27",
 ]
 
 [project.scripts]

@@ -123,6 +123,16 @@ free/total memory and utilization; discovery does not import CuPy. Host memory
 uses native Windows/Linux facilities, with optional psutil for other hosts.
 These are resource snapshots, not guarantees of future availability.
 
+Registered benchmark cells run sequentially. Admission estimates each cell
+separately and takes the peak seed wave, bounded by the selected seed count
+and CPU workers; GPU studies require one requested worker. Selection and
+execution share the per-cell memory planner. Automatic GPU batches use the
+effective task/cell pool cap and 80% of observed free device memory; the CUDA
+context reserve is separate from the pool cap. GPU host admission uses the
+pool-cap-only batch consistently in selection and execution, even when device
+free memory shrinks the actual batch. Disk-backed admission is used
+only when the configured host budget forces it and statistics are disabled.
+
 `select_task(task, resources, cloud=None)` returns placement, numerical device,
 reason, evidence and conservative host/GPU byte estimates. Unsupported time and
 CU estimates are `null`. Memory planning includes model data, assets, steps,
@@ -172,7 +182,10 @@ python tools/research/build_research_wheel.py --repository /absolute/path/Factor
 Install the resulting wheel in the execution environment with the
 `monte-carlo-native` and `monte-carlo-benchmark` extras; GPU execution also needs
 `monte-carlo-cuda`. For example, replace the wheel placeholder with the helper's
-actual output:
+actual output. Both CPU research extras explicitly include `packaging>=24,<27`
+for installed dependency validation; it is not part of the minimal trading
+execution dependencies. Existing full research locks already pin compatible
+packaging versions:
 
 ```sh
 python -m pip install '/absolute/path/factorlab-<version>-py3-none-any.whl[monte-carlo-native,monte-carlo-benchmark]'
