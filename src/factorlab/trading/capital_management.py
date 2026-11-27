@@ -191,7 +191,9 @@ class CapitalManagement:
 
         with self.store.transaction():
             snapshot = self._snapshot(account_id)
-            owner = next(s for s in snapshot.strategies if s.strategy_id == strategy_id)
+            owner = next((s for s in snapshot.strategies if s.strategy_id == strategy_id), None)
+            if owner is None:
+                raise ValueError(f'unknown strategy ID {strategy_id!r}')
             if owner.equity is None:
                 raise ValueError('strategy performance requires reconciled equity')
             date = self.store.db.execute(
