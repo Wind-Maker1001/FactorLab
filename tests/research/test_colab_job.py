@@ -274,6 +274,8 @@ def test_submit_forwards_proxy_by_name_without_exposing_value(tmp_path, monkeypa
         "--wheel", str(wheel), "--script", str(script), "--commit", "a" * 40, "--budget-cu", "2"])
     def run(command, **kwargs):
         assert "--setenv=HTTPS_PROXY" in command
+        preserved = next(arg for arg in command if arg.startswith("--preserve-env="))
+        assert "HTTPS_PROXY" in preserved.split("=", 1)[1].split(",")
         assert not any("private-proxy" in argument for argument in command)
         assert command[-3] == "run"
         return subprocess.CompletedProcess(command, 0)

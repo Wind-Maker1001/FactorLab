@@ -256,15 +256,17 @@ def main():
         (root / "job.json").write_text(json.dumps(data, indent=2), encoding="utf-8")
         base = [sys.executable, str(Path(__file__).resolve())]
         cleanup = shlex.join([*base, "recover", "--job", str(root)])
-        command = ["sudo", "-n", "systemd-run", f"--unit={session}", f"--uid={os.getuid()}",
+        proxy_names = [name for name in
+                       ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY",
+                        "http_proxy", "https_proxy", "all_proxy", "no_proxy") if name in os.environ]
+        preserve = ["--preserve-env=" + ",".join(proxy_names)] if proxy_names else []
+        command = ["sudo", "-n", *preserve, "systemd-run", f"--unit={session}", f"--uid={os.getuid()}",
                    "--collect", "--property=Type=exec", "--property=UMask=0077",
                    "--property=MemoryMax=256M", "--property=MemorySwapMax=0",
                    "--property=CPUQuota=25%", "--property=CPUWeight=10",
                    f"--property=RuntimeMaxSec={args.timeout}", "--property=TimeoutStopSec=150",
                    f"--property=ExecStopPost={cleanup}",
-                   *[f"--setenv={name}" for name in
-                     ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY",
-                      "http_proxy", "https_proxy", "all_proxy", "no_proxy") if name in os.environ],
+                   *[f"--setenv={name}" for name in proxy_names],
                    *base, "run", "--job", str(root)]
         subprocess.run(command, check=True)
         print(json.dumps({"job": str(root), "unit": session}))

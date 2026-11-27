@@ -27,8 +27,9 @@ through the Windows gateway. Mirrored networking can expose the existing
 localhost proxy to WSL; changing networking requires an explicitly scheduled
 WSL restart. Set `HTTPS_PROXY`/`HTTP_PROXY` to the working Linux-reachable proxy
 before authorization and submission. The submit command copies standard
-uppercase/lowercase proxy environment variables into the transient unit by
-name, without including their values in the systemd-run command line. Proxy
+uppercase/lowercase proxy environment variables through sudo's explicit
+`--preserve-env` allowlist and into the transient unit by name, without
+including their values in the systemd-run command line. Proxy
 configuration is not a credential-transfer mechanism.
 
 WSL is needed only while controlling a job. Keep a WSL foreground session open

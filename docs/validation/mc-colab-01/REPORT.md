@@ -233,8 +233,12 @@ Local minimal evidence: WSL2 Linux with systemd PID 1 and Python 3.14.10 ran
 official CLI 0.8.0. The final local regression suite passed **24 tests in 0.30
 seconds**, including proxy propagation without embedding values in argv.
 A real transient systemd unit acquired the account lock and exported cgroup
-resource evidence; a separate transient unit confirmed the proxy environment
-arrived intact. Mirrored networking reached the Google OAuth endpoint through
+resource evidence. The initial proxy smoke test omitted the sudo boundary;
+a subsequent real submission exposed sudo stripping proxy variables before
+systemd-run. Submission now explicitly preserves only named standard proxy
+variables through sudo. A full sudo → systemd transient unit then asserted the
+exact proxy value successfully (`PROXY_ENV_OK`); all 24 regressions passed in
+0.27 seconds. Proxy values remain absent from submission argv. Mirrored networking reached the Google OAuth endpoint through
 the existing Windows localhost proxy after NAT direct access had timed out.
 Independent browser ADC consent completed successfully. The official local
 `colab --auth adc usage` query returned balance **199.35 CU**, rate **0.00/hour**
