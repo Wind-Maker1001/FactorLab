@@ -8,6 +8,7 @@ from tests.research.test_grid_batch_simulation import (
     test_expiry_and_endowed_inventory,
     test_volatile_random_step_and_fill_parity,
     test_existing_mc_runner_integration,
+    test_collect_fills_preserves_static_account_and_events,
 )
 from tests.research.test_grid_batch_numeric_boundaries import (
     test_exact_touch_and_minimum_notional,
@@ -21,6 +22,7 @@ from tests.research.test_grid_batch_dynamic import (
     test_volatility_real_subclass_fallback_and_extreme,
     test_future_ohlc_and_prices_do_not_change_past,
     test_continuous_history_order_capacity,
+    test_collect_fills_preserves_dynamic_account_and_events,
 )
 from tests.research.test_grid_batch_funding import (
     test_funding_own_mark_and_prefill_inventory,

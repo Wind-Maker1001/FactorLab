@@ -43,7 +43,7 @@ def canonical_order_events(events):
     return rows
 
 
-def run_paper_reference(values, config, prepared, trace):
+def run_paper_reference(values, config, prepared, trace, collect_fills=True):
     """Replay prepared observations through the actual strategy and Paper authority.
 
     Funding uses raw rates and settlement marks, independently of packed native
@@ -56,7 +56,8 @@ def run_paper_reference(values, config, prepared, trace):
     started = perf_counter()
     terminal = np.empty((len(values), len(COLUMNS)))
     traces = np.empty((*values.shape, len(COLUMNS))) if trace else None
-    all_fills, all_events, raw_events = ([] if trace else None for _ in range(3))
+    all_fills = [] if trace and collect_fills else None
+    all_events, raw_events = ([] if trace else None for _ in range(2))
     for path, prices in enumerate(values):
         now = [_utc(prepared.observation_us[0])]
         broker = PaperBroker(Market.BINANCE_USDM, _ACCOUNT,
@@ -194,7 +195,7 @@ def run_paper_reference(values, config, prepared, trace):
                     day_slip += cost
                     budget -= quantity
                     count += 1
-                    if trace:
+                    if trace and collect_fills:
                         fills.append([step, int(key.rsplit('-', 1)[1]), int(order.intent.side == Side.SELL),
                             order_details[key][1], float(quantity), float(execution_price), float(fee), float(cost),
                             int(order.intent.order_type.value == 'MARKET')])
@@ -245,8 +246,9 @@ def run_paper_reference(values, config, prepared, trace):
                 if trace:
                     traces[path, step] = data
             terminal[path] = data
-            if trace:
+            if trace and collect_fills:
                 all_fills.append(np.asarray(fills, dtype=float).reshape(-1, 9))
+            if trace:
                 all_events.append(np.asarray(events, dtype=float).reshape(-1, 12))
                 raw_events.append(receipts)
         finally:

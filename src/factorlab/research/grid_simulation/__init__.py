@@ -208,7 +208,9 @@ def _cuda_kernel():
     return kernel
 
 
-def simulate(prices, config, *, backend='cpu', trace=False, batch_size=4096, market=None):
+def simulate(prices, config, *, backend='cpu', trace=False, batch_size=4096, market=None,
+             collect_fills=True):
+    """Run frozen quotes; collect_fills=False retains traces/events but omits fill exports."""
     values, scaled = _quotes(prices, config)
     extended = market is not None or config.grid.mode == 'atr' or config.grid.breakout == 'rebuild' or config.funding_policy is not None or config.volatility_policy is not None
     if market is None:
@@ -225,10 +227,10 @@ def simulate(prices, config, *, backend='cpu', trace=False, batch_size=4096, mar
     if backend == 'paper':
         if extended:
             from .paper import run_paper_reference
-            return run_paper_reference(values, config, prepared, trace)
-        return _reference(values, config, trace)
+            return run_paper_reference(values, config, prepared, trace, collect_fills)
+        return _reference(values, config, trace, collect_fills)
     if backend == 'cpu':
-        return _native(scaled, config, trace, batch_size, prepared)
+        return _native(scaled, config, trace, batch_size, prepared, collect_fills)
     if backend != 'cuda':
         raise ValueError('backend must be paper, cpu or cuda')
     setup_started = perf_counter()
@@ -244,7 +246,7 @@ def simulate(prices, config, *, backend='cpu', trace=False, batch_size=4096, mar
     setup_seconds = perf_counter() - setup_started
     terminal = np.empty((len(values), len(COLUMNS)), dtype=np.float64)
     traces = np.empty((*values.shape, len(COLUMNS)), dtype=np.float64) if trace else None
-    fill_rows = [] if trace else None
+    fill_rows = [] if trace and collect_fills else None
     event_rows = [] if trace else None
     device_seconds = transfer_seconds = upload_seconds = 0.
     started = perf_counter()
@@ -279,9 +281,11 @@ def simulate(prices, config, *, backend='cpu', trace=False, batch_size=4096, mar
         terminal[begin:end] = host[:, -1]
         if trace:
             traces[begin:end] = host
+        if trace and collect_fills:
             for path_fills in cp.asnumpy(fills):
                 fill_rows.append(np.asarray([[step, *row] for step, rows in enumerate(path_fills)
                                              for row in rows if row[0]], dtype=float).reshape(-1, 9))
+        if trace:
             event_rows.extend(_audit_rows(cp.asnumpy(audit)))
         transfer_seconds += perf_counter() - before
         del d_prices, output, fills, errors, audit, d_market, workspace
@@ -300,7 +304,7 @@ def _audit_rows(audit):
             for path in audit]
 
 
-def _native(quotes, config, trace, batch_size, prepared):
+def _native(quotes, config, trace, batch_size, prepared, collect_fills):
     from .native import run, _library
     before = perf_counter()
     _library()
@@ -312,7 +316,7 @@ def _native(quotes, config, trace, batch_size, prepared):
     args = targets, limits, params, integers
     terminal = np.empty((len(quotes), len(COLUMNS)))
     traces = np.empty((*quotes.shape, len(COLUMNS))) if trace else None
-    fill_rows = [] if trace else None
+    fill_rows = [] if trace and collect_fills else None
     event_rows = [] if trace else None
     compute_seconds = 0.
     for begin in range(0, len(quotes), batch_size):
@@ -326,24 +330,25 @@ def _native(quotes, config, trace, batch_size, prepared):
         terminal[begin:end] = output[:, -1]
         if trace:
             traces[begin:end] = output
+        if trace and collect_fills:
             for path_fills in fills:
                 fill_rows.append(np.asarray([[step, *row] for step, rows in enumerate(path_fills)
                                              for row in rows if row[0]], dtype=float).reshape(-1, 9))
+        if trace:
             event_rows.extend(_audit_rows(audit))
     return BatchGridResult(terminal, traces, dict(backend='cpu', evidence='RESEARCH_SIMULATION',
         seconds=perf_counter()-started, setup_seconds=setup, kernel_seconds=compute_seconds,
         quote_decimals=6), fill_rows, event_rows)
 
 
-def _reference(values, config, trace):
+def _reference(values, config, trace, collect_fills):
     from factorlab.experiments.grid_paper import run_experiment
     from factorlab.experiments.grid_monte_carlo import close_bars
     from factorlab.trading.contracts import Market
     started = perf_counter()
     terminal = np.empty((len(values), len(COLUMNS)))
     traces = np.empty((*values.shape, len(COLUMNS))) if trace else None
-    fill_rows = [] if trace else None
-    event_rows = [] if trace else None
+    fill_rows = [] if trace and collect_fills else None
     for index, prices in enumerate(values):
         _, artifacts = run_experiment(None, bars=close_bars(prices, '2026-11-15T00:00:00Z'),
             config=config.grid, rules=config.rules, capital=config.capital,
@@ -374,7 +379,7 @@ def _reference(values, config, trace):
             if trace:
                 traces[index, step] = data
         terminal[index] = data
-        if trace:
+        if trace and collect_fills:
             steps = {row['date']: i for i, row in enumerate(rows)}
             orders = artifacts['result']['orders']
             fill_rows.append(np.asarray([[steps[t['execution_date']], int(t['order_id'].rsplit('-', 1)[1]),

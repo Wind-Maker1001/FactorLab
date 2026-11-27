@@ -100,6 +100,36 @@ def test_existing_mc_runner_integration(config, backend):
     np.testing.assert_allclose(cpu.trace, paper.trace, rtol=1e-12, atol=5e-10)
 
 
+@pytest.mark.parametrize('trace', [False, True])
+def test_collect_fills_preserves_static_account_and_events(config, backend, trace):
+    prices = np.asarray(CASES, dtype=float)
+    for engine in ('paper', backend):
+        default = simulate(prices, config, backend=engine, trace=trace, batch_size=3)
+        full = simulate(prices, config, backend=engine, trace=trace, batch_size=3,
+            collect_fills=True)
+        compact = simulate(prices, config, backend=engine, trace=trace, batch_size=3,
+            collect_fills=False)
+        assert compact.fills is None
+        np.testing.assert_array_equal(full.terminal, default.terminal)
+        np.testing.assert_array_equal(compact.terminal, default.terminal)
+        if trace:
+            np.testing.assert_array_equal(full.trace, default.trace)
+            np.testing.assert_array_equal(compact.trace, default.trace)
+            assert any(len(rows) for rows in default.fills)
+            for actual, expected in zip(full.fills, default.fills, strict=True):
+                np.testing.assert_array_equal(actual, expected)
+        else:
+            assert default.trace is full.trace is compact.trace is None
+            assert default.fills is full.fills is None
+        if default.events is None:
+            assert full.events is compact.events is None
+        else:
+            assert any(len(rows) for rows in default.events)
+            for result in (full, compact):
+                for actual, expected in zip(result.events, default.events, strict=True):
+                    np.testing.assert_array_equal(actual, expected)
+
+
 def test_reject_unrepresented_inputs(config):
     with pytest.raises(UnsupportedGridSimulation, match='budget'):
         replace(config, grid=replace(config.grid, budget=100))

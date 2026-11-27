@@ -1,0 +1,28 @@
+{
+  "study": "MC-GRID-OPT-01-v1",
+  "baseline": "configs/mc05_grid_tail.json",
+  "snapshot": "D:/Code/p7-r04b-official-payloads/certified/runs/bde00b2f948842e2b8c2a00465a9f8c6",
+  "capital": "1000",
+  "calibration_end": "2026-07-15T00:00:00Z",
+  "models": ["gbm", "moving_block_bootstrap", "regime_historical", "jump_down"],
+  "steps": 168,
+  "batch_size": 128,
+  "bootstrap_block_size": 24,
+  "design_seed": 49157,
+  "random_domains": {"A": 100000000, "B": 500000000, "C": 1000000000, "D": 2000000000},
+  "model_stride": 10000000,
+  "replicate_stride": 1000000,
+  "A": {"paths": 10000, "replicates": 1},
+  "B": {"configurations": 500, "paths": 10000, "replicates": 1},
+  "C": {"configurations": 20, "paths": 100000, "replicates": 5},
+  "D": {"paths": 100000, "replicates": 5},
+  "audit_random_paths": 3,
+  "funding": "NOT_SIMULATED",
+  "historical_validation": {
+    "status": "FROZEN_DESIGN",
+    "start": "2026-07-15T00:00:00Z",
+    "end": "2026-08-12T00:00:00Z",
+    "interpretation": "held out from this study, not historically untouched",
+    "retuning_after_validation": false
+  }
+}

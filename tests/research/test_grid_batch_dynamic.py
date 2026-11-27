@@ -119,6 +119,55 @@ def test_continuous_history_order_capacity(profile, backend):
         assert paper.terminal[0, COLUMNS.index('rebuilds')] > 100
 
 
+@pytest.mark.parametrize('profile', ['rebuild', 'ATR', 'B', 'C'])
+@pytest.mark.parametrize('trace', [False, True])
+def test_collect_fills_preserves_dynamic_account_and_events(profile, backend, trace):
+    prices = np.asarray([[100, 89, 101, 99, 125, 95, 100]], dtype=float)
+    config = dynamic_config()
+    options = {}
+    if profile == 'ATR':
+        prices = np.asarray([[100, 100, 97, 103, 97, 103, 100]], dtype=float)
+        config = replace(config, grid=replace(config.grid, mode='atr', atr_window=1,
+            atr_multiplier=.5, rebuild_threshold=100.))
+        options = dict(highs=prices + 2, lows=prices - 2)
+    elif profile == 'B':
+        config = replace(config, funding_policy=FundingPolicy(
+            entry_max_bps_h=1., min_net_margin_bps=0., exit_mode='none'))
+    elif profile == 'C':
+        config = replace(config, grid=replace(config.grid, levels=1, lower=98, upper=102,
+                initial_inventory=10),
+            volatility_policy=VolatilityPolicy(vol_window_hours=3,
+                reference_vol_1h=.004, min_rebuild_interval=1))
+        options = dict(warmup_closes=[99., 101., 100.])
+    times = market_inputs(prices).observation_times
+    settlements = [times[0] - timedelta(hours=1), times[2]]
+    market = market_inputs(prices, **options, funding_times=settlements,
+        funding_rates=[D('.00001'), D('.00002')], funding_marks=[D('100'), D('103')],
+        expected_funding_times=settlements)
+    for engine in ('paper', backend):
+        default = simulate(prices, config, market=market, backend=engine, trace=trace)
+        full = simulate(prices, config, market=market, backend=engine, trace=trace,
+            collect_fills=True)
+        compact = simulate(prices, config, market=market, backend=engine, trace=trace,
+            collect_fills=False)
+        assert compact.fills is None
+        np.testing.assert_array_equal(full.terminal, default.terminal)
+        np.testing.assert_array_equal(compact.terminal, default.terminal)
+        if not trace:
+            assert default.trace is full.trace is compact.trace is None
+            assert default.fills is full.fills is None
+            assert default.events is full.events is compact.events is None
+            continue
+        assert len(default.events[0]) > 0
+        assert len(default.fills[0]) > 0
+        np.testing.assert_array_equal(full.fills[0], default.fills[0])
+        for result in (full, compact):
+            np.testing.assert_array_equal(result.trace, default.trace)
+            np.testing.assert_array_equal(result.events[0], default.events[0])
+        if engine == 'paper':
+            assert compact.metadata['paper_events'] == full.metadata['paper_events'] == default.metadata['paper_events']
+
+
 def test_future_ohlc_and_prices_do_not_change_past(backend):
     first = np.asarray([[100, 101, 99, 105, 100, 102]], dtype=float)
     second = first.copy()
