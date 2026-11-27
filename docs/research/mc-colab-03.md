@@ -183,8 +183,9 @@ Install the resulting wheel in the execution environment with the
 `monte-carlo-native` and `monte-carlo-benchmark` extras; GPU execution also needs
 `monte-carlo-cuda`. For example, replace the wheel placeholder with the helper's
 actual output. Both CPU research extras explicitly include `packaging>=24,<27`
-for installed dependency validation; it is not part of the minimal trading
-execution dependencies. Existing full research locks already pin compatible
+for installed dependency validation, and the benchmark extra includes
+`threadpoolctl>=3.5,<4` for worker BLAS control. These are not part of the minimal
+trading execution dependencies. Existing full research locks already pin compatible
 packaging versions:
 
 ```sh

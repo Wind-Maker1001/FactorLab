@@ -13,6 +13,29 @@ lifecycle reserve and cannot consume the final 90 seconds reserved for release.
 Existing partial-file, transfer failure, release failure and original-exception
 preservation tests also pass. This revision runs no real Colab experiment.
 
+## PR #275 benchmark admission and CPU dependency regression
+
+The per-cell planner is shared by selection and execution. Regression covers
+scale admission at 8192 MiB for CPU/local GPU/simulated Colab, sequential-cell
+peaks, selected-seed concurrency, automatic GPU batches, exact prepared-array
+persistent bytes, genuine over-budget rejection, and disk/statistics admission.
+The initial combined run passed 111 tests; three existing benchmark integration
+tests exposed missing Git/worktree mapping and `threadpoolctl` in the isolated
+test environment. After supplying Git with Linux worktree paths and declaring
+`threadpoolctl` in the benchmark extra, all 17 benchmark tests passed in 141.10 s.
+The CPU extras explicitly declare `packaging>=24,<27`; the existing full
+research snapshots already pin compatible `packaging==26.3`. Trading execution
+dependency sets and locks are unchanged. Independent review found no remaining
+blocking issue after the shared host/device planning corrections.
+
+A provenance-built wheel at `9787f31d2b3817c4b5c5de976a46cbf5985d1fec`
+was installed with only the documented CPU research extras in a new Python 3.13
+environment. A registered CPU GBM batch (32 paths, eight steps, one asset,
+batch 16) completed with `SUCCEEDED` and retained its report and samples.
+The installed runtime included packaging 26.4 and threadpoolctl 3.8.0, with
+NumPy 2.3.5 and SciPy 1.16.3; it contained neither CuPy/CUDA toolkit packages
+nor pytest/build development dependencies.
+
 ## Current evidence
 
 The final combined portable research/backend regression run passed **220 tests,
