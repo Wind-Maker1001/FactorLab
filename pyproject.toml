@@ -51,7 +51,7 @@ monte-carlo-cuda = [
 ]
 monte-carlo-benchmark = [
     "numpy>=1.26.4,<2.4", "pandas>=2.2.3,<3", "scipy>=1.13.1,<1.17",
-    "psutil>=5.9,<8", "nvidia-ml-py>=12,<14", "packaging>=24,<27",
+    "psutil>=5.9,<8", "nvidia-ml-py>=12,<14", "packaging>=24,<27", "threadpoolctl>=3.5,<4",
 ]
 monte-carlo-native = [
     "numpy>=1.26.4,<2.4", "pandas>=2.2.3,<3", "scipy>=1.13.1,<1.17",
