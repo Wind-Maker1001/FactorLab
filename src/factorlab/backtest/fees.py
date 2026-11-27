@@ -3,16 +3,37 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 import math
 from typing import Iterable, Optional, Tuple
-
-import pandas as pd
 
 from factorlab.errors import ConfigurationError
 
 
 def _as_date(value: object, field: str) -> date:
+    if value is None or isinstance(value, bool):
+        raise ConfigurationError("%s must not be null" % field if value is None else "invalid %s: %r" % (field, value))
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str):
+        text = value.strip()
+        if not text or text.lower() in {"nat", "nan", "none"}:
+            raise ConfigurationError("%s must not be null" % field)
+        try:
+            return date.fromisoformat(text)
+        except ValueError:
+            pass
+        try:
+            iso = text[:-1] + "+00:00" if text.endswith(("Z", "z")) else text
+            return datetime.fromisoformat(iso).date()
+        except ValueError:
+            pass
+    try:
+        import pandas as pd
+    except ModuleNotFoundError as exc:
+        raise ConfigurationError("invalid %s: %r" % (field, value)) from exc
     try:
         timestamp = pd.Timestamp(value)
     except (TypeError, ValueError) as exc:
@@ -196,7 +217,7 @@ class FeeSchedule:
         matches = [rule for rule in self._rules if rule.contains(trade_date)]
         if len(matches) != 1:
             raise ConfigurationError(
-                "fee schedule must cover trade date %s exactly once" % pd.Timestamp(trade_date).date()
+                "fee schedule must cover trade date %s exactly once" % _as_date(trade_date, "trade_date")
             )
         return matches[0]
 

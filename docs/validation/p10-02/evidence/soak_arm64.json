@@ -1,0 +1,205 @@
+{
+  "observed_duration_seconds": 183.0,
+  "cadence_note": "12 V2 isolated strategies ticking every 10s (6x accelerated vs 1m production bar) + Binance Execute (2s loop) + TradFi Observer (10s loop)",
+  "return_codes": {
+    "binance": 0,
+    "alpaca_12": 0,
+    "tradfi": 0
+  },
+  "sys_before": {
+    "mem_total_mb": 944.15,
+    "mem_avail_mb": 651.68,
+    "swap_used_mb": 39.98
+  },
+  "sys_after": {
+    "mem_total_mb": 944.15,
+    "mem_avail_mb": 645.45,
+    "swap_used_mb": 42.03
+  },
+  "alpaca_12_stats": {
+    "ticks_completed": 18,
+    "decisions_completed": 216,
+    "decision_p50_ms": 13.45,
+    "decision_p95_ms": 19.58,
+    "decision_p99_ms": 26.44,
+    "tick_p50_ms": 174.48,
+    "tick_p95_ms": 200.38,
+    "tick_max_ms": 200.38
+  },
+  "peak_process_count": 15,
+  "peak_sum_rss_mb": 610.06,
+  "peak_sum_pss_mb": 378.38,
+  "pss_first_to_last_delta_mb": 0.61,
+  "min_sys_avail_mb": 343.68,
+  "max_sys_swap_mb": 42.0,
+  "samples": [
+    {
+      "elapsed_s": 2.8,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 609.45,
+        "sum_pss_mb": 377.77,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 346.37,
+        "swap_used_mb": 41.61
+      }
+    },
+    {
+      "elapsed_s": 17.8,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 609.87,
+        "sum_pss_mb": 378.19,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 345.41,
+        "swap_used_mb": 41.61
+      }
+    },
+    {
+      "elapsed_s": 32.8,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 609.89,
+        "sum_pss_mb": 378.21,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 344.18,
+        "swap_used_mb": 41.61
+      }
+    },
+    {
+      "elapsed_s": 47.9,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 609.9,
+        "sum_pss_mb": 378.22,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 344.48,
+        "swap_used_mb": 41.61
+      }
+    },
+    {
+      "elapsed_s": 62.9,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 609.93,
+        "sum_pss_mb": 378.25,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 344.88,
+        "swap_used_mb": 42.0
+      }
+    },
+    {
+      "elapsed_s": 77.9,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 609.93,
+        "sum_pss_mb": 378.25,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 344.64,
+        "swap_used_mb": 42.0
+      }
+    },
+    {
+      "elapsed_s": 92.9,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 609.94,
+        "sum_pss_mb": 378.26,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 344.4,
+        "swap_used_mb": 42.0
+      }
+    },
+    {
+      "elapsed_s": 107.9,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 610.05,
+        "sum_pss_mb": 378.37,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 344.49,
+        "swap_used_mb": 42.0
+      }
+    },
+    {
+      "elapsed_s": 122.9,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 610.05,
+        "sum_pss_mb": 378.38,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 344.6,
+        "swap_used_mb": 42.0
+      }
+    },
+    {
+      "elapsed_s": 138.0,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 610.05,
+        "sum_pss_mb": 378.38,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 344.26,
+        "swap_used_mb": 42.0
+      }
+    },
+    {
+      "elapsed_s": 153.0,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 610.06,
+        "sum_pss_mb": 378.38,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 343.68,
+        "swap_used_mb": 42.0
+      }
+    },
+    {
+      "elapsed_s": 168.0,
+      "tree": {
+        "process_count": 15,
+        "sum_rss_mb": 610.06,
+        "sum_pss_mb": 378.38,
+        "sum_swap_mb": 0.0
+      },
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 343.77,
+        "swap_used_mb": 42.0
+      }
+    }
+  ]
+}

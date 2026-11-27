@@ -1,0 +1,142 @@
+{
+  "alpaca_v69": {
+    "orders": [
+      {
+        "adjusted_quantity": "21.80318267003757",
+        "side": "buy",
+        "symbol": "JPM"
+      },
+      {
+        "adjusted_quantity": "19.623697755807164",
+        "side": "buy",
+        "symbol": "GE"
+      },
+      {
+        "adjusted_quantity": "5.933254394080555",
+        "side": "buy",
+        "symbol": "TQQQ"
+      },
+      {
+        "adjusted_quantity": "16.27207501130724",
+        "side": "buy",
+        "symbol": "QQQ"
+      }
+    ],
+    "session": "2025-12-22",
+    "state": {
+      "last_week": [
+        2025,
+        52
+      ]
+    },
+    "weights": {
+      "AAPL": "0.0",
+      "BA": "0.0",
+      "C": "0.0",
+      "GE": "0.044000000000000004",
+      "JPM": "0.044000000000000004",
+      "QQQ": "0.044000000000000004",
+      "SNDK": "0.0",
+      "TQQQ": "0.014666666666666668"
+    }
+  },
+  "binance_grid_funding": {
+    "final_cash": {
+      "USDT": "4999.87654322"
+    },
+    "final_positions": {},
+    "funding_events_count": 1,
+    "funding_total": "-0.12345678",
+    "grid_center": "100.0",
+    "grid_prices": [
+      "95.0",
+      "97.5",
+      "100.0",
+      "102.5",
+      "105.0"
+    ],
+    "grid_state": "RUNNING",
+    "orders_submitted": [
+      {
+        "cid": "p10parity1-00000001",
+        "limit": "95.0",
+        "qty": "0.1",
+        "side": "BUY",
+        "status": "SUBMITTED",
+        "step": 0
+      },
+      {
+        "cid": "p10parity1-00000002",
+        "limit": "97.5",
+        "qty": "0.1",
+        "side": "BUY",
+        "status": "SUBMITTED",
+        "step": 0
+      }
+    ]
+  },
+  "platform": {
+    "machine": "aarch64",
+    "python": "3.13.18",
+    "system": "Linux"
+  },
+  "primitives": {
+    "decimal_check": {
+      "balance": "9995.368518562125",
+      "fee": "0.00185185",
+      "notional": "4.629629587875"
+    },
+    "file_lock_exclusive": true,
+    "sqlite_integrity": "ok",
+    "sqlite_version": "3.54.1",
+    "sqlite_wal": true,
+    "timezone_dst": {
+      "after_dst": "2026-03-08T03:30:00-04:00",
+      "before_dst": "2026-03-08T01:30:00-05:00",
+      "fall_back": "2026-11-01T01:30:00-05:00"
+    },
+    "tls_ca_count": 0,
+    "tls_openssl": "OpenSSL 3.5.9 29 Sep 2026",
+    "websocket_loopback_ok": true,
+    "websocket_version": "16.1.1"
+  },
+  "v2_isolated_strategy": {
+    "code_sha256": "e616da4891c06ae5394c6c00ab2da1c3d0ff550d433ea1e31d0414639107bb8e",
+    "decisions": [
+      {
+        "event_id": "closed-bar:2026-06-01T13:36:00+00:00:60",
+        "state": {
+          "last_close": "181.20",
+          "last_ratio": "0.00454596",
+          "ticks": 1
+        },
+        "targets": {
+          "AAPL": "0.5"
+        }
+      },
+      {
+        "event_id": "closed-bar:2026-06-01T13:37:00+00:00:60",
+        "state": {
+          "last_close": "181.80",
+          "last_ratio": "0.00586478",
+          "ticks": 2
+        },
+        "targets": {
+          "AAPL": "0.5"
+        }
+      },
+      {
+        "event_id": "closed-bar:2026-06-01T13:38:00+00:00:60",
+        "state": {
+          "last_close": "180.10",
+          "last_ratio": "-0.00343072",
+          "ticks": 3
+        },
+        "targets": {
+          "AAPL": "0"
+        }
+      }
+    ],
+    "package_id": "ed00fab9cadcb5867ba8dc991187615ce6e2a6f4425bdd12b14fff65fedf283f"
+  }
+}

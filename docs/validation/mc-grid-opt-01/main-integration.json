@@ -1,0 +1,605 @@
+{
+  "original_research_head": "4205e76660bc0e57a9b5bfdd35aa6b788b4b61bf",
+  "integrated_main": "a48fea581df296474845bc825f35cec861c80c3c",
+  "frozen_source": "D-v2 persisted Paper/FIFO prices.npy and comparison.npz",
+  "frozen_selection": "first and last stored audit path per model/configuration group",
+  "frozen_paths": 32,
+  "backends": [
+    "cpu",
+    "cuda",
+    "paper"
+  ],
+  "relative_tolerance": 1e-10,
+  "absolute_tolerance": 1e-08,
+  "exact_fields": [
+    "fills",
+    "state",
+    "reason"
+  ],
+  "funding": "NOT_SIMULATED",
+  "searched_configurations": 500,
+  "retained_paper_fifo_groups": 16,
+  "retained_matched_paper_fifo_paths": 166,
+  "shortlist": [],
+  "comparisons": [
+    {
+      "group": "D-v2/paper-audits/gbm/baseline",
+      "backend": "cpu",
+      "path_ids": [
+        1800,
+        98436
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 8
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/baseline",
+      "backend": "cuda",
+      "path_ids": [
+        1800,
+        98436
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 8
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/baseline",
+      "backend": "paper",
+      "path_ids": [
+        1800,
+        98436
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 1.455745246570217e-13,
+      "fills": 8
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-037e6f4fe072c0229d7f",
+      "backend": "cpu",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-037e6f4fe072c0229d7f",
+      "backend": "cuda",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-037e6f4fe072c0229d7f",
+      "backend": "paper",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-6a6613c67bc07fe1ca3d",
+      "backend": "cpu",
+      "path_ids": [
+        0,
+        98436
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 29
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-6a6613c67bc07fe1ca3d",
+      "backend": "cuda",
+      "path_ids": [
+        0,
+        98436
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 29
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-6a6613c67bc07fe1ca3d",
+      "backend": "paper",
+      "path_ids": [
+        0,
+        98436
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 2.2737367544323206e-13,
+      "fills": 29
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-fbb08169de0057be0551",
+      "backend": "cpu",
+      "path_ids": [
+        1,
+        94734
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 44
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-fbb08169de0057be0551",
+      "backend": "cuda",
+      "path_ids": [
+        1,
+        94734
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 44
+    },
+    {
+      "group": "D-v2/paper-audits/gbm/grid-fbb08169de0057be0551",
+      "backend": "paper",
+      "path_ids": [
+        1,
+        94734
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 3.410605131648481e-13,
+      "fills": 44
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/baseline",
+      "backend": "cpu",
+      "path_ids": [
+        2056,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 5
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/baseline",
+      "backend": "cuda",
+      "path_ids": [
+        2056,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 5
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/baseline",
+      "backend": "paper",
+      "path_ids": [
+        2056,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 2.2737367544323206e-13,
+      "fills": 5
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-037e6f4fe072c0229d7f",
+      "backend": "cpu",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-037e6f4fe072c0229d7f",
+      "backend": "cuda",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-037e6f4fe072c0229d7f",
+      "backend": "paper",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-6a6613c67bc07fe1ca3d",
+      "backend": "cpu",
+      "path_ids": [
+        0,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 1
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-6a6613c67bc07fe1ca3d",
+      "backend": "cuda",
+      "path_ids": [
+        0,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 1
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-6a6613c67bc07fe1ca3d",
+      "backend": "paper",
+      "path_ids": [
+        0,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 1.1368683772161603e-13,
+      "fills": 1
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-fbb08169de0057be0551",
+      "backend": "cpu",
+      "path_ids": [
+        6,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 57
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-fbb08169de0057be0551",
+      "backend": "cuda",
+      "path_ids": [
+        6,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 57
+    },
+    {
+      "group": "D-v2/paper-audits/jump_down/grid-fbb08169de0057be0551",
+      "backend": "paper",
+      "path_ids": [
+        6,
+        97894
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 5.684341886080801e-13,
+      "fills": 57
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/baseline",
+      "backend": "cpu",
+      "path_ids": [
+        6722,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 5
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/baseline",
+      "backend": "cuda",
+      "path_ids": [
+        6722,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 5
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/baseline",
+      "backend": "paper",
+      "path_ids": [
+        6722,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 1.1368683772161603e-13,
+      "fills": 5
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-037e6f4fe072c0229d7f",
+      "backend": "cpu",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-037e6f4fe072c0229d7f",
+      "backend": "cuda",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-037e6f4fe072c0229d7f",
+      "backend": "paper",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-6a6613c67bc07fe1ca3d",
+      "backend": "cpu",
+      "path_ids": [
+        0,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-6a6613c67bc07fe1ca3d",
+      "backend": "cuda",
+      "path_ids": [
+        0,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-6a6613c67bc07fe1ca3d",
+      "backend": "paper",
+      "path_ids": [
+        0,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 5.684341886080802e-14,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-fbb08169de0057be0551",
+      "backend": "cpu",
+      "path_ids": [
+        9,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 50
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-fbb08169de0057be0551",
+      "backend": "cuda",
+      "path_ids": [
+        9,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 50
+    },
+    {
+      "group": "D-v2/paper-audits/moving_block_bootstrap/grid-fbb08169de0057be0551",
+      "backend": "paper",
+      "path_ids": [
+        9,
+        83353
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 3.410605131648481e-13,
+      "fills": 50
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/baseline",
+      "backend": "cpu",
+      "path_ids": [
+        760,
+        91276
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 3
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/baseline",
+      "backend": "cuda",
+      "path_ids": [
+        760,
+        91276
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 3
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/baseline",
+      "backend": "paper",
+      "path_ids": [
+        760,
+        91276
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 1.1368683772161603e-13,
+      "fills": 3
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-037e6f4fe072c0229d7f",
+      "backend": "cpu",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-037e6f4fe072c0229d7f",
+      "backend": "cuda",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-037e6f4fe072c0229d7f",
+      "backend": "paper",
+      "path_ids": [
+        0,
+        99999
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-6a6613c67bc07fe1ca3d",
+      "backend": "cpu",
+      "path_ids": [
+        0,
+        76718
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-6a6613c67bc07fe1ca3d",
+      "backend": "cuda",
+      "path_ids": [
+        0,
+        76718
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-6a6613c67bc07fe1ca3d",
+      "backend": "paper",
+      "path_ids": [
+        0,
+        76718
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 5.684341886080802e-14,
+      "fills": 0
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-fbb08169de0057be0551",
+      "backend": "cpu",
+      "path_ids": [
+        55,
+        90032
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 17
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-fbb08169de0057be0551",
+      "backend": "cuda",
+      "path_ids": [
+        55,
+        90032
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 0.0,
+      "fills": 17
+    },
+    {
+      "group": "D-v2/paper-audits/regime_historical/grid-fbb08169de0057be0551",
+      "backend": "paper",
+      "path_ids": [
+        55,
+        90032
+      ],
+      "original_account_columns": 16,
+      "matched": true,
+      "maximum_absolute_account_difference": 2.964573031505324e-13,
+      "fills": 17
+    }
+  ],
+  "audit_buffer_bytes_per_path_observation": 45056,
+  "fill_buffer_bytes_per_path_observation": 8192,
+  "collect_fills_false": "Omits Python fill export and CUDA fill device-to-host transfer; retains account traces and existing order-event exports and native/device audit buffers."
+}

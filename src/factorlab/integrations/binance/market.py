@@ -2,8 +2,6 @@
 from decimal import Decimal, InvalidOperation
 import re
 
-import pandas as pd
-
 from factorlab.errors import DataQualityError
 
 BOUNDARIES = ('NO LIVE MONEY', 'PIT_UNVERIFIED', 'HFQ_UNVERIFIED', 'FORMAL_ADMISSION_BLOCKED')
@@ -20,6 +18,7 @@ MARK_COLUMNS = ['event_time', 'mark_price', 'index_price', 'estimated_settle_pri
 
 def utc(value):
     """ISO dates mean UTC midnight; non-date instants require an explicit zone."""
+    import pandas as pd
     date_only = isinstance(value, str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}', value)
     result = pd.Timestamp(value)
     if pd.isna(result) or (result.tzinfo is None and not date_only):
@@ -126,6 +125,7 @@ def bars(rows, start, end, step, cutoff):
         if int(row[8]) < 0:
             raise DataQualityError('negative trade count')
         records.append([opened, closed, *row[1:6], row[7], int(row[8]), row[9], row[10]])
+    import pandas as pd
     frame = pd.DataFrame(records, columns=BAR_COLUMNS)
     for field in ['open_time', 'close_time']:
         frame[field] = pd.to_datetime(frame[field], unit='ms', utc=True)
@@ -148,6 +148,7 @@ def price_bars(rows, start, end, step, cutoff):
 
 
 def funding(rows, symbol, start, end):
+    import pandas as pd
     records = []
     for row in rows:
         if row['symbol'] != symbol or not start <= int(row['fundingTime']) < end:
@@ -167,6 +168,7 @@ def funding(rows, symbol, start, end):
 
 
 def mark(row, symbol):
+    import pandas as pd
     if row['symbol'] != symbol:
         raise DataQualityError('premiumIndex returned a different contract')
     for field in ['markPrice', 'indexPrice', 'estimatedSettlePrice']:
@@ -215,6 +217,7 @@ def paginate(client, endpoint, *, symbol, start, end, archive, interval=None):
 
 
 def completeness(frame, start, end, step, cutoff, onboard):
+    import pandas as pd
     expected_start = max(start, ((onboard + step - 1) // step) * step)
     completed_end = min(end, (cutoff // step) * step)
     observed = set(frame.open_time.astype('int64') // 1_000_000)

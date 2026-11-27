@@ -300,6 +300,8 @@ class StrategyInstances:
         return reports
 
     def close(self):
+        for strategy in self.loaded.values():
+            strategy.close()
         for native in self.native.values():
             native.close()
         for view in self.views.values():

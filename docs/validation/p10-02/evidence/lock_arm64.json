@@ -1,0 +1,15 @@
+{
+  "machine": "aarch64",
+  "python": "3.13.18",
+  "owner_lock_while_held": "BLOCKED",
+  "owner_lock_after_release": "ACQUIRED",
+  "controller_lock_primary_acquired": true,
+  "controller_lock_while_held": "BLOCKED",
+  "controller_lock_after_release": "ACQUIRED",
+  "flock_processes": 8,
+  "flock_rounds_per_process": 25,
+  "flock_expected": 200,
+  "flock_actual": 200,
+  "flock_elapsed_ms": 2836.08,
+  "pass": true
+}

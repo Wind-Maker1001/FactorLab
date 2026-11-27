@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import sqlite3
 
-from .tradfi_schedule import utc_instant
+from factorlab.time_utils import utc_instant
 
 TEST_ALLOCATION = 'tradfi-qqq-spy-test'
 TEST_SYMBOLS = frozenset({'QQQUSDT', 'SPYUSDT'})

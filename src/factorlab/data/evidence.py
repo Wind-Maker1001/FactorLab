@@ -4,6 +4,8 @@ Hashes detect inconsistent local evidence; they are not external certification.
 No provider calls or filesystem mutations occur at import time.
 """
 
+from __future__ import annotations
+
 from dataclasses import asdict, dataclass, is_dataclass
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -16,9 +18,6 @@ import re
 import uuid
 from typing import Any, Dict
 
-import pandas as pd
-
-from factorlab.data.tdx import TdxError, read_snapshot, safe_path
 from factorlab.errors import DataQualityError
 
 
@@ -44,7 +43,8 @@ def require_text(value: Any, label: str) -> str:
     return value
 
 
-def date(value: Any) -> pd.Timestamp:
+def date(value: Any):
+    import pandas as pd
     if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
         fail("canonical YYYY-MM-DD required")
     try:
@@ -56,8 +56,9 @@ def date(value: Any) -> pd.Timestamp:
     return result
 
 
-def timestamp(value: Any) -> pd.Timestamp:
+def timestamp(value: Any):
     """A date-only fact uses its Shanghai end-of-day upper bound."""
+    import pandas as pd
     if isinstance(value, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
         return (date(value).tz_localize("Asia/Shanghai") + pd.Timedelta(days=1)
                 - pd.Timedelta(nanoseconds=1)).tz_convert("UTC")
@@ -83,7 +84,7 @@ def json_bytes(value: Any) -> bytes:
                        allow_nan=False, default=_json_default) + "\n").encode("ascii")
 
 
-def table_sha256(frame: pd.DataFrame) -> str:
+def table_sha256(frame: Any) -> str:
     """Stable table bytes within the pinned dependency contract; input is unmodified."""
     stream = io.BytesIO()
     frame.to_parquet(stream, index=False)
@@ -106,6 +107,7 @@ class SourceArtifact:
     locator: str
 
     def read(self) -> bytes:
+        from factorlab.data.tdx import TdxError, read_snapshot
         require_hash(self.sha256)
         require_text(self.source_id, "source_id")
         timestamp(self.acquired_at)
@@ -122,6 +124,7 @@ class SourceArtifact:
 
 
 def snapshot_file(path: Path, source_id: str, acquired_at: str) -> SourceArtifact:
+    from factorlab.data.tdx import TdxError, read_snapshot
     require_text(source_id, "source_id")
     timestamp(acquired_at)
     p = Path(path)
@@ -136,6 +139,7 @@ def snapshot_file(path: Path, source_id: str, acquired_at: str) -> SourceArtifac
 def archive_bytes(content: bytes, root: Path, source_id: str, locator: str,
                   acquired_at: str) -> SourceArtifact:
     """Content addressed exclusive publication; never overwrite an old file."""
+    from factorlab.data.tdx import read_snapshot, safe_path
     require_text(source_id, "source_id")
     require_text(locator, "locator")
     timestamp(acquired_at)

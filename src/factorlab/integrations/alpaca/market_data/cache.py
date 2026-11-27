@@ -1,4 +1,5 @@
 """Immutable market-data vintages with an atomic active-generation pointer."""
+from collections import OrderedDict
 from dataclasses import dataclass, asdict
 import hashlib
 import io
@@ -29,9 +30,19 @@ class Series:
 
 
 class MarketCache:
-    def __init__(self, root):
+    def __init__(self, root, *, max_cached=32):
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
+        self._max_cached = max(0, int(max_cached))
+        self._frames = OrderedDict()
+
+    def _cache_put(self, cache_key, frame):
+        if self._max_cached <= 0:
+            return
+        self._frames[cache_key] = frame
+        self._frames.move_to_end(cache_key)
+        while len(self._frames) > self._max_cached:
+            self._frames.popitem(last=False)
 
     def load(self, series):
         pointer = self.root / (series.key + '.json')
@@ -46,7 +57,14 @@ class MarketCache:
         payload = (self.root / name / 'bars.parquet').read_bytes()
         if hashlib.sha256(payload).hexdigest() != metadata['sha256']:
             raise ValueError('cache generation integrity failure')
-        return pd.read_parquet(io.BytesIO(payload)), metadata
+        cache_key = (series.key, name, metadata['sha256'])
+        cached = self._frames.get(cache_key)
+        if cached is not None:
+            self._frames.move_to_end(cache_key)
+            return cached.copy(), metadata
+        frame = pd.read_parquet(io.BytesIO(payload))
+        self._cache_put(cache_key, frame)
+        return frame.copy(), metadata
 
     def publish(self, series, rows, *, start, end, calendar_version, captured_at):
         """Replace the requested interval; adjusted updates must cover the old window."""
@@ -94,6 +112,7 @@ class MarketCache:
                 output.flush()
                 os.fsync(output.fileno())
             os.replace(temporary, self.root / (series.key + '.json'))
+            self._cache_put((series.key, generation, metadata['sha256']), frame.copy())
             return metadata
 
     def provider(self, series):

@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import os
 
+from factorlab.time_utils import utc_instant
 from factorlab.trading.contracts import Side
 from factorlab.trading.paper import Instrument, Quote
 from factorlab.trading.portfolio_runtime import PortfolioRuntime
@@ -79,7 +80,6 @@ class DemoPortfolioConsumer:
                 status, detail = self.session.instance_owner.accept_task(task_payload)
                 self.receipt(status, detail)
                 return
-            from .tradfi_schedule import utc_instant
             from factorlab.trading.contracts import TERMINAL
             from factorlab.trading.storage import decode
             store = self.session.controller.store
@@ -93,7 +93,7 @@ class DemoPortfolioConsumer:
             saved_target = store.event_payload('portfolio:' + identity((
                 task_payload['allocation_id'],task_payload['task_id'])))
             started = saved_target is not None
-            if utc_instant(task_payload['valid_until']) <= self.session._now():
+            if utc_instant(task_payload['valid_until']) <= utc_instant(self.session._now()):
                 recovered = self.session.gateway.recover(self.session.controller)
                 if recovered.reconciled and started:
                     portfolio = PortfolioRuntime(self.session.controller,
@@ -195,8 +195,7 @@ class DemoPortfolioConsumer:
                 self.session.controller.quote(Quote(symbol, price, book['time_utc']))
         def submit(intent):
             if self.active_mailbox_task is not None:
-                from .tradfi_schedule import utc_instant
-                if utc_instant(self.active_mailbox_task['valid_until']) <= self.session._now():
+                if utc_instant(self.active_mailbox_task['valid_until']) <= utc_instant(self.session._now()):
                     raise SafetyBlocked('task expired before dispatch; recover original identities')
             with self.scope(task, intent.instrument_id, client_id=intent.client_order_id) as (authorization, guard):
                 self.session.submit_instance_intent(intent, instance_id=instance_id,
@@ -261,8 +260,7 @@ class DemoPortfolioConsumer:
             if durable_control_state(self.runtime) is not None:
                 raise SafetyBlocked('account execution stopped')
             if self.active_mailbox_task is not None:
-                from .tradfi_schedule import utc_instant
-                if utc_instant(self.active_mailbox_task['valid_until']) <= s._now() and method != 'DELETE':
+                if utc_instant(self.active_mailbox_task['valid_until']) <= utc_instant(s._now()) and method != 'DELETE':
                     raise SafetyBlocked('task expired at dispatch; only known-order cleanup permitted')
             if params.get('symbol') != symbol or symbol not in SYMBOLS:
                 raise SafetyBlocked('portfolio symbol ownership mismatch')
