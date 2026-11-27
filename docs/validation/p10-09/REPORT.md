@@ -89,3 +89,13 @@ Binance 未成交的撤销或过期订单有较短的官方历史保留窗口。
 新增 HTTP 夹具覆盖基线读取前、期间、之后的成交，期间成交已纳入和未纳入的两种情形，账户与持仓端点读到不同部分成交数量，源区间内手续费、已实现损益及资金费，恢复过程中新成交和晚到资金费，原始锚点跨 SQLite 重开，以及真实现金与持仓差额。复查 Alpaca 的现金追赶后，确认它沿用已持久化的请求区间和官方成交序列；订单投影使用券商 `updated_at`。本次改动集中在 Binance 与恢复标记。
 
 Linux x64 上 Binance 灾备、F10 资金费、Demo 网络适配器及执行入口共 142 项通过，Alpaca、C07、交接和传输回归共 73 项通过。Windows x64 上存储及 Binance 灾备共 28 项通过。本地重新执行两市场工件的导出和校验恢复，原生 ARM64 跨架构复验由同一 PR 的灾备工作流运行。测试中的订单和资金事件通过 HTTP 夹具生成。
+
+## 可信 CI 账户读取夹具修复
+
+上一轮扩展软件 shard 2 在 Python 3.13 和 3.14 上均只有 `test_parallel_account_matches_serial_and_starts_known_v2_read_with_v3` 失败。旧替身没有接收 `read_windows`，因此在强制串行读取执行前报参数错误。3.13 分片有 2962 项通过，3.14 分片有 2786 项通过。[Python 3.13 分片](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45967212161/job/140401070816) [Python 3.14 分片](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45967212161/job/140401071034)
+
+替身现在把同一个 `read_windows` 容器传给原方法，并继续指定 `parallel=False`。比较时单独处理观测时间和读取区间，仍核对资产及其余账户事实。串行路径留下空区间。并行路径必须记录账户、持仓风险和挂单三个端点的整数毫秒区间，并覆盖夹具中的交易所时钟。V2 权限请求与 V3 请求的并发约束、权限冲突导致对账关闭的断言均继续执行。合入 `origin/main` 的 `c9b455e` 后，生产调用和测试替身中只有该夹具需要更新。该基线包含已合并的 #264 和 #267。
+
+上一轮可信 CI 的 3.13 shard 0 和 3.14 shard 0、1 已通过。复查时 3.13 shard 1 仍在运行。云端运行时的四个离线矩阵作业和 x64 到原生 ARM64 的灾备工件恢复均已通过。[上一轮可信 CI](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45967212161) [跨架构恢复](https://github.com/Wind-Maker1001/FactorLab/actions/runs/45967216858)
+
+合并后在 Windows x64 上运行账户 GET 恢复、构造器校时、Binance 灾备、F10 资金费、共用灾备和外部策略集成的定向回归。Python 3.13 通过 137 项，Python 3.14 通过 137 项。
