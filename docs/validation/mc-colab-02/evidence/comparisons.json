@@ -1,0 +1,687 @@
+{
+  "reliability": {
+    "statistics": [
+      {
+        "cell": {
+          "name": "gbm-pilot",
+          "model": "gbm",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "contrasts": {
+          "var_0.95": {
+            "gpu_minus_cpu": 7.723015502819619e-05,
+            "family_interval_95": [
+              -0.0025088023804545755,
+              0.002663262690510968
+            ]
+          },
+          "cvar_0.95": {
+            "gpu_minus_cpu": -3.870689730678389e-06,
+            "family_interval_95": [
+              -0.001746164295351445,
+              0.0017384229158900883
+            ]
+          },
+          "var_0.99": {
+            "gpu_minus_cpu": -0.0008060419346640479,
+            "family_interval_95": [
+              -0.003800963788755717,
+              0.002188879919427621
+            ]
+          },
+          "cvar_0.99": {
+            "gpu_minus_cpu": -0.0006532066388241775,
+            "family_interval_95": [
+              -0.00543562307878117,
+              0.004129209801132815
+            ]
+          },
+          "loss_probability": {
+            "gpu_minus_cpu": 0.0001140000000000585,
+            "family_interval_95": [
+              -0.0027881593445674806,
+              0.0030161593445675976
+            ]
+          },
+          "drawdown_breach_probability": {
+            "gpu_minus_cpu": 0.0007500000000001394,
+            "family_interval_95": [
+              -0.0017035137412624263,
+              0.003203513741262705
+            ]
+          },
+          "drawdown_0.5": {
+            "gpu_minus_cpu": 0.00010700688393858182,
+            "family_interval_95": [
+              -0.0003388989630268998,
+              0.0005529127309040634
+            ]
+          },
+          "drawdown_0.95": {
+            "gpu_minus_cpu": -0.00011935755120773273,
+            "family_interval_95": [
+              -0.002237727348531516,
+              0.0019990122461160504
+            ]
+          },
+          "drawdown_0.99": {
+            "gpu_minus_cpu": -0.0005828150448488612,
+            "family_interval_95": [
+              -0.0028454895435563745,
+              0.0016798594538586522
+            ]
+          }
+        },
+        "method": "unpaired Welch, Bonferroni across nine metrics within cell",
+        "equivalence_status": "NO_BUSINESS_MARGIN_SPECIFIED"
+      },
+      {
+        "cell": {
+          "name": "bootstrap-pilot",
+          "model": "moving_block_bootstrap",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "contrasts": {
+          "var_0.95": {
+            "gpu_minus_cpu": 0.0005615878451883938,
+            "family_interval_95": [
+              -0.0013948425347548405,
+              0.002518018225131628
+            ]
+          },
+          "cvar_0.95": {
+            "gpu_minus_cpu": 0.0009091005846688649,
+            "family_interval_95": [
+              -0.0013167670219954891,
+              0.003134968191333219
+            ]
+          },
+          "var_0.99": {
+            "gpu_minus_cpu": 0.001122758138361879,
+            "family_interval_95": [
+              -0.002780914784897004,
+              0.005026431061620762
+            ]
+          },
+          "cvar_0.99": {
+            "gpu_minus_cpu": 0.0022264921347514566,
+            "family_interval_95": [
+              -0.003080548251655566,
+              0.007533532521158479
+            ]
+          },
+          "loss_probability": {
+            "gpu_minus_cpu": 0.0007380000000001274,
+            "family_interval_95": [
+              -0.002801086830126965,
+              0.00427708683012722
+            ]
+          },
+          "drawdown_breach_probability": {
+            "gpu_minus_cpu": -2.399999999991298e-05,
+            "family_interval_95": [
+              -0.004395884525814545,
+              0.004347884525814719
+            ]
+          },
+          "drawdown_0.5": {
+            "gpu_minus_cpu": 0.00016240457268773545,
+            "family_interval_95": [
+              -0.0007482191794027243,
+              0.0010730283247781952
+            ]
+          },
+          "drawdown_0.95": {
+            "gpu_minus_cpu": 0.0006520840182594467,
+            "family_interval_95": [
+              -0.0011760110678256089,
+              0.0024801791043445025
+            ]
+          },
+          "drawdown_0.99": {
+            "gpu_minus_cpu": 0.0011115509689067493,
+            "family_interval_95": [
+              -0.0015337019661584863,
+              0.003756803903971985
+            ]
+          }
+        },
+        "method": "unpaired Welch, Bonferroni across nine metrics within cell",
+        "equivalence_status": "NO_BUSINESS_MARGIN_SPECIFIED"
+      },
+      {
+        "cell": {
+          "name": "gbm-8assets",
+          "model": "gbm",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 8,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "contrasts": {
+          "var_0.95": {
+            "gpu_minus_cpu": -0.0002906203026273313,
+            "family_interval_95": [
+              -0.0021012325482053836,
+              0.0015199919429507212
+            ]
+          },
+          "cvar_0.95": {
+            "gpu_minus_cpu": 0.00025702558735524184,
+            "family_interval_95": [
+              -0.001603810910835337,
+              0.0021178620855458207
+            ]
+          },
+          "var_0.99": {
+            "gpu_minus_cpu": 0.0005207863927783329,
+            "family_interval_95": [
+              -0.0016947730825500537,
+              0.0027363458681067196
+            ]
+          },
+          "cvar_0.99": {
+            "gpu_minus_cpu": 0.0015567965360482328,
+            "family_interval_95": [
+              -0.001063628550231468,
+              0.004177221622327934
+            ]
+          },
+          "loss_probability": {
+            "gpu_minus_cpu": -0.0007039999999999824,
+            "family_interval_95": [
+              -0.0054286732703649875,
+              0.004020673270365023
+            ]
+          },
+          "drawdown_breach_probability": {
+            "gpu_minus_cpu": -5.600000000001437e-05,
+            "family_interval_95": [
+              -0.0031328336970038,
+              0.0030208336970037712
+            ]
+          },
+          "drawdown_0.5": {
+            "gpu_minus_cpu": -0.00023349494300213547,
+            "family_interval_95": [
+              -0.0005526116641300458,
+              8.562177812577489e-05
+            ]
+          },
+          "drawdown_0.95": {
+            "gpu_minus_cpu": -0.00010059224953504198,
+            "family_interval_95": [
+              -0.0012867374774420163,
+              0.0010855529783719323
+            ]
+          },
+          "drawdown_0.99": {
+            "gpu_minus_cpu": 0.0002610813050424876,
+            "family_interval_95": [
+              -0.0017041638720869138,
+              0.002226326482171889
+            ]
+          }
+        },
+        "method": "unpaired Welch, Bonferroni across nine metrics within cell",
+        "equivalence_status": "NO_BUSINESS_MARGIN_SPECIFIED"
+      },
+      {
+        "cell": {
+          "name": "bootstrap-8assets",
+          "model": "moving_block_bootstrap",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 8,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "contrasts": {
+          "var_0.95": {
+            "gpu_minus_cpu": 3.180369583735687e-05,
+            "family_interval_95": [
+              -0.0015864466655001025,
+              0.0016500540571748163
+            ]
+          },
+          "cvar_0.95": {
+            "gpu_minus_cpu": 0.00023384790421851487,
+            "family_interval_95": [
+              -0.001875805831158072,
+              0.0023435016395951017
+            ]
+          },
+          "var_0.99": {
+            "gpu_minus_cpu": 0.0003015459469145887,
+            "family_interval_95": [
+              -0.0027142048799095684,
+              0.0033172967737387458
+            ]
+          },
+          "cvar_0.99": {
+            "gpu_minus_cpu": 0.0009310018267942866,
+            "family_interval_95": [
+              -0.0021114591455413693,
+              0.003973462799129942
+            ]
+          },
+          "loss_probability": {
+            "gpu_minus_cpu": 0.0015440000000000453,
+            "family_interval_95": [
+              -0.0025372122777945014,
+              0.005625212277794592
+            ]
+          },
+          "drawdown_breach_probability": {
+            "gpu_minus_cpu": 5.000000000000837e-05,
+            "family_interval_95": [
+              -0.0020956255408146715,
+              0.0021956255408146883
+            ]
+          },
+          "drawdown_0.5": {
+            "gpu_minus_cpu": 5.3708664168719555e-05,
+            "family_interval_95": [
+              -0.0003310286609651831,
+              0.0004384459893026222
+            ]
+          },
+          "drawdown_0.95": {
+            "gpu_minus_cpu": -0.00016716314671746946,
+            "family_interval_95": [
+              -0.0010956788851455494,
+              0.0007613525917106104
+            ]
+          },
+          "drawdown_0.99": {
+            "gpu_minus_cpu": 0.0008266374858310055,
+            "family_interval_95": [
+              -0.001431227163790938,
+              0.003084502135452949
+            ]
+          }
+        },
+        "method": "unpaired Welch, Bonferroni across nine metrics within cell",
+        "equivalence_status": "NO_BUSINESS_MARGIN_SPECIFIED"
+      }
+    ],
+    "performance": [
+      {
+        "cell": {
+          "name": "gbm-pilot",
+          "model": "gbm",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 2.4667185999569483,
+        "cold_gpu_median_seconds": 3.5962872999953106,
+        "measured_cold_choice": "cpu",
+        "cpu_median_seconds": 1.0035682499874383,
+        "gpu_median_seconds": 0.09432040003594011,
+        "observed_speedup": 10.639991450471328,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "bootstrap-pilot",
+          "model": "moving_block_bootstrap",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 2.2972477999865077,
+        "cold_gpu_median_seconds": 3.156153300020378,
+        "measured_cold_choice": "cpu",
+        "cpu_median_seconds": 0.7822151000145823,
+        "gpu_median_seconds": 0.10984670001198538,
+        "observed_speedup": 7.120970406295635,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "gbm-8assets",
+          "model": "gbm",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 8,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 8.77421930001583,
+        "cold_gpu_median_seconds": 3.818237700033933,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 5.869876149954507,
+        "gpu_median_seconds": 0.38561890000710264,
+        "observed_speedup": 15.221961760293365,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "bootstrap-8assets",
+          "model": "moving_block_bootstrap",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 8,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 4.038733900000807,
+        "cold_gpu_median_seconds": 3.461771000002045,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 1.4103715000092052,
+        "gpu_median_seconds": 0.23142799999914132,
+        "observed_speedup": 6.094212887007787,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      }
+    ]
+  },
+  "scale": {
+    "statistics": [],
+    "performance": [
+      {
+        "cell": {
+          "name": "gbm-1m-b1024",
+          "model": "gbm",
+          "n_paths": 1000000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 13.340041599993128,
+        "cold_gpu_median_seconds": 3.1530798000167124,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 13.740266750013689,
+        "gpu_median_seconds": 0.798496149975108,
+        "observed_speedup": 17.207680651236732,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "gbm-1m-b4096",
+          "model": "gbm",
+          "n_paths": 1000000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 4096,
+          "gpu_memory_limit_mb": 4096
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 20.655935599992517,
+        "cold_gpu_median_seconds": 3.8940594000159763,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 17.041418149980018,
+        "gpu_median_seconds": 0.45555975000024773,
+        "observed_speedup": 37.40764663684786,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "bootstrap-1m",
+          "model": "moving_block_bootstrap",
+          "n_paths": 1000000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 4096,
+          "gpu_memory_limit_mb": 4096
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 15.331485700036865,
+        "cold_gpu_median_seconds": 3.843060700048227,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 14.445656850002706,
+        "gpu_median_seconds": 0.28830710001057014,
+        "observed_speedup": 50.10510268208132,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "gbm-8assets",
+          "model": "gbm",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 8,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 16.94552480004495,
+        "cold_gpu_median_seconds": 2.5693398999865167,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 8.947333449992584,
+        "gpu_median_seconds": 0.36038660001941025,
+        "observed_speedup": 24.827042541289508,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "gbm-32assets",
+          "model": "gbm",
+          "n_paths": 100000,
+          "n_steps": 252,
+          "assets": 32,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 29.07240990002174,
+        "cold_gpu_median_seconds": 3.1195645999978296,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 25.737705699983053,
+        "gpu_median_seconds": 1.0308665500197094,
+        "observed_speedup": 24.967058732763196,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "gbm-168steps",
+          "model": "gbm",
+          "n_paths": 100000,
+          "n_steps": 168,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 2.1261351000284776,
+        "cold_gpu_median_seconds": 2.3130537000251934,
+        "measured_cold_choice": "cpu",
+        "cpu_median_seconds": 0.6565260500065051,
+        "gpu_median_seconds": 0.07200464999186806,
+        "observed_speedup": 9.117828502473808,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "gbm-8760steps",
+          "model": "gbm",
+          "n_paths": 100000,
+          "n_steps": 8760,
+          "assets": 1,
+          "batch_size": 256,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 51.512075899983756,
+        "cold_gpu_median_seconds": 5.467262700025458,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 52.05893579998519,
+        "gpu_median_seconds": 3.224974500015378,
+        "observed_speedup": 16.142433312181833,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      }
+    ]
+  },
+  "crossover": {
+    "statistics": [],
+    "performance": [
+      {
+        "cell": {
+          "name": "gbm-100",
+          "model": "gbm",
+          "n_paths": 100,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 2.596551000024192,
+        "cold_gpu_median_seconds": 2.279655499965884,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 0.002498099987860769,
+        "gpu_median_seconds": 0.002820699999574572,
+        "observed_speedup": 0.8856312221212966,
+        "measured_steady_choice": "cpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "gbm-1000",
+          "model": "gbm",
+          "n_paths": 1000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 2.5997274999972433,
+        "cold_gpu_median_seconds": 3.248584499990102,
+        "measured_cold_choice": "cpu",
+        "cpu_median_seconds": 0.014389699965249747,
+        "gpu_median_seconds": 0.0056579000083729625,
+        "observed_speedup": 2.5432934381934724,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "gbm-10000",
+          "model": "gbm",
+          "n_paths": 10000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 1.822173400025349,
+        "cold_gpu_median_seconds": 3.473363699973561,
+        "measured_cold_choice": "cpu",
+        "cpu_median_seconds": 0.10022249998291954,
+        "gpu_median_seconds": 0.012289199978113174,
+        "observed_speedup": 8.155331523729279,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "bootstrap-100",
+          "model": "moving_block_bootstrap",
+          "n_paths": 100,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 1.7814059000229463,
+        "cold_gpu_median_seconds": 2.3996326999622397,
+        "measured_cold_choice": "cpu",
+        "cpu_median_seconds": 0.0011864000116474926,
+        "gpu_median_seconds": 0.002839100023265928,
+        "observed_speedup": 0.417878905964972,
+        "measured_steady_choice": "cpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "bootstrap-1000",
+          "model": "moving_block_bootstrap",
+          "n_paths": 1000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 2.5626190999755636,
+        "cold_gpu_median_seconds": 2.3201236000168137,
+        "measured_cold_choice": "gpu",
+        "cpu_median_seconds": 0.009859699988737702,
+        "gpu_median_seconds": 0.003818199969828129,
+        "observed_speedup": 2.5822901017888604,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      },
+      {
+        "cell": {
+          "name": "bootstrap-10000",
+          "model": "moving_block_bootstrap",
+          "n_paths": 10000,
+          "n_steps": 252,
+          "assets": 1,
+          "batch_size": 1024,
+          "gpu_memory_limit_mb": 1024
+        },
+        "cpu_workers": 1,
+        "gpu_workers": 1,
+        "cold_cpu_median_seconds": 2.7212037999997847,
+        "cold_gpu_median_seconds": 3.1954932999797165,
+        "measured_cold_choice": "cpu",
+        "cpu_median_seconds": 0.08891359996050596,
+        "gpu_median_seconds": 0.019923599960748106,
+        "observed_speedup": 4.462727626316352,
+        "measured_steady_choice": "gpu",
+        "scope": "runner including exact summary; excludes external reliability analysis"
+      }
+    ]
+  }
+}

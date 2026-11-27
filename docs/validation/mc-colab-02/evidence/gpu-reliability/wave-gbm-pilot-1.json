@@ -1,0 +1,40 @@
+{
+  "outcomes": [
+    {
+      "status": "SUCCEEDED",
+      "resources": {
+        "sample_interval_seconds": 0.05,
+        "samples": 22,
+        "rss_peak_bytes": 583094272,
+        "cpu_peak_core_equivalents": 2.022620994026752,
+        "cpu_seconds": 1.28125,
+        "device_used_peak_bytes": 2237382656,
+        "device_memory_scope": "whole CUDA device, includes other processes",
+        "gpu": {
+          "name": "NVIDIA GeForce RTX 2070",
+          "uuid": "GPU-2363dc5c-9b8b-af1e-8b7f-f1428c255437",
+          "pci_bus_id": "0000:01:00.0",
+          "driver": "617.42",
+          "total_memory_bytes": 8589934592
+        },
+        "peak_meaning": "sampled lower bound on instantaneous peak"
+      }
+    }
+  ],
+  "workers": 1,
+  "wall_seconds": 4.556764099979773,
+  "child_inclusive_memory": {
+    "sample_interval_seconds": 0.05,
+    "samples": 60,
+    "rss_peak_bytes": 753799168,
+    "cpu_peak_core_equivalents": 0.4124443363093907,
+    "cpu_seconds": 1.03125,
+    "device_used_peak_bytes": null,
+    "device_memory_scope": "whole CUDA device, includes other processes",
+    "gpu": null,
+    "peak_meaning": "sampled lower bound on instantaneous peak"
+  },
+  "child_cpu_seconds": 0.59375,
+  "completed_paths": 300000,
+  "scope": "aggregate child jobs including startup, sampling and external statistics"
+}

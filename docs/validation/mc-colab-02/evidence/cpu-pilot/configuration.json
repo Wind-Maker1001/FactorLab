@@ -1,0 +1,60 @@
+{
+  "protocol": "MC-COLAB-02-v1",
+  "seeds": [
+    104729,
+    130363,
+    155921,
+    181081,
+    205019
+  ],
+  "timing_repeats": 2,
+  "bootstrap_resamples": 199,
+  "input_seed": 1729,
+  "host_memory_budget_mb": 8192,
+  "budget_seconds": 600,
+  "blas_threads": 1,
+  "cells": [
+    {
+      "name": "gbm-pilot",
+      "model": "gbm",
+      "n_paths": 100000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "bootstrap-pilot",
+      "model": "moving_block_bootstrap",
+      "n_paths": 100000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    }
+  ],
+  "candidate_paths": [
+    100000,
+    1000000,
+    10000000,
+    100000000
+  ],
+  "candidate_assets": [
+    1,
+    8,
+    32
+  ],
+  "candidate_steps": [
+    168,
+    252,
+    8760
+  ],
+  "candidate_batches": [
+    1024,
+    4096
+  ],
+  "candidate_gpu_budgets_mb": [
+    1024,
+    4096
+  ]
+}
