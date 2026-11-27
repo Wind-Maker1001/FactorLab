@@ -67,7 +67,7 @@ def _warm_timezones(manifest: dict, *, pandas_module=None):
             if tz_name == 'UTC':
                 continue
             try:
-                pandas_module.Timestamp('2026-01-01', tz=tz_name)
+                pandas_module.Timestamp(2000, 1, 1).tz_localize(tz_name)
             except Exception:
                 pass
 
@@ -99,12 +99,13 @@ def _check_dependencies(manifest):
 
 
 def _prepare_runtime(source_root: Path, package: Path, manifest: dict):
-    # Compatible with P10-11 lightweight runtime_profile and model packages:
-    # skip heavyweight adapter/numeric preimports unless actually required.
+    # Preload the numerical libraries only for non-lightweight packages that
+    # require them (or declare an America/New_York exchange calendar).
+    # P10-11 lightweight and frozen-model packages use audited imports directly.
     lightweight = 'model' in manifest or manifest.get('runtime_profile') == 'lightweight'
     if not lightweight:
         import factorlab.strategies.adapters  # noqa: F401
-        if _needs_numeric_preimport(package, manifest):
+        if _needs_numeric_preimport(package, manifest) or manifest.get('calendar_timezone') == 'America/New_York':
             try:
                 import numpy  # noqa: F401
                 import pandas as pd
@@ -122,6 +123,7 @@ def _prepare_runtime(source_root: Path, package: Path, manifest: dict):
 
 def _load_strategy_module(package: Path, manifest: dict):
     entry = package / manifest['file']
+    # A package entrypoint supports ordinary relative imports.
     module_spec = importlib.util.spec_from_file_location(
         'factorlab_selected_strategy',
         entry,
@@ -134,10 +136,20 @@ def _load_strategy_module(package: Path, manifest: dict):
     return module
 
 
-def _execute_request(module, manifest, request, *, protocol_types, validate_event):
+def _execute_request(
+    module, package: Path, manifest: dict, request: dict, *,
+    protocol_types, validate_event, strategy_event, LinearModel,
+):
     Decision, StrategySpec, DecisionV2, StrategySpecV2, decision_payload, spec_payload, json_value = protocol_types
+    parameters = manifest['parameters']
+    if 'model' in manifest:
+        declaration = manifest['model']
+        model = LinearModel.read(declaration, (package / declaration['file']).read_bytes())
+        if request['operation'] == 'decide':
+            model.require_event_time(request['event']['event_time'])
+        parameters = dict(parameters, model=model)
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-        strategy = getattr(module, manifest['class'])(**manifest['parameters'])
+        strategy = getattr(module, manifest['class'])(**parameters)
         spec = strategy.describe()
         if not isinstance(spec, (StrategySpec, StrategySpecV2)):
             raise ValueError('describe must return a versioned StrategySpec')
@@ -154,7 +166,8 @@ def _execute_request(module, manifest, request, *, protocol_types, validate_even
             v2 = isinstance(spec, StrategySpecV2)
             if v2:
                 validate_event(request['event'], spec)
-            decision = strategy.decide(request['event'], request['state'])
+            event = strategy_event(request['event'], spec) if v2 else request['event']
+            decision = strategy.decide(event, request['state'])
             if not isinstance(decision, DecisionV2 if v2 else Decision):
                 raise ValueError('decide must return a matching versioned Decision')
             value = decision_payload(decision.validate(spec, None if v2 else request['event']['symbol']))
@@ -171,7 +184,8 @@ def main():
         Decision, StrategySpec, DecisionV2, StrategySpecV2,
         decision_payload, spec_payload, json_value,
     )
-    from factorlab.strategies.events import validate_event
+    from factorlab.strategies.events import strategy_event, validate_event
+    from factorlab.strategies.model import LinearModel
     protocol_types = (
         Decision, StrategySpec, DecisionV2, StrategySpecV2,
         decision_payload, spec_payload, json_value,
@@ -191,7 +205,11 @@ def main():
     try:
         module = _load_strategy_module(package, manifest)
         response = _execute_request(
-            module, manifest, request, protocol_types=protocol_types, validate_event=validate_event,
+            module, package, manifest, request,
+            protocol_types=protocol_types,
+            validate_event=validate_event,
+            strategy_event=strategy_event,
+            LinearModel=LinearModel,
         )
     except Exception as error:
         response = dict(error=type(error).__name__ + ': ' + str(error))

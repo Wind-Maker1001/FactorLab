@@ -1,7 +1,7 @@
 # P10-02：FactorLab 执行端轻量化及 ARM64 跨架构适配验证报告
 
-> **状态**：已完成依赖审计、轻量化优化、PR #268 Codex Review（P1 逐请求隔离恢复 + P2 原子容量与双层并发上限）修复、ARM64 原生验证、四向金融一致性校验与修复后全量性能复测；未修改或升级马来西亚生产模拟主机，未自动合并 PR。  
-> **开发分支**：`perf/p10-02-lightweight-arm64`（独立 worktree，基于 `origin/main` `388a8ee`，PR #268）  
+> **状态**：已完成依赖审计、轻量化优化、PR #268 Codex Review（P1/P2 及二轮管道清理 P2）修复、同步 `origin/main`（`59dbcad`，含 PR #264 / P10-11）并按接口语义完成冲突集成与 x64/ARM64 联合验证；未修改或升级马来西亚生产模拟主机，未自动合并 PR。  
+> **开发分支**：`perf/p10-02-lightweight-arm64`（独立 worktree，已合入最新 `origin/main` `59dbcad`，PR #268）  
 > **证据归档目录**：`docs/validation/p10-02/evidence/`
 
 ---
@@ -206,7 +206,11 @@
    - **Azure CPU 积分**：本次通过精确测量进程与子进程 CPU 时间（`RUSAGE_SELF + RUSAGE_CHILDREN`）并与 B2pts/B2ats v2 标称 20%/vCPU 基线（24s/min）比对评估可持续性，未通过 Azure Monitor API 读取云端实时积分余额表。
 2. **已知依赖兼容性与 P10-11 协同说明**：
    - `AdaptiveGridV2` 内部经 `grid_restore.py` 调用研究模块 `factorlab.experiments.grid_funding_adaptive`（顶层依赖 `numpy` / `pandas`），因此在部署 `AdaptiveGridV2` 的主机上需使用包含 `strategy-numeric` 或 `execution-dual` 的环境（纯 22 MiB `execution-binance` 仅适用于不依赖 `numpy/pandas` 的原生 `GridExecution` 与纯 Decimal / P10-11 `lightweight` 策略）。
-   - 与 **P10-11**（`runtime_profile='lightweight'`、模型工件与隔离加载器）保持兼容：`worker.py` 对 `runtime_profile='lightweight'` 与含 `model` 声明的包跳过重型预导入并仅预热 stdlib 时区表；`loader.py` 保留逐请求 one-shot 架构与透传字段，未重复实现 P10-11 策略协议。
+   - 与 **P10-11（PR #264 `59dbcad`）语义集成与联合验证**：
+     - 在合并 `origin/main` 时，按接口语义完整集成 3 个冲突文件（`strategies/__init__.py`、`strategies/worker.py`、`strategies/loader.py`）并核验自动合并的 `strategies/decision_runtime.py` 与 `integrations/alpaca/strategy_instances.py`：同时保留 P10-11 的外部策略协议、`strategy_event()` 参考行情裁剪、冻结线性模型工件（`LinearModel` / `model_effective_at` / `require_event_time` / `model_identity`）、`StrategyPackageError` 与 `read_package()` 无 TOCTOU 读取，以及 P10-02 的最小依赖、延迟导入、one-shot 逐请求隔离、宿主/整机双层并发上限和 `9e6cfc8` 先终止再关闭管道的清理顺序。
+     - **联合回归**：本地 x64 运行 `test_external_strategy.py`、`test_p10_02_lightweight_arm64.py`、`test_alpaca_native_v69.py`、`test_demo_adaptive_grid_v2.py`、`test_demo_instance_host.py`、`test_unified_cloud_strategy_s04.py`、`test_s04_package_failures.py` 及 `test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape` 共 **77 passed, 0 failed**（143.82s）；ARM64 最小无 `scipy` 环境（`venv-opt-dual`）运行上述执行套件 + `test_alpaca_deployment.py` 共 **78 passed, 0 failed**（75.88s）。
+     - **P10-11 外部策略三类示例跨架构验证**（`examples/external_strategy/run.py a/b/c`）：外部轻量策略（`a`，`SPY: 0.45, IWM: 0.45`）、参考 ETF 策略（`b`，`SPY: 0.9`）、冻结线性模型（`c`，`linear-1.json`，`NVDAUSDT: 0.5`）在 x64 与 ARM64 产生的 `package_id`、`model.sha256`、`targets` 与 `state` **逐位完全一致**；ARM64 单次决策耗时分别为 **`116.73 ms` / `116.44 ms` / `116.57 ms`**，子进程峰值内存仅 **`24.3 MiB`**（`24,876–24,884 KiB`）。
+     - **合并后 ARM64 双市场混合负载抽查**（3 宿主 + 12 策略 = 10 轻量 + 2 数值，共享 `VM_MAX=2`，3 轮并发）：最大总进程数 `5`（实时 Worker ≤ `2`），空载 PSS **`175.98 MiB`**，峰值 PSS **`302.95 MiB`**，最低 `MemAvailable` **`447.33 MiB`**，进程 Swap **`0.0 MiB`**，OOM **`0`**，轻量决策 p50 **`175.52 ms`**，数值决策 p50 **`722.09 ms`**，每分钟总 CPU **`2.65s`**（B2pts 持续基线占比 **`11.02%`**）。
    - 研究期/CI 专用锁测试 `tools/ci/lock_acceptance.py` 及 `tests/research/test_p8_perf01_optimizations.py` 顶层导入了研究依赖（`PyYAML`、`scipy`、`scikit-learn`），属于研究测试套件，不属于执行端最小运行期依赖；执行端隔离/并发回归与文件锁已在 ARM64 最小环境与本地 x64 完整验证。
    - Python 版本仍严格保持 `>=3.13,<3.15`；Ubuntu 24.04 系统自带 Python 3.12 不可直接运行，须按安装说明部署原生 `cpython-3.13-linux-<arch>-gnu` 至 `/opt/factorlab/python`。
 3. **生产主机与审批边界确认**：

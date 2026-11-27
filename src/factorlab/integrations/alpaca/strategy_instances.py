@@ -5,12 +5,13 @@ from uuid import uuid4
 
 from factorlab.strategies.decision_runtime import InstanceDecisionRuntime
 from factorlab.strategies.deployment import DeploymentController, DeploymentStore
-from factorlab.strategies.loader import LoadedStrategy
+from factorlab.strategies.loader import LoadedStrategy, StrategyPackageError
+from factorlab.strategies.package import manifest_spec
 from factorlab.trading.portfolio_execution import PortfolioStore
 from .http import AlpacaError
 from .adapter import OrderNotFound
 from .portfolio import AlpacaPortfolioRunner
-from .strategy_assets import StrategyAssets
+from .strategy_assets import StrategyAssetIneligible, StrategyAssets
 from .strategy_data import StrategyData
 from .strategy_deployment import AlpacaDeployment
 from .strategy_execution import AlpacaDecisionExecution
@@ -21,8 +22,9 @@ from .market_data.cache import MarketCache
 
 
 class StrategyInstances:
-    def __init__(self, root, adapter, configuration, *, clock, revision='unknown'):
+    def __init__(self, root, adapter, configuration, *, clock, revision='unknown', reference_provider=None):
         self.root, self.adapter, self.clock = Path(root), adapter, clock
+        self.reference_provider = reference_provider
         self.store = PortfolioStore(self.root / 'portfolio.sqlite3')
         self.runner = AlpacaPortfolioRunner(adapter, self.store, order_not_found=OrderNotFound,
                                            rejection_error=AlpacaError, clock=clock)
@@ -100,19 +102,27 @@ class StrategyInstances:
 
     def _bind(self, owner, package_id, account):
         view = self.views[owner]
-        strategy = self.load(package_id)
+        spec = manifest_spec(view.manifest(package_id))
         assets = StrategyAssets(self.adapter, self.store, clock=self.clock)
-        instance = AlpacaInstance(self.root, view.binding(), package_id, strategy.spec,
-            None, self.runner, StrategyData(assets, clock=self.clock), clock=self.clock)
-        allocation = instance.allocation(account)
-        execution = AlpacaDecisionExecution(self.runner.executor, assets, strategy.spec,
-                                           view.binding(), allocation, clock=self.clock)
-        instance.runtime = InstanceDecisionRuntime(strategy, view, execution, allocation=allocation)
+        data = StrategyData(assets, clock=self.clock, reference_provider=self.reference_provider)
+        instance = AlpacaInstance(self.root, view.binding(), package_id, spec,
+            None, self.runner, data, clock=self.clock)
+        try:
+            strategy = self.load(package_id)
+            allocation = instance.allocation(account)
+            execution = AlpacaDecisionExecution(self.runner.executor, assets, spec,
+                                               view.binding(), allocation, clock=self.clock)
+            instance.runtime = InstanceDecisionRuntime(strategy, view, execution, allocation=allocation)
+        except (StrategyPackageError, StrategyAssetIneligible) as error:
+            instance.state.update(state='PACKAGE_BLOCKED', reason=str(error))
         self.instances[owner] = instance
+        self.state['instances'][owner] = dict(instance.state)
+        return instance
 
     @property
     def symbols(self):
-        symbols = {symbol for instance in self.instances.values() for symbol in instance.spec.symbols}
+        symbols = {symbol for instance in self.instances.values() if instance.runtime is not None
+                   for symbol in instance.spec.symbols}
         symbols.update(symbol for native in self.native.values() for symbol in native.strategy.spec.symbols)
         symbols.update(symbol for symbol, in self.store.db.execute(
             'SELECT DISTINCT symbol FROM portfolio_claims WHERE account=?',
@@ -131,6 +141,35 @@ class StrategyInstances:
         receipts = self.adapter.read_corporate_activities(after=since + 'T00:00:00Z')
         return CorporateReceiptJournal(self.store, account_id).reconcile_account(
             self.runner.executor, announcements=announcements, receipts=receipts)
+
+    def _tick_instance(self, owner, instance, service, at, account):
+        view, controller = self.views[owner], self.controllers[owner]
+        controller.adapter.market_service = service
+        if instance.runtime is not None:
+            instance.runtime.adapter.bind_market(service, instance.data)
+        if view.pending() is not None or view.activation_callback() is not None:
+            outstanding = view.outstanding(instance.package_id)
+            if instance.runtime is None and outstanding:
+                return instance
+            for receipt in outstanding:
+                instance.runtime.adapter.execute(receipt)
+                view.acknowledge(receipt)
+            snapshot = controller.step()
+            if view.pending() is not None or view.activation_callback() is not None:
+                instance.state.update(state='SWITCHING', switch=snapshot['switch'])
+                return instance
+            if snapshot['active'] != instance.package_id or instance.runtime is None:
+                instance = self._bind(owner, snapshot['active'], account)
+                controller.adapter.instance = instance
+                if instance.runtime is not None:
+                    instance.runtime.adapter.bind_market(service, instance.data)
+        if instance.runtime is None:
+            snapshot = view.snapshot()
+            if snapshot['previous'] is not None and not view.outstanding(instance.package_id):
+                view.rollback('PACKAGE_BLOCKED', expected_active=instance.package_id)
+            return instance
+        instance.tick(service, at, account)
+        return instance
 
     def tick(self, service, window, at, facts):
         from zoneinfo import ZoneInfo
@@ -161,30 +200,11 @@ class StrategyInstances:
                                       reason={symbol: blocked[symbol] for symbol in affected})
                 self.state['instances'][owner] = dict(instance.state)
                 continue
-            view, controller = self.views[owner], self.controllers[owner]
-            instance.runtime.adapter.bind_market(service, instance.data)
-            if view.pending() is not None or view.activation_callback() is not None:
-                for receipt in view.outstanding(instance.package_id):
-                    instance.runtime.adapter.execute(receipt)
-                    view.acknowledge(receipt)
-                snapshot = controller.step()
-                controller.adapter.instance = instance
-                if view.pending() is not None or view.activation_callback() is not None:
-                    instance.state.update(state='SWITCHING', switch=snapshot['switch'])
-                    self.state['instances'][owner] = dict(instance.state)
-                    continue
-                if snapshot['active'] != instance.package_id:
-                    self._bind(owner, snapshot['active'], account)
-                    instance = self.instances[owner]
-                    controller.adapter.instance = instance
-                    instance.runtime.adapter.bind_market(service, instance.data)
-            required_feed = instance.spec.data.get('feed')
-            if required_feed is not None and required_feed != service.client.feed:
-                raise ValueError('strategy requires its declared real market-data feed')
-            instance.tick(service, at, account)
+            instance = self._tick_instance(owner, instance, service, at, account)
             self.state['instances'][owner] = dict(instance.state)
         blocked_states = {'PREPARATION_INCOMPLETE', 'PREVIOUS_TASK_RECONCILIATION_REQUIRED',
-                          'WAITING_PACKAGE_ACTIVATION', 'SWITCHING'}
+                          'WAITING_PACKAGE_ACTIVATION', 'SWITCHING', 'PACKAGE_BLOCKED',
+                          'STRATEGY_FAILED', 'WAITING_MODEL_EFFECTIVE'}
         blocked_instances = sorted(owner for owner, state in self.state['instances'].items()
                                    if state['state'] in blocked_states)
         self.state['state'] = 'BLOCKED_INSTANCES' if blocked_instances else 'RUNNING'
