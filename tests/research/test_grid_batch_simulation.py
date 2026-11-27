@@ -101,8 +101,6 @@ def test_existing_mc_runner_integration(config, backend):
 
 
 def test_reject_unrepresented_inputs(config):
-    with pytest.raises(UnsupportedGridSimulation, match='pause/exit'):
-        replace(config, grid=replace(config.grid, breakout='rebuild'))
     with pytest.raises(UnsupportedGridSimulation, match='budget'):
         replace(config, grid=replace(config.grid, budget=100))
     with pytest.raises(UnsupportedGridSimulation, match='collateral'):

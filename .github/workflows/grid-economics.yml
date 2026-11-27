@@ -1,0 +1,37 @@
+name: Grid CPU economic parity
+on:
+  pull_request:
+    paths:
+      - 'src/factorlab/research/grid_simulation/**'
+      - 'src/factorlab/strategies/**'
+      - 'src/factorlab/trading/**'
+      - 'src/factorlab/experiments/grid_funding_adaptive.py'
+      - 'tests/research/test_grid_batch_*.py'
+      - '.github/workflows/grid-economics.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  parity:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install CPU and Paper dependencies
+        run: python -m pip install -r requirements/py314-core.txt -r requirements/dev.txt
+      - name: Compare native CPU with Paper economics
+        run: python -m pytest tests/research/test_grid_batch_simulation.py tests/research/test_grid_batch_numeric_boundaries.py tests/research/test_grid_batch_inputs.py tests/research/test_grid_batch_dynamic.py tests/research/test_grid_batch_funding.py -q --junitxml=grid-economics.xml
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: grid-economics-${{ matrix.os }}
+          path: grid-economics.xml

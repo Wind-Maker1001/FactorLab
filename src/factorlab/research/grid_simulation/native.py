@@ -35,17 +35,25 @@ def _library():
     integers = np.ctypeslib.ndpointer(dtype=np.int64, flags='C_CONTIGUOUS')
     errors = np.ctypeslib.ndpointer(dtype=np.int32, flags='C_CONTIGUOUS')
     function.argtypes = [integers, ctypes.c_int, ctypes.c_int, doubles, integers,
-                         doubles, integers, ctypes.c_int, doubles, doubles, errors]
+                         doubles, integers, ctypes.c_int, doubles, doubles, errors,
+                         doubles, integers, integers, doubles, doubles, integers,
+                         doubles, doubles, ctypes.c_int, ctypes.c_int, ctypes.c_int, doubles]
     function.restype = None
     return loaded
 
 
-def run(quotes, targets, limits, params, integers, trace):
+def run(quotes, targets, limits, params, integers, trace, market, workspace_width):
+    from . import COLUMNS
     function = _library().grid_cpu
-    output = np.empty((len(quotes), quotes.shape[1] if trace else 1, 16))
+    output = np.empty((len(quotes), quotes.shape[1] if trace else 1, len(COLUMNS)))
     fills = np.zeros((len(quotes), quotes.shape[1], 128, 8) if trace else (1,))
+    audit = np.zeros((len(quotes), quotes.shape[1], 512, 11) if trace else (1,))
     errors = np.zeros(len(quotes), dtype=np.int32)
+    bars, times, event_times, rates, marks, coefficients, warmup = market
+    workspace = np.empty((len(quotes), workspace_width), dtype=np.float64)
     started = perf_counter()
     function(quotes, len(quotes), quotes.shape[1], targets, limits,
-             params, integers, trace, output, fills, errors)
-    return output, fills, errors, perf_counter() - started
+             params, integers, trace, output, fills, errors, bars, times,
+             event_times, rates, marks, coefficients, warmup, workspace,
+             len(event_times), warmup.shape[1], workspace_width, audit)
+    return output, fills, errors, perf_counter() - started, audit

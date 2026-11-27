@@ -1,0 +1,3949 @@
+{
+  "schema_version": 1,
+  "evidence": "RESEARCH_SIMULATION",
+  "experiment": "MC-GRID-GPU-02",
+  "python": "3.13.9",
+  "numpy": "2.3.5",
+  "seed": 1729,
+  "steps": 168,
+  "intrabar_substeps": 8,
+  "warmup_hours": 48,
+  "hourly_drift": 0.0,
+  "hourly_sigma": 0.008,
+  "initial_price": 200.0,
+  "anchor_close_utc_microseconds": 1794704399999999,
+  "model": "GBM at eight equal intrabar substeps; true sampled-process OHLC extrema, not close-derived envelopes; six-decimal shared quote freeze",
+  "funding": "whole-hour settlements inside observation intervals: +0.125bps/h until hour56, +1.5bps/h until hour112, then -0.25bps/h; 24-hour causal history; common exogenous six-decimal marks=200*(1.0002+0.01*sin(hour/24)), not path closes",
+  "output_policy": "bounded <=4096 input/output batches; compact terminal memmaps; only selected small Paper traces/fills/audits",
+  "comparison_policy": "identical seeded paths, real OHLC and funding schedules for every profile/backend and Paper; native CPU is serial",
+  "configuration": {
+    "static": {
+      "grid": {
+        "mode": "arithmetic",
+        "lower": 197.0,
+        "upper": 203.0,
+        "levels": 1,
+        "initial_cash": 10000.0,
+        "initial_inventory": 0,
+        "initial_price": 200.0,
+        "quantity": 1,
+        "budget": null,
+        "max_inventory": 1,
+        "max_cash_committed": 1000.0,
+        "atr_window": 3,
+        "atr_multiplier": 1.0,
+        "rebuild_threshold": 2.0,
+        "min_rebuild_interval": 3,
+        "max_turnover": 10.0,
+        "breakout": "pause",
+        "max_drawdown": 0.2,
+        "minimum_price": 0.01,
+        "minimum_quantity": 1,
+        "fee_bps": 4.0,
+        "slippage_bps": 6.0,
+        "order_ttl": 100,
+        "center_rule": "last_close",
+        "expiry_reseed_limit": 0,
+        "expiry_reseed_interval": 100
+      },
+      "rules": {
+        "quantity_unit": "0.10",
+        "step_size": "0.01",
+        "tick_size": "0.01",
+        "min_quantity": "0.01",
+        "min_notional": "5"
+      },
+      "capital": "1000",
+      "fee_rate": "0.0004",
+      "slippage": "0.0006",
+      "capacity": "0.10",
+      "funding_policy": null,
+      "volatility_policy": null
+    },
+    "ATR": {
+      "grid": {
+        "mode": "atr",
+        "lower": 197.0,
+        "upper": 203.0,
+        "levels": 1,
+        "initial_cash": 10000.0,
+        "initial_inventory": 0,
+        "initial_price": 200.0,
+        "quantity": 1,
+        "budget": null,
+        "max_inventory": 1,
+        "max_cash_committed": 1000.0,
+        "atr_window": 3,
+        "atr_multiplier": 1.0,
+        "rebuild_threshold": 2.0,
+        "min_rebuild_interval": 3,
+        "max_turnover": 10.0,
+        "breakout": "rebuild",
+        "max_drawdown": 0.2,
+        "minimum_price": 0.01,
+        "minimum_quantity": 1,
+        "fee_bps": 4.0,
+        "slippage_bps": 6.0,
+        "order_ttl": 100,
+        "center_rule": "last_close",
+        "expiry_reseed_limit": 0,
+        "expiry_reseed_interval": 100
+      },
+      "rules": {
+        "quantity_unit": "0.10",
+        "step_size": "0.01",
+        "tick_size": "0.01",
+        "min_quantity": "0.01",
+        "min_notional": "5"
+      },
+      "capital": "1000",
+      "fee_rate": "0.0004",
+      "slippage": "0.0006",
+      "capacity": "0.10",
+      "funding_policy": null,
+      "volatility_policy": null
+    },
+    "C": {
+      "grid": {
+        "mode": "arithmetic",
+        "lower": 197.0,
+        "upper": 203.0,
+        "levels": 1,
+        "initial_cash": 10000.0,
+        "initial_inventory": 0,
+        "initial_price": 200.0,
+        "quantity": 1,
+        "budget": null,
+        "max_inventory": 1,
+        "max_cash_committed": 1000.0,
+        "atr_window": 3,
+        "atr_multiplier": 1.0,
+        "rebuild_threshold": 2.0,
+        "min_rebuild_interval": 3,
+        "max_turnover": 10.0,
+        "breakout": "pause",
+        "max_drawdown": 0.2,
+        "minimum_price": 0.01,
+        "minimum_quantity": 1,
+        "fee_bps": 4.0,
+        "slippage_bps": 6.0,
+        "order_ttl": 100,
+        "center_rule": "last_close",
+        "expiry_reseed_limit": 0,
+        "expiry_reseed_interval": 100
+      },
+      "rules": {
+        "quantity_unit": "0.10",
+        "step_size": "0.01",
+        "tick_size": "0.01",
+        "min_quantity": "0.01",
+        "min_notional": "5"
+      },
+      "capital": "1000",
+      "fee_rate": "0.0004",
+      "slippage": "0.0006",
+      "capacity": "0.10",
+      "funding_policy": null,
+      "volatility_policy": {
+        "candidate_id": "C5",
+        "vol_window_hours": 48,
+        "k_mult": 3.0,
+        "horizon_hours": 1.0,
+        "min_half_width": 0.006,
+        "max_half_width": 0.035,
+        "extreme_vol_mult": 2.0,
+        "allow_flat_rebuild": true,
+        "min_rebuild_interval": 24,
+        "rebuild_width_delta": 0.25,
+        "reference_vol_1h": 0.008
+      }
+    },
+    "B": {
+      "grid": {
+        "mode": "arithmetic",
+        "lower": 197.0,
+        "upper": 203.0,
+        "levels": 1,
+        "initial_cash": 10000.0,
+        "initial_inventory": 0,
+        "initial_price": 200.0,
+        "quantity": 1,
+        "budget": null,
+        "max_inventory": 1,
+        "max_cash_committed": 1000.0,
+        "atr_window": 3,
+        "atr_multiplier": 1.0,
+        "rebuild_threshold": 2.0,
+        "min_rebuild_interval": 3,
+        "max_turnover": 10.0,
+        "breakout": "pause",
+        "max_drawdown": 0.2,
+        "minimum_price": 0.01,
+        "minimum_quantity": 1,
+        "fee_bps": 4.0,
+        "slippage_bps": 6.0,
+        "order_ttl": 100,
+        "center_rule": "last_close",
+        "expiry_reseed_limit": 0,
+        "expiry_reseed_interval": 100
+      },
+      "rules": {
+        "quantity_unit": "0.10",
+        "step_size": "0.01",
+        "tick_size": "0.01",
+        "min_quantity": "0.01",
+        "min_notional": "5"
+      },
+      "capital": "1000",
+      "fee_rate": "0.0004",
+      "slippage": "0.0006",
+      "capacity": "0.10",
+      "funding_policy": {
+        "candidate_id": "B5",
+        "lookback_hours": 24,
+        "conservative": true,
+        "entry_max_bps_h": 0.5,
+        "expected_hold_hours": 48.0,
+        "min_net_margin_bps": 100.0,
+        "exit_mode": "funding_bleed",
+        "exit_bps_h": 1.0,
+        "max_hold_hours": 72.0
+      },
+      "volatility_policy": null
+    }
+  },
+  "columns": [
+    "cash",
+    "inventory",
+    "available",
+    "committed",
+    "realized_gross",
+    "unrealized",
+    "equity",
+    "fee",
+    "slippage",
+    "drawdown",
+    "fills",
+    "state",
+    "reason",
+    "total_fees",
+    "total_slippage",
+    "maximum_drawdown",
+    "funding_pnl",
+    "total_funding_pnl",
+    "rebuilds",
+    "center",
+    "spacing",
+    "volatility",
+    "buy_blocked",
+    "pending_rebuild",
+    "last_rebuild",
+    "funding_bps_h"
+  ],
+  "scales": [
+    {
+      "paths": 1000,
+      "shared_path_generation_seconds": 0.04767810000339523,
+      "timing_policy": "Each profile/backend E2E attributes the SAME shared generation time once; these E2E values are not additive. Full-call wall includes wrapper input validation. Cold calls and selected audits excluded from warm totals.",
+      "cold_calls": {
+        "static/cpu": {
+          "first_call_seconds": 1.160720499989111,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.011954199988394976,
+            "setup_seconds": 1.1419489000109024,
+            "kernel_seconds": 0.011676199967041612,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "static/cuda": {
+          "first_call_seconds": 0.388629499997478,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.013858099991921335,
+            "kernel_seconds": 0.010177299962379038,
+            "setup_seconds": 0.36963259999174625,
+            "compile_or_cache_seconds": 0.11383769998792559,
+            "upload_and_allocation_seconds": 0.0033997000427916646,
+            "output_transfer_seconds": 0.00010949996067211032,
+            "device_allocation_peak_bytes": 10827776,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "ATR/cpu": {
+          "first_call_seconds": 0.017594299977645278,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.0121373999863863,
+            "setup_seconds": 1.100008375942707e-06,
+            "kernel_seconds": 0.011940500000491738,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "ATR/cuda": {
+          "first_call_seconds": 0.009057299990672618,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.0038500000373460352,
+            "kernel_seconds": 0.002187000005505979,
+            "setup_seconds": 0.00028979999478906393,
+            "compile_or_cache_seconds": 1.200009137392044e-06,
+            "upload_and_allocation_seconds": 0.0015472000231966376,
+            "output_transfer_seconds": 6.019999273121357e-05,
+            "device_allocation_peak_bytes": 10843648,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "C/cpu": {
+          "first_call_seconds": 0.14003050001338124,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.13512510003056377,
+            "setup_seconds": 6.999471224844456e-07,
+            "kernel_seconds": 0.13495100004365668,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "C/cuda": {
+          "first_call_seconds": 0.064485999988392,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.05887399998027831,
+            "kernel_seconds": 0.057087099994532764,
+            "setup_seconds": 0.0005478000384755433,
+            "compile_or_cache_seconds": 5.00003807246685e-07,
+            "upload_and_allocation_seconds": 0.0015980000025592744,
+            "output_transfer_seconds": 6.819999543949962e-05,
+            "device_allocation_peak_bytes": 11203584,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "B/cpu": {
+          "first_call_seconds": 0.016135399986524135,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.010843200027011335,
+            "setup_seconds": 9.00006853044033e-07,
+            "kernel_seconds": 0.010666899965144694,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "B/cuda": {
+          "first_call_seconds": 0.009225499990861863,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.004048899980261922,
+            "kernel_seconds": 0.0025934999575838447,
+            "setup_seconds": 0.0002694000140763819,
+            "compile_or_cache_seconds": 6.00004568696022e-07,
+            "upload_and_allocation_seconds": 0.0013455000007525086,
+            "output_transfer_seconds": 5.820003570988774e-05,
+            "device_allocation_peak_bytes": 10827776,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        }
+      },
+      "warm_runs": {
+        "static/cpu": {
+          "full_call_seconds": 0.016703900007996708,
+          "kernel_seconds": 0.011259300052188337,
+          "batches": 1,
+          "setup_seconds": 1.0999501682817936e-06,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 0.04767810000339523,
+          "attributed_end_to_end_seconds": 0.06438200001139194,
+          "paths_per_full_call_second": 59866.25874923024,
+          "paths_per_attributed_e2e_second": 15532.291631559398,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.8582527447011,
+                "minimum": 994.4542854905935,
+                "p05": 997.3519068795162,
+                "median": 1000.0,
+                "p95": 1002.0868086666927,
+                "maximum": 1006.144001782273
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011251707570758525,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003687343309591612,
+                "maximum": 0.005650805026317207
+              },
+              "fills": {
+                "mean": 0.455,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035691242778124166,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875617695094803,
+                "maximum": 0.007879587317440002
+              },
+              "total_slippage": {
+                "mean": 0.005350476131040038,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011806342737001785,
+                "maximum": 0.011812293600002022
+              },
+              "total_funding_pnl": {
+                "mean": -0.06930369288999998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 1000,
+              "confidence": 0.95,
+              "var": 0.0026480931204838406,
+              "cvar": 0.00350749385109053,
+              "loss_probability": 0.263
+            }
+          }
+        },
+        "static/cuda": {
+          "full_call_seconds": 0.010053500009234995,
+          "kernel_seconds": 0.0017973999492824078,
+          "batches": 1,
+          "setup_seconds": 0.0003628000267781317,
+          "compile_or_cache_seconds": 6.00004568696022e-07,
+          "upload_and_allocation_seconds": 0.0017173000378534198,
+          "output_transfer_seconds": 7.770000956952572e-05,
+          "device_allocation_peak_bytes": 10827776,
+          "shared_generation_seconds": 0.04767810000339523,
+          "attributed_end_to_end_seconds": 0.057731600012630224,
+          "paths_per_full_call_second": 99467.84692708161,
+          "paths_per_attributed_e2e_second": 17321.53620861409,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.8582527447011,
+                "minimum": 994.4542854905935,
+                "p05": 997.3519068795162,
+                "median": 1000.0,
+                "p95": 1002.0868086666927,
+                "maximum": 1006.144001782273
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011251707570758525,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003687343309591612,
+                "maximum": 0.005650805026317207
+              },
+              "fills": {
+                "mean": 0.455,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035691242778124166,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875617695094803,
+                "maximum": 0.007879587317440002
+              },
+              "total_slippage": {
+                "mean": 0.005350476131040038,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011806342737001785,
+                "maximum": 0.011812293600002022
+              },
+              "total_funding_pnl": {
+                "mean": -0.06930369288999998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 1000,
+              "confidence": 0.95,
+              "var": 0.0026480931204838406,
+              "cvar": 0.00350749385109053,
+              "loss_probability": 0.263
+            }
+          }
+        },
+        "ATR/cpu": {
+          "full_call_seconds": 0.017963299993425608,
+          "kernel_seconds": 0.011684800032526255,
+          "batches": 1,
+          "setup_seconds": 1.00000761449337e-06,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 0.04767810000339523,
+          "attributed_end_to_end_seconds": 0.06564139999682084,
+          "paths_per_full_call_second": 55669.058600924676,
+          "paths_per_attributed_e2e_second": 15234.288117688415,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.8480123848922,
+                "minimum": 994.8162479700173,
+                "p05": 997.2043435932732,
+                "median": 1000.0,
+                "p95": 1002.2196485104575,
+                "maximum": 1006.4848162049731
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011511004351124163,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.9851417038418973e-05,
+                "p95": 0.003715236946422284,
+                "maximum": 0.005733779659982674
+              },
+              "fills": {
+                "mean": 0.575,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 3.0
+              },
+              "total_fees": {
+                "mean": 0.0045578059382312495,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.007745738056040001,
+                "p95": 0.015519279959746403,
+                "maximum": 0.02439483801528
+              },
+              "total_slippage": {
+                "mean": 0.006833395999559963,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.011611640099998512,
+                "p95": 0.023279005704000894,
+                "maximum": 0.03658502808000037
+              },
+              "total_funding_pnl": {
+                "mean": -0.07105726076999999,
+                "minimum": -0.15304236999999996,
+                "p05": -0.15304236999999996,
+                "median": -0.00025067,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 1.263,
+                "minimum": 1.0,
+                "p05": 1.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 5.0
+              }
+            },
+            "risk": {
+              "paths": 1000,
+              "confidence": 0.95,
+              "var": 0.002795656406726792,
+              "cvar": 0.0034979898742053153,
+              "loss_probability": 0.279
+            }
+          }
+        },
+        "ATR/cuda": {
+          "full_call_seconds": 0.008794599969405681,
+          "kernel_seconds": 0.002186899946536869,
+          "batches": 1,
+          "setup_seconds": 0.00019699998665601015,
+          "compile_or_cache_seconds": 4.00003045797348e-07,
+          "upload_and_allocation_seconds": 0.0014326000236906111,
+          "output_transfer_seconds": 6.209994899109006e-05,
+          "device_allocation_peak_bytes": 10843648,
+          "shared_generation_seconds": 0.04767810000339523,
+          "attributed_end_to_end_seconds": 0.05647269997280091,
+          "paths_per_full_call_second": 113706.13825287811,
+          "paths_per_attributed_e2e_second": 17707.671148743244,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.8480123848922,
+                "minimum": 994.8162479700173,
+                "p05": 997.2043435932732,
+                "median": 1000.0,
+                "p95": 1002.2196485104575,
+                "maximum": 1006.4848162049731
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011511004351124163,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.9851417038418973e-05,
+                "p95": 0.003715236946422284,
+                "maximum": 0.005733779659982674
+              },
+              "fills": {
+                "mean": 0.575,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 3.0
+              },
+              "total_fees": {
+                "mean": 0.0045578059382312495,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.007745738056040001,
+                "p95": 0.015519279959746403,
+                "maximum": 0.02439483801528
+              },
+              "total_slippage": {
+                "mean": 0.006833395999559963,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.011611640099998512,
+                "p95": 0.023279005704000894,
+                "maximum": 0.03658502808000037
+              },
+              "total_funding_pnl": {
+                "mean": -0.07105726076999999,
+                "minimum": -0.15304236999999996,
+                "p05": -0.15304236999999996,
+                "median": -0.00025067,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 1.263,
+                "minimum": 1.0,
+                "p05": 1.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 5.0
+              }
+            },
+            "risk": {
+              "paths": 1000,
+              "confidence": 0.95,
+              "var": 0.002795656406726792,
+              "cvar": 0.0034979898742053153,
+              "loss_probability": 0.279
+            }
+          }
+        },
+        "C/cpu": {
+          "full_call_seconds": 0.1411095999646932,
+          "kernel_seconds": 0.1356056000222452,
+          "batches": 1,
+          "setup_seconds": 8.00006091594696e-07,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 0.04767810000339523,
+          "attributed_end_to_end_seconds": 0.18878769996808842,
+          "paths_per_full_call_second": 7086.690063965942,
+          "paths_per_attributed_e2e_second": 5296.955258044005,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.8611106700268,
+                "minimum": 994.4542854905935,
+                "p05": 997.3519068795162,
+                "median": 1000.0,
+                "p95": 1002.0868086666927,
+                "maximum": 1006.144001782273
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011264739488657193,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003687343309591612,
+                "maximum": 0.005650805026317207
+              },
+              "fills": {
+                "mean": 0.456,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035766825107928727,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0078756625619988,
+                "maximum": 0.007895123713688001
+              },
+              "total_slippage": {
+                "mean": 0.005361806682180035,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011806409997001594,
+                "maximum": 0.011835584220000328
+              },
+              "total_funding_pnl": {
+                "mean": -0.06944312767999998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.005,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 1.0
+              }
+            },
+            "risk": {
+              "paths": 1000,
+              "confidence": 0.95,
+              "var": 0.0026480931204838406,
+              "cvar": 0.00350749385109053,
+              "loss_probability": 0.263
+            }
+          }
+        },
+        "C/cuda": {
+          "full_call_seconds": 0.06564200000138953,
+          "kernel_seconds": 0.058292999980039895,
+          "batches": 1,
+          "setup_seconds": 0.00027270003920421004,
+          "compile_or_cache_seconds": 1.00000761449337e-06,
+          "upload_and_allocation_seconds": 0.0014550000196322799,
+          "output_transfer_seconds": 7.389998063445091e-05,
+          "device_allocation_peak_bytes": 11203584,
+          "shared_generation_seconds": 0.04767810000339523,
+          "attributed_end_to_end_seconds": 0.11332010000478476,
+          "paths_per_full_call_second": 15234.148867780257,
+          "paths_per_attributed_e2e_second": 8824.55980852273,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.8611106700268,
+                "minimum": 994.4542854905935,
+                "p05": 997.3519068795162,
+                "median": 1000.0,
+                "p95": 1002.0868086666927,
+                "maximum": 1006.144001782273
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011264739488657193,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003687343309591612,
+                "maximum": 0.005650805026317207
+              },
+              "fills": {
+                "mean": 0.456,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035766825107928727,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0078756625619988,
+                "maximum": 0.007895123713688001
+              },
+              "total_slippage": {
+                "mean": 0.005361806682180035,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011806409997001594,
+                "maximum": 0.011835584220000328
+              },
+              "total_funding_pnl": {
+                "mean": -0.06944312767999998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.005,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 1.0
+              }
+            },
+            "risk": {
+              "paths": 1000,
+              "confidence": 0.95,
+              "var": 0.0026480931204838406,
+              "cvar": 0.00350749385109053,
+              "loss_probability": 0.263
+            }
+          }
+        },
+        "B/cpu": {
+          "full_call_seconds": 0.015581900021061301,
+          "kernel_seconds": 0.01062900002580136,
+          "batches": 1,
+          "setup_seconds": 9.00006853044033e-07,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 0.04767810000339523,
+          "attributed_end_to_end_seconds": 0.06326000002445653,
+          "paths_per_full_call_second": 64177.02582152037,
+          "paths_per_attributed_e2e_second": 15807.777420382494,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 1000.0187992049633,
+                "minimum": 997.0493725339486,
+                "p05": 998.6927440008956,
+                "median": 1000.0,
+                "p95": 1001.4416542183094,
+                "maximum": 1004.0981722111743
+              },
+              "maximum_drawdown": {
+                "mean": 0.0005510141903737092,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.001878869503062885,
+                "maximum": 0.0031540014998867605
+              },
+              "fills": {
+                "mean": 0.91,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 2.0,
+                "maximum": 2.0
+              },
+              "total_fees": {
+                "mean": 0.007152026993603593,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.016287678161423205,
+                "maximum": 0.01726228038576
+              },
+              "total_slippage": {
+                "mean": 0.010728056753100072,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.024432106847999506,
+                "maximum": 0.02589491843999952
+              },
+              "total_funding_pnl": {
+                "mean": -0.008494862989999998,
+                "minimum": -0.019896999999999998,
+                "p05": -0.01964685,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 1000,
+              "confidence": 0.95,
+              "var": 0.001307255999104495,
+              "cvar": 0.0017778857684696177,
+              "loss_probability": 0.234
+            }
+          }
+        },
+        "B/cuda": {
+          "full_call_seconds": 0.009429900033865124,
+          "kernel_seconds": 0.0025913999998010695,
+          "batches": 1,
+          "setup_seconds": 0.0002823000540956855,
+          "compile_or_cache_seconds": 8.00006091594696e-07,
+          "upload_and_allocation_seconds": 0.0014758000033907592,
+          "output_transfer_seconds": 6.709998706355691e-05,
+          "device_allocation_peak_bytes": 10827776,
+          "shared_generation_seconds": 0.04767810000339523,
+          "attributed_end_to_end_seconds": 0.057108000037260354,
+          "paths_per_full_call_second": 106045.66288176444,
+          "paths_per_attributed_e2e_second": 17510.681504299675,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 1000.0187992049633,
+                "minimum": 997.0493725339486,
+                "p05": 998.6927440008956,
+                "median": 1000.0,
+                "p95": 1001.4416542183094,
+                "maximum": 1004.0981722111743
+              },
+              "maximum_drawdown": {
+                "mean": 0.0005510141903737092,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.001878869503062885,
+                "maximum": 0.0031540014998867605
+              },
+              "fills": {
+                "mean": 0.91,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 2.0,
+                "maximum": 2.0
+              },
+              "total_fees": {
+                "mean": 0.007152026993603593,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.016287678161423205,
+                "maximum": 0.01726228038576
+              },
+              "total_slippage": {
+                "mean": 0.010728056753100072,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.024432106847999506,
+                "maximum": 0.02589491843999952
+              },
+              "total_funding_pnl": {
+                "mean": -0.008494862989999998,
+                "minimum": -0.019896999999999998,
+                "p05": -0.01964685,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 1000,
+              "confidence": 0.95,
+              "var": 0.001307255999104495,
+              "cvar": 0.0017778857684696177,
+              "loss_probability": 0.234
+            }
+          }
+        }
+      },
+      "resources": {
+        "process_sampled_peak_rss_bytes": 578281472,
+        "process_lifetime_os_peak_rss_bytes": 578490368,
+        "nvml_device_sampled_peak_used_bytes": 2184269824,
+        "nvml_process_sampled_peak_used_bytes": null,
+        "nvml_device_status": "AVAILABLE",
+        "nvml_process_status": "UNAVAILABLE_WDDM_OR_DRIVER",
+        "sample_interval_seconds": 0.05,
+        "scope": "whole process/device, including prior allocator caches; sampled peaks, not continuous maxima"
+      },
+      "selected_paper_comparisons": [
+        {
+          "profile": "static",
+          "backend": "cpu",
+          "paths": [
+            217,
+            475
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cuda",
+          "paths": [
+            217,
+            475
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cpu",
+          "paths": [
+            217,
+            475
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cuda",
+          "paths": [
+            217,
+            475
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cpu",
+          "paths": [
+            217,
+            475
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cuda",
+          "paths": [
+            217,
+            475
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cpu",
+          "paths": [
+            217,
+            475
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cuda",
+          "paths": [
+            217,
+            475
+          ],
+          "step_fill_audit_match": true
+        }
+      ],
+      "paired_financial": {
+        "static": {
+          "paired_nav_minus_static_mean": 0.0,
+          "paired_nav_minus_static_p05": 0.0,
+          "paired_nav_minus_static_p95": 0.0
+        },
+        "ATR": {
+          "paired_nav_minus_static_mean": -0.010240359808930066,
+          "paired_nav_minus_static_p05": -2.1190445040207235,
+          "paired_nav_minus_static_p95": 2.117742910873556
+        },
+        "C": {
+          "paired_nav_minus_static_mean": 0.002857925325879364,
+          "paired_nav_minus_static_p05": 0.0,
+          "paired_nav_minus_static_p95": 0.0
+        },
+        "B": {
+          "paired_nav_minus_static_mean": 0.16054646026227737,
+          "paired_nav_minus_static_p05": -1.644459311217497,
+          "paired_nav_minus_static_p95": 2.3882691518822523
+        }
+      },
+      "financial_interpretation": "Synthetic pilot only; no financial advantage claim. Funding is settled in-step at fixed 0.00000001 HALF_EVEN quantum, not a terminal overlay. Slippage is embedded in fills, not deducted twice."
+    },
+    {
+      "paths": 10000,
+      "shared_path_generation_seconds": 0.6613787999958731,
+      "timing_policy": "Each profile/backend E2E attributes the SAME shared generation time once; these E2E values are not additive. Full-call wall includes wrapper input validation. Cold calls and selected audits excluded from warm totals.",
+      "cold_calls": {
+        "static/cpu": {
+          "first_call_seconds": 0.06324069999391213,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.04628229996887967,
+            "setup_seconds": 1.200009137392044e-06,
+            "kernel_seconds": 0.04613370000151917,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "static/cuda": {
+          "first_call_seconds": 0.02956549997907132,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.011764399998355657,
+            "kernel_seconds": 0.0018338999943807721,
+            "setup_seconds": 0.000318799982778728,
+            "compile_or_cache_seconds": 1.2999516911804676e-06,
+            "upload_and_allocation_seconds": 0.009488800016697496,
+            "output_transfer_seconds": 0.000340400030836463,
+            "device_allocation_peak_bytes": 44324864,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "ATR/cpu": {
+          "first_call_seconds": 0.07620850001694635,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.05510529997991398,
+            "setup_seconds": 1.400010660290718e-06,
+            "kernel_seconds": 0.05494960001669824,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "ATR/cuda": {
+          "first_call_seconds": 0.02734319999581203,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.007797300000675023,
+            "kernel_seconds": 0.002202000003308058,
+            "setup_seconds": 0.0003103000344708562,
+            "compile_or_cache_seconds": 8.00006091594696e-07,
+            "upload_and_allocation_seconds": 0.005242799990810454,
+            "output_transfer_seconds": 0.00024719996144995093,
+            "device_allocation_peak_bytes": 44390400,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "C/cpu": {
+          "first_call_seconds": 0.617334500013385,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.6011279000085779,
+            "setup_seconds": 1.00000761449337e-06,
+            "kernel_seconds": 0.600937100010924,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "C/cuda": {
+          "first_call_seconds": 0.08157859998755157,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.06421479996060953,
+            "kernel_seconds": 0.05877970001893118,
+            "setup_seconds": 0.0004939999780617654,
+            "compile_or_cache_seconds": 9.00006853044033e-07,
+            "upload_and_allocation_seconds": 0.005039300012867898,
+            "output_transfer_seconds": 0.00022089999401941895,
+            "device_allocation_peak_bytes": 45864960,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "B/cpu": {
+          "first_call_seconds": 0.06397139996988699,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.04524860001401976,
+            "setup_seconds": 1.2999516911804676e-06,
+            "kernel_seconds": 0.04507960000773892,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "B/cuda": {
+          "first_call_seconds": 0.030473000020720065,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.008715000003576279,
+            "kernel_seconds": 0.002604199980851263,
+            "setup_seconds": 0.000658600009046495,
+            "compile_or_cache_seconds": 8.00006091594696e-07,
+            "upload_and_allocation_seconds": 0.005697100015822798,
+            "output_transfer_seconds": 0.0002649999805726111,
+            "device_allocation_peak_bytes": 44324864,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        }
+      },
+      "warm_runs": {
+        "static/cpu": {
+          "full_call_seconds": 0.16498460003640503,
+          "kernel_seconds": 0.11896629998227581,
+          "batches": 3,
+          "setup_seconds": 3.6999699659645557e-06,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 0.6613787999958731,
+          "attributed_end_to_end_seconds": 0.8263634000322782,
+          "paths_per_full_call_second": 60611.717686338176,
+          "paths_per_attributed_e2e_second": 12101.213581832635,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9248219039741,
+                "minimum": 993.0040868398282,
+                "p05": 997.4562596427824,
+                "median": 1000.0,
+                "p95": 1002.1971478612651,
+                "maximum": 1008.0202925904271
+              },
+              "maximum_drawdown": {
+                "mean": 0.001079730232423626,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.00365726740225587,
+                "maximum": 0.007433467672432914
+              },
+              "fills": {
+                "mean": 0.4506,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.00353456553527258,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875223684830401,
+                "maximum": 0.007879999244448
+              },
+              "total_slippage": {
+                "mean": 0.005298669101447996,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.01180575207599901,
+                "maximum": 0.011812911119997695
+              },
+              "total_funding_pnl": {
+                "mean": -0.06859032164899999,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 10000,
+              "confidence": 0.95,
+              "var": 0.0025437403572175993,
+              "cvar": 0.003373123721004769,
+              "loss_probability": 0.2467
+            }
+          }
+        },
+        "static/cuda": {
+          "full_call_seconds": 0.07312729995464906,
+          "kernel_seconds": 0.005495399993378669,
+          "batches": 3,
+          "setup_seconds": 0.0012351999757811427,
+          "compile_or_cache_seconds": 2.100015990436077e-06,
+          "upload_and_allocation_seconds": 0.01304119999986142,
+          "output_transfer_seconds": 0.000696200062520802,
+          "device_allocation_peak_bytes": 44324864,
+          "shared_generation_seconds": 0.6613787999958731,
+          "attributed_end_to_end_seconds": 0.7345060999505222,
+          "paths_per_full_call_second": 136747.83570843778,
+          "paths_per_attributed_e2e_second": 13614.59081234808,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9248219039741,
+                "minimum": 993.0040868398282,
+                "p05": 997.4562596427824,
+                "median": 1000.0,
+                "p95": 1002.1971478612651,
+                "maximum": 1008.0202925904271
+              },
+              "maximum_drawdown": {
+                "mean": 0.001079730232423626,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.00365726740225587,
+                "maximum": 0.007433467672432914
+              },
+              "fills": {
+                "mean": 0.4506,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.00353456553527258,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875223684830401,
+                "maximum": 0.007879999244448
+              },
+              "total_slippage": {
+                "mean": 0.005298669101447996,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.01180575207599901,
+                "maximum": 0.011812911119997695
+              },
+              "total_funding_pnl": {
+                "mean": -0.06859032164899999,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 10000,
+              "confidence": 0.95,
+              "var": 0.0025437403572175993,
+              "cvar": 0.003373123721004769,
+              "loss_probability": 0.2467
+            }
+          }
+        },
+        "ATR/cpu": {
+          "full_call_seconds": 0.16536039992934093,
+          "kernel_seconds": 0.12077570002293214,
+          "batches": 3,
+          "setup_seconds": 4.399917088449001e-06,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 0.6613787999958731,
+          "attributed_end_to_end_seconds": 0.826739199925214,
+          "paths_per_full_call_second": 60473.9708193318,
+          "paths_per_attributed_e2e_second": 12095.712893382326,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.918613864087,
+                "minimum": 993.4937031115347,
+                "p05": 997.3322804678016,
+                "median": 1000.0,
+                "p95": 1002.3529066739032,
+                "maximum": 1008.0331962127556
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011577796561228755,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 2.0084798124542225e-05,
+                "p95": 0.0037581893701125295,
+                "maximum": 0.006559736580840636
+              },
+              "fills": {
+                "mean": 0.574,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 5.0
+              },
+              "total_fees": {
+                "mean": 0.004553111424112509,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.007757463346996001,
+                "p95": 0.015286002791723138,
+                "maximum": 0.038606031379224
+              },
+              "total_slippage": {
+                "mean": 0.006826295744843993,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.011629217490001054,
+                "p95": 0.022928970335999332,
+                "maximum": 0.0579022756200061
+              },
+              "total_funding_pnl": {
+                "mean": -0.07230934709399998,
+                "minimum": -0.15304236999999996,
+                "p05": -0.15304236999999996,
+                "median": -0.00025077,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 1.2418,
+                "minimum": 1.0,
+                "p05": 1.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 6.0
+              }
+            },
+            "risk": {
+              "paths": 10000,
+              "confidence": 0.95,
+              "var": 0.0026677195321983863,
+              "cvar": 0.0034952072472161726,
+              "loss_probability": 0.2642
+            }
+          }
+        },
+        "ATR/cuda": {
+          "full_call_seconds": 0.06368180003482848,
+          "kernel_seconds": 0.006472299981396645,
+          "batches": 3,
+          "setup_seconds": 0.0008891000761650503,
+          "compile_or_cache_seconds": 1.500011421740055e-06,
+          "upload_and_allocation_seconds": 0.011721399961970747,
+          "output_transfer_seconds": 0.0005833000177517533,
+          "device_allocation_peak_bytes": 44390400,
+          "shared_generation_seconds": 0.6613787999958731,
+          "attributed_end_to_end_seconds": 0.7250606000307016,
+          "paths_per_full_call_second": 157030.7371106165,
+          "paths_per_attributed_e2e_second": 13791.950630852876,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.918613864087,
+                "minimum": 993.4937031115347,
+                "p05": 997.3322804678016,
+                "median": 1000.0,
+                "p95": 1002.3529066739032,
+                "maximum": 1008.0331962127556
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011577796561228755,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 2.0084798124542225e-05,
+                "p95": 0.0037581893701125295,
+                "maximum": 0.006559736580840636
+              },
+              "fills": {
+                "mean": 0.574,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 5.0
+              },
+              "total_fees": {
+                "mean": 0.004553111424112509,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.007757463346996001,
+                "p95": 0.015286002791723138,
+                "maximum": 0.038606031379224
+              },
+              "total_slippage": {
+                "mean": 0.006826295744843993,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.011629217490001054,
+                "p95": 0.022928970335999332,
+                "maximum": 0.0579022756200061
+              },
+              "total_funding_pnl": {
+                "mean": -0.07230934709399998,
+                "minimum": -0.15304236999999996,
+                "p05": -0.15304236999999996,
+                "median": -0.00025077,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 1.2418,
+                "minimum": 1.0,
+                "p05": 1.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 6.0
+              }
+            },
+            "risk": {
+              "paths": 10000,
+              "confidence": 0.95,
+              "var": 0.0026677195321983863,
+              "cvar": 0.0034952072472161726,
+              "loss_probability": 0.2642
+            }
+          }
+        },
+        "C/cpu": {
+          "full_call_seconds": 1.4343224000185728,
+          "kernel_seconds": 1.3886541999527253,
+          "batches": 3,
+          "setup_seconds": 4.199915565550327e-06,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 0.6613787999958731,
+          "attributed_end_to_end_seconds": 2.095701200014446,
+          "paths_per_full_call_second": 6971.9332277530575,
+          "paths_per_attributed_e2e_second": 4771.672602912605,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9248172075711,
+                "minimum": 993.0040868398282,
+                "p05": 997.4548962630972,
+                "median": 1000.0,
+                "p95": 1002.1971478612651,
+                "maximum": 1008.0202925904271
+              },
+              "maximum_drawdown": {
+                "mean": 0.001080960440708289,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0036578254184448933,
+                "maximum": 0.007433467672432914
+              },
+              "fills": {
+                "mean": 0.4512,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.003538994300646405,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875285163695601,
+                "maximum": 0.007931029043968
+              },
+              "total_slippage": {
+                "mean": 0.005305308266009994,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805844238999441,
+                "maximum": 0.01188940991999914
+              },
+              "total_funding_pnl": {
+                "mean": -0.06866032328199999,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0065,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 2.0
+              }
+            },
+            "risk": {
+              "paths": 10000,
+              "confidence": 0.95,
+              "var": 0.0025451037369027926,
+              "cvar": 0.0033736651045387376,
+              "loss_probability": 0.2467
+            }
+          }
+        },
+        "C/cuda": {
+          "full_call_seconds": 0.22931029996834695,
+          "kernel_seconds": 0.17162879998795688,
+          "batches": 3,
+          "setup_seconds": 0.0009006999898701906,
+          "compile_or_cache_seconds": 2.0999577827751637e-06,
+          "upload_and_allocation_seconds": 0.012370800075586885,
+          "output_transfer_seconds": 0.0005692999693565071,
+          "device_allocation_peak_bytes": 45864960,
+          "shared_generation_seconds": 0.6613787999958731,
+          "attributed_end_to_end_seconds": 0.8906890999642201,
+          "paths_per_full_call_second": 43609.031087484334,
+          "paths_per_attributed_e2e_second": 11227.26212816763,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9248172075711,
+                "minimum": 993.0040868398282,
+                "p05": 997.4548962630972,
+                "median": 1000.0,
+                "p95": 1002.1971478612651,
+                "maximum": 1008.0202925904271
+              },
+              "maximum_drawdown": {
+                "mean": 0.001080960440708289,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0036578254184448933,
+                "maximum": 0.007433467672432914
+              },
+              "fills": {
+                "mean": 0.4512,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.003538994300646405,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875285163695601,
+                "maximum": 0.007931029043968
+              },
+              "total_slippage": {
+                "mean": 0.005305308266009994,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805844238999441,
+                "maximum": 0.01188940991999914
+              },
+              "total_funding_pnl": {
+                "mean": -0.06866032328199999,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0065,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 2.0
+              }
+            },
+            "risk": {
+              "paths": 10000,
+              "confidence": 0.95,
+              "var": 0.0025451037369027926,
+              "cvar": 0.0033736651045387376,
+              "loss_probability": 0.2467
+            }
+          }
+        },
+        "B/cpu": {
+          "full_call_seconds": 0.16186609998112544,
+          "kernel_seconds": 0.11372770002344623,
+          "batches": 3,
+          "setup_seconds": 3.100023604929447e-06,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 0.6613787999958731,
+          "attributed_end_to_end_seconds": 0.8232448999769986,
+          "paths_per_full_call_second": 61779.45846082694,
+          "paths_per_attributed_e2e_second": 12147.053689952285,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9859579865424,
+                "minimum": 996.4646771609495,
+                "p05": 998.6480199389055,
+                "median": 1000.0,
+                "p95": 1001.3490202348088,
+                "maximum": 1004.3086745521923
+              },
+              "maximum_drawdown": {
+                "mean": 0.0005580936756239893,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0019295548764906188,
+                "maximum": 0.0038686784785283423
+              },
+              "fills": {
+                "mean": 0.9012,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 2.0,
+                "maximum": 2.0
+              },
+              "total_fees": {
+                "mean": 0.0070696899544162575,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0162436980793652,
+                "maximum": 0.017424513607840003
+              },
+              "total_slippage": {
+                "mean": 0.010604539252253978,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.024366095121002188,
+                "maximum": 0.026138344199998186
+              },
+              "total_funding_pnl": {
+                "mean": -0.008369533181,
+                "minimum": -0.019896999999999998,
+                "p05": -0.01964685,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 10000,
+              "confidence": 0.95,
+              "var": 0.0013519800610944926,
+              "cvar": 0.001870023059054322,
+              "loss_probability": 0.2352
+            }
+          }
+        },
+        "B/cuda": {
+          "full_call_seconds": 0.06637349998345599,
+          "kernel_seconds": 0.007916299975477159,
+          "batches": 3,
+          "setup_seconds": 0.0010647000162862241,
+          "compile_or_cache_seconds": 1.700012944638729e-06,
+          "upload_and_allocation_seconds": 0.012754200026392937,
+          "output_transfer_seconds": 0.0005296999588608742,
+          "device_allocation_peak_bytes": 44324864,
+          "shared_generation_seconds": 0.6613787999958731,
+          "attributed_end_to_end_seconds": 0.7277522999793291,
+          "paths_per_full_call_second": 150662.538550665,
+          "paths_per_attributed_e2e_second": 13740.93905341699,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9859579865424,
+                "minimum": 996.4646771609495,
+                "p05": 998.6480199389055,
+                "median": 1000.0,
+                "p95": 1001.3490202348088,
+                "maximum": 1004.3086745521923
+              },
+              "maximum_drawdown": {
+                "mean": 0.0005580936756239893,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0019295548764906188,
+                "maximum": 0.0038686784785283423
+              },
+              "fills": {
+                "mean": 0.9012,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 2.0,
+                "maximum": 2.0
+              },
+              "total_fees": {
+                "mean": 0.0070696899544162575,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0162436980793652,
+                "maximum": 0.017424513607840003
+              },
+              "total_slippage": {
+                "mean": 0.010604539252253978,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.024366095121002188,
+                "maximum": 0.026138344199998186
+              },
+              "total_funding_pnl": {
+                "mean": -0.008369533181,
+                "minimum": -0.019896999999999998,
+                "p05": -0.01964685,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 10000,
+              "confidence": 0.95,
+              "var": 0.0013519800610944926,
+              "cvar": 0.001870023059054322,
+              "loss_probability": 0.2352
+            }
+          }
+        }
+      },
+      "resources": {
+        "process_sampled_peak_rss_bytes": 806109184,
+        "process_lifetime_os_peak_rss_bytes": 833458176,
+        "nvml_device_sampled_peak_used_bytes": 2230407168,
+        "nvml_process_sampled_peak_used_bytes": null,
+        "nvml_device_status": "AVAILABLE",
+        "nvml_process_status": "UNAVAILABLE_WDDM_OR_DRIVER",
+        "sample_interval_seconds": 0.05,
+        "scope": "whole process/device, including prior allocator caches; sampled peaks, not continuous maxima"
+      },
+      "selected_paper_comparisons": [
+        {
+          "profile": "static",
+          "backend": "cpu",
+          "paths": [
+            2177
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cuda",
+          "paths": [
+            2177
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cpu",
+          "paths": [
+            2177
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cuda",
+          "paths": [
+            2177
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cpu",
+          "paths": [
+            2177
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cuda",
+          "paths": [
+            2177
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cpu",
+          "paths": [
+            2177
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cuda",
+          "paths": [
+            2177
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cpu",
+          "paths": [
+            4753
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cuda",
+          "paths": [
+            4753
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cpu",
+          "paths": [
+            4753
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cuda",
+          "paths": [
+            4753
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cpu",
+          "paths": [
+            4753
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cuda",
+          "paths": [
+            4753
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cpu",
+          "paths": [
+            4753
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cuda",
+          "paths": [
+            4753
+          ],
+          "step_fill_audit_match": true
+        }
+      ],
+      "paired_financial": {
+        "static": {
+          "paired_nav_minus_static_mean": 0.0,
+          "paired_nav_minus_static_p05": 0.0,
+          "paired_nav_minus_static_p95": 0.0
+        },
+        "ATR": {
+          "paired_nav_minus_static_mean": -0.006208039887230041,
+          "paired_nav_minus_static_p05": -2.0396906232091907,
+          "paired_nav_minus_static_p95": 2.182331036109745
+        },
+        "C": {
+          "paired_nav_minus_static_mean": -4.696402935917376e-06,
+          "paired_nav_minus_static_p05": 0.0,
+          "paired_nav_minus_static_p95": 0.0
+        },
+        "B": {
+          "paired_nav_minus_static_mean": 0.061136082568175945,
+          "paired_nav_minus_static_p05": -1.8469586538950125,
+          "paired_nav_minus_static_p95": 2.0995244558121553
+        }
+      },
+      "financial_interpretation": "Synthetic pilot only; no financial advantage claim. Funding is settled in-step at fixed 0.00000001 HALF_EVEN quantum, not a terminal overlay. Slippage is embedded in fills, not deducted twice."
+    },
+    {
+      "paths": 100000,
+      "shared_path_generation_seconds": 6.788060300110374,
+      "timing_policy": "Each profile/backend E2E attributes the SAME shared generation time once; these E2E values are not additive. Full-call wall includes wrapper input validation. Cold calls and selected audits excluded from warm totals.",
+      "cold_calls": {
+        "static/cpu": {
+          "first_call_seconds": 0.06888550001895055,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.0489540999988094,
+            "setup_seconds": 1.500011421740055e-06,
+            "kernel_seconds": 0.04876239999430254,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "static/cuda": {
+          "first_call_seconds": 0.028319599980022758,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.0079682000214234,
+            "kernel_seconds": 0.002217100001871586,
+            "setup_seconds": 0.00039760000072419643,
+            "compile_or_cache_seconds": 6.00004568696022e-07,
+            "upload_and_allocation_seconds": 0.005360200011637062,
+            "output_transfer_seconds": 0.00031070003751665354,
+            "device_allocation_peak_bytes": 44324864,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "ATR/cpu": {
+          "first_call_seconds": 0.08500109997112304,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.06038839998655021,
+            "setup_seconds": 1.00000761449337e-06,
+            "kernel_seconds": 0.060198099992703646,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "ATR/cuda": {
+          "first_call_seconds": 0.028832399984821677,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.009121300012338907,
+            "kernel_seconds": 0.002215399988926947,
+            "setup_seconds": 0.0006092000403441489,
+            "compile_or_cache_seconds": 1.300009898841381e-06,
+            "upload_and_allocation_seconds": 0.006560100009664893,
+            "output_transfer_seconds": 0.00024129997473210096,
+            "device_allocation_peak_bytes": 44390400,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "C/cpu": {
+          "first_call_seconds": 0.5882749000447802,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.5684083999949507,
+            "setup_seconds": 1.100008375942707e-06,
+            "kernel_seconds": 0.5682105000014417,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "C/cuda": {
+          "first_call_seconds": 0.08524190000025555,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.06643299997085705,
+            "kernel_seconds": 0.06053519999841228,
+            "setup_seconds": 0.00028249999741092324,
+            "compile_or_cache_seconds": 6.00004568696022e-07,
+            "upload_and_allocation_seconds": 0.005472099990583956,
+            "output_transfer_seconds": 0.00025759998243302107,
+            "device_allocation_peak_bytes": 45864960,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "B/cpu": {
+          "first_call_seconds": 0.06322850001743063,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.04539510002359748,
+            "setup_seconds": 8.00006091594696e-07,
+            "kernel_seconds": 0.0452435000333935,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "B/cuda": {
+          "first_call_seconds": 0.026748400006908923,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.007727100048214197,
+            "kernel_seconds": 0.0022275999654084444,
+            "setup_seconds": 0.0002832000027410686,
+            "compile_or_cache_seconds": 5.00003807246685e-07,
+            "upload_and_allocation_seconds": 0.005093300016596913,
+            "output_transfer_seconds": 0.00031949998810887337,
+            "device_allocation_peak_bytes": 44324864,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        }
+      },
+      "warm_runs": {
+        "static/cpu": {
+          "full_call_seconds": 1.622825599857606,
+          "kernel_seconds": 1.1595786000252701,
+          "batches": 25,
+          "setup_seconds": 3.0999945010989904e-05,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 6.788060300110374,
+          "attributed_end_to_end_seconds": 8.41088589996798,
+          "paths_per_full_call_second": 61620.91601757727,
+          "paths_per_attributed_e2e_second": 11889.354009710285,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9245367967211,
+                "minimum": 993.0040868398282,
+                "p05": 997.4385163065091,
+                "median": 1000.0,
+                "p95": 1002.2894820189458,
+                "maximum": 1010.3837723500433
+              },
+              "maximum_drawdown": {
+                "mean": 0.001081744207113057,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003663829135722627,
+                "maximum": 0.007433467672432914
+              },
+              "fills": {
+                "mean": 0.45008,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035305602006768778,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875044921636801,
+                "maximum": 0.007879999484592002
+              },
+              "total_slippage": {
+                "mean": 0.005292664702194001,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805484091998865,
+                "maximum": 0.011812911480001277
+              },
+              "total_funding_pnl": {
+                "mean": -0.06850413895489998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 100000,
+              "confidence": 0.95,
+              "var": 0.0025614836934908947,
+              "cvar": 0.0033611942186108344,
+              "loss_probability": 0.24799
+            }
+          }
+        },
+        "static/cuda": {
+          "full_call_seconds": 0.6292442999547347,
+          "kernel_seconds": 0.049070999841205776,
+          "batches": 25,
+          "setup_seconds": 0.007829100068192929,
+          "compile_or_cache_seconds": 1.860008342191577e-05,
+          "upload_and_allocation_seconds": 0.12562429998070002,
+          "output_transfer_seconds": 0.00616200000513345,
+          "device_allocation_peak_bytes": 44324864,
+          "shared_generation_seconds": 6.788060300110374,
+          "attributed_end_to_end_seconds": 7.417304600065108,
+          "paths_per_full_call_second": 158920.78801062415,
+          "paths_per_attributed_e2e_second": 13481.9864346844,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9245367967211,
+                "minimum": 993.0040868398282,
+                "p05": 997.4385163065091,
+                "median": 1000.0,
+                "p95": 1002.2894820189458,
+                "maximum": 1010.3837723500433
+              },
+              "maximum_drawdown": {
+                "mean": 0.001081744207113057,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003663829135722627,
+                "maximum": 0.007433467672432914
+              },
+              "fills": {
+                "mean": 0.45008,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035305602006768778,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875044921636801,
+                "maximum": 0.007879999484592002
+              },
+              "total_slippage": {
+                "mean": 0.005292664702194001,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805484091998865,
+                "maximum": 0.011812911480001277
+              },
+              "total_funding_pnl": {
+                "mean": -0.06850413895489998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 100000,
+              "confidence": 0.95,
+              "var": 0.0025614836934908947,
+              "cvar": 0.0033611942186108344,
+              "loss_probability": 0.24799
+            }
+          }
+        },
+        "ATR/cpu": {
+          "full_call_seconds": 1.6799223002162762,
+          "kernel_seconds": 1.2257133998791687,
+          "batches": 25,
+          "setup_seconds": 2.8799986466765404e-05,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 6.788060300110374,
+          "attributed_end_to_end_seconds": 8.46798260032665,
+          "paths_per_full_call_second": 59526.56261966748,
+          "paths_per_attributed_e2e_second": 11809.18817619471,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9156408713071,
+                "minimum": 993.4937031115347,
+                "p05": 997.3534900584715,
+                "median": 1000.0,
+                "p95": 1002.3500841754662,
+                "maximum": 1009.1650581121322
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011474048698145813,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 2.000396940438076e-05,
+                "p95": 0.0037534901649666753,
+                "maximum": 0.00702580346151882
+              },
+              "fills": {
+                "mean": 0.57152,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 5.0
+              },
+              "total_fees": {
+                "mean": 0.004535238270917772,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.00774761888386,
+                "p95": 0.015501153787903588,
+                "maximum": 0.039714604257072
+              },
+              "total_slippage": {
+                "mean": 0.006799523673303003,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.011614459650000696,
+                "p95": 0.023251775541000486,
+                "maximum": 0.059564918160003796
+              },
+              "total_funding_pnl": {
+                "mean": -0.07148183230659998,
+                "minimum": -0.15304236999999996,
+                "p05": -0.15304236999999996,
+                "median": -0.00025067,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 1.24409,
+                "minimum": 1.0,
+                "p05": 1.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 7.0
+              }
+            },
+            "risk": {
+              "paths": 100000,
+              "confidence": 0.95,
+              "var": 0.0026465099415284585,
+              "cvar": 0.0034580123462564292,
+              "loss_probability": 0.26307
+            }
+          }
+        },
+        "ATR/cuda": {
+          "full_call_seconds": 0.6457497999072075,
+          "kernel_seconds": 0.057790399936493486,
+          "batches": 25,
+          "setup_seconds": 0.008370400057174265,
+          "compile_or_cache_seconds": 1.8200022168457508e-05,
+          "upload_and_allocation_seconds": 0.12804399995366111,
+          "output_transfer_seconds": 0.005897700088098645,
+          "device_allocation_peak_bytes": 44390400,
+          "shared_generation_seconds": 6.788060300110374,
+          "attributed_end_to_end_seconds": 7.433810100017581,
+          "paths_per_full_call_second": 154858.73942875356,
+          "paths_per_attributed_e2e_second": 13452.051996830467,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9156408713071,
+                "minimum": 993.4937031115347,
+                "p05": 997.3534900584715,
+                "median": 1000.0,
+                "p95": 1002.3500841754662,
+                "maximum": 1009.1650581121322
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011474048698145813,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 2.000396940438076e-05,
+                "p95": 0.0037534901649666753,
+                "maximum": 0.00702580346151882
+              },
+              "fills": {
+                "mean": 0.57152,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 5.0
+              },
+              "total_fees": {
+                "mean": 0.004535238270917772,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.00774761888386,
+                "p95": 0.015501153787903588,
+                "maximum": 0.039714604257072
+              },
+              "total_slippage": {
+                "mean": 0.006799523673303003,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.011614459650000696,
+                "p95": 0.023251775541000486,
+                "maximum": 0.059564918160003796
+              },
+              "total_funding_pnl": {
+                "mean": -0.07148183230659998,
+                "minimum": -0.15304236999999996,
+                "p05": -0.15304236999999996,
+                "median": -0.00025067,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 1.24409,
+                "minimum": 1.0,
+                "p05": 1.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 7.0
+              }
+            },
+            "risk": {
+              "paths": 100000,
+              "confidence": 0.95,
+              "var": 0.0026465099415284585,
+              "cvar": 0.0034580123462564292,
+              "loss_probability": 0.26307
+            }
+          }
+        },
+        "C/cpu": {
+          "full_call_seconds": 14.99903769994853,
+          "kernel_seconds": 14.517595499928575,
+          "batches": 25,
+          "setup_seconds": 3.040005685761571e-05,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 6.788060300110374,
+          "attributed_end_to_end_seconds": 21.787098000058904,
+          "paths_per_full_call_second": 6667.094383017862,
+          "paths_per_attributed_e2e_second": 4589.872409796369,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9244675466156,
+                "minimum": 993.0040868398282,
+                "p05": 997.4413934245573,
+                "median": 1000.0,
+                "p95": 1002.2870020451085,
+                "maximum": 1010.3837723500433
+              },
+              "maximum_drawdown": {
+                "mean": 0.0010813364218772486,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003663829135722627,
+                "maximum": 0.007433467672432914
+              },
+              "fills": {
+                "mean": 0.44995,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035294034167114917,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875122284026401,
+                "maximum": 0.008073123209344
+              },
+              "total_slippage": {
+                "mean": 0.005290930566727201,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805600066000607,
+                "maximum": 0.01210242335999965
+              },
+              "total_funding_pnl": {
+                "mean": -0.0684729853028,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.00652,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 3.0
+              }
+            },
+            "risk": {
+              "paths": 100000,
+              "confidence": 0.95,
+              "var": 0.0025586065754427175,
+              "cvar": 0.0033600775674878765,
+              "loss_probability": 0.24787
+            }
+          }
+        },
+        "C/cuda": {
+          "full_call_seconds": 2.021524900046643,
+          "kernel_seconds": 1.4359672999125905,
+          "batches": 25,
+          "setup_seconds": 0.008727299864403903,
+          "compile_or_cache_seconds": 2.0599865820258856e-05,
+          "upload_and_allocation_seconds": 0.12643540010321885,
+          "output_transfer_seconds": 0.007191700104158372,
+          "device_allocation_peak_bytes": 45864960,
+          "shared_generation_seconds": 6.788060300110374,
+          "attributed_end_to_end_seconds": 8.809585200157017,
+          "paths_per_full_call_second": 49467.60734814233,
+          "paths_per_attributed_e2e_second": 11351.27224812102,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9244675466156,
+                "minimum": 993.0040868398282,
+                "p05": 997.4413934245573,
+                "median": 1000.0,
+                "p95": 1002.2870020451085,
+                "maximum": 1010.3837723500433
+              },
+              "maximum_drawdown": {
+                "mean": 0.0010813364218772486,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003663829135722627,
+                "maximum": 0.007433467672432914
+              },
+              "fills": {
+                "mean": 0.44995,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035294034167114917,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875122284026401,
+                "maximum": 0.008073123209344
+              },
+              "total_slippage": {
+                "mean": 0.005290930566727201,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805600066000607,
+                "maximum": 0.01210242335999965
+              },
+              "total_funding_pnl": {
+                "mean": -0.0684729853028,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.00652,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 3.0
+              }
+            },
+            "risk": {
+              "paths": 100000,
+              "confidence": 0.95,
+              "var": 0.0025586065754427175,
+              "cvar": 0.0033600775674878765,
+              "loss_probability": 0.24787
+            }
+          }
+        },
+        "B/cpu": {
+          "full_call_seconds": 1.6435364999924786,
+          "kernel_seconds": 1.1789869999629445,
+          "batches": 25,
+          "setup_seconds": 2.940004924312234e-05,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 6.788060300110374,
+          "attributed_end_to_end_seconds": 8.431596800102852,
+          "paths_per_full_call_second": 60844.40473360807,
+          "paths_per_attributed_e2e_second": 11860.149669251281,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9756753235686,
+                "minimum": 995.3012589274597,
+                "p05": 998.59620325091,
+                "median": 1000.0,
+                "p95": 1001.3324796719918,
+                "maximum": 1004.8763304234519
+              },
+              "maximum_drawdown": {
+                "mean": 0.0005595519224511714,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.001961168652957923,
+                "maximum": 0.004698741072540313
+              },
+              "fills": {
+                "mean": 0.90016,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 2.0,
+                "maximum": 2.0
+              },
+              "total_fees": {
+                "mean": 0.007057554691174675,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.016239857401997605,
+                "maximum": 0.017694859228112002
+              },
+              "total_slippage": {
+                "mean": 0.010586332638702596,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.02436028147199977,
+                "maximum": 0.02654406732000041
+              },
+              "total_funding_pnl": {
+                "mean": -0.0083528462925,
+                "minimum": -0.019896999999999998,
+                "p05": -0.01964685,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 100000,
+              "confidence": 0.95,
+              "var": 0.001403796749090108,
+              "cvar": 0.001892660706650165,
+              "loss_probability": 0.23845
+            }
+          }
+        },
+        "B/cuda": {
+          "full_call_seconds": 0.6871588000212796,
+          "kernel_seconds": 0.06948329991428182,
+          "batches": 25,
+          "setup_seconds": 0.009628700092434883,
+          "compile_or_cache_seconds": 2.0500097889453173e-05,
+          "upload_and_allocation_seconds": 0.13187880004988983,
+          "output_transfer_seconds": 0.005810799892060459,
+          "device_allocation_peak_bytes": 44324864,
+          "shared_generation_seconds": 6.788060300110374,
+          "attributed_end_to_end_seconds": 7.475219100131653,
+          "paths_per_full_call_second": 145526.7690625562,
+          "paths_per_attributed_e2e_second": 13377.534311768708,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9756753235686,
+                "minimum": 995.3012589274597,
+                "p05": 998.59620325091,
+                "median": 1000.0,
+                "p95": 1001.3324796719918,
+                "maximum": 1004.8763304234519
+              },
+              "maximum_drawdown": {
+                "mean": 0.0005595519224511714,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.001961168652957923,
+                "maximum": 0.004698741072540313
+              },
+              "fills": {
+                "mean": 0.90016,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 2.0,
+                "maximum": 2.0
+              },
+              "total_fees": {
+                "mean": 0.007057554691174675,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.016239857401997605,
+                "maximum": 0.017694859228112002
+              },
+              "total_slippage": {
+                "mean": 0.010586332638702596,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.02436028147199977,
+                "maximum": 0.02654406732000041
+              },
+              "total_funding_pnl": {
+                "mean": -0.0083528462925,
+                "minimum": -0.019896999999999998,
+                "p05": -0.01964685,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 100000,
+              "confidence": 0.95,
+              "var": 0.001403796749090108,
+              "cvar": 0.001892660706650165,
+              "loss_probability": 0.23845
+            }
+          }
+        }
+      },
+      "resources": {
+        "process_sampled_peak_rss_bytes": 1007341568,
+        "process_lifetime_os_peak_rss_bytes": 1007341568,
+        "nvml_device_sampled_peak_used_bytes": 2229227520,
+        "nvml_process_sampled_peak_used_bytes": null,
+        "nvml_device_status": "AVAILABLE",
+        "nvml_process_status": "UNAVAILABLE_WDDM_OR_DRIVER",
+        "sample_interval_seconds": 0.05,
+        "scope": "whole process/device, including prior allocator caches; sampled peaks, not continuous maxima"
+      },
+      "selected_paper_comparisons": [
+        {
+          "profile": "static",
+          "backend": "cpu",
+          "paths": [
+            21776
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cuda",
+          "paths": [
+            21776
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cpu",
+          "paths": [
+            21776
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cuda",
+          "paths": [
+            21776
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cpu",
+          "paths": [
+            21776
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cuda",
+          "paths": [
+            21776
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cpu",
+          "paths": [
+            21776
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cuda",
+          "paths": [
+            21776
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cpu",
+          "paths": [
+            47537
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cuda",
+          "paths": [
+            47537
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cpu",
+          "paths": [
+            47537
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cuda",
+          "paths": [
+            47537
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cpu",
+          "paths": [
+            47537
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cuda",
+          "paths": [
+            47537
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cpu",
+          "paths": [
+            47537
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cuda",
+          "paths": [
+            47537
+          ],
+          "step_fill_audit_match": true
+        }
+      ],
+      "paired_financial": {
+        "static": {
+          "paired_nav_minus_static_mean": 0.0,
+          "paired_nav_minus_static_p05": 0.0,
+          "paired_nav_minus_static_p95": 0.0
+        },
+        "ATR": {
+          "paired_nav_minus_static_mean": -0.00889592541404266,
+          "paired_nav_minus_static_p05": -2.0894310194265358,
+          "paired_nav_minus_static_p95": 2.200233536266319
+        },
+        "C": {
+          "paired_nav_minus_static_mean": -6.92501054677325e-05,
+          "paired_nav_minus_static_p05": 0.0,
+          "paired_nav_minus_static_p95": 0.0
+        },
+        "B": {
+          "paired_nav_minus_static_mean": 0.05113852684751902,
+          "paired_nav_minus_static_p05": -1.9035200046357033,
+          "paired_nav_minus_static_p95": 2.0886819894286415
+        }
+      },
+      "financial_interpretation": "Synthetic pilot only; no financial advantage claim. Funding is settled in-step at fixed 0.00000001 HALF_EVEN quantum, not a terminal overlay. Slippage is embedded in fills, not deducted twice."
+    },
+    {
+      "paths": 1000000,
+      "shared_path_generation_seconds": 88.57713220041478,
+      "timing_policy": "Each profile/backend E2E attributes the SAME shared generation time once; these E2E values are not additive. Full-call wall includes wrapper input validation. Cold calls and selected audits excluded from warm totals.",
+      "cold_calls": {
+        "static/cpu": {
+          "first_call_seconds": 0.07708980003371835,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.05224879999877885,
+            "setup_seconds": 1.00000761449337e-06,
+            "kernel_seconds": 0.05210249999072403,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "static/cuda": {
+          "first_call_seconds": 0.0306855000089854,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.00779619999229908,
+            "kernel_seconds": 0.001836199953686446,
+            "setup_seconds": 0.00029500003438442945,
+            "compile_or_cache_seconds": 6.00004568696022e-07,
+            "upload_and_allocation_seconds": 0.005643000011332333,
+            "output_transfer_seconds": 0.00023800000781193376,
+            "device_allocation_peak_bytes": 44324864,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "ATR/cpu": {
+          "first_call_seconds": 0.07570700003998354,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.05092010000953451,
+            "setup_seconds": 1.300009898841381e-06,
+            "kernel_seconds": 0.05076260003261268,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "ATR/cuda": {
+          "first_call_seconds": 0.03209879994392395,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.007655199966393411,
+            "kernel_seconds": 0.0021838999819010496,
+            "setup_seconds": 0.0003005999606102705,
+            "compile_or_cache_seconds": 9.999494068324566e-07,
+            "upload_and_allocation_seconds": 0.005162900022696704,
+            "output_transfer_seconds": 0.00023180001880973577,
+            "device_allocation_peak_bytes": 44390400,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "C/cpu": {
+          "first_call_seconds": 0.5758449999848381,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.5522957000066526,
+            "setup_seconds": 1.600012183189392e-06,
+            "kernel_seconds": 0.552045599964913,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "C/cuda": {
+          "first_call_seconds": 0.101457400014624,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.07172809995245188,
+            "kernel_seconds": 0.061524500022642314,
+            "setup_seconds": 0.00033060001442208886,
+            "compile_or_cache_seconds": 7.00005330145359e-07,
+            "upload_and_allocation_seconds": 0.009761399996932596,
+            "output_transfer_seconds": 0.00027059996500611305,
+            "device_allocation_peak_bytes": 45864960,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "B/cpu": {
+          "first_call_seconds": 0.07236419996479526,
+          "metadata": {
+            "backend": "cpu",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.04877630004193634,
+            "setup_seconds": 1.200009137392044e-06,
+            "kernel_seconds": 0.048619699955452234,
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        },
+        "B/cuda": {
+          "first_call_seconds": 0.03261850000126287,
+          "metadata": {
+            "backend": "cuda",
+            "evidence": "RESEARCH_SIMULATION",
+            "seconds": 0.009281400009058416,
+            "kernel_seconds": 0.003373999963514507,
+            "setup_seconds": 0.00030700000934302807,
+            "compile_or_cache_seconds": 6.00004568696022e-07,
+            "upload_and_allocation_seconds": 0.005438400025013834,
+            "output_transfer_seconds": 0.00036860001273453236,
+            "device_allocation_peak_bytes": 44324864,
+            "device": "NVIDIA GeForce RTX 2070",
+            "cupy": "14.2.0",
+            "quote_decimals": 6
+          },
+          "scope": "first call for this profile; process caches may already be warm"
+        }
+      },
+      "warm_runs": {
+        "static/cpu": {
+          "full_call_seconds": 21.622680499684066,
+          "kernel_seconds": 13.476559800095856,
+          "batches": 245,
+          "setup_seconds": 0.00037399993743747473,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 88.57713220041478,
+          "attributed_end_to_end_seconds": 110.19981270009885,
+          "paths_per_full_call_second": 46247.73510456353,
+          "paths_per_attributed_e2e_second": 9074.425586560938,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9234376295545,
+                "minimum": 991.4744354370922,
+                "p05": 997.4548715069133,
+                "median": 1000.0,
+                "p95": 1002.3055549397345,
+                "maximum": 1011.1538648728584
+              },
+              "maximum_drawdown": {
+                "mean": 0.0010852333100972696,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0036534975093788164,
+                "maximum": 0.008525564562907761
+              },
+              "fills": {
+                "mean": 0.451345,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.00354047005474431,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875001493595601,
+                "maximum": 0.007879999924856001
+              },
+              "total_slippage": {
+                "mean": 0.0053075205697745995,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805418989000458,
+                "maximum": 0.011812912140001686
+              },
+              "total_funding_pnl": {
+                "mean": -0.06869742309486998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 1000000,
+              "confidence": 0.95,
+              "var": 0.0025451284930866677,
+              "cvar": 0.0033586995983203747,
+              "loss_probability": 0.249793
+            }
+          }
+        },
+        "static/cuda": {
+          "full_call_seconds": 10.577534900628962,
+          "kernel_seconds": 0.5034045009524561,
+          "batches": 245,
+          "setup_seconds": 0.10780649847583845,
+          "compile_or_cache_seconds": 0.0002690005348995328,
+          "upload_and_allocation_seconds": 1.87313920003362,
+          "output_transfer_seconds": 0.08731649973196909,
+          "device_allocation_peak_bytes": 44324864,
+          "shared_generation_seconds": 88.57713220041478,
+          "attributed_end_to_end_seconds": 99.15466710104374,
+          "paths_per_full_call_second": 94539.98586575573,
+          "paths_per_attributed_e2e_second": 10085.253969749585,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9234376295545,
+                "minimum": 991.4744354370922,
+                "p05": 997.4548715069133,
+                "median": 1000.0,
+                "p95": 1002.3055549397345,
+                "maximum": 1011.1538648728584
+              },
+              "maximum_drawdown": {
+                "mean": 0.0010852333100972696,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0036534975093788164,
+                "maximum": 0.008525564562907761
+              },
+              "fills": {
+                "mean": 0.451345,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.00354047005474431,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.007875001493595601,
+                "maximum": 0.007879999924856001
+              },
+              "total_slippage": {
+                "mean": 0.0053075205697745995,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805418989000458,
+                "maximum": 0.011812912140001686
+              },
+              "total_funding_pnl": {
+                "mean": -0.06869742309486998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 1000000,
+              "confidence": 0.95,
+              "var": 0.0025451284930866677,
+              "cvar": 0.0033586995983203747,
+              "loss_probability": 0.249793
+            }
+          }
+        },
+        "ATR/cpu": {
+          "full_call_seconds": 22.24201900087064,
+          "kernel_seconds": 14.171098400140181,
+          "batches": 245,
+          "setup_seconds": 0.0003913998953066766,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 88.57713220041478,
+          "attributed_end_to_end_seconds": 110.81915120128542,
+          "paths_per_full_call_second": 44959.94720447168,
+          "paths_per_attributed_e2e_second": 9023.711056797922,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9161925758335,
+                "minimum": 991.8149168797061,
+                "p05": 997.3547069715987,
+                "median": 1000.0,
+                "p95": 1002.3675972369235,
+                "maximum": 1010.9477472608995
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011460351071540266,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.9978434001366452e-05,
+                "p95": 0.0037448264406395614,
+                "maximum": 0.008185083120293979
+              },
+              "fills": {
+                "mean": 0.570219,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 5.0
+              },
+              "total_fees": {
+                "mean": 0.004524785370774824,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.007744579541348002,
+                "p95": 0.015475799813073596,
+                "maximum": 0.040879950997848
+              },
+              "total_slippage": {
+                "mean": 0.0067838497991105405,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.011609903370001007,
+                "p95": 0.023213749323001305,
+                "maximum": 0.0613126996200009
+              },
+              "total_funding_pnl": {
+                "mean": -0.07136514613724998,
+                "minimum": -0.15304236999999996,
+                "p05": -0.15304236999999996,
+                "median": -0.00025067,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 1.242049,
+                "minimum": 1.0,
+                "p05": 1.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 7.0
+              }
+            },
+            "risk": {
+              "paths": 1000000,
+              "confidence": 0.95,
+              "var": 0.0026452930284012566,
+              "cvar": 0.0034655743020595062,
+              "loss_probability": 0.26314
+            }
+          }
+        },
+        "ATR/cuda": {
+          "full_call_seconds": 10.654698598838877,
+          "kernel_seconds": 0.580608400166966,
+          "batches": 245,
+          "setup_seconds": 0.10770570050226524,
+          "compile_or_cache_seconds": 0.00024399964604526758,
+          "upload_and_allocation_seconds": 1.8795678003225476,
+          "output_transfer_seconds": 0.0865446007810533,
+          "device_allocation_peak_bytes": 44390400,
+          "shared_generation_seconds": 88.57713220041478,
+          "attributed_end_to_end_seconds": 99.23183079925366,
+          "paths_per_full_call_second": 93855.30625042529,
+          "paths_per_attributed_e2e_second": 10077.411571927998,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9161925758335,
+                "minimum": 991.8149168797061,
+                "p05": 997.3547069715987,
+                "median": 1000.0,
+                "p95": 1002.3675972369235,
+                "maximum": 1010.9477472608995
+              },
+              "maximum_drawdown": {
+                "mean": 0.0011460351071540266,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.9978434001366452e-05,
+                "p95": 0.0037448264406395614,
+                "maximum": 0.008185083120293979
+              },
+              "fills": {
+                "mean": 0.570219,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 5.0
+              },
+              "total_fees": {
+                "mean": 0.004524785370774824,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.007744579541348002,
+                "p95": 0.015475799813073596,
+                "maximum": 0.040879950997848
+              },
+              "total_slippage": {
+                "mean": 0.0067838497991105405,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.011609903370001007,
+                "p95": 0.023213749323001305,
+                "maximum": 0.0613126996200009
+              },
+              "total_funding_pnl": {
+                "mean": -0.07136514613724998,
+                "minimum": -0.15304236999999996,
+                "p05": -0.15304236999999996,
+                "median": -0.00025067,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 1.242049,
+                "minimum": 1.0,
+                "p05": 1.0,
+                "median": 1.0,
+                "p95": 2.0,
+                "maximum": 7.0
+              }
+            },
+            "risk": {
+              "paths": 1000000,
+              "confidence": 0.95,
+              "var": 0.0026452930284012566,
+              "cvar": 0.0034655743020595062,
+              "loss_probability": 0.26314
+            }
+          }
+        },
+        "C/cpu": {
+          "full_call_seconds": 209.451779900759,
+          "kernel_seconds": 201.35575379960937,
+          "batches": 245,
+          "setup_seconds": 0.0003657999914139509,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 88.57713220041478,
+          "attributed_end_to_end_seconds": 298.0289121011738,
+          "paths_per_full_call_second": 4774.368594403032,
+          "paths_per_attributed_e2e_second": 3355.3791575111463,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9233174108195,
+                "minimum": 991.4744354370922,
+                "p05": 997.454882710249,
+                "median": 1000.0,
+                "p95": 1002.3046282697555,
+                "maximum": 1011.1538648728584
+              },
+              "maximum_drawdown": {
+                "mean": 0.0010848546639068072,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003652840292760329,
+                "maximum": 0.008525564562907761
+              },
+              "fills": {
+                "mean": 0.451231,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035394447429012554,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0078750655800244,
+                "maximum": 0.008186123408808001
+              },
+              "total_slippage": {
+                "mean": 0.0053059835242373395,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805515060998318,
+                "maximum": 0.012271822019999946
+              },
+              "total_funding_pnl": {
+                "mean": -0.06867154070796998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.027905550000000005
+              },
+              "rebuilds": {
+                "mean": 0.006221,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 4.0
+              }
+            },
+            "risk": {
+              "paths": 1000000,
+              "confidence": 0.95,
+              "var": 0.0025451172897510417,
+              "cvar": 0.0033584066766876087,
+              "loss_probability": 0.249757
+            }
+          }
+        },
+        "C/cuda": {
+          "full_call_seconds": 24.66779099946143,
+          "kernel_seconds": 14.505292100016959,
+          "batches": 245,
+          "setup_seconds": 0.11204710078891367,
+          "compile_or_cache_seconds": 0.00024839851539582014,
+          "upload_and_allocation_seconds": 1.9115059988689609,
+          "output_transfer_seconds": 0.09123050014022738,
+          "device_allocation_peak_bytes": 45864960,
+          "shared_generation_seconds": 88.57713220041478,
+          "attributed_end_to_end_seconds": 113.24492319987621,
+          "paths_per_full_call_second": 40538.69274398477,
+          "paths_per_attributed_e2e_second": 8830.417927300896,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9233174108195,
+                "minimum": 991.4744354370922,
+                "p05": 997.454882710249,
+                "median": 1000.0,
+                "p95": 1002.3046282697555,
+                "maximum": 1011.1538648728584
+              },
+              "maximum_drawdown": {
+                "mean": 0.0010848546639068072,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.003652840292760329,
+                "maximum": 0.008525564562907761
+              },
+              "fills": {
+                "mean": 0.451231,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 1.0,
+                "maximum": 1.0
+              },
+              "total_fees": {
+                "mean": 0.0035394447429012554,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0078750655800244,
+                "maximum": 0.008186123408808001
+              },
+              "total_slippage": {
+                "mean": 0.0053059835242373395,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.011805515060998318,
+                "maximum": 0.012271822019999946
+              },
+              "total_funding_pnl": {
+                "mean": -0.06867154070796998,
+                "minimum": -0.15354277999999996,
+                "p05": -0.15329262999999996,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.027905550000000005
+              },
+              "rebuilds": {
+                "mean": 0.006221,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 4.0
+              }
+            },
+            "risk": {
+              "paths": 1000000,
+              "confidence": 0.95,
+              "var": 0.0025451172897510417,
+              "cvar": 0.0033584066766876087,
+              "loss_probability": 0.249757
+            }
+          }
+        },
+        "B/cpu": {
+          "full_call_seconds": 22.09846119885333,
+          "kernel_seconds": 14.03318619885249,
+          "batches": 245,
+          "setup_seconds": 0.0003803999861702323,
+          "compile_or_cache_seconds": 0.0,
+          "upload_and_allocation_seconds": 0.0,
+          "output_transfer_seconds": 0.0,
+          "device_allocation_peak_bytes": 0,
+          "shared_generation_seconds": 88.57713220041478,
+          "attributed_end_to_end_seconds": 110.67559339926811,
+          "paths_per_full_call_second": 45252.01963166056,
+          "paths_per_attributed_e2e_second": 9035.415752346107,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9741210769541,
+                "minimum": 995.3012589274597,
+                "p05": 998.5893293648132,
+                "median": 1000.0,
+                "p95": 1001.3313519607334,
+                "maximum": 1006.1003804858436
+              },
+              "maximum_drawdown": {
+                "mean": 0.000562247184921405,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0019685962258898337,
+                "maximum": 0.004773899003145954
+              },
+              "fills": {
+                "mean": 0.902674,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 2.0,
+                "maximum": 2.0
+              },
+              "total_fees": {
+                "mean": 0.007076644515109901,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.016240384362598802,
+                "maximum": 0.018194489936472005
+              },
+              "total_slippage": {
+                "mean": 0.01061496684100446,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.02436106788900233,
+                "maximum": 0.02729395421999641
+              },
+              "total_funding_pnl": {
+                "mean": -0.008377143938989999,
+                "minimum": -0.019896999999999998,
+                "p05": -0.01964685,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 1000000,
+              "confidence": 0.95,
+              "var": 0.001410670635186759,
+              "cvar": 0.0019110318376609804,
+              "loss_probability": 0.239986
+            }
+          }
+        },
+        "B/cuda": {
+          "full_call_seconds": 10.956368200364523,
+          "kernel_seconds": 0.7159246015362442,
+          "batches": 245,
+          "setup_seconds": 0.11285249947104603,
+          "compile_or_cache_seconds": 0.00025749957421794534,
+          "upload_and_allocation_seconds": 1.8937899990705773,
+          "output_transfer_seconds": 0.0894592993427068,
+          "device_allocation_peak_bytes": 44324864,
+          "shared_generation_seconds": 88.57713220041478,
+          "attributed_end_to_end_seconds": 99.5335004007793,
+          "paths_per_full_call_second": 91271.12029392456,
+          "paths_per_attributed_e2e_second": 10046.868601761447,
+          "financial": {
+            "metrics": {
+              "equity": {
+                "mean": 999.9741210769541,
+                "minimum": 995.3012589274597,
+                "p05": 998.5893293648132,
+                "median": 1000.0,
+                "p95": 1001.3313519607334,
+                "maximum": 1006.1003804858436
+              },
+              "maximum_drawdown": {
+                "mean": 0.000562247184921405,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0019685962258898337,
+                "maximum": 0.004773899003145954
+              },
+              "fills": {
+                "mean": 0.902674,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 2.0,
+                "maximum": 2.0
+              },
+              "total_fees": {
+                "mean": 0.007076644515109901,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.016240384362598802,
+                "maximum": 0.018194489936472005
+              },
+              "total_slippage": {
+                "mean": 0.01061496684100446,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.02436106788900233,
+                "maximum": 0.02729395421999641
+              },
+              "total_funding_pnl": {
+                "mean": -0.008377143938989999,
+                "minimum": -0.019896999999999998,
+                "p05": -0.01964685,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              },
+              "rebuilds": {
+                "mean": 0.0,
+                "minimum": 0.0,
+                "p05": 0.0,
+                "median": 0.0,
+                "p95": 0.0,
+                "maximum": 0.0
+              }
+            },
+            "risk": {
+              "paths": 1000000,
+              "confidence": 0.95,
+              "var": 0.001410670635186759,
+              "cvar": 0.0019110318376609804,
+              "loss_probability": 0.239986
+            }
+          }
+        }
+      },
+      "resources": {
+        "process_sampled_peak_rss_bytes": 2494824448,
+        "process_lifetime_os_peak_rss_bytes": 2501640192,
+        "nvml_device_sampled_peak_used_bytes": 2541252608,
+        "nvml_process_sampled_peak_used_bytes": null,
+        "nvml_device_status": "AVAILABLE",
+        "nvml_process_status": "UNAVAILABLE_WDDM_OR_DRIVER",
+        "sample_interval_seconds": 0.05,
+        "scope": "whole process/device, including prior allocator caches; sampled peaks, not continuous maxima"
+      },
+      "selected_paper_comparisons": [
+        {
+          "profile": "static",
+          "backend": "cpu",
+          "paths": [
+            217768
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cuda",
+          "paths": [
+            217768
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cpu",
+          "paths": [
+            217768
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cuda",
+          "paths": [
+            217768
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cpu",
+          "paths": [
+            217768
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cuda",
+          "paths": [
+            217768
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cpu",
+          "paths": [
+            217768
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cuda",
+          "paths": [
+            217768
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cpu",
+          "paths": [
+            475374
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "static",
+          "backend": "cuda",
+          "paths": [
+            475374
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cpu",
+          "paths": [
+            475374
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "ATR",
+          "backend": "cuda",
+          "paths": [
+            475374
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cpu",
+          "paths": [
+            475374
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "C",
+          "backend": "cuda",
+          "paths": [
+            475374
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cpu",
+          "paths": [
+            475374
+          ],
+          "step_fill_audit_match": true
+        },
+        {
+          "profile": "B",
+          "backend": "cuda",
+          "paths": [
+            475374
+          ],
+          "step_fill_audit_match": true
+        }
+      ],
+      "paired_financial": {
+        "static": {
+          "paired_nav_minus_static_mean": 0.0,
+          "paired_nav_minus_static_p05": 0.0,
+          "paired_nav_minus_static_p95": 0.0
+        },
+        "ATR": {
+          "paired_nav_minus_static_mean": -0.0072450537207390244,
+          "paired_nav_minus_static_p05": -2.076667014122171,
+          "paired_nav_minus_static_p95": 2.1938416868823762
+        },
+        "C": {
+          "paired_nav_minus_static_mean": -0.00012021873491962356,
+          "paired_nav_minus_static_p05": 0.0,
+          "paired_nav_minus_static_p95": 0.0
+        },
+        "B": {
+          "paired_nav_minus_static_mean": 0.0506834473998105,
+          "paired_nav_minus_static_p05": -1.929404319565873,
+          "paired_nav_minus_static_p95": 2.0836199048665414
+        }
+      },
+      "financial_interpretation": "Synthetic pilot only; no financial advantage claim. Funding is settled in-step at fixed 0.00000001 HALF_EVEN quantum, not a terminal overlay. Slippage is embedded in fills, not deducted twice."
+    }
+  ]
+}
