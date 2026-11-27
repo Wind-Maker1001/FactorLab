@@ -1,0 +1,32 @@
+{
+  "protocol": "MC-05-F06-v1",
+  "frozen_definition": "configs/mc05_grid_tail.json",
+  "seeds": [1729, 2718, 31415, 57721, 65537],
+  "sizes": [10000, 100000, 1000000],
+  "horizons": [168, 720, 2160],
+  "models": ["gbm", "moving_block_bootstrap", "regime_historical", "jump_down"],
+  "generation_chunk_size": 1000,
+  "execution_batch_size": 1000,
+  "generator_batch_size": 128,
+  "bootstrap_block_size": 24,
+  "audit_random_paths": 2,
+  "rng": {
+    "version": "F06-U32-PERMUTATION-v1",
+    "multiplier": 2654435761,
+    "increment": 1013904223,
+    "chunk_bits": 20,
+    "seed_slots": 8,
+    "horizon_slots": 4,
+    "interpretation": "unique effective seed identities, not a proof of disjoint RNG subsequences"
+  },
+  "statistics": {
+    "coverage": 0.95,
+    "tail_confidences": [0.95, 0.99],
+    "financial_tolerance": null,
+    "decision": "PRECISION_REPORTED_CONVERGENCE_NOT_ESTABLISHED",
+    "nested_levels": "paired shared prefixes; never independent replications",
+    "calibration_uncertainty": "NOT_ESTIMATED"
+  },
+  "extensions": "Complete the entire 168h matrix first; decide longer-horizon sizes from measured cost and precision.",
+  "funding": "NOT_SIMULATED"
+}
