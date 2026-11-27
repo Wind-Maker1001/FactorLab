@@ -1,0 +1,160 @@
+{
+  "schema": "FACTORLAB_EXTERNAL_VALIDATION_V1",
+  "study_id": "p10-04-external-validation",
+  "strategies": [
+    "v69",
+    "v179",
+    "v182"
+  ],
+  "tickers": [
+    "AAPL",
+    "SNDK",
+    "BA",
+    "C",
+    "JPM",
+    "GE",
+    "TQQQ",
+    "QQQ"
+  ],
+  "initial_capital_usd": 300000.0,
+  "gross_cap": 0.9,
+  "v69_reference_cap": 0.375,
+  "normal_fee_rate": 0.001,
+  "stress_fee_rate": 0.003,
+  "rebalance_deadband": 0.005,
+  "volume_cap_ratio": 0.001,
+  "packages": {
+    "v179_v182_dir": "T:/FactorLab_Audit_Temp/p10-04/packages/v179_v182/Qlib_v182_v179",
+    "v69_dir": "T:/FactorLab_Audit_Temp/p10-04/packages/v69/F02_v69",
+    "qlib_python": "T:/FactorLab_Audit_Temp/p10-04/qlib-venv/Scripts/python.exe",
+    "gpu_python": "T:/FactorLab_Audit_Temp/p10-04/gpu-venv/Scripts/python.exe",
+    "p10_03_native_commit": null,
+    "binance_nvda_bars": "D:/Code/p8-s02-f01-real-run-v2/data/nvdausdt_1h_audited.parquet",
+    "binance_nvda_funding": "D:/Code/p8-s02-f01-real-run-v2/data/nvdausdt_funding_audited.json"
+  },
+  "windows": [
+    {
+      "name": "target",
+      "start": "2023-01-01",
+      "end": "2026-11-23",
+      "market_subdir": "fixtures/target",
+      "benchmark_file": "fixtures/target/benchmark.parquet",
+      "window_role": "repeated_target",
+      "default_omit_sndk": false
+    },
+    {
+      "name": "dev_a",
+      "start": "2013-01-01",
+      "end": "2018-12-31",
+      "market_subdir": "fixtures/history",
+      "benchmark_file": "fixtures/history/dev_benchmark.parquet",
+      "window_role": "development",
+      "default_omit_sndk": true
+    },
+    {
+      "name": "dev_b",
+      "start": "2019-01-01",
+      "end": "2022-12-31",
+      "market_subdir": "fixtures/history",
+      "benchmark_file": "fixtures/history/dev_benchmark.parquet",
+      "window_role": "development",
+      "default_omit_sndk": true
+    },
+    {
+      "name": "dev_crisis",
+      "start": "2006-11-20",
+      "end": "2012-12-31",
+      "market_subdir": "fixtures/history",
+      "benchmark_file": "fixtures/history/long_benchmark.parquet",
+      "window_role": "development",
+      "default_omit_sndk": true
+    },
+    {
+      "name": "twenty",
+      "start": "2006-11-20",
+      "end": "2026-11-20",
+      "market_subdir": "fixtures/history",
+      "benchmark_file": "fixtures/history/long_benchmark.parquet",
+      "window_role": "long_overlap",
+      "default_omit_sndk": false
+    },
+    {
+      "name": "challenge",
+      "start": "2001-01-02",
+      "end": "2006-11-17",
+      "market_subdir": "fixtures/history",
+      "benchmark_file": "fixtures/history/long_benchmark.parquet",
+      "window_role": "historical_challenge",
+      "default_omit_sndk": false
+    }
+  ],
+  "monte_carlo": {
+    "tier1_path_scales": [
+      1000,
+      10000,
+      50000
+    ],
+    "tier2_path_scales": [
+      256,
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "tier2_max_scale": 10000,
+    "horizon_days": 252,
+    "warmup_days": 252,
+    "block_size": 20,
+    "seeds": [
+      1729,
+      2718,
+      31415,
+      65537,
+      104729
+    ],
+    "models": [
+      "corr_gbm",
+      "sync_mbb",
+      "regime_cond_bootstrap",
+      "down_jump_stress",
+      "corr_shock_stress",
+      "student_t_garch"
+    ],
+    "calibration_windows": [
+      "target_4y",
+      "history_10y",
+      "history_20y"
+    ],
+    "drawdown_thresholds": [
+      0.1,
+      0.15,
+      0.2
+    ],
+    "bootstrap_resamples": 999,
+    "max_workers": 16,
+    "precision_target_cvar95_halfwidth_pp": 0.5,
+    "precision_target_cvar99_halfwidth_pp": 1.0,
+    "precision_target_seed_sd_pp": 0.25
+  },
+  "shared_account": {
+    "alpaca_initial_capital_usd": 300000.0,
+    "alpaca_fee_rate": 0.001,
+    "alpaca_gross_cap": 0.9,
+    "alpaca_max_symbol_weight": 0.35,
+    "alpaca_reserve_fee_buffer": 0.001,
+    "alpaca_window": "target",
+    "alpaca_long_window": "twenty",
+    "binance_initial_capital_usdt": 10.0,
+    "allocation_schemes": [
+      "equal_weight_3",
+      "risk_budget_inv_vol_3",
+      "fixed_20_40_40",
+      "pair_v69_v179_50_50",
+      "pair_v69_v182_50_50",
+      "pair_v179_v182_50_50",
+      "dynamic_regime_research_only"
+    ]
+  },
+  "champion_incumbent": "v69",
+  "oos_eligibility": "HISTORICAL_REUSE_PSEUDO_OOS"
+}
