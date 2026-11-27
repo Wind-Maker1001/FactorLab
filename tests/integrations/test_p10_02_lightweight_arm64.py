@@ -642,6 +642,208 @@ def test_p2_vm_wide_cross_process_cap_limits_colocated_binance_and_alpaca_hosts(
     assert max_vm_overlap == 1, f'cross-process VM worker overlap {max_vm_overlap} exceeded VM_MAX=1'
 
 
+@pytest.mark.parametrize('ignore_sigterm', [False, True], ids=['terminate', 'ignore_sigterm_kill_fallback'])
+def test_p2_large_stdin_pipe_full_timeout_terminates_without_deadlock_and_releases_slots(
+    tmp_path, monkeypatch, ignore_sigterm
+):
+    """P2 regression: payload > OS pipe buffer (> 256 KiB, < 4 MiB limit) sent to a real
+    subprocess that never reads stdin and sleeps 15s (optionally ignoring SIGTERM) must
+    time out promptly without deadlocking on buffered stdin.close(), reap the child,
+    join the writer/reader threads, release host & VM slots, and let normal decisions continue.
+    """
+    import factorlab.strategies.loader as loader_mod
+    from factorlab.strategies.loader import (
+        LoadedStrategy,
+        StrategyWorkerError,
+        _try_acquire_vm_slot,
+        active_worker_count,
+        live_worker_pids,
+    )
+
+    lock_dir = tmp_path / 'vm-slots'
+    monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_POOL_MAX', '1')
+    monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_VM_MAX', '1')
+    monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_LOCK_DIR', str(lock_dir))
+
+    # First construct a valid LoadedStrategy using the real worker so describe() succeeds.
+    pkg = _write_timed_strategy(tmp_path / f'pipe_pkg_{int(ignore_sigterm)}', idx=0)
+    strat = LoadedStrategy(pkg, trusted=True, timeout=10.0)
+    strat.timeout = 0.3
+
+    # Stub worker script: optionally ignores SIGTERM, never reads stdin, records its PID, sleeps 15s.
+    pid_file = tmp_path / f'child_{int(ignore_sigterm)}.pid'
+    stub_worker = tmp_path / f'stalled_worker_{int(ignore_sigterm)}.py'
+    stub_worker.write_text(
+        'import os, signal, time\n'
+        'from pathlib import Path\n'
+        f'if {ignore_sigterm!r} and hasattr(signal, "SIGTERM"):\n'
+        '    signal.signal(signal.SIGTERM, signal.SIG_IGN)\n'
+        f'Path({str(pid_file)!r}).write_text(str(os.getpid()), encoding="utf-8")\n'
+        'time.sleep(15.0)\n',
+        encoding='utf-8',
+    )
+
+    real_worker = loader_mod.WORKER
+    # > 256 KiB payload exceeds both Linux (64 KiB) and Windows (4-64 KiB) OS pipe buffers,
+    # while staying well within the 4 MiB protocol limit.
+    large_blob = 'X' * (384 * 1024)
+    now = datetime(2026, 6, 1, 0, 1, tzinfo=timezone.utc)
+    stalled_event = {
+        'kind': 'closed_bar',
+        'symbol': 'NVDAUSDT',
+        'event_id': 'pipe-full-timeout',
+        'now': now,
+        'blob': large_blob,
+    }
+
+    spawned_procs: list[subprocess.Popen] = []
+    orig_popen = loader_mod.subprocess.Popen
+
+    def _track_popen(*args, **kwargs):
+        p = orig_popen(*args, **kwargs)
+        spawned_procs.append(p)
+        return p
+
+    monkeypatch.setattr(loader_mod.subprocess, 'Popen', _track_popen)
+    try:
+        monkeypatch.setattr(loader_mod, 'WORKER', stub_worker)
+        t0 = time.monotonic()
+        with pytest.raises(StrategyWorkerError, match='timed out'):
+            strat.decide(stalled_event, {})
+        elapsed = time.monotonic() - t0
+
+        # Must finish promptly (0.3s timeout + <= 0.5s SIGTERM grace + kill/reap),
+        # nowhere near the 15s child sleep.
+        max_allowed = 4.0 if ignore_sigterm else 3.0
+        assert elapsed < max_allowed, (
+            f'timeout cleanup stalled for {elapsed:.2f}s (ignore_sigterm={ignore_sigterm})'
+        )
+        assert len(spawned_procs) == 1
+        assert spawned_procs[0].poll() is not None, 'child OS process must be confirmed exited'
+
+        # Verify OS-level child PID is actually gone and repeated cleanup is idempotent.
+        loader_mod._terminate_and_reap(spawned_procs[0])
+        if pid_file.exists():
+            child_pid = int(pid_file.read_text(encoding='utf-8').strip())
+            if os.name != 'nt':
+                with pytest.raises(ProcessLookupError):
+                    os.kill(child_pid, 0)
+
+        # Verify stdin writer and stdout/stderr reader threads have exited cleanly.
+        worker_threads = [
+            t for t in threading.enumerate()
+            if t.name in {'factorlab-worker-stdin', 'factorlab-worker-stdout', 'factorlab-worker-stderr'}
+            and t.is_alive()
+        ]
+        assert worker_threads == [], f'lingering worker IO threads: {[t.name for t in worker_threads]}'
+
+        # Verify host pool slot and VM file-lock slot are immediately available again.
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+        slot_lock_path = lock_dir / 'worker-slot-0.lock'
+        lease = _try_acquire_vm_slot(slot_lock_path)
+        assert lease is not None, 'VM file-lock slot was not released after timeout cleanup'
+        lease.release()
+
+        # Restore real worker and verify subsequent normal strategy decision succeeds immediately.
+        monkeypatch.setattr(loader_mod, 'WORKER', real_worker)
+        strat.timeout = 10
+        normal_ev = {'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'after-timeout-ok', 'now': now}
+        dec = strat.decide(normal_ev, {})
+        assert dec.target_weight == D('0.1')
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+    finally:
+        monkeypatch.setattr(loader_mod, 'WORKER', real_worker)
+        strat.close()
+
+
+def test_p2_large_stdin_pipe_full_active_close_terminates_without_deadlock(tmp_path, monkeypatch):
+    """Verify explicit close() while stdin writer is blocked on a full pipe also terminates
+    cleanly (including SIGTERM-ignoring child), joins IO threads, and releases host & VM slots.
+    """
+    import factorlab.strategies.loader as loader_mod
+    from factorlab.strategies.loader import (
+        LoadedStrategy,
+        StrategyWorkerError,
+        _try_acquire_vm_slot,
+        active_worker_count,
+        live_worker_pids,
+    )
+
+    lock_dir = tmp_path / 'vm-slots-close'
+    monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_POOL_MAX', '1')
+    monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_VM_MAX', '1')
+    monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_LOCK_DIR', str(lock_dir))
+
+    pkg = _write_timed_strategy(tmp_path / 'pipe_close_pkg', idx=1)
+    strat = LoadedStrategy(pkg, trusted=True, timeout=20.0)
+    real_worker = loader_mod.WORKER
+    stub_worker = tmp_path / 'stalled_close_worker.py'
+    stub_worker.write_text(
+        'import signal, time\n'
+        'if hasattr(signal, "SIGTERM"):\n'
+        '    signal.signal(signal.SIGTERM, signal.SIG_IGN)\n'
+        'time.sleep(15.0)\n',
+        encoding='utf-8',
+    )
+
+    now = datetime(2026, 6, 1, 0, 1, tzinfo=timezone.utc)
+    stalled_event = {
+        'kind': 'closed_bar',
+        'symbol': 'NVDAUSDT',
+        'event_id': 'pipe-full-close',
+        'now': now,
+        'blob': 'Y' * (384 * 1024),
+    }
+
+    res: list = []
+
+    def _run():
+        try:
+            strat.decide(stalled_event, {})
+            res.append('OK')
+        except Exception as exc:
+            res.append(exc)
+
+    try:
+        monkeypatch.setattr(loader_mod, 'WORKER', stub_worker)
+        t = threading.Thread(target=_run)
+        t.start()
+        deadline = time.monotonic() + 5.0
+        while not live_worker_pids() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert len(live_worker_pids()) == 1
+        time.sleep(0.1)  # Allow _write_stdin to fill the OS pipe buffer and block
+
+        t0 = time.monotonic()
+        strat.close()
+        t.join(timeout=5.0)
+        elapsed = time.monotonic() - t0
+
+        assert not t.is_alive()
+        assert elapsed < 4.0, f'active close() stalled for {elapsed:.2f}s'
+        assert len(res) == 1 and isinstance(res[0], StrategyWorkerError)
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+        # Repeated close() must be idempotent.
+        strat.close()
+
+        worker_threads = [
+            th for th in threading.enumerate()
+            if th.name in {'factorlab-worker-stdin', 'factorlab-worker-stdout', 'factorlab-worker-stderr'}
+            and th.is_alive()
+        ]
+        assert worker_threads == []
+
+        lease = _try_acquire_vm_slot(lock_dir / 'worker-slot-0.lock')
+        assert lease is not None
+        lease.release()
+    finally:
+        monkeypatch.setattr(loader_mod, 'WORKER', real_worker)
+        strat.close()
+
+
 def test_market_cache_lru_still_detects_tampering(tmp_path):
     import pandas as pd
     from factorlab.integrations.alpaca.market_data.cache import MarketCache, Series

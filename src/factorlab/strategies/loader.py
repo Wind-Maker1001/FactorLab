@@ -140,34 +140,55 @@ class StrategyWorkerError(ValueError):
     pass
 
 
-def _terminate_and_reap(proc: subprocess.Popen | None):
-    """Ensure child process has strictly exited before capacity is released."""
+def _close_proc_streams(proc: subprocess.Popen):
+    """Idempotently close subprocess pipes only after the child has exited."""
+    for stream in (proc.stdin, proc.stdout, proc.stderr):
+        if stream is not None:
+            try:
+                if not stream.closed:
+                    stream.close()
+            except (OSError, ValueError):
+                pass
+
+
+def _terminate_and_reap(
+    proc: subprocess.Popen | None,
+    *,
+    close_streams: bool = True,
+    terminate_timeout: float = 0.5,
+):
+    """Ensure child process has strictly exited BEFORE closing pipe streams.
+
+    Never closes stdin/stdout/stderr while the child may still be alive: a helper
+    thread blocked on a full OS pipe holds the buffered stream lock until the
+    child exits and the kernel breaks the pipe.
+    """
     if proc is None:
         return
     try:
-        if proc.stdin is not None:
-            proc.stdin.close()
-    except OSError:
-        pass
-    try:
         if proc.poll() is None:
-            proc.terminate()
             try:
-                proc.wait(timeout=1.0)
+                proc.terminate()
+            except OSError:
+                pass
+            try:
+                proc.wait(timeout=terminate_timeout)
             except subprocess.TimeoutExpired:
-                proc.kill()
+                try:
+                    proc.kill()
+                except OSError:
+                    pass
                 proc.wait(timeout=5.0)
         if proc.poll() is None:
-            proc.kill()
+            try:
+                proc.kill()
+            except OSError:
+                pass
             proc.wait(timeout=5.0)
     except OSError:
         pass
-    for stream in (proc.stdout, proc.stderr):
-        if stream is not None:
-            try:
-                stream.close()
-            except OSError:
-                pass
+    if close_streams:
+        _close_proc_streams(proc)
 
 
 class _VmSlotLease:
@@ -329,7 +350,7 @@ class _WorkerCapacityPool:
             self._cond.notify_all()
         for slot in slots:
             slot.cancel_and_terminate(force=False)
-        soft_deadline = time.monotonic() + 1.0
+        soft_deadline = time.monotonic() + 0.5
         with self._cond:
             while strategy._active_slots:
                 remaining = soft_deadline - time.monotonic()
@@ -355,7 +376,7 @@ class _WorkerCapacityPool:
             self._cond.notify_all()
         for slot in slots:
             slot.cancel_and_terminate(force=False)
-        soft_deadline = time.monotonic() + 1.0
+        soft_deadline = time.monotonic() + 0.5
         with self._cond:
             while self._reserved:
                 remaining = soft_deadline - time.monotonic()
@@ -429,7 +450,7 @@ def _communicate_bounded(proc: subprocess.Popen, payload_bytes: bytes, *, deadli
                         pass
                     break
                 stdout_chunks.append(chunk)
-        except OSError:
+        except (OSError, ValueError):
             pass
 
     def _drain_stderr():
@@ -443,7 +464,7 @@ def _communicate_bounded(proc: subprocess.Popen, payload_bytes: bytes, *, deadli
                 if total > _MAX_STDERR_BYTES:
                     # Keep draining without buffering to avoid pipe deadlock.
                     continue
-        except OSError:
+        except (OSError, ValueError):
             pass
 
     def _write_stdin():
@@ -451,13 +472,13 @@ def _communicate_bounded(proc: subprocess.Popen, payload_bytes: bytes, *, deadli
             if proc.stdin is not None:
                 proc.stdin.write(payload_bytes)
                 proc.stdin.flush()
-        except OSError:
+        except (OSError, ValueError):
             pass
         finally:
             if proc.stdin is not None:
                 try:
                     proc.stdin.close()
-                except OSError:
+                except (OSError, ValueError):
                     pass
 
     t_out = threading.Thread(target=_read_stdout, name='factorlab-worker-stdout', daemon=True)
@@ -467,19 +488,23 @@ def _communicate_bounded(proc: subprocess.Popen, payload_bytes: bytes, *, deadli
     t_err.start()
     t_in.start()
 
-    remaining = max(0.01, deadline - time.monotonic())
+    timed_out = False
     try:
-        proc.wait(timeout=remaining)
-    except subprocess.TimeoutExpired as error:
-        _terminate_and_reap(proc)
-        t_out.join(timeout=1.0)
-        t_err.join(timeout=1.0)
-        t_in.join(timeout=1.0)
-        raise StrategyWorkerError('strategy worker timed out') from error
+        remaining = max(0.01, deadline - time.monotonic())
+        try:
+            proc.wait(timeout=remaining)
+        except subprocess.TimeoutExpired:
+            timed_out = True
+    finally:
+        # Strictly terminate/kill and reap child BEFORE joining IO threads and closing streams.
+        _terminate_and_reap(proc, close_streams=False)
+        t_in.join(timeout=2.0)
+        t_out.join(timeout=2.0)
+        t_err.join(timeout=2.0)
+        _close_proc_streams(proc)
 
-    t_out.join(timeout=2.0)
-    t_err.join(timeout=1.0)
-    t_in.join(timeout=1.0)
+    if timed_out:
+        raise StrategyWorkerError('strategy worker timed out')
     return b''.join(stdout_chunks), oversized
 
 

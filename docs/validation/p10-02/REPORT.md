@@ -105,12 +105,17 @@
    - **最终修复**：彻底移除常驻 `--serve` 模式，恢复**轻量化后的逐请求 one-shot 隔离 Worker**（每次请求独立 OS 子进程 `-I -B`、空环境变量、`close_fds=True`、`sys.addaudithook`、4 MiB 请求/响应上限，执行完毕立即退出并释放全部内存）。
    - **P10-11 兼容性**：`worker.py` 与 `loader.py` 原生识别 `runtime_profile='lightweight'`、`model` 工件声明与 `calendar_timezone`，轻量包跳过重型预导入并仅预热 stdlib `ZoneInfo`，不重复实现 P10-11 策略协议。
    - **保留的独立加速**：`runtime_identity()` 保留 `(st_mtime_ns, st_size)` 变更校验缓存；纯 Python/Decimal 策略零 `numpy/pandas/scipy/pyarrow` 加载，单次冷启动从 574 ms 降至 **25.6 ms**（-95.5%）。
-3. **PR #268 Codex Review P2 修复 — 原子容量预留与宿主/VM 双层并发上限**（`strategies/loader.py`）：
+3. **PR #268 Codex Review P2 修复 — 原子容量预留、双层并发上限与管道清理无死锁**（`strategies/loader.py`）：
    - **初版问题**：原 `_register_pool_worker()` 与 `call()` 间存在无锁竞争窗口，被驱逐或关闭的 Worker 可能在未持有容量时继续启动子进程，导致实际存活子进程突破上限；且未区分单宿主上限与同机双市场 VM 总上限。
-   - **最终修复**：实现 `_WorkerCapacityPool` 原子容量状态机：
+   - **二轮审查问题（comment `4717211384`）**：`_terminate_and_reap()` 曾在 `terminate()` 子进程前调用 `proc.stdin.close()`，当请求大于系统管道容量且子进程未读取 stdin 时，`_write_stdin` 线程阻塞在 `write()` 并持有缓冲区锁，导致 `close()` 等待同一把锁而阻塞超时清理。
+   - **最终修复**：实现 `_WorkerCapacityPool` 原子容量状态机与无死锁清理顺序：
      - 容量在创建临时目录与 `subprocess.Popen` **之前**原子预留；进入 `Popen` 前在 `slot.lock` 下再次校验 `_closed / cancelled / shutting_down`，确保已关闭策略绝不拉起孤儿进程。
-     - `finally` 块严格执行 `_terminate_and_reap(proc)`，**仅在确认 `proc.poll() is not None`（旧 OS 进程完全退出）后**才释放 VM 槽位锁与宿主容量并唤醒等待者；`close()` 与 `atexit` 均强制终止并等待在途子进程退出。
+     - `_terminate_and_reap()` 与 `_communicate_bounded()` 严格遵循**先 `terminate()` → 必要时升级 `kill()` → 确认 `proc.poll() is not None` 退出 → join 全部读写线程（`stdin`/`stdout`/`stderr`）→ 幂等关闭管道 → 释放 VM 文件锁与宿主容量槽位**的顺序，杜绝缓冲锁死锁并保证重复清理、正常退出、主动 `close()`、超时与 `atexit` 全路径幂等。
      - 显式区分**单宿主进程上限** `FACTORLAB_STRATEGY_WORKER_POOL_MAX`（默认 **`1`**，Binance + Alpaca 同机天然 ≤ 2 并发且保持各自 systemd 隔离）与**跨进程 VM 总上限** `FACTORLAB_STRATEGY_WORKER_VM_MAX` + `FACTORLAB_STRATEGY_WORKER_LOCK_DIR`（基于内核 `fcntl.flock` / `msvcrt.locking` 槽位锁，进程崩溃由 OS 自动回收）。
+     - **三平台复验与正常决策延迟抽查**（仅修改异常清理路径，保留既有容量阶梯与四向金融一致性证据，执行必要正常决策抽查）：
+       - **Windows x64**（`AMD64`, Python 3.13.9）：`test_p10_02_lightweight_arm64.py` + `test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape` **26 passed**（31.99s）；正常决策 10 次抽查 p50 **`244.28 ms`**（`218.18–262.96 ms`）。
+       - **Linux x64**（WSL2 原生 ext4, Python 3.13.18）：全部非 pandas 执行与隔离/并发/管道超时/SIGKILL/close 用例 **22 passed**（9.69s）；正常决策 10 次抽查 p50 **`65.30 ms`**（`65.08–115.84 ms`）；完整套件同步由 GitHub Actions `ubuntu-latest` CI 验证。
+       - **ARM64 Linux**（`factorlab-arm-01`, `venv-opt-dual`, Python 3.13.18）：`test_p10_02_lightweight_arm64.py` + `test_unified_cloud_strategy_s04.py` **38 passed**（40.66s）；正常决策 10 次抽查 p50 **`216.62 ms`**（`216.48–216.69 ms`）。
 4. **热点查询、缓存与流存储收敛**（`strategies/decision_runtime.py`, `integrations/alpaca/market_data/cache.py`, `integrations/alpaca/cloud_runtime.py`）：
    - `DecisionJournal._count()` / `_latest()` 改为 `events.id` 主键前缀范围索引查询。
    - `MarketCache` 增加有界 LRU 内存缓存（默认 32 条），每次 `load()` 仍完整校验磁盘 `bars.parquet` SHA-256（零安全妥协）。
@@ -214,7 +219,7 @@
 - [x] 最小执行依赖与 `pyproject.toml` 分层（保留研究环境 `.[research]` 与 `requirements/py314-core.txt` 完全兼容）
 - [x] 跨架构（x86_64 / ARM64）安装与部署脚本适配及安装文档：[docs/execution-lightweight-install.md](../../execution-lightweight-install.md)
 - [x] PR #268 Codex Review P1 修复（恢复轻量化逐请求 one-shot 隔离 Worker，`test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape` 原封不动通过）
-- [x] PR #268 Codex Review P2 修复（原子容量预留、进程退出确认后释放、单宿主 `POOL_MAX` 与跨进程 `VM_MAX` 双层上限）
+- [x] PR #268 Codex Review P2 修复（原子容量预留、先终止/升级 `kill` 确认退出后再 join IO 线程并幂等关闭管道、单宿主 `POOL_MAX` 与跨进程 `VM_MAX` 双层上限；覆盖 384 KiB 超大输入阻塞 + 忽略 `SIGTERM` + 主动 `close()` 真实子进程回归，Windows x64 / Linux x64 / ARM64 三平台全绿）
 - [x] ARM64 原生安装与功能运行证据（4 个分层 venv `pip check` 全绿，[lock_arm64.json](evidence/lock_arm64.json) 跨进程文件锁验证全绿，ARM64 修复后执行回归 51 passed / 本地 x64 含 S01 原隔离测试 52 passed）
 - [x] 优化前基线、初版常驻池（已撤回对照）与最终修复版 3/6/12/24 实例及双市场轻/数值混合负载实测证据：[bench_arm64_baseline.json](evidence/bench_arm64_baseline.json)、[bench_arm64_optimized.json](evidence/bench_arm64_optimized.json)、[bench_arm64_post_review.json](evidence/bench_arm64_post_review.json)
 - [x] 四向（AMD x64 / ARM64 × 优化前基线 / 最终修复版）金融结果一致性证据：[parity_x64_baseline.json](evidence/parity_x64_baseline.json)、[parity_x64_optimized.json](evidence/parity_x64_optimized.json)、[parity_arm64_baseline.json](evidence/parity_arm64_baseline.json)、[parity_arm64_optimized.json](evidence/parity_arm64_optimized.json)
