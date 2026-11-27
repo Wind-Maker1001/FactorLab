@@ -1,0 +1,37 @@
+{
+  "runtime_modules": [
+    "audit",
+    "beta_research.engine",
+    "entry_research.policies",
+    "entry_research.risk",
+    "exposure_research.policies",
+    "exposure_validation.policies",
+    "mix_research.policies",
+    "research_v86_v100.policies",
+    "reserve_research.policies",
+    "risk_research.parent",
+    "risk_research.replay",
+    "v100.strategy",
+    "v105.strategy",
+    "v125.strategy",
+    "v150.strategy",
+    "v161.strategy",
+    "v165.strategy",
+    "v179.strategy",
+    "v182.strategy",
+    "v48_strategy",
+    "v49.strategy",
+    "v50.experiment",
+    "v50.strategy",
+    "v51.strategy",
+    "v61.strategy",
+    "v69.strategy"
+  ],
+  "account_counts": {
+    "v182": 9,
+    "v179": 14
+  },
+  "selection": "v179",
+  "latest_number": "v182",
+  "original_mix_lock_sha256": "c2c049a1d223a5d44c3e45fddf1cf124a5fe3ae16134b34eff4ffdf3f9092f74"
+}

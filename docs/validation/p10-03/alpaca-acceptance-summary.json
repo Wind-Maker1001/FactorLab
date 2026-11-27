@@ -1,0 +1,118 @@
+{
+  "execution_session": "2026-10-05",
+  "signal_cutoff": "2026-10-02",
+  "capital_policy_mode": "SHARED_SAME_DIRECTION",
+  "account_initial_cash_usd": "40000",
+  "corporate_action_factor_override": {
+    "AAPL": "0.5"
+  },
+  "phase1_missing_benchmark_isolation": {
+    "instances": {
+      "V69_CAUSAL": {
+        "state": "WEEK_COMPLETE",
+        "reason": null
+      },
+      "V179_TREND": {
+        "state": "PREPARATION_INCOMPLETE",
+        "reason": "MISSING_BENCHMARK_PROVIDER:^SP500TR"
+      },
+      "V182_RECOVERY": {
+        "state": "PREPARATION_INCOMPLETE",
+        "reason": "MISSING_BENCHMARK_PROVIDER:^SP500TR"
+      }
+    },
+    "v69_submitted_orders": 4
+  },
+  "phase2_three_strategy_coexistence": {
+    "total_submitted_orders": 12,
+    "instances": {
+      "V69_CAUSAL": {
+        "allocation_id": "v69-original",
+        "strategy_id": "V69_CAUSAL",
+        "cash_usd": "17066.66591682702",
+        "positions": {
+          "AAPL": "1.319591010",
+          "QQQ": "1.173990741",
+          "SNDK": "4.093047075",
+          "TQQQ": "3.620952050"
+        },
+        "plan_phase": "COMPLETE",
+        "multipliers": {
+          "TQQQ": "3"
+        }
+      },
+      "V179_TREND": {
+        "allocation_id": "v179-usd",
+        "strategy_id": "V179_TREND_BLEND",
+        "cash_usd": "4793.33362248032",
+        "positions": {
+          "AAPL": "2.522949775",
+          "QQQ": "2.158058613",
+          "SNDK": "6.445965735",
+          "TQQQ": "6.427189889"
+        },
+        "plan_phase": "COMPLETE",
+        "multipliers": {
+          "TQQQ": "3"
+        }
+      },
+      "V182_RECOVERY": {
+        "allocation_id": "v182-usd",
+        "strategy_id": "V182_RECOVERY_BLEND",
+        "cash_usd": "2858.66751481452",
+        "positions": {
+          "AAPL": "1.103411898",
+          "QQQ": "0.946083297",
+          "SNDK": "2.242798825",
+          "TQQQ": "2.643294996"
+        },
+        "plan_phase": "COMPLETE",
+        "multipliers": {
+          "TQQQ": "3"
+        }
+      }
+    },
+    "shared_symbol_owners_AAPL": [
+      "V179_TREND",
+      "V182_RECOVERY",
+      "V69_CAUSAL"
+    ]
+  },
+  "phase3_restart_pause_upgrade_idempotency": {
+    "posts_before_restart": 12,
+    "posts_after_restart": 12,
+    "pause_applied": true,
+    "posts_after_pause_resume": 12,
+    "posts_after_v182_upgrade_wait_flat": 12,
+    "duplicate_rebalances": 0,
+    "v179_checkpoint": {
+      "last_blend_share": 0.75,
+      "last_execution_session": "2026-10-05",
+      "last_ridge_cutoff": "2026-09-24",
+      "last_ridge_month": "2026-10",
+      "last_signal_date": "2026-10-02",
+      "last_week": [
+        2026,
+        41
+      ],
+      "model_artifact_sha256": "042f0f87d51d3965eb5182b20532fe0a8b5afbfaa42e40d1a0e855efb4e8b443"
+    },
+    "v182_checkpoint": {
+      "last_blend_share": 0.4,
+      "last_execution_session": "2026-10-05",
+      "last_ridge_cutoff": "2026-09-24",
+      "last_ridge_month": "2026-10",
+      "last_signal_date": "2026-10-02",
+      "last_week": [
+        2026,
+        41
+      ],
+      "model_artifact_sha256": "042f0f87d51d3965eb5182b20532fe0a8b5afbfaa42e40d1a0e855efb4e8b443"
+    }
+  },
+  "small_account_fractional_validation": {
+    "account_cash_usd": "1000",
+    "verified_by": "tests/integrations/test_alpaca_v179_v182_runtime.py::test_small_paper_account_fractional_shares_and_equity_scaling",
+    "status": "PASS"
+  }
+}

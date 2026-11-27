@@ -222,9 +222,17 @@ def evaluate_champion_and_status(
             full_rep_status = "PASSED_NATIVE_FL" if is_native and v69_diff_f32 and v69_diff_f32["exact_reference_match"] else "FAILED"
         else:
             diffs_s = v179_diffs_f32 if s == "v179" else v182_diffs_f32
+            all_l2_exact = bool(diffs_s) and all(
+                (d.get("layer_checks") or {}).get("layer2_targets_exact", False) for d in diffs_s
+            )
             all_exec_exact = bool(diffs_s) and all(d["exact_reference_match"] for d in diffs_s)
             src_status = "PASSED_23_ACCOUNTS" if qlib_23_pass else "FAILED"
-            sig_status = "PASSED_NATIVE_FL" if is_native else "PENDING_P10_03_NATIVE_PORT"
+            sig_status = (
+                "PASSED_NATIVE_FL"
+                if is_native and all_l2_exact
+                else ("FAILED" if is_native else "PENDING_P10_03_NATIVE_PORT")
+            )
+            exec_status = "PASSED_NATIVE_FL" if is_native and all_exec_exact else ("PASSED_REFERENCE_SIGNAL" if all_exec_exact else "FAILED")
             full_rep_status = (
                 "PASSED_NATIVE_FL"
                 if is_native and all_exec_exact
@@ -234,6 +242,11 @@ def evaluate_champion_and_status(
         status_matrix[s] = {
             "SOURCE_REPLAY": src_status,
             "SIGNAL_EQUIVALENCE": sig_status,
+            "EXECUTION_EQUIVALENCE": (
+                ("PASSED_NATIVE_FL" if is_native and v69_diff_f32 and v69_diff_f32["exact_reference_match"] else "FAILED")
+                if s == "v69"
+                else exec_status
+            ),
             "FULL_REFERENCE_REPLAY": full_rep_status,
             "EXECUTION_ROBUSTNESS": "CONDITIONAL_COST_AND_CONCENTRATION_SENSITIVE",
             "STATISTICAL_RELIABILITY": (

@@ -285,6 +285,23 @@ def build_signal_provider(
             market_index=market.benchmark_close,
         )
     # Check if P10-03 native module exists in factorlab.strategies
+    if version in ("v179", "v182"):
+        try:
+            native_blend = importlib.import_module("factorlab.strategies.v179_v182_native")
+            factory = getattr(native_blend, "build_signal_provider", None)
+            if callable(factory):
+                return factory(
+                    version,
+                    market.close,
+                    market.volume,
+                    market.opening,
+                    market_index=market.benchmark_close,
+                    omit_sndk=omit_sndk,
+                    omit_symbols=omit_symbols,
+                    blend_override=blend_override,
+                )
+        except ImportError:
+            pass
     native_mod_name = f"factorlab.strategies.{version}_native"
     try:
         native_mod = importlib.import_module(native_mod_name)

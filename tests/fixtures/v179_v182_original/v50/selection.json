@@ -1,0 +1,28 @@
+{
+  "selected": "band",
+  "development_passed": true,
+  "qualified": [
+    "band",
+    "band_xgb"
+  ],
+  "ranking": {
+    "band": 3.0,
+    "band_xgb": 6.0
+  },
+  "hashes": {
+    "v50\\protocol.json": "08ef0aea97934f1eb98fb8cd677035e20b29862e5d14e150291821eb1c857526",
+    "v50\\strategy.py": "2752ed484951ee73478549f949f02251118555eae1610f23a625c2b3a1747212",
+    "v50\\experiment.py": "3a78c147692c02efe45621ab8c74e4eb0c99b99cd7a66eaa1d3d150e4b2965da",
+    "v49\\strategy.py": "8b2d4d0985a2f996c1764c150bdee31922af81432eb7865732f7f834dc20fdcd",
+    "v48_strategy.py": "97e680e531c05217098677613fe7d2975842e0b1be901cd6c657f0a0322c0503",
+    "data\\manifest.json": "53d806a0682423303dd440cd1b4c44c82d1b6c1d371b2ad80b85274460f7c15c",
+    "data\\AAPL.parquet": "6a3286de79f3b2773e4baa144214d53a10f2fc886e603f92ca272042e2bf1444",
+    "data\\SNDK.parquet": "eaea70e902877b51f434b4657117680bdd0a57c4e878dc371d41b255ee5a0e8a",
+    "data\\BA.parquet": "09196bb3c93af82a3d8c2f347f086e57d9882b3fe946e5c830336e1ec0c6c4b3",
+    "data\\C.parquet": "355985520beee383b683a9b7585ba4ab83cdf5de32167f8b84ec581353e44e70",
+    "data\\JPM.parquet": "afa8a96f4519f0375ae42bbcccd1b031b38366460ebe88057bffae4fdec4c012",
+    "data\\GE.parquet": "00dcacfbac875be6640ad48782410c16ef5326fc549bf9b75f3d86ded860aacc",
+    "data\\TQQQ.parquet": "3e154cbb6b250d93c95802f73e8891ad58ec550d8960d1e314012c9f4013670c",
+    "data\\QQQ.parquet": "044a3adf6c36ee3e4e38eff90283ad92b29c5604af58f7ff977e73187c2ba52e"
+  }
+}
