@@ -24,6 +24,10 @@ def main():
     p.add_argument('--commit', required=True)
     p.add_argument('--archive', type=Path, required=True)
     p.add_argument('--sha256', required=True)
+    p.add_argument('--rebuild-lightweight-venv', action='store_true',
+                   help='build a minimal execution-binance venv instead of copying the previous venv')
+    p.add_argument('--python', default=None,
+                   help='interpreter used with --rebuild-lightweight-venv (defaults to auto arch path)')
     args = p.parse_args()
     if (len(args.commit) != 40 or any(c not in '0123456789abcdef' for c in args.commit)
             or hashlib.sha256(args.archive.read_bytes()).hexdigest() != args.sha256):
@@ -45,13 +49,22 @@ def main():
             source.mkdir(parents=True)
             with tarfile.open(args.archive) as archive:
                 archive.extractall(source, filter='data')
-            shutil.copytree(old_venv, release / 'venv', symlinks=True)
-            site = next((release / 'venv/lib').glob('python*/site-packages'))
-            # Retain the exact existing dependencies, install this source via a dedicated path entry.
-            for candidate in site.glob('factorlab*'):
-                if candidate.is_dir(): shutil.rmtree(candidate)
-                else: candidate.unlink()
-            (site / 'factorlab-release.pth').write_text(str(source / 'src') + '\n')
+            if args.rebuild_lightweight_venv:
+                import platform as _platform
+                base_py = args.python or f'/opt/factorlab/python/cpython-3.13-linux-{_platform.machine()}-gnu/bin/python3'
+                command(base_py, '-m', 'venv', str(release / 'venv'))
+                vpy = str(release / 'venv/bin/python')
+                command(vpy, '-m', 'pip', 'install', '--only-binary=:all:', '-r', str(source / 'requirements/execution-binance.txt'))
+                command(vpy, '-m', 'pip', 'install', '--no-deps', str(source))
+                command(vpy, '-m', 'pip', 'check')
+            else:
+                shutil.copytree(old_venv, release / 'venv', symlinks=True)
+                site = next((release / 'venv/lib').glob('python*/site-packages'))
+                # Retain the exact existing dependencies, install this source via a dedicated path entry.
+                for candidate in site.glob('factorlab*'):
+                    if candidate.is_dir(): shutil.rmtree(candidate)
+                    else: candidate.unlink()
+                (site / 'factorlab-release.pth').write_text(str(source / 'src') + '\n')
         python = str(release / 'venv/bin/python')
         command('runuser', '-u', 'factorlab-demo', '--', python, '-c',
                 'from factorlab.integrations.binance_futures_trading.demo_strategy_release import ReleaseConsumer')

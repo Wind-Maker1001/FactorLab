@@ -13,6 +13,12 @@ on:
       - 'deploy/systemd/**'
       - 'tools/ci/demo_cloud_systemd.py'
       - 'tools/ci/demo_execute_systemd.py'
+      - 'tools/ci/binance_mailbox_acceptance.py'
+      - 'requirements/execution-binance.txt'
+      - 'requirements/execution-tradfi.txt'
+      - 'src/factorlab/time_utils.py'
+      - 'src/factorlab/experiments/__init__.py'
+      - 'src/factorlab/experiments/grid_funding_adaptive.py'
       - '.github/workflows/demo-cloud-runtime.yml'
   workflow_dispatch:
 permissions:
@@ -111,3 +117,46 @@ jobs:
             cloud-systemd-acceptance.json
             execute-systemd-acceptance.json
           if-no-files-found: error
+
+  lightweight-mailbox:
+    name: Lightweight Binance mailbox (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - name: Run Observer and Execute in separate environments over offline HTTP
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m venv "$RUNNER_TEMP/binance-execute"
+          python -m venv "$RUNNER_TEMP/tradfi-observer"
+          execute="$RUNNER_TEMP/binance-execute/bin/python"
+          observer="$RUNNER_TEMP/tradfi-observer/bin/python"
+          "$execute" -m pip install --only-binary=:all: -r requirements/execution-binance.txt
+          "$observer" -m pip install --only-binary=:all: -r requirements/execution-tradfi.txt
+          "$execute" -m pip check
+          "$execute" -m tools.ci.binance_mailbox_acceptance "$observer" > mailbox-results.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: mailbox-${{ matrix.runner }}
+          path: mailbox-results.json
+          if-no-files-found: error
+
+  lightweight-mailbox-parity:
+    name: Lightweight Binance mailbox parity
+    needs: lightweight-mailbox
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: mailbox-ubuntu-24.04*
+      - run: diff -u mailbox-ubuntu-24.04/mailbox-results.json mailbox-ubuntu-24.04-arm/mailbox-results.json

@@ -12,9 +12,18 @@ from urllib.parse import urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 import uuid
 
-from factorlab.data.evidence import archive_bytes, sha256, utc_now
+from factorlab.data.evidence import archive_bytes, json_bytes, sha256, utc_now
 from factorlab.errors import DataQualityError
-from .store import _write_json
+
+
+def _write_json(path, value):
+    path = Path(path)
+    temporary = path.with_name('.tmp-' + uuid.uuid4().hex)
+    with temporary.open('xb') as stream:
+        stream.write(json_bytes(value))
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, path)
 
 HOST = 'https://fapi.binance.com'
 ENDPOINTS = frozenset({'ping', 'exchangeInfo', 'klines', 'fundingRate', 'premiumIndex',

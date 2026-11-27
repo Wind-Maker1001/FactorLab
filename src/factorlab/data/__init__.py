@@ -1,18 +1,20 @@
 """Vendor-neutral market-data layer for Qbot FactorLab."""
 
-from .cache import BarCacheSnapshot, ParquetBarCache
-from .calendar import TradingCalendar, reindex_bars_to_calendar
-from .providers import (
-    AKShareProvider, LocalParquetProvider, MarketDataProvider,
-    publish_local_market_data,
-)
-from .schema import (
-    CANONICAL_BAR_COLUMNS,
-    canonicalize_bars,
-    empty_bars,
-    normalize_symbol,
-    validate_bars,
-)
+_EXPORTS = {
+    "BarCacheSnapshot": ".cache",
+    "ParquetBarCache": ".cache",
+    "TradingCalendar": ".calendar",
+    "reindex_bars_to_calendar": ".calendar",
+    "AKShareProvider": ".providers",
+    "LocalParquetProvider": ".providers",
+    "MarketDataProvider": ".providers",
+    "publish_local_market_data": ".providers",
+    "CANONICAL_BAR_COLUMNS": ".schema",
+    "canonicalize_bars": ".schema",
+    "empty_bars": ".schema",
+    "normalize_symbol": ".schema",
+    "validate_bars": ".schema",
+}
 
 __all__ = [
     "AKShareProvider",
@@ -29,3 +31,15 @@ __all__ = [
     "reindex_bars_to_calendar",
     "validate_bars",
 ]
+
+
+def __getattr__(name: str):
+    module_name = _EXPORTS.get(name)
+    if module_name is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    from importlib import import_module
+    return getattr(import_module(module_name, __name__), name)
+
+
+def __dir__():
+    return sorted(list(globals()) + __all__)

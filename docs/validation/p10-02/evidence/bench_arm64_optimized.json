@@ -1,0 +1,443 @@
+{
+  "timestamp_utc": "2026-11-26T15:34:36.933555+00:00",
+  "platform": {
+    "machine": "aarch64",
+    "python": "3.13.18"
+  },
+  "sys_mem_start": {
+    "mem_total_mb": 944.15,
+    "mem_avail_mb": 615.59,
+    "mem_free_mb": 93.84,
+    "swap_total_mb": 2048.0,
+    "swap_used_mb": 26.84
+  },
+  "cold_imports": [
+    {
+      "module": "factorlab",
+      "wall_ms": 5.81,
+      "cpu_ms": 5.51,
+      "rss_mb": 16.62,
+      "pss_mb": 10.53,
+      "hwm_mb": 16.62,
+      "swap_mb": 0.0,
+      "minflt": 1761,
+      "majflt": 0,
+      "loaded_modules": 63,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.trading",
+      "wall_ms": 24.37,
+      "cpu_ms": 24.38,
+      "rss_mb": 18.75,
+      "pss_mb": 12.53,
+      "hwm_mb": 18.75,
+      "swap_mb": 0.0,
+      "minflt": 2250,
+      "majflt": 0,
+      "loaded_modules": 90,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.strategies.loader",
+      "wall_ms": 60.54,
+      "cpu_ms": 60.55,
+      "rss_mb": 24.2,
+      "pss_mb": 17.69,
+      "hwm_mb": 24.2,
+      "swap_mb": 0.0,
+      "minflt": 3217,
+      "majflt": 0,
+      "loaded_modules": 138,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.strategies.worker",
+      "wall_ms": 28.65,
+      "cpu_ms": 28.65,
+      "rss_mb": 19.82,
+      "pss_mb": 13.57,
+      "hwm_mb": 19.82,
+      "swap_mb": 0.0,
+      "minflt": 2511,
+      "majflt": 0,
+      "loaded_modules": 126,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.strategies.decision_runtime",
+      "wall_ms": 136.23,
+      "cpu_ms": 136.24,
+      "rss_mb": 29.47,
+      "pss_mb": 22.96,
+      "hwm_mb": 30.09,
+      "swap_mb": 0.0,
+      "minflt": 4857,
+      "majflt": 0,
+      "loaded_modules": 184,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.strategies.grid_execution",
+      "wall_ms": 37.29,
+      "cpu_ms": 37.32,
+      "rss_mb": 21.99,
+      "pss_mb": 15.53,
+      "hwm_mb": 21.99,
+      "swap_mb": 0.0,
+      "minflt": 2617,
+      "majflt": 0,
+      "loaded_modules": 107,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.strategies.adaptive_grid_v2",
+      "wall_ms": 78.54,
+      "cpu_ms": 78.55,
+      "rss_mb": 26.17,
+      "pss_mb": 19.66,
+      "hwm_mb": 26.17,
+      "swap_mb": 0.0,
+      "minflt": 3725,
+      "majflt": 0,
+      "loaded_modules": 184,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.integrations.binance_futures_trading.demo_grid_supervisor",
+      "wall_ms": 228.83,
+      "cpu_ms": 228.79,
+      "rss_mb": 32.84,
+      "pss_mb": 26.28,
+      "hwm_mb": 33.31,
+      "swap_mb": 0.0,
+      "minflt": 5688,
+      "majflt": 0,
+      "loaded_modules": 240,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.integrations.binance_futures_trading.demo_instance_owner",
+      "wall_ms": 68.43,
+      "cpu_ms": 68.44,
+      "rss_mb": 25.67,
+      "pss_mb": 19.16,
+      "hwm_mb": 25.67,
+      "swap_mb": 0.0,
+      "minflt": 3612,
+      "majflt": 0,
+      "loaded_modules": 176,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.integrations.binance_futures_trading.tradfi_cloud",
+      "wall_ms": 1561.21,
+      "cpu_ms": 1644.13,
+      "rss_mb": 120.9,
+      "pss_mb": 113.72,
+      "hwm_mb": 121.79,
+      "swap_mb": 0.0,
+      "minflt": 18732,
+      "majflt": 1,
+      "loaded_modules": 657,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.integrations.alpaca.cloud_runtime",
+      "wall_ms": 479.92,
+      "cpu_ms": 558.55,
+      "rss_mb": 117.5,
+      "pss_mb": 110.33,
+      "hwm_mb": 117.5,
+      "swap_mb": 0.0,
+      "minflt": 16552,
+      "majflt": 15,
+      "loaded_modules": 722,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "pyarrow"
+      ]
+    },
+    {
+      "module": "factorlab.integrations.alpaca.strategy_instances",
+      "wall_ms": 483.23,
+      "cpu_ms": 566.91,
+      "rss_mb": 116.64,
+      "pss_mb": 109.46,
+      "hwm_mb": 116.64,
+      "swap_mb": 0.0,
+      "minflt": 16207,
+      "majflt": 0,
+      "loaded_modules": 723,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "pyarrow"
+      ]
+    }
+  ],
+  "warmup_peak": {
+    "wall_ms": 8575.49,
+    "cpu_ms": 8335.16,
+    "reread_3x_ms": 16.17,
+    "rss_mb": 132.23,
+    "hwm_mb": 132.23,
+    "disk_kb": 840.5,
+    "minflt": 19019,
+    "majflt": 11
+  },
+  "dual_market_observer": {
+    "single_market": {
+      "binance_execute": {
+        "pid": 14491,
+        "rss_mb": 30.94,
+        "hwm_mb": 30.94,
+        "pss_mb": 24.28,
+        "swap_mb": 0.0
+      },
+      "alpaca_runtime": {
+        "pid": 14492,
+        "rss_mb": 121.49,
+        "hwm_mb": 121.49,
+        "pss_mb": 114.23,
+        "swap_mb": 0.0
+      }
+    },
+    "dual_before_sys": {
+      "mem_total_mb": 944.15,
+      "mem_avail_mb": 636.79,
+      "mem_free_mb": 113.41,
+      "swap_total_mb": 2048.0,
+      "swap_used_mb": 28.07
+    },
+    "dual_peak_sum_rss_mb": 273.14,
+    "dual_peak_sum_pss_mb": 193.5,
+    "dual_peak_sum_hwm_mb": 273.14,
+    "dual_min_sys_avail_mb": 513.92,
+    "dual_max_sys_swap_mb": 29.61,
+    "dual_last_sample": {
+      "procs": {
+        "binance_execute": {
+          "pid": 14494,
+          "rss_mb": 30.95,
+          "hwm_mb": 30.95,
+          "pss_mb": 20.2,
+          "swap_mb": 0.0
+        },
+        "alpaca_runtime": {
+          "pid": 14495,
+          "rss_mb": 121.57,
+          "hwm_mb": 121.57,
+          "pss_mb": 87.13,
+          "swap_mb": 0.0
+        },
+        "tradfi_observer": {
+          "pid": 14496,
+          "rss_mb": 120.62,
+          "hwm_mb": 120.62,
+          "pss_mb": 86.17,
+          "swap_mb": 0.0
+        }
+      },
+      "sum_rss_mb": 273.14,
+      "sum_pss_mb": 193.5,
+      "sum_hwm_mb": 273.14,
+      "sys": {
+        "mem_total_mb": 944.15,
+        "mem_avail_mb": 513.92,
+        "mem_free_mb": 58.75,
+        "swap_total_mb": 2048.0,
+        "swap_used_mb": 29.61
+      }
+    }
+  },
+  "scaling_ladder": [
+    {
+      "instances": 3,
+      "ticks": 3,
+      "init_ms": 387.01,
+      "total_wall_ms": 834.45,
+      "self_cpu_ms": 100.56,
+      "child_cpu_ms": 332.65,
+      "decision_latency": {
+        "count": 9,
+        "mean_ms": 12.86,
+        "p50_ms": 12.64,
+        "p95_ms": 17.02,
+        "p99_ms": 17.02,
+        "max_ms": 17.02
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 38.96,
+        "p50_ms": 38.09,
+        "p95_ms": 43.61,
+        "p99_ms": 43.61,
+        "max_ms": 43.61
+      },
+      "parent_rss_mb": 30.54,
+      "parent_pss_mb": 23.78,
+      "parent_hwm_mb": 30.54,
+      "parent_swap_mb": 0.0,
+      "max_live_children": 3,
+      "peak_combined_rss_mb": 114.16,
+      "peak_combined_pss_mb": 70.84,
+      "min_sys_avail_mb": 579.72,
+      "max_sys_swap_mb": 29.61,
+      "db_kb": 288.0,
+      "self_majflt": 6,
+      "child_majflt": 0,
+      "fits_1m_cycle": true
+    },
+    {
+      "instances": 6,
+      "ticks": 3,
+      "init_ms": 758.56,
+      "total_wall_ms": 1095.87,
+      "self_cpu_ms": 161.17,
+      "child_cpu_ms": 659.2,
+      "decision_latency": {
+        "count": 18,
+        "mean_ms": 11.95,
+        "p50_ms": 11.55,
+        "p95_ms": 14.46,
+        "p99_ms": 14.46,
+        "max_ms": 14.46
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 72.52,
+        "p50_ms": 73.68,
+        "p95_ms": 74.39,
+        "p99_ms": 74.39,
+        "max_ms": 74.39
+      },
+      "parent_rss_mb": 31.39,
+      "parent_pss_mb": 24.64,
+      "parent_hwm_mb": 31.39,
+      "parent_swap_mb": 0.0,
+      "max_live_children": 6,
+      "peak_combined_rss_mb": 198.66,
+      "peak_combined_pss_mb": 116.39,
+      "min_sys_avail_mb": 544.12,
+      "max_sys_swap_mb": 29.61,
+      "db_kb": 412.0,
+      "self_majflt": 0,
+      "child_majflt": 0,
+      "fits_1m_cycle": true
+    },
+    {
+      "instances": 12,
+      "ticks": 3,
+      "init_ms": 1513.13,
+      "total_wall_ms": 2079.39,
+      "self_cpu_ms": 280.31,
+      "child_cpu_ms": 1327.48,
+      "decision_latency": {
+        "count": 36,
+        "mean_ms": 11.42,
+        "p50_ms": 11.07,
+        "p95_ms": 13.98,
+        "p99_ms": 15.3,
+        "max_ms": 15.3
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 138.83,
+        "p50_ms": 139.57,
+        "p95_ms": 140.13,
+        "p99_ms": 140.13,
+        "max_ms": 140.13
+      },
+      "parent_rss_mb": 33.18,
+      "parent_pss_mb": 26.44,
+      "parent_hwm_mb": 33.18,
+      "parent_swap_mb": 0.0,
+      "max_live_children": 12,
+      "peak_combined_rss_mb": 367.76,
+      "peak_combined_pss_mb": 206.6,
+      "min_sys_avail_mb": 455.53,
+      "max_sys_swap_mb": 30.4,
+      "db_kb": 668.0,
+      "self_majflt": 0,
+      "child_majflt": 0,
+      "fits_1m_cycle": true
+    },
+    {
+      "instances": 24,
+      "ticks": 3,
+      "init_ms": 3076.39,
+      "total_wall_ms": 12310.33,
+      "self_cpu_ms": 642.31,
+      "child_cpu_ms": 10507.51,
+      "decision_latency": {
+        "count": 72,
+        "mean_ms": 125.74,
+        "p50_ms": 125.16,
+        "p95_ms": 129.26,
+        "p99_ms": 135.05,
+        "max_ms": 135.05
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 3021.83,
+        "p50_ms": 3028.2,
+        "p95_ms": 3029.18,
+        "p99_ms": 3029.18,
+        "max_ms": 3029.18
+      },
+      "parent_rss_mb": 36.24,
+      "parent_pss_mb": 29.48,
+      "parent_hwm_mb": 36.25,
+      "parent_swap_mb": 0.0,
+      "max_live_children": 12,
+      "peak_combined_rss_mb": 370.34,
+      "peak_combined_pss_mb": 209.12,
+      "min_sys_avail_mb": 452.58,
+      "max_sys_swap_mb": 30.47,
+      "db_kb": 1160.0,
+      "self_majflt": 0,
+      "child_majflt": 0,
+      "fits_1m_cycle": true
+    }
+  ],
+  "recovery_burst_sqlite": {
+    "backfill_120bars_recovery_ms": 3004.39,
+    "burst_120orders_total_ms": 3364.33,
+    "burst_order_latency": {
+      "count": 120,
+      "mean_ms": 15.06,
+      "p50_ms": 14.29,
+      "p95_ms": 19.06,
+      "p99_ms": 23.02,
+      "max_ms": 31.48
+    },
+    "journal_300decisions_latency": {
+      "count": 300,
+      "mean_ms": 13.46,
+      "p50_ms": 12.81,
+      "p95_ms": 17.34,
+      "p99_ms": 21.69,
+      "max_ms": 24.42
+    },
+    "db_kb": 532.0,
+    "backup_ms": 39.71,
+    "backup_verify_ms": 1.88,
+    "log_2000lines_rotate_ms": 45.12,
+    "log_rotations": 1,
+    "rss_mb": 33.85,
+    "hwm_mb": 33.85
+  },
+  "sys_mem_end": {
+    "mem_total_mb": 944.15,
+    "mem_avail_mb": 643.41,
+    "mem_free_mb": 248.51,
+    "swap_total_mb": 2048.0,
+    "swap_used_mb": 30.47
+  }
+}

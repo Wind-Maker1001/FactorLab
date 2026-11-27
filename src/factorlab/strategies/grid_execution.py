@@ -13,8 +13,6 @@ from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 from hashlib import sha256
 import re
 
-import pandas as pd
-
 from factorlab.backtest.fees import FeeRule, FeeSchedule
 from factorlab.trading.contracts import (
     FundingEvent, Market, OrderIntent, OrderSnapshot, OrderStatus, OrderType, Side, TERMINAL, ZERO, decimal_value,
@@ -23,7 +21,7 @@ from factorlab.trading.paper import Quote
 from factorlab.trading.control import RiskRejected
 from factorlab.trading.state import OrderRecord, advance, unknown
 from factorlab.trading.storage import dumps
-from .grid import GridStrategy
+from .grid import GridStrategy, _parse_naive_timestamp
 
 
 _CHECKPOINT = 'grid_execution'
@@ -148,9 +146,10 @@ def _project_paper_account(broker, instrument_id, turnover, *, allow_shared=Fals
 
 def _observation(event):
     validate_identity(event['id'])
-    timestamp = pd.Timestamp(event['time'])
-    if pd.isna(timestamp) or timestamp.tzinfo is not None:
-        raise ValueError('ordered timezone-free observations required')
+    try:
+        timestamp = _parse_naive_timestamp(event['time'])
+    except (TypeError, ValueError) as exc:
+        raise ValueError('ordered timezone-free observations required') from exc
     price = D(event['price'])
     decimal_value(price, 'price', positive=True)
     close_only = event.get('scenario') == 'CLOSE_ONLY_SCENARIO'
@@ -567,7 +566,7 @@ class GridExecution:
         self._apply_external(delivery, 'bar', None, None)
 
     def _check_observation(self, event):
-        timestamp = pd.Timestamp(event['time'])
+        timestamp = _parse_naive_timestamp(event['time'])
         if self.timestamp is not None and timestamp < self.timestamp:
             raise ValueError('observation time regression')
         if event['action'] == 'cancel' and event['order_id'] not in self.orders:
@@ -803,7 +802,7 @@ class GridExecution:
             raise ValueError('fresh engine and compatible Grid checkpoint required')
         for name in _DECISION_FIELDS:
             setattr(self, name, payload['decision'][name])
-        self.timestamp = None if payload['timestamp'] is None else pd.Timestamp(payload['timestamp'])
+        self.timestamp = None if payload['timestamp'] is None else _parse_naive_timestamp(payload['timestamp'])
         self.true_ranges.extend(payload['true_ranges'])
         self.account = None if payload['account'] is None else GridAccount(**payload['account'])
         self._turnover = payload['turnover']
@@ -860,7 +859,7 @@ class GridExecution:
                     setattr(staged, name, payload['decision'].get(name, getattr(staged, name)))
                 else:
                     setattr(staged, name, payload['decision'][name])
-            staged.timestamp = pd.Timestamp(payload['timestamp'])
+            staged.timestamp = _parse_naive_timestamp(payload['timestamp'])
             staged.true_ranges.extend(payload['true_ranges'])
             for name in ('pending_rebuild', 'pending_bar'):
                 pending = payload[name]

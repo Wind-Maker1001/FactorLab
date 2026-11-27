@@ -17,11 +17,14 @@
 
 ```bash
 python -m venv .venv
-python -m pip install .
+python -m pip install ".[research]"
 python -m pip check
 factorlab --help
 factorlab demo --output results/synthetic-first-run
 ```
+
+研究环境亦保持既有锁文件入口完全兼容：`python -m pip install -r requirements/py314-core.txt && python -m pip install --no-deps .`。
+执行端（低内存 Linux x64/ARM64 云主机）最小安装见 [执行端轻量化与跨架构安装说明](docs/execution-lightweight-install.md)，可选 `.[execution-binance]`、`.[execution-alpaca]`、`.[execution-tradfi]` 或 `.[execution-dual]`。
 
 先激活所创建的虚拟环境，或使用环境内 python/factorlab 的完整路径。
 Windows 的实际复现版本见 `requirements/py314-win64.lock.txt`；供应商依赖单独放在

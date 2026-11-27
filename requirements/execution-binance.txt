@@ -1,0 +1,4 @@
+# Minimal cross-architecture Binance USD-M / Equity execution dependencies (CPython 3.13 Linux x86_64 & aarch64).
+# Pure stdlib + Decimal execution core; no numpy/pandas/scipy/pyarrow/ML/CUDA required.
+tzdata==2026.6
+websockets==16.1.1
