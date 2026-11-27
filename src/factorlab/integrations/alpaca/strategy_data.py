@@ -104,10 +104,8 @@ class StrategyData:
                     if days.empty:
                         raise PreparationIncomplete('INSUFFICIENT_REFERENCE_CALENDAR:' + symbol)
                     observations = self.reference_provider.history(symbol, kind, request,
-                        start=days[0].date().isoformat(), end=days[-1].date().isoformat(), as_of=self.clock())
-                    if kind == 'closed_bar':
-                        observations = [observation for observation in observations
-                                        if observation['effective_at'] <= window.signal_cutoff]
+                        start=days[0].date().isoformat(), end=days[-1].date().isoformat(),
+                        as_of=self.clock(), effective_through=window.signal_cutoff if kind == 'closed_bar' else None)
                 if len(observations) != limit:
                     raise ReferenceUnavailable('incomplete reference history: ' + symbol + '/' + kind)
                 history[kind] = observations

@@ -42,8 +42,9 @@ class DataHub:
              knowledge_as_of: str | None = None) -> QueryResult:
         """Read an inclusive daily window; timestamps require explicit timezone.
 
-        Symbols must include their exchange. Missing dates remain missing, and
-        unsupported histories fail rather than falling back to current data.
+        Market research symbols include their exchange. Strategy observations
+        use the selected source's explicit identifier. Missing dates remain
+        missing, and unsupported histories fail.
         """
         if source not in self._sources:
             raise UnsupportedQueryError("unknown DataHub source: %s" % source)
@@ -53,7 +54,8 @@ class DataHub:
         lo, hi = strict_import_date(start, "start"), strict_import_date(end, "end")
         if lo > hi:
             raise DataQualityError("start must not exceed end")
-        symbol_pattern = STRATEGY_SYMBOL if kind.startswith("strategy_") else CANONICAL_SYMBOL
+        strategy_query = kind.startswith("strategy_")
+        symbol_pattern = STRATEGY_SYMBOL if strategy_query else CANONICAL_SYMBOL
         if symbol is not None and (not isinstance(symbol, str) or not symbol_pattern.fullmatch(symbol)):
             raise DataQualityError("explicit canonical symbol with exchange required")
         if kind == "corporate_actions":
@@ -73,7 +75,13 @@ class DataHub:
             frame = result.data
             if not frame.columns.is_unique:
                 raise DataQualityError("duplicate result columns")
-            keys = [key for key in ("date", "symbol") if key in frame.columns]
+            if kind == "strategy_closed_bar":
+                identity = ("symbol", "effective_at")
+            elif strategy_query:
+                identity = ("symbol", "observed_at", "effective_at")
+            else:
+                identity = ("date", "symbol")
+            keys = [key for key in identity if key in frame.columns]
             if keys and frame.duplicated(keys).any():
                 raise DataQualityError("duplicate result keys; no silent source priority")
         elif isinstance(result.data, pd.DatetimeIndex) and result.data.has_duplicates:

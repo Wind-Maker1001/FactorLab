@@ -16,7 +16,7 @@ class DataHubReferences:
     def supports(self, symbol, kind, requirement):
         return 'strategy_' + kind in self.hub.capabilities().get(requirement['source'], ())
 
-    def history(self, symbol, kind, requirement, *, start, end, as_of):
+    def history(self, symbol, kind, requirement, *, start, end, as_of, effective_through=None):
         from factorlab.errors import DataQualityError
 
         utc(as_of)
@@ -39,9 +39,14 @@ class DataHubReferences:
             if (row['symbol'] != symbol or observed > as_of
                     or kind != 'funding_forecast' and effective > as_of):
                 raise ReferenceUnavailable('reference result exceeds symbol or knowledge cutoff')
+            if effective_through is not None and effective > effective_through:
+                continue
             observations.append(dict(source=source, source_version=metadata.data_version,
                                      observed_at=observed, effective_at=effective, payload=row['payload']))
-        observations.sort(key=lambda item: (item['observed_at'], item['effective_at']))
+        if kind == 'closed_bar':
+            observations.sort(key=lambda item: item['effective_at'])
+        else:
+            observations.sort(key=lambda item: (item['observed_at'], item['effective_at']))
         return observations[-requirement['history_limit']:]
 
 

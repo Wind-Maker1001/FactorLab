@@ -23,6 +23,8 @@ PR 的可信验证由目标分支现有工作流生成。Windows 本地回归和
 
 Linux x64 用同一套离线夹具运行了 31 项定向用例，涵盖外部策略、Alpaca 日历与数据、原生 V69、Binance 实例宿主。首轮 V69 暴露 pandas 初次本地化时读取系统时区文件的问题。worker 在受信初始化阶段预热已声明的纽约交易日历，策略运行时继续使用原有 I/O 限制。修复后 31 项全部通过。
 
+PR 审查发现跨周期 DataHub 参考先截取历史再应用信号截止，会把有效窗口错误标记为缺失。修复后用小时调度和分钟参考验证先按生效时间过滤，再截取声明窗口，同时保留独立的知识时间要求。Linux 两市场定向回归为 32 项通过，Windows 新回归和 DataHub 既有用例为 19 项通过。 [PR 审查意见](https://github.com/Wind-Maker1001/FactorLab/pull/264#discussion_r4711321474)
+
 ## Linux x64 资源测量
 
 Python 3.13，WSL Debian x86_64，源码复制到 Linux 原生文件系统。`taskset -c 0,1` 固定两个逻辑 CPU，`ulimit -v 1048576` 为各进程设置 1 GiB 地址空间上限。每行使用新进程执行一次 `python -m examples.external_strategy.run <示例> <输出目录> --measure`。加载包含校验、worker 描述和运行时指纹，决策包含新 worker 启动和指纹校验。预热表示构造声明长度的合成行情事件。

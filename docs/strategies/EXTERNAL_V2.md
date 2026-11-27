@@ -44,7 +44,7 @@
 
 - Alpaca 使用 `MarketDataService` 和 `MarketCache` 读取指定 feed 的 raw 日线或常规交易时段分钟聚合。参考资产只解析数据身份。SPY 与 IWM 的市场角色由各自的包声明决定。
 - Binance Demo 利用已有公共 REST 和 SQLite 历史区间读取与决策间隔对齐的 raw K 线。参考数据可以声明 `funding_forecast` 或 `funding_settlement`，对应各自的来源记录与时间语义。预测允许结算目标在未来，已知时间必须在决策截止前。已结算资金费记录在取得后才可见。
-- `DataHubReferences(hub)` 可用于历史回放，以及注入 Alpaca 实例宿主的外部来源。注册来源明确暴露 `strategy_<类型>`，可按同样的接口接入指数、行业、波动率、特征、预测等。适配器收到单一符号、查询窗口和 `knowledge_as_of`，返回包含 `symbol`、`observed_at`、`effective_at`、`payload` 的表，并提供精确的 `source_id` 和 `data_version`。适配器须提供可核验的历史可用时间。只有回顾性日期的现有 DataHub 来源不能满足该合同。
+- `DataHubReferences(hub)` 可用于历史回放，以及注入 Alpaca 实例宿主的外部来源。注册来源明确暴露 `strategy_<类型>`，可按同样的接口接入指数、行业、波动率、特征、预测等。适配器收到单一符号、查询窗口和 `knowledge_as_of`，返回包含 `symbol`、`observed_at`、`effective_at`、`payload` 的表，并提供精确的 `source_id` 和 `data_version`。参考 K 线按生效时间排序，一个闭合时点只交付一条符合查询知识截止的记录。宿主先应用信号截止，再按声明长度取历史。只有回顾性日期的现有 DataHub 来源不能满足该合同。
 
 OHLCV、调整口径和基准身份由数据生产者负责。更换来源、复权方式或标的需要显式调整声明并构建新包。参考输入缺失时实例等待完整数据，其他独立实例照常接收自己的事件。
 

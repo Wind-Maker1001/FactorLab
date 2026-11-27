@@ -1,5 +1,6 @@
 """External package examples and point-in-time input wiring without a network."""
 from contextlib import ExitStack, closing
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import shutil
@@ -11,7 +12,7 @@ import pytest
 from examples.external_strategy.run import EXAMPLES, example_manifest, event_for
 from factorlab.data.hub.contracts import QueryResult, SourceMetadata
 from factorlab.data.hub.hub import DataHub
-from factorlab.integrations.alpaca.market_data.inputs import normalize_bars
+from factorlab.integrations.alpaca.market_data.inputs import Instrument, normalize_bars
 from factorlab.integrations.alpaca.scheduling import schedule_window
 from factorlab.integrations.alpaca.strategy_assets import StrategyAssets
 from factorlab.integrations.alpaca.strategy_data import StrategyData
@@ -215,10 +216,47 @@ def test_datahub_reads_only_declared_source_and_requires_point_in_time():
         adapter.history('SPY.US', 'prediction', requirement, **dict(args, as_of=JAN6 - timedelta(seconds=1)))
 
 
+def test_alpaca_cuts_datahub_minutes_before_selecting_reference_history():
+    now = at(24, 11, 15).astimezone(UTC)
+    market_calendar = calendar()
+    declaration = manifest_spec(example_manifest('b', commit='a' * 40, account_id='paper',
+                                                reference_source='FROZEN_BARS'))
+    spec = replace(declaration, schedule=dict(kind='interval', interval_seconds=3600), data=dict(
+        declaration.data, references={'IWM': {'closed_bar': dict(source='FROZEN_BARS',
+            price_basis='raw', interval_seconds=60, history_limit=2)}}))
+    window = schedule_window(market_calendar, spec.schedule, now)
+    binding = event_for(spec, now)['binding']
+
+    class Source:
+        capabilities = frozenset({'strategy_closed_bar'})
+
+        def read(self, kind, **query):
+            assert query['knowledge_as_of'] == now.isoformat()
+            rows = [dict(symbol='IWM', observed_at=now,
+                effective_at=window.signal_cutoff + timedelta(minutes=offset),
+                payload=dict(price_basis='raw', interval_seconds=60, close=100 + offset))
+                for offset in (-1, 0, 1, 2)]
+            return QueryResult(pd.DataFrame(rows), SourceMetadata('FROZEN_BARS', 'vintage-one'))
+
+    def history(instrument, start, end, *, timeframe):
+        minutes = pd.date_range(at(24, 9, 30), periods=60, freq='min')
+        rows = [dict(t=stamp.isoformat(), o=10, h=10, l=10, c=10, v=100) for stamp in minutes]
+        return normalize_bars(rows, instrument, calendar=market_calendar, timeframe=timeframe,
+                              received_at=now, feed='iex', source='ALPACA:iex')
+
+    service = SimpleNamespace(calendar=market_calendar, history=history)
+    assets = SimpleNamespace(instruments=lambda symbols: (Instrument('spy-id', symbols[0], now),))
+    provider = DataHubReferences(DataHub({'FROZEN_BARS': Source()}))
+    event = StrategyData(assets, clock=lambda: now, reference_provider=provider).event(
+        service, spec, binding, {}, window)
+    validate_event(event, spec)
+    observations = event['references']['IWM']['history']['closed_bar']
+    assert [entry['effective_at'] for entry in observations] == [
+        window.signal_cutoff - timedelta(minutes=1), window.signal_cutoff]
+
+
 @pytest.mark.parametrize('reference_first', [False, True])
 def test_binance_reference_arrivals_complete_one_trade_event(tmp_path, monkeypatch, reference_first):
-    from dataclasses import replace
-
     declaration = manifest_spec(example_manifest('c', commit='a' * 40))
     spec = replace(declaration, data=dict(declaration.data, references={
         'ETHUSDT': {'closed_bar': dict(source=SOURCE, history_limit=2, price_basis='raw',

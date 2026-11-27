@@ -80,7 +80,10 @@ def _references(event, declared):
                 if kind == 'closed_bar' and (payload['price_basis'] != requirement['price_basis']
                         or payload['interval_seconds'] != requirement['interval_seconds']):
                     raise ValueError('reference bar provenance mismatch: ' + symbol)
-            times = [(entry['observed_at'], entry['effective_at']) for entry in history]
+            if kind == 'closed_bar':
+                times = [entry['effective_at'] for entry in history]
+            else:
+                times = [(entry['observed_at'], entry['effective_at']) for entry in history]
             if times != sorted(set(times)):
                 raise ValueError('reference history must be ordered and unique: ' + symbol)
 
