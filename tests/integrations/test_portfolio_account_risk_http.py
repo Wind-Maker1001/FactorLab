@@ -429,6 +429,117 @@ def test_alpaca_unprepared_buy_is_unknown_risk_but_owned_reduction_remains_legal
         assert alpaca_snapshot(runner, http).projected_gross_exposure == ZERO
 
 
+@pytest.mark.parametrize('market', ['alpaca', 'binance'])
+@pytest.mark.parametrize('gross_limit', [D(150), D(500)])
+def test_pending_capital_defers_original_order_until_preparation_recovers(tmp_path, market, gross_limit):
+    with ExitStack() as stack:
+        if market == 'alpaca':
+            http = AlpacaRiskHTTP()
+            runner, store = alpaca_runner(stack, tmp_path, http)
+            setup_pair(runner, store)
+            executor, account, symbol = runner.executor, ACCOUNT, 'MSFT'
+            prepared = alpaca_direct(runner, 'A', 'AAPL', 'prepared-before-missing')
+            advance_prepared = lambda: alpaca_advance(runner, prepared)
+            advance_pending = lambda identity: alpaca_advance(runner, identity, symbol)
+        else:
+            http = BinanceRiskHTTP()
+            executor = binance_runner(stack, tmp_path, http, lambda: http.now)
+            store, account, symbol = executor.store, 'offline', 'NVDAUSDT'
+            executor.capital_policy.configure(account_id=account, currency='USDT', budget=D(1000),
+                fee_rate=ZERO, mode=CapitalPolicyMode.SHARED_SAME_DIRECTION)
+            for owner in ('A', 'B'):
+                executor.allocate(account_id=account, strategy_id=owner, allocation_id=owner + '-usdt',
+                    capital=D(400), initial_cash=D(400), official_equity=D(1000))
+                executor.capital_policy.bind(account_id=account, strategy_id=owner, instance_id=owner,
+                    allocation_id=owner + '-usdt')
+            executor.adapter.sync_funding(start_time=http.now, end_time=http.now)
+            prepared = binance_direct(executor, 'A', 'prepared-before-missing')
+            advance_prepared = lambda: binance_advance(executor, prepared, http)
+            advance_pending = lambda identity: binance_advance(executor, identity, http)
+        pending = executor.create(account_id=account, strategy_id='B', strategy_version='1',
+            trading_session=SESSION, rebalance_id='missing-quote', weights={}, owned_symbols=[symbol],
+            quantity_deltas={symbol: D(1)}, now=executor.clock())
+        executor.configure_portfolio_risk(account, PortfolioRiskLimits(max_gross_exposure=D(500)))
+        advance_prepared()
+        order, = store.orders(prepared)
+        original = order['record'].snapshot.intent.client_order_id
+        assert order['record'].snapshot.status.value == 'NEW'
+        assert not order['attempted'] and not order['uncertain']
+        assert store.plan(prepared)['reasons'][order['record'].snapshot.intent.instrument_id] == (
+            'PORTFOLIO_RISK_PENDING_CAPITAL')
+        advance_pending(pending)
+        if market == 'binance':
+            pending_order, = store.orders(pending)
+            http.trade_update(pending_order['record'].snapshot.intent.client_order_id)
+            advance_pending(pending)
+        assert 'pending_capital' not in executor.portfolio_risk_snapshot(account).missing
+        executor.configure_portfolio_risk(account, PortfolioRiskLimits(max_gross_exposure=gross_limit))
+        advance_prepared()
+        order, = store.orders(prepared)
+        assert order['record'].snapshot.intent.client_order_id == original
+        if gross_limit == D(150):
+            assert order['record'].snapshot.status.value == 'REJECTED'
+            assert store.plan(prepared)['reasons'][order['record'].snapshot.intent.instrument_id] == (
+                'PORTFOLIO_GROSS_EXPOSURE_LIMIT')
+            assert executor.portfolio_risk_snapshot(account).projected_gross_exposure == D(100)
+        else:
+            assert order['record'].snapshot.status.value == 'SUBMITTED'
+            assert executor.portfolio_risk_snapshot(account).projected_gross_exposure == D(200)
+
+
+def test_alpaca_recorded_direct_admission_keeps_pending_capital_retryable(tmp_path):
+    http = AlpacaRiskHTTP()
+    with ExitStack() as stack:
+        runner, store = alpaca_runner(stack, tmp_path, http)
+        setup_pair(runner, store)
+        executor = runner.executor
+        pending = executor.create(account_id=ACCOUNT, strategy_id='B', strategy_version='1',
+            trading_session=SESSION, rebalance_id='unprepared-direct-peer', weights={},
+            owned_symbols=['MSFT'], quantity_deltas={'MSFT': D(1)}, now=executor.clock())
+        executor.configure_portfolio_risk(ACCOUNT, PortfolioRiskLimits(max_gross_exposure=D(500)))
+        intent = OrderIntent(Market.ALPACA_US_EQUITY, 'AAPL', Side.BUY, OrderType.LIMIT,
+            D(1), D(100), 'recorded-pending-admission', time_in_force='DAY')
+        identity = executor.create(account_id=ACCOUNT, strategy_id='A', strategy_version='1',
+            trading_session=SESSION, rebalance_id='recorded-pending-admission', weights={},
+            owned_symbols=['AAPL'], now=executor.clock(), direct_orders=[(intent, D(100))],
+            concurrent_direct_orders=True, record_risk_rejection=True)
+        assert store.plan(identity)['phase'] == 'WAITING'
+        order, = store.orders(identity)
+        assert order['record'].snapshot.status.value == 'NEW'
+        alpaca_advance(runner, pending, 'MSFT')
+        alpaca_advance(runner, identity)
+        assert http.post_ids.count(intent.client_order_id) == 1
+
+
+def test_alpaca_partial_preparation_keeps_original_child_retryable(tmp_path):
+    http = AlpacaRiskHTTP()
+    with ExitStack() as stack:
+        runner, store = alpaca_runner(stack, tmp_path, http)
+        setup_pair(runner, store)
+        executor = runner.executor
+        identity = executor.create(account_id=ACCOUNT, strategy_id='A', strategy_version='1',
+            trading_session=SESSION, rebalance_id='partial-prepare', weights={},
+            owned_symbols=['AAPL', 'MSFT'], quantity_deltas={'AAPL': D(1), 'MSFT': D(1)},
+            now=executor.clock())
+        executor.configure_portfolio_risk(ACCOUNT, PortfolioRiskLimits(max_gross_exposure=D(500)))
+        alpaca_advance(runner, identity, 'AAPL')
+        first, = store.orders(identity)
+        original = first['record'].snapshot.intent.client_order_id
+        assert first['record'].snapshot.status.value == 'NEW'
+        assert http.post_ids == []
+    with ExitStack() as stack:
+        runner, store = alpaca_runner(stack, tmp_path, http)
+        inputs = order_inputs('AAPL', runner.clock(), tif='DAY')
+        other = order_inputs('MSFT', runner.clock(), tif='DAY')
+        for key in inputs:
+            inputs[key].update(other[key])
+        runner.run_once(identity, **inputs)
+        assert original in http.post_ids
+        assert len(http.post_ids) == len(set(http.post_ids)) == 2
+        assert all(order['record'].snapshot.status.value == 'SUBMITTED'
+                   for order in store.orders(identity))
+
+
 def test_alpaca_stale_quote_cannot_dispatch_reserved_order(tmp_path):
     http = AlpacaRiskHTTP()
     with ExitStack() as stack:

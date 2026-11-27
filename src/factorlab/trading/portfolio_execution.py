@@ -783,7 +783,9 @@ class PortfolioExecutor:
                         raise
                     for order in self.store.orders(identity):
                         self._reject_portfolio_risk(plan, order, error)
-                    plan['phase'] = 'COMPLETE'
+                    plan['phase'] = ('WAITING' if any(
+                        order['record'].snapshot.status not in TERMINAL or order['uncertain']
+                        for order in self.store.orders(identity)) else 'COMPLETE')
                     self.store.save_plan(plan)
         return identity
 
@@ -1388,7 +1390,8 @@ class PortfolioExecutor:
             if quantity == 0 or quantity * price < rules[symbol].minimum_notional:
                 plan['reasons'].setdefault(symbol, 'BELOW_MINIMUM_NOTIONAL')
                 continue
-            client_id = 'flp-' + sha256(dumps([plan['id'], symbol, side.value]).encode()).hexdigest()[:40]
+            client_id = 'flp-' + sha256(dumps([plan['id'], symbol, side.value]).encode()).hexdigest()[
+                :32 if account.market is Market.BINANCE_USDM else 40]
             intent = OrderIntent(account.market, symbol, side, OrderType.LIMIT,
                 quantity, price, client_id, time_in_force=rules[symbol].time_in_force,
                 reduce_only=side is Side.SELL and account.market is Market.BINANCE_USDM
@@ -1665,6 +1668,12 @@ class PortfolioExecutor:
 
     def _reject_portfolio_risk(self, plan, order, error):
         intent = order['record'].snapshot.intent
+        if str(error) == 'PORTFOLIO_RISK_PENDING_CAPITAL':
+            order['attempted'] = False
+            plan['reasons'][intent.instrument_id] = str(error)
+            self.store.save_order(order)
+            self.store.save_plan(plan)
+            return
         client_id = intent.client_order_id
         event = OrderEvent(client_id, None, OrderStatus.REJECTED, ZERO, None,
             self.clock(), str(error), 'portfolio-risk-rejection:' + client_id)

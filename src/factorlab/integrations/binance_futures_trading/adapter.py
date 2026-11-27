@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import hashlib
 import json
+from math import ceil, floor
 
 from factorlab.errors import DataQualityError
 from factorlab.integrations.binance.market import _decimal, symbol_name
@@ -32,8 +33,12 @@ from .rules import order_parameters
 
 ACCOUNT_READ_SECONDS = 5
 ACCOUNT_PATH = '/fapi/v3/account'
-ACCOUNT_PATHS = (ACCOUNT_PATH, '/fapi/v3/positionRisk', '/fapi/v1/positionSide/dual',
-                 '/fapi/v1/openOrders', '/fapi/v1/symbolConfig')
+POSITION_RISK_PATH = '/fapi/v3/positionRisk'
+OPEN_ORDERS_PATH = '/fapi/v1/openOrders'
+ACCOUNT_PATHS = (ACCOUNT_PATH, POSITION_RISK_PATH, '/fapi/v1/positionSide/dual',
+                 OPEN_ORDERS_PATH, '/fapi/v1/symbolConfig')
+_RECOVERY_READS = {ACCOUNT_PATH: 'account', POSITION_RISK_PATH: 'position_risk',
+                   OPEN_ORDERS_PATH: 'open_orders'}
 ACCOUNT_PERMISSION_PATH = '/fapi/v2/account'
 QUANTITATIVE_PATH = '/fapi/v1/apiTradingStatus'
 
@@ -868,10 +873,13 @@ class FuturesAdapter:
         started = self.client.monotonic()
         observed_at = self.clock()
         error = None
+        read_windows = {}
         try:
-            with self._account_reads(observed_at, started, parallel=parallel, sync_funding=sync_funding) as read:
+            with self._account_reads(observed_at, started, read_windows,
+                                     parallel=parallel, sync_funding=sync_funding) as read:
                 facts = self._assemble_facts(observed_at, started, read)
             if parallel:
+                facts = replace(facts, read_windows=read_windows)
                 facts.confirmed_position_amounts()
                 facts.open_order_identities()
                 self._require_fresh_account_read(observed_at, started, self.clock())
@@ -890,7 +898,7 @@ class FuturesAdapter:
         return facts
 
     @contextmanager
-    def _account_reads(self, observed_at, started, *, parallel, sync_funding):
+    def _account_reads(self, observed_at, started, read_windows, *, parallel, sync_funding):
         if not parallel:
             def read(path):
                 payload = self.client.request('GET', path)
@@ -906,13 +914,18 @@ class FuturesAdapter:
 
         def fetch(path):
             reader = self.client.account_reader(window)
+            stage = _RECOVERY_READS.get(path)
+            before = None if stage is None else reader.demo_time(allow_refresh=False)
             payload = reader.request('GET', path)
+            bounds = None
+            if before is not None:
+                after = reader.demo_time(allow_refresh=False)
+                bounds = (floor(before.lower_ms), ceil(after.upper_ms))
+            permission = None
             if path == ACCOUNT_PATH:
-                permission = None
                 if not early_permission and isinstance(payload, dict) and 'canTrade' not in payload:
                     permission = reader.request('GET', ACCOUNT_PERMISSION_PATH)
-                return payload, permission
-            return payload
+            return payload, permission, bounds
 
         endpoints = (*ACCOUNT_PATHS, QUANTITATIVE_PATH)
         if early_permission:
@@ -932,8 +945,10 @@ class FuturesAdapter:
             def read(path):
                 if path == ACCOUNT_PERMISSION_PATH and not early_permission:
                     return pending[ACCOUNT_PATH].result()[1]
-                result = pending[path].result()
-                return result[0] if path == ACCOUNT_PATH else result
+                payload, _, bounds = pending[path].result()
+                if bounds is not None:
+                    read_windows[_RECOVERY_READS[path]] = bounds
+                return payload
 
             yield read
 

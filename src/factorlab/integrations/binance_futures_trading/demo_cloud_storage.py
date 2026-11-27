@@ -2,14 +2,18 @@
 
 from contextlib import ExitStack, closing, contextmanager
 import ctypes
+from datetime import datetime, timezone
 import errno
+from hashlib import file_digest
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import sqlite3
 import stat
 import tempfile
+from uuid import uuid4
 
 from .protocol import SafetyBlocked
 
@@ -18,7 +22,9 @@ _DB_SUFFIXES = {'.sqlite', '.sqlite3', '.db'}
 _SIDECARS = ('-wal', '-shm', '-journal')
 _QUARANTINE = 'restore-quarantine.json'
 _BACKUP_MANIFEST = 'backup-manifest.json'
+_RECOVERY_MANIFEST = 'recovery-manifest.json'
 _HANDOFF_SOURCE = 'windows-execute-source-sealed'
+_DR_SOURCE = 'disaster-recovery-source-sealed'
 _TASK_MAILBOX = Path('external/task-mailbox/tasks.sqlite3')
 
 
@@ -197,7 +203,7 @@ def _validate_binding(value):
 
 def assert_source_controls_available(root):
     marker = root / _QUARANTINE
-    if marker.exists() and json.loads(marker.read_text(encoding='utf-8')).get('reason') == _HANDOFF_SOURCE:
+    if marker.exists() and json.loads(marker.read_text(encoding='utf-8')).get('reason') in (_HANDOFF_SOURCE, _DR_SOURCE):
         raise SafetyBlocked('Demo Execute source is sealed; send controls to the current owner')
 
 
@@ -245,18 +251,92 @@ def _copy_databases(root, staging, databases, *, task_mailbox=None):
         _sync_directory(Path(directory))
 
 
-def _snapshot(root, destination, databases, *, quarantine, task_mailbox=None):
+def _strategy_files(root):
+    releases = root / 'strategy-releases'
+    if not releases.exists():
+        return []
+    from factorlab.strategies.package import load_package
+
+    files = []
+    for release in sorted(releases.iterdir()):
+        # Package installation publishes an immutable directory by rename.
+        if release.name.startswith('.staging-'):
+            continue
+        manifest = load_package(release)
+        if manifest['package_id'] != release.name:
+            raise SafetyBlocked('strategy release directory differs from its package identity')
+        files.extend(release / name for name in ['manifest.json', *manifest['files']])
+    return files
+
+
+def file_sha256(path):
+    with path.open('rb') as stream:
+        return file_digest(stream, 'sha256').hexdigest()
+
+
+def verify_snapshot(root):
+    """Verify the complete offsite inventory and SQLite content without opening writers."""
+    root = _root(root)
+    manifest_path = root / _RECOVERY_MANIFEST
+    _private(manifest_path)
+    manifest = json.loads(manifest_path.read_bytes())
+    databases, files = _inventory(root)
+    inventory = set(databases) | set(_strategy_files(root)) | {root / _BACKUP_MANIFEST}
+    if (root / 'binding.json').exists():
+        _binding(root / 'binding.json')
+        inventory.add(root / 'binding.json')
+    if (root / _QUARANTINE).exists():
+        inventory.add(root / _QUARANTINE)
+    if (manifest['version'] != 1 or manifest['market'] not in ('binance', 'alpaca')
+            or not databases or set(files) != inventory | {manifest_path}
+            or manifest['files'] != {p.relative_to(root).as_posix(): file_sha256(p) for p in inventory}):
+        raise SafetyBlocked('offsite snapshot inventory or digest mismatch')
+    _verify_database_manifest(root, databases)
+    for path in databases:
+        _integrity(path)
+    return manifest
+
+
+def _verify_database_manifest(root, databases):
+    manifest = json.loads((root / _BACKUP_MANIFEST).read_bytes())
+    expected = dict(version=1, databases=[path.relative_to(root).as_posix() for path in databases],
+                    binding=(root / 'binding.json').exists())
+    if manifest != expected:
+        raise SafetyBlocked('incomplete backup inventory')
+    return manifest
+
+
+def _snapshot(root, destination, databases, *, quarantine, task_mailbox=None, metadata=None):
     staging = Path(tempfile.mkdtemp(prefix='.' + destination.name + '-', dir=destination.parent))
     try:
         _copy_databases(root, staging, databases, task_mailbox=task_mailbox)
+        for path in _strategy_files(root):
+            relative = path.relative_to(root)
+            target = staging / relative
+            _root(target.parent, create=True)
+            with path.open('rb') as reader, target.open('xb') as writer:
+                os.chmod(target, 0o600)
+                shutil.copyfileobj(reader, writer)
+                writer.flush()
+                os.fsync(writer.fileno())
         binding = root / 'binding.json'
         if binding.exists():
             atomic_json(staging / 'binding.json', _binding(binding))
-        if quarantine or (root / _QUARANTINE).exists():
-            atomic_json(staging / _QUARANTINE, {'version': 1, 'reason': 'restored-state-requires-GET-only-recovery'})
+        source_marker = root / _QUARANTINE
+        if quarantine or (source_marker.exists() and not (metadata and metadata['final_target'])):
+            reason = 'restored-state-requires-GET-only-recovery'
+            marker = json.loads(source_marker.read_bytes()) if source_marker.exists() else {}
+            restore_id = marker.get('restore_id') if marker.get('reason') == reason else uuid4().hex
+            atomic_json(staging / _QUARANTINE, {'version': 1, 'reason': reason, 'restore_id': restore_id})
         atomic_json(staging / _BACKUP_MANIFEST, dict(version=1,
             databases=sorted((_TASK_MAILBOX if path == task_mailbox else path.relative_to(root)).as_posix()
                              for path in databases), binding=binding.exists()))
+        if metadata is not None and not quarantine:
+            _, files = _inventory(staging)
+            atomic_json(staging / _RECOVERY_MANIFEST, dict(metadata, version=1,
+                files={path.relative_to(staging).as_posix(): file_sha256(path) for path in files}))
+        for directory, _, _ in os.walk(staging, topdown=False, onerror=_walk_error):
+            _sync_directory(Path(directory))
         _publish(staging, destination)
     finally:
         if staging.exists():
@@ -300,11 +380,11 @@ def _frozen_snapshot(root, destination, *, quarantine, task_mailbox=None):
         root, destination, task_mailbox=task_mailbox,
     ) as databases:
         if quarantine:
-            manifest = json.loads((root / _BACKUP_MANIFEST).read_text())
-            expected = dict(version=1, databases=[path.relative_to(root).as_posix() for path in databases],
-                            binding=(root / 'binding.json').exists())
-            if manifest != expected:
-                raise SafetyBlocked('incomplete backup inventory')
+            _verify_database_manifest(root, databases)
+        if not quarantine and os.environ.get('FACTORLAB_DR_REVISION'):
+            metadata = recovery_metadata('binance', os.environ['FACTORLAB_DR_REVISION'])
+            return _snapshot(root, destination, databases, quarantine=False, task_mailbox=task_mailbox,
+                             metadata=metadata)
         return _snapshot(root, destination, databases, quarantine=quarantine, task_mailbox=task_mailbox)
 
 
@@ -322,3 +402,67 @@ def backup_state(root, dest, *, task_mailbox=None):
 def restore_state(source, dest):
     """Restore without resetting budgets; persist GET-only recovery quarantine."""
     return _frozen_snapshot(source, dest, quarantine=True)
+
+
+def recovery_metadata(market, revision, *, final_target=None, configuration_sha256=None):
+    if not re.fullmatch('[0-9a-f]{40}', revision):
+        raise SafetyBlocked('the deployed Git revision must be a full commit ID')
+    return dict(market=market, revision=revision, source_machine=machine_id(),
+                captured_at=datetime.now(timezone.utc).isoformat(), final_target=final_target,
+                configuration_sha256=configuration_sha256)
+
+
+def machine_id():
+    identity = Path('/etc/machine-id').read_text(encoding='ascii').strip()
+    if not re.fullmatch('[0-9a-f]{32}', identity):
+        raise SafetyBlocked('a unique Linux machine ID is required')
+    return identity
+
+
+def recovery_lock(root, market):
+    if market == 'alpaca':
+        from factorlab.integrations.alpaca.cloud_runtime import owner_lock
+        return owner_lock(root, allow_quarantined=True)
+    from .demo_runtime import operator_lock
+    return operator_lock(root, allow_quarantined=True)
+
+
+def recovery_snapshot(root, destination, market, revision, *, task_mailbox=None,
+                      final_target=None, configuration_sha256=None):
+    """Capture the frozen internal ledger. A final snapshot durably seals its source."""
+    root = _root(root)
+    destination = _destination(root, destination)
+    if task_mailbox is not None:
+        task_mailbox = Path(os.path.abspath(task_mailbox))
+    if market == 'alpaca' and task_mailbox is not None:
+        raise SafetyBlocked('the external TaskMailbox belongs to Binance')
+    with recovery_lock(root, market):
+        metadata = recovery_metadata(market, revision, final_target=final_target,
+                                     configuration_sha256=configuration_sha256)
+        marker = root / _QUARANTINE
+        if marker.exists():
+            _private(marker)
+            seal = json.loads(marker.read_bytes())
+            if (not final_target or seal['reason'] != _DR_SOURCE or seal['destination'] != str(destination)
+                    or any(seal['metadata'][key] != metadata[key] for key in metadata if key != 'captured_at')):
+                raise SafetyBlocked('source is quarantined or sealed for another transfer')
+            metadata = seal['metadata']
+        with _freeze_databases(root, destination, task_mailbox=task_mailbox) as databases:
+            if not databases:
+                raise SafetyBlocked('the source contains no account databases')
+            if final_target and not marker.exists():
+                atomic_json(marker, dict(version=1, reason=_DR_SOURCE,
+                                         destination=str(destination), metadata=metadata))
+            return _snapshot(root, destination, databases, quarantine=False,
+                             task_mailbox=task_mailbox, metadata=metadata)
+
+
+def restore_verified_state(source, dest, manifest):
+    """Copy a verified, published snapshot without locking or changing the backup itself."""
+    source = _root(source)
+    destination = _destination(source, dest)
+    captured = json.loads((source / _BACKUP_MANIFEST).read_bytes())
+    databases = [source / name for name in captured['databases']]
+    if any(name not in manifest['files'] for name in captured['databases']):
+        raise SafetyBlocked('database inventory differs from the verified manifest')
+    return _snapshot(source, destination, databases, quarantine=True)

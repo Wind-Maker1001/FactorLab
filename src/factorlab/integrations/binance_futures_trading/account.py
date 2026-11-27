@@ -22,6 +22,10 @@ def number(row, key):
     return None if value is None else _decimal(value)
 
 
+class AccountPositionConflict(DataQualityError):
+    """Account Information and Position Risk observed different quantities."""
+
+
 @dataclass(frozen=True)
 class AccountFacts:
     """Raw authenticated read results, not public funding forecasts."""
@@ -39,6 +43,7 @@ class AccountFacts:
     can_trade: bool | None = None
     quantitative: QuantitativeObservation | None = None
     read_started_monotonic: float | None = None
+    read_windows: dict[str, tuple[int, int]] | None = None
 
     def usdt(self):
         matches = [asset for asset in self.assets if asset.get('asset') == 'USDT']
@@ -64,8 +69,10 @@ class AccountFacts:
             return {key: value for key, value in amounts.items() if value}
 
         account = nonzero(self.positions)
-        if not self.source_complete or account != nonzero(self.risk):
+        if not self.source_complete:
             raise DataQualityError('incomplete or conflicting positions')
+        if account != nonzero(self.risk):
+            raise AccountPositionConflict('incomplete or conflicting positions')
         return account
 
     def open_order_identities(self):
