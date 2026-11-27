@@ -125,6 +125,64 @@ def test_failures_release_runtime(job, monkeypatch, failure_at):
     assert job.data["state"] == "failed"
 
 
+@pytest.mark.parametrize("download_failure,cleanup_failure", [
+    (False, False), (True, False), (True, True),
+])
+def test_failed_research_retrieves_evidence_before_release(
+        job, monkeypatch, download_failure, cleanup_failure):
+    calls = []
+    original = subprocess.CalledProcessError(7, "research")
+
+    def cli(*args, **kwargs):
+        calls.append(args)
+        if args[0] == "version":
+            return "Version: 0.8.0"
+        if args[0] == "usage":
+            count = int(bool(job.data.get("endpoint")) and not job.data.get("released"))
+            return f"Current balance: 200.00 compute units\nUsage rate: 2.33/hr\nActive assignments: {count}"
+        if args[0] == "sessions":
+            return "" if any(c[0] == "stop" for c in calls) else "[fl-test] vm-123 | Hardware: L4"
+        if args[0] == "download":
+            assert not any(c[0] == "stop" for c in calls)
+            if download_failure and str(args[-2]).endswith("samples.npz"):
+                raise OSError("artifact transfer failed")
+            Path(args[-1]).write_text("retained evidence")
+        if args[0] == "stop" and cleanup_failure:
+            raise RuntimeError("release failed")
+        return ""
+
+    executions = []
+    def execute(code):
+        executions.append(code)
+        if len(executions) == 1:
+            return 'FACTORLAB_HARDWARE={"gpu":"NVIDIA L4"}'
+        if len(executions) == 3:
+            raise original
+        return ""
+
+    monkeypatch.setattr(job, "cli", cli)
+    monkeypatch.setattr(job, "execute", execute)
+    with pytest.raises(subprocess.CalledProcessError) as caught:
+        job.run()
+    assert caught.value is original
+    assert (job.root / "results/report.json").read_text() == "retained evidence"
+    assert [str(c[-2]) for c in calls if c[0] == "download"] == [
+        "/content/factorlab-result/report.json", "/content/factorlab-result/samples.npz"]
+    saved = module.Job(job.root).data
+    assert saved["error"].startswith("CalledProcessError:")
+    assert saved["state"] == ("cleanup_failed" if cleanup_failure else "failed")
+    if cleanup_failure:
+        assert saved["cleanup_error"] == "RuntimeError: release failed"
+    else:
+        assert saved["released"] is True
+    if download_failure:
+        assert saved["failure_artifact_error"] == "OSError: artifact transfer failed"
+        assert not saved.get("failure_artifacts_downloaded")
+    else:
+        assert saved["failure_artifacts_downloaded"] is True
+        assert (job.root / "results/samples.npz").read_text() == "retained evidence"
+
+
 def test_cpu_or_missing_gpu_stops_before_install(job, monkeypatch):
     calls = []
     def cli(*args, **kwargs):

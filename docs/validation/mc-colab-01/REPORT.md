@@ -284,3 +284,21 @@ Final targeted commands and results:
 
 These offline regressions preserve the existing Colab execution evidence and
 allocate no runtime or CU.
+
+### Failed research artifact retrieval
+
+Research execution failure now attempts the existing two-file artifact contract
+before release, under the remaining work deadline. A successful transfer does
+not change failed execution into success. Partial local files survive transfer
+failure, which is recorded separately as `failure_artifact_error`; a complete
+transfer records `failure_artifacts_downloaded`. The original execution
+exception remains the raised failure even if retrieval or release also fails;
+release failure still records `cleanup_failed` and `cleanup_error`.
+
+Mocked regression covers successful failure-evidence retrieval, second-file
+transfer failure retaining the first file, and simultaneous transfer/release
+failure. Each checks the original exception identity and retrieval-before-stop
+ordering. Windows Python 3.13: **27 passed in 0.89 seconds**. Local WSL Linux,
+including the explicit real-flock entrypoint: **29 passed in 8.32 seconds**.
+Both runs had zero skips and failures; no Colab allocation or experiment rerun
+was performed.

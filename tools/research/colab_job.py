@@ -184,7 +184,16 @@ class Job:
             arguments = ["/content/monte_carlo.py", "--paths", str(self.data["paths"]),
                          "--steps", str(self.data["steps"]), "--seed", str(self.data["seed"]),
                          "--commit", self.data["commit"]]
-            self.execute(research_code(arguments))
+            try:
+                self.execute(research_code(arguments))
+            except (Exception, KeyboardInterrupt):
+                try:
+                    self.download()
+                except (Exception, KeyboardInterrupt) as exc:
+                    self.save(failure_artifact_error=f"{type(exc).__name__}: {exc}")
+                else:
+                    self.save(failure_artifacts_downloaded=True)
+                raise
             self.save(state="downloading")
             self.download()
             self.save(state="completed")
@@ -197,7 +206,8 @@ class Job:
                 self.release()
             except Exception as exc:
                 self.save(state="cleanup_failed", cleanup_error=f"{type(exc).__name__}: {exc}")
-                failure = exc
+                if failure is None:
+                    failure = exc
             try:
                 self.save(usage_after=usage(self.cli("usage", bounded=False)))
             except Exception as exc:

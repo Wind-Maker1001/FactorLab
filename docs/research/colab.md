@@ -155,6 +155,15 @@ that refuses release. `usage_before`, `usage_allocated` and `usage_after` retain
 observed account values; balance differences must not be described as exact
 job consumption. A task refuses further work if the rate cannot be determined.
 
+When research execution fails, the controller first attempts to download the
+same `report.json` and `samples.npz` contract before releasing the runtime.
+Scripts must write their failure evidence to those paths themselves. Retrieval
+uses the remaining work deadline, preserves any files already downloaded and
+never converts execution failure into success. `failure_artifacts_downloaded`
+records a complete transfer; `failure_artifact_error` records a failed transfer
+separately from the original execution error. Cleanup failures also retain the
+original execution exception while recording `cleanup_error`.
+
 Execution, transfer failure, SIGTERM and work timeout enter cleanup.
 `ExecStopPost` also invokes recovery after the transient service exits. Release
 is confirmed by a new official server-side `sessions` listing, including a
