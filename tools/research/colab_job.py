@@ -172,7 +172,8 @@ class Job:
 
     def run(self):
         started = time.monotonic()
-        self.deadline = started + self.data["timeout"] - CLEANUP_SECONDS
+        lifecycle_deadline = started + self.data["timeout"]
+        self.deadline = lifecycle_deadline - CLEANUP_SECONDS
         self.save(state="preflight", started_at=time.time())
         failure = None
         try:
@@ -203,6 +204,7 @@ class Job:
                                        after["rate_per_hour"] + 0.005, time.monotonic() - started,
                                        self.data["timeout"])
             self.deadline = time.monotonic() + remaining
+            lifecycle_deadline = min(lifecycle_deadline, self.deadline + CLEANUP_SECONDS)
             self.save(usage_allocated=after, work_deadline=time.time() + remaining)
             hardware = self.execute(
                 "import json, os, platform, subprocess\n"
@@ -232,8 +234,11 @@ class Job:
                 with self.timed("execution"):
                     self.execute(research_code(arguments))
             except (Exception, KeyboardInterrupt):
-                # Salvage has its own bounded share of the cleanup reserve, not the expired work deadline.
-                self.deadline = time.monotonic() + SALVAGE_SECONDS
+                now = time.monotonic()
+                if self.deadline <= now:
+                    # Spend only the salvage share of the existing cleanup reserve.
+                    self.deadline = min(now + SALVAGE_SECONDS,
+                                        lifecycle_deadline - (CLEANUP_SECONDS - SALVAGE_SECONDS))
                 try:
                     with self.timed("download"):
                         self.download()
@@ -243,7 +248,6 @@ class Job:
                     self.save(failure_artifacts_downloaded=True)
                 raise
             self.save(state="downloading")
-            self.deadline = time.monotonic() + SALVAGE_SECONDS
             with self.timed("download"):
                 self.download()
             self.save(state="completed", outcome="completed")

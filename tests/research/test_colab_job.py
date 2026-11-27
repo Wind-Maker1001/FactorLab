@@ -429,7 +429,59 @@ def test_release_never_stops_reassigned_name(job, monkeypatch):
 
 
 @pytest.mark.parametrize("batch", [False, True])
-def test_expired_work_deadline_salvages_before_release(job, batch_manifest, monkeypatch, batch):
+@pytest.mark.parametrize("failed", [False, True])
+def test_download_keeps_remaining_work_time(job, batch_manifest, monkeypatch, batch, failed):
+    if batch:
+        job.save(manifest=str(batch_manifest))
+    clock = [100.0]
+    monkeypatch.setattr(module.time, "monotonic", lambda: clock[0])
+    original = RuntimeError("original research failure")
+    downloads = []
+    def cli(*args, **kwargs):
+        if args[0] == "version":
+            return "Version: 0.8.0"
+        if args[0] == "usage":
+            count = int(bool(job.data.get("endpoint")) and not job.data.get("released"))
+            return f"Current balance: 200.00 compute units\nUsage rate: 2.33/hr\nActive assignments: {count}"
+        if args[0] == "sessions":
+            return "" if job.data.get("released") else "[fl-test] vm-123 | Hardware: L4"
+        if args[0] == "stop":
+            job.save(released=True)
+        if args[0] == "download":
+            remaining = job.deadline - clock[0]
+            assert remaining >= 60
+            if not downloads:
+                assert remaining == 300
+            clock[0] += 30
+            Path(args[-1]).write_text("retained")
+            downloads.append(args[-1])
+        return ""
+    def execute(code):
+        if "FACTORLAB_HARDWARE" in code:
+            return 'FACTORLAB_HARDWARE={"gpu":"NVIDIA L4"}'
+        clock[0] = job.deadline - 300
+        if failed:
+            raise original
+    monkeypatch.setattr(job, "cli", cli)
+    monkeypatch.setattr(job, "deploy", lambda: None)
+    monkeypatch.setattr(job, "execute", execute)
+    if failed:
+        with pytest.raises(RuntimeError) as caught:
+            job.run()
+        assert caught.value is original
+        assert job.data["failure_artifacts_downloaded"]
+    else:
+        job.run()
+        assert job.data["outcome"] == "completed"
+    assert len(downloads) == 2
+    assert job.data["cleanup_outcome"] == "released"
+
+
+@pytest.mark.parametrize("batch", [False, True])
+@pytest.mark.parametrize("overrun", [0, 20, 31])
+def test_expired_work_deadline_salvages_before_release(job, batch_manifest, monkeypatch, batch, overrun):
+    clock = [100.0]
+    monkeypatch.setattr(module.time, "monotonic", lambda: clock[0])
     if batch:
         job.save(manifest=str(batch_manifest))
     calls, executions = [], []
@@ -444,7 +496,9 @@ def test_expired_work_deadline_salvages_before_release(job, batch_manifest, monk
             return "" if any(c[0] == "stop" for c in calls) else "[fl-test] vm-123 | Hardware: L4"
         if args[0] == "download":
             remaining = job.deadline - module.time.monotonic()
-            assert 0 < remaining <= module.SALVAGE_SECONDS
+            assert remaining == module.SALVAGE_SECONDS - overrun
+            if remaining <= 0:
+                raise TimeoutError("no salvage budget before release reserve")
             assert not any(c[0] == "stop" for c in calls)
             Path(args[-1]).write_text("salvaged")
         return ""
@@ -454,13 +508,13 @@ def test_expired_work_deadline_salvages_before_release(job, batch_manifest, monk
             return 'FACTORLAB_HARDWARE={"gpu":"NVIDIA L4"}'
         if "pip" in code or "root.mkdir" in code:
             return ""
-        job.deadline = module.time.monotonic() - 1
+        clock[0] = job.deadline + overrun
         raise TimeoutError("expired work")
     monkeypatch.setattr(job, "cli", cli)
     monkeypatch.setattr(job, "execute", execute)
     with pytest.raises(TimeoutError, match="expired work"):
         job.run()
-    assert job.data["failure_artifacts_downloaded"]
+    assert bool(job.data.get("failure_artifacts_downloaded")) == (overrun < module.SALVAGE_SECONDS)
     assert job.data["outcome"] == "failed"
     assert job.data["cleanup_outcome"] == "released"
     assert set(job.data["timings"]) == {"deployment", "execution", "download", "release"}

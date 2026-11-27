@@ -2,6 +2,17 @@
 
 Protocol: [MC-COLAB-03](../../research/mc-colab-03.md).
 
+## PR #275 download-deadline regression
+
+Offline controller regression passed 47 tests in 1.94 s with zero skips.
+Controlled clocks cover a successful 60-second download with 300 seconds of
+remaining work time for both single experiments and batches, and retrieval
+after a research failure with remaining work time. Expired-work tests cover
+zero, 20 and 31 seconds of overrun: salvage shrinks within the original
+lifecycle reserve and cannot consume the final 90 seconds reserved for release.
+Existing partial-file, transfer failure, release failure and original-exception
+preservation tests also pass. This revision runs no real Colab experiment.
+
 ## Current evidence
 
 The final combined portable research/backend regression run passed **220 tests,

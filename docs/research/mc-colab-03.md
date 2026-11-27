@@ -241,7 +241,10 @@ is available or increase the study budget.
 
 The controller installs the wheel and registered extras, uploads declared
 inputs and starts the remote batch. It downloads retained artifacts on normal
-completion and attempts bounded salvage after execution failure. Release runs
+completion using the original work deadline. After execution failure, retrieval
+also uses remaining work time; only an expired work deadline permits up to
+30 seconds from the existing cleanup reserve, bounded by the authorized time/CU
+lifecycle deadline and leaving 90 seconds for release. Release runs
 in cleanup; record server-confirmed release and final usage even if execution
 failed. `recover --job ...` and `release --job ...` use the controller's existing
 release path; `download --job ...` requests the retained remote result files.
