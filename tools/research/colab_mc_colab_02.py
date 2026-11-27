@@ -39,7 +39,7 @@ def main():
         (output/'setup-and-study.json').write_text(json.dumps(dict(
             commit=args.commit, deployment_and_study_seconds=monotonic()-started,
             cost_scope='controller allocation lifecycle includes initial wheel installation and release'), indent=2))
-        # TODO: Extend the controller to download failure bundles before releasing the runtime.
+        # TODO: Deploy the controller failure-download extension from ac2b91c before another cloud run.
         bundle_results(output, args.commit)
 
 

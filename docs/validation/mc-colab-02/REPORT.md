@@ -14,7 +14,7 @@ Cloud execution completed on an officially allocated NVIDIA L4 (23034 MiB, drive
 
 ## Failure evidence retention
 
-The cloud launcher packages retained stage outcomes and artifacts even when its execution subprocess fails, preserving the nonzero failure. TODO: Extend the separate controller's failure path to download this bundle before releasing the runtime; its current success-only download path can still discard partial cloud evidence. This controller extension is outside the completed study run. The measured run completed every stage and downloaded its evidence before release.
+The cloud launcher packages retained stage outcomes and artifacts even when its execution subprocess fails, preserving the nonzero failure. The separate controller's failure-download extension is implemented in PR #271, revision `ac2b91c`, retaining the original execution exception, partial transfers and separate transfer/cleanup errors. Controller regressions passed 27 portable cases on Windows and 29 portable/Linux-lock cases in WSL, with zero skips or failures. TODO: Deploy that controller revision before another cloud run; the currently deployed controller still has the success-only download path. This extension was not used for the completed study run. The measured run completed every stage and downloaded its evidence before release.
 
 ## Implementation measurement scope
 
