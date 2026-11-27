@@ -34,6 +34,12 @@ The run used a local GPU, not Colab billing. CU cost is recorded as null with `L
 
 The corpus covers upward/downward trends, oscillations, gaps, extreme positive prices, no fills, multiple eligible orders, capacity-limited partial fills, accumulated reverse fragments, insufficient capital, initial inventory and exhaustion, expiration, breakout pause/exit, price/quantity rules and costs. Realized gross PnL in batch output uses Paper average-entry accounting. FIFO net-cycle and residual attribution is produced by the existing audit engine, not approximated by the batch kernel.
 
+## CPU CI and hardware regression separation
+
+The CPU/Paper suite now runs independently of CuPy and CUDA. Native compilation uses `ziglang==0.15.2` from the existing CI development requirements; missing compiler dependencies fail the tests rather than skip them. The explicit CUDA suite reuses the economic and numerical scenarios with a CUDA backend fixture and requires an actual device.
+
+On 2026-11-27, the CPU-only Python 3.13 and 3.14 environments each executed all 20 collected tests: 20 passed, 0 skipped, 0 failed. The RTX 2070 Python 3.13 environment executed all 19 explicit CUDA tests: 19 passed, 0 skipped, 0 failed. These are test execution counts, not source-line coverage. The CPU suite includes input/support validation, native/Paper stepwise and fill comparisons, partial fills, costs, cash limits, expiry, endowed inventory, stochastic paths, MC integration and numerical boundary acceptance/refusal. The historical scale measurements and independent Paper audit evidence above are unchanged.
+
 ## Performance attribution
 
 Initial full-precision profiling (`profile-initial/`) diagnosed durable SQLite transaction cost in a low-fill path. In-memory Paper removed most filesystem cost but retained confirmation and serialization work. Fill-heavy profiling (`profile-oscillating/`) exposed repeated full order-event scans during turnover admission: 168 fills decoded 29,544 event reports and spent 0.979 seconds cumulatively in `_historical_turnover`.
@@ -46,7 +52,10 @@ The native research state machine removes transactional persistence, serialized 
 
 ```sh
 python -m pip install -e '.[dev,monte-carlo-native,monte-carlo-cuda]'
+# CPU/Paper regressions (no CUDA dependency)
 python -m pytest tests/research/test_grid_batch_simulation.py tests/research/test_grid_batch_numeric_boundaries.py
+# Hardware acceptance; fails when CuPy or a CUDA device is unavailable
+python -m pytest tests/research/cuda_grid_batch.py
 python tools/research/profile_grid_batch.py --paths 8 --batch-backends --output <new-ablation-output>
 python tools/research/run_grid_batch.py --sizes 100 1000 10000 100000 1000000 --output <new-study-output>
 ```

@@ -31,20 +31,14 @@ CASES = [
 ]
 
 
-def cuda_available():
-    cp = pytest.importorskip('cupy')
-    if not cp.cuda.is_available():
-        pytest.skip('CUDA device required')
+@pytest.fixture
+def backend():
+    return 'cpu'
 
 
-@pytest.mark.parametrize('backend', ['cpu', 'cuda'])
 @pytest.mark.parametrize('mode', ['arithmetic', 'geometric'])
 @pytest.mark.parametrize('breakout', ['pause', 'exit'])
-def test_paper_stepwise_cuda(config, mode, breakout, backend):
-    if backend == 'cuda':
-        cuda_available()
-    else:
-        pytest.importorskip('ziglang')
+def test_paper_stepwise_parity(config, mode, breakout, backend):
     config = replace(config, grid=replace(config.grid, mode=mode, breakout=breakout))
     prices = np.array(CASES)
     cpu = simulate(prices, config, backend='paper', trace=True)
@@ -64,51 +58,45 @@ def test_paper_stepwise_cuda(config, mode, breakout, backend):
     {'fee_rate': D('0'), 'slippage': D('0')},
     {'capital': D('150')},
 ])
-def test_partial_zero_cost_and_cash_limits(config, change):
-    cuda_available()
+def test_partial_zero_cost_and_cash_limits(config, change, backend):
     config = replace(config, **change)
     prices = np.asarray([[100] + [89, 101] * 12], dtype=float)
     cpu = simulate(prices, config, backend='paper', trace=True)
-    gpu = simulate(prices, config, backend='cuda', trace=True)
+    gpu = simulate(prices, config, backend=backend, trace=True)
     np.testing.assert_allclose(gpu.trace, cpu.trace, rtol=1e-12, atol=5e-10)
 
 
 @pytest.mark.parametrize('ttl', [1, 2, 3])
-def test_expiry_and_endowed_inventory(config, ttl):
-    cuda_available()
+def test_expiry_and_endowed_inventory(config, ttl, backend):
     config = replace(config, grid=replace(config.grid, initial_inventory=10, order_ttl=ttl))
     prices = np.asarray([[100, 111, 89, 111, 89, 130, 100]], dtype=float)
     cpu = simulate(prices, config, backend='paper', trace=True)
-    gpu = simulate(prices, config, backend='cuda', trace=True)
+    gpu = simulate(prices, config, backend=backend, trace=True)
     np.testing.assert_allclose(gpu.trace, cpu.trace, rtol=1e-12, atol=5e-10)
 
 
 @pytest.mark.parametrize('mode', ['arithmetic', 'geometric'])
-def test_volatile_random_step_and_fill_parity(config, mode):
-    cuda_available()
-    pytest.importorskip('ziglang')
+def test_volatile_random_step_and_fill_parity(config, mode, backend):
     config = replace(config, grid=replace(config.grid, mode=mode, initial_inventory=5,
                                          max_drawdown=.03, max_turnover=.3), capacity=D('1.5'))
     rng = np.random.default_rng(9187)
     prices = freeze_prices(100*np.exp(np.column_stack((np.zeros(64),
                             rng.normal(0, .03, (64, 64)).cumsum(axis=1)))))
     paper = simulate(prices, config, backend='paper', trace=True)
-    for backend in ('cpu', 'cuda'):
-        result = simulate(prices, config, backend=backend, trace=True, batch_size=13)
-        np.testing.assert_allclose(result.trace, paper.trace, rtol=1e-12, atol=5e-10)
-        for actual, expected in zip(result.fills, paper.fills):
-            np.testing.assert_allclose(actual, expected, rtol=1e-12, atol=5e-10)
+    result = simulate(prices, config, backend=backend, trace=True, batch_size=13)
+    np.testing.assert_allclose(result.trace, paper.trace, rtol=1e-12, atol=5e-10)
+    for actual, expected in zip(result.fills, paper.fills):
+        np.testing.assert_allclose(actual, expected, rtol=1e-12, atol=5e-10)
 
 
-def test_existing_mc_runner_integration(config):
-    pytest.importorskip('ziglang')
+def test_existing_mc_runner_integration(config, backend):
     from factorlab.research.monte_carlo import MonteCarloConfig, MonteCarloInput, MonteCarloRunner
     result = MonteCarloRunner(MonteCarloConfig(n_paths=4, n_steps=8, seed=71,
         dt=1., save_full_paths=True)).run(MonteCarloInput(weights=[1.],
             drift=[0.], volatility=[.03], initial_prices=[100.]))
     prices = freeze_prices(result.asset_paths[:, :, 0])
     paper = simulate(prices, config, backend='paper', trace=True)
-    cpu = simulate(prices, config, backend='cpu', trace=True)
+    cpu = simulate(prices, config, backend=backend, trace=True)
     np.testing.assert_allclose(cpu.trace, paper.trace, rtol=1e-12, atol=5e-10)
 
 
