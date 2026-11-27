@@ -4,6 +4,7 @@ After=local-fs.target
 # Let C06 classify the restart using the committed backup status.
 Before=factorlab-demo-health.service factorlab-demo-daily-report.service
 RequiresMountsFor=/var/lib/factorlab-demo/execute-state /var/backups/factorlab-demo
+OnFailure=factorlab-dr-failure@binance-backup.service
 
 [Service]
 Type=oneshot

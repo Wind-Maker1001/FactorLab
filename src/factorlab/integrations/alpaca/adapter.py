@@ -16,6 +16,7 @@ from .storage import AlpacaStore
 
 D = Decimal
 Z = D("0")
+CORPORATE_ACTIVITY_TYPES = frozenset({'DIV', 'DIVNRA', 'DIVFEE', 'SSP', 'SSO', 'REORG'})
 STATUS = {
     "new": S.SUBMITTED, "accepted": S.SUBMITTED, "pending_new": S.SUBMITTED,
     "accepted_for_bidding": S.SUBMITTED, "pending_cancel": S.SUBMITTED,
@@ -162,6 +163,9 @@ class AlpacaAdapter:
         needing execution-exact cash flows use read_order_executions instead.
         """
         self._apply(self._lookup(client_order_id), emit=False)
+        return self.stored_order_details(client_order_id)
+
+    def stored_order_details(self, client_order_id):
         row = self.store.order(client_order_id)[1]
         return {"client_order_id": row["client_order_id"], "exchange_order_id": row["id"],
                 "status": order_status(row), "filled_quantity": D(row["filled_qty"]),
@@ -307,15 +311,18 @@ class AlpacaAdapter:
             return self.query_order(client_order_id)
         return self._apply(row, activities=())
 
-    def read_activities(self):
-        return self._activity_pages('/v2/account/activities/FILL', {})
+    def read_activities(self, *, after=None):
+        filters = {} if after is None else {'after': after}
+        return self._activity_pages('/v2/account/activities/FILL', filters)
+
+    def read_account_activities(self, *, after):
+        return self._activity_pages('/v2/account/activities', {'after': after})
 
     def read_corporate_activities(self, *, after):
         """Official nontrade receipts; dividend qty is eligibility, not new shares."""
         # Paper rejects SSP as a query filter despite documenting it as a receipt type.
-        rows = self._activity_pages('/v2/account/activities', {'after': after})
-        return tuple(row for row in rows if row['activity_type'] in {
-            'DIV', 'DIVNRA', 'DIVFEE', 'SSP', 'SSO', 'REORG'})
+        rows = self.read_account_activities(after=after)
+        return tuple(row for row in rows if row['activity_type'] in CORPORATE_ACTIVITY_TYPES)
 
     def _activity_pages(self, path, filters):
         rows, token = [], None
@@ -333,10 +340,12 @@ class AlpacaAdapter:
             token = next_token
         raise ValueError("activity pagination budget exceeded")
 
-    def _all_orders(self):
+    def _all_orders(self, *, after=None, status='all'):
         rows, until = [], None
         for _ in range(10000):
-            params = {"status": "all", "limit": 500, "direction": "desc", "nested": "false"}
+            params = {"status": status, "limit": 500, "direction": "desc", "nested": "false"}
+            if after is not None:
+                params['after'] = after
             if until:
                 params["until"] = until
             page = self.http.request("GET", "/v2/orders", params=params)
@@ -357,14 +366,20 @@ class AlpacaAdapter:
             until = next_until
         raise ValueError("order pagination budget exceeded")
 
-    def recover(self):
+    def recover(self, *, after=None):
+        """Recover the account, optionally using a restored ledger's history floor."""
         self.reconciled = False
         self.read_account_details()
-        activities = self.read_activities()
+        filters = {} if after is None else {'after': after}
+        activities = self.read_activities(**filters)
         with self.store.transaction():
             for activity in activities:
                 self.store.activity(activity)
-        for row in self._all_orders():
+        rows = self._all_orders(**filters)
+        if after is not None:
+            # An order submitted before the floor can remain open for days.
+            rows.extend(self._all_orders(status='open'))
+        for row in rows:
             self._apply(row, activities=(), emit=False)
         for key, (_, row, uncertain, _) in self.store.orders():
             if row is None and self.store.get("rejection:" + key) is not None:
@@ -375,10 +390,20 @@ class AlpacaAdapter:
                 except OrderNotFound:
                     # Absence is not proof a timed-out POST cannot still arrive.
                     pass
-        activities = self.read_activities()
+        activities = self.read_activities(**filters)
         with self.store.transaction():
             for row in activities:
                 self.store.activity(row)
+        if after is not None:
+            # A fill of an older order can arrive inside the activity window even
+            # if the order is already terminal by the time we list open orders.
+            known = {row['id'] for _, (_, row, _, _) in self.store.orders() if row is not None}
+            for order_id in sorted({row['order_id'] for row in activities} - known):
+                path = '/v2/orders/' + quote(order_id, safe='')
+                row = self.http.request('GET', path)
+                if row['id'] != order_id:
+                    raise ValueError('Alpaca requested exchange order identity mismatch')
+                self._apply(row, activities=(), emit=False)
         totals = {}
         for row in self.store.activities():
             key = row["order_id"]

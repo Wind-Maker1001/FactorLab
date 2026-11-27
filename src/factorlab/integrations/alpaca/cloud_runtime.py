@@ -38,10 +38,12 @@ def atomic_json(path, value):
 
 
 @contextmanager
-def owner_lock(root):
+def owner_lock(root, *, allow_quarantined=False):
     import fcntl
     with (root / 'owner.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        if not allow_quarantined and (root / 'restore-quarantine.json').exists():
+            raise PermissionError('Alpaca state is quarantined or sealed for transfer')
         yield
 
 
@@ -318,7 +320,9 @@ class Supervisor:
         self.health.update(account_recovered=False, market_rest=None, error=None)
         try:
             snapshot = self.adapter.recover()
+            cash_request_started_at = now()
             facts = self.adapter.read_account_details()
+            cash_observed_at = now()
             self.health.update(account_recovered=snapshot.reconciled,
                                last_recovery_at=at.isoformat())
             if self.calendar_day != at.date():
@@ -349,10 +353,14 @@ class Supervisor:
                     self.symbols = self.execution.symbols
                     self.market.replace_symbols(self.symbols)
                 snapshot = self.adapter.recover()
+                cash_request_started_at = now()
                 facts = self.adapter.read_account_details()
+                cash_observed_at = now()
                 self.health['account_recovered'] = snapshot.reconciled
             report = {'observed_at': at.isoformat(), 'source': 'ALPACA_PAPER_ACCOUNT',
                       'equity': str(facts.equity), 'cash': str(facts.cash),
+                      'cash_request_started_at': cash_request_started_at.isoformat() if snapshot.reconciled else None,
+                      'cash_observed_at': cash_observed_at.isoformat() if snapshot.reconciled else None,
                       'positions': self.adapter.http.request('GET', '/v2/positions'),
                       'target_weights': None, 'actual_weights': {},
                       'strategy_state': self.execution.state['state'] if self.execution else 'NOT_ENABLED',
@@ -469,7 +477,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('action', choices=('run', 'health', 'acceptance'))
     parser.add_argument('--phase', choices=('open', 'recover', 'rotate', 'replay', 'cleanup'))
-    parser.add_argument('--state-root', default='/var/lib/factorlab-alpaca-paper')
+    parser.add_argument('--state-root', default=os.environ.get(
+        'FACTORLAB_ALPACA_STATE_ROOT', '/var/lib/factorlab-alpaca-paper'))
     parser.add_argument('--credential-file', default=os.environ.get('FACTORLAB_ALPACA_SECRET_FILE'))
     parser.add_argument('--revision', default='unknown')
     parser.add_argument('--execute-v69', action='store_true',

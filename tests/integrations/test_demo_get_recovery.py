@@ -183,21 +183,32 @@ def test_parallel_account_matches_serial_and_starts_known_v2_read_with_v3(wired,
         return reply
 
     monkeypatch.setattr(NetworkFixture, '__call__', account_routes)
-    subject = client()
+    clock = NetworkClock()
+    subject = client(clock)
     subject.sync_time()
     with closing(PaperStore(':memory:')) as store:
         adapter = FuturesAdapter(subject, store, account_id=subject.environment.account_id)
         read_set = adapter._account_reads
+
+        def serial_read_set(observed_at, started, read_windows, *, parallel, sync_funding):
+            return read_set(observed_at, started, read_windows, parallel=False, sync_funding=sync_funding)
+
         with monkeypatch.context() as patch:
-            patch.setattr(adapter, '_account_reads', lambda observed_at, started, *, parallel, sync_funding:
-                read_set(observed_at, started, parallel=False, sync_funding=sync_funding))
+            patch.setattr(adapter, '_account_reads', serial_read_set)
             serial = adapter.reconcile()
             serial_facts = adapter.facts
         permission_read.clear()
         hold_account = True
         assert adapter.reconcile().assets == serial.assets
-        assert adapter.facts == replace(serial_facts, observed_at=adapter.facts.observed_at)
-        assert adapter.facts.can_trade
+        parallel_facts = adapter.facts
+        assert parallel_facts == replace(serial_facts, observed_at=parallel_facts.observed_at,
+                                         read_windows=parallel_facts.read_windows)
+        assert serial_facts.read_windows == {}
+        assert set(parallel_facts.read_windows) == {'account', 'position_risk', 'open_orders'}
+        for lower_ms, upper_ms in parallel_facts.read_windows.values():
+            assert type(lower_ms) is int and type(upper_ms) is int
+            assert lower_ms <= clock.server_ms() <= upper_ms
+        assert parallel_facts.can_trade
         assert paths(wired[1]).count(ACCOUNT_PERMISSION_PATH) == 2
         report_permission_in_v3 = True
         permission = False

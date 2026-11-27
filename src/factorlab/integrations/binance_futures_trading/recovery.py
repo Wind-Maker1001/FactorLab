@@ -697,6 +697,13 @@ def account_baseline(facts):
     return dict(
         wallet=str(wallet),
         positions=[[symbol, side, str(qty)] for (symbol, side), qty in sorted(positions.items())],
+        observed_at=facts.observed_at.isoformat(),
+        read_windows=facts.read_windows,
+        wallet_update_ms=next(asset.get('updateTime') for asset in facts.assets if asset.get('asset') == 'USDT'),
+        position_updates=[
+            sorted([row['symbol'], row['positionSide'], row.get('updateTime')] for row in rows)
+            for rows in (facts.positions, facts.risk)
+        ],
     )
 
 
