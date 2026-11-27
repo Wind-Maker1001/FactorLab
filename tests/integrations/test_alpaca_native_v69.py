@@ -98,6 +98,61 @@ def test_native_adopts_checkpoint_and_keeps_original_plan_identity_on_frozen_rep
     execution.close()
 
 
+def test_native_runtime_upgrade_preserves_frozen_plan_and_rollback(tmp_path, monkeypatch):
+    from contextlib import closing
+    from factorlab.strategies import loader
+    from factorlab.strategies.deployment import DeploymentStore
+
+    account = Account()
+    previous_sha = 'a' * 64
+    replacement_sha = 'b' * 64
+    package_revision = '1' * 40
+    replacement_revision = '2' * 40
+    monkeypatch.setattr(loader, 'runtime_identity', lambda: previous_sha)
+    prepared = dict(inputs(), decision=dict(weights=dict.fromkeys(ASSETS, .04),
+        orders=[dict(symbol='AAPL', side='buy', adjusted_quantity=1)],
+        state={'last_week': [2026, 48]}))
+    with closing(NativeWeeklyExecution(tmp_path, account, clock=lambda: NOW,
+                                       revision=package_revision)) as original:
+        plan_id = original.resume_prepared(prepared)
+        package_id = original.package_id
+        old_binding = original.strategy.binding
+        old_checkpoint = original.view.checkpoint()
+
+    with closing(DeploymentStore(tmp_path / 'deployments.sqlite3', instance_id='V69_CAUSAL')) as store:
+        old_payload = store._runtime_binding(package_id)['binding']
+        replacement = dict(old_binding, runtime_sha256=replacement_sha)
+        with pytest.raises(ValueError, match='runtime identity changed'):
+            store.bind_runtime(package_id, replacement)
+        changed_model = dict(replacement, model={'artifact_sha256': '3' * 64})
+        with pytest.raises(ValueError, match='strategy identity'):
+            store.admit_runtime_upgrade(package_id, old_binding, changed_model)
+        insert = store._insert
+
+        def interrupt(table, values):
+            insert(table, values)
+            raise OSError('upgrade interrupted before commit')
+
+        with monkeypatch.context() as crash:
+            crash.setattr(store, '_insert', interrupt)
+            with pytest.raises(OSError, match='upgrade interrupted'):
+                store.admit_runtime_upgrade(package_id, old_binding, replacement)
+        with pytest.raises(ValueError, match='runtime identity changed'):
+            store.bind_runtime(package_id, replacement)
+        assert store.admit_runtime_upgrade(package_id, old_binding, replacement)
+        assert not store.admit_runtime_upgrade(package_id, old_binding, replacement)
+        assert store._runtime_binding(package_id)['binding'] == old_payload
+
+    for digest, revision in ((replacement_sha, replacement_revision), (previous_sha, package_revision)):
+        monkeypatch.setattr(loader, 'runtime_identity', lambda: digest)
+        with closing(NativeWeeklyExecution(tmp_path, account, clock=lambda: NOW, revision=revision)) as current:
+            assert current.package_id == package_id
+            assert current.resume_prepared(prepared) == plan_id
+            assert current.view.checkpoint() == old_checkpoint
+            assert current.store.db.execute('SELECT COUNT(*) FROM portfolio_plans').fetchone()[0] == 1
+    assert not account.posts
+
+
 @pytest.mark.parametrize('crash_before_plan', [False, True])
 def test_native_package_decision_matches_legacy_plan_and_freezes_before_dispatch(tmp_path, crash_before_plan):
     account = Account()

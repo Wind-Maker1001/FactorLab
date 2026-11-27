@@ -17,6 +17,9 @@ from .cloud_execution import PreparationIncomplete, WeeklyExecution
 from .strategy_deployment import AlpacaDeployment
 
 
+NATIVE_V69_WRAPPER = b'from factorlab.strategies.v69_runtime import V69AlpacaStrategy as Strategy\n'
+
+
 class NativeDeployment(AlpacaDeployment):
     def prepare(self, version):
         strategy = self.instance.load(version)
@@ -83,7 +86,6 @@ class NativeWeeklyExecution(WeeklyExecution):
         source = root / 'native-v69-source'
         source.mkdir(mode=0o700, exist_ok=True)
         entry = source / 'strategy.py'
-        content = 'from factorlab.strategies.v69_runtime import V69AlpacaStrategy as Strategy\n'
         fields = asdict(declaration)
         requirements = {key: fields[key] for key in ('data', 'schedule', 'state', 'capital', 'execution')}
         requirements['capital']['requested'] = '0'
@@ -97,7 +99,7 @@ class NativeWeeklyExecution(WeeklyExecution):
             evidence={'native_strategy': 'V69_CAUSAL', 'journal': 'portfolio.sqlite3'},
             migration='wait_flat')
         if not archive.exists():
-            entry.write_text(content, encoding='utf-8')
+            entry.write_bytes(NATIVE_V69_WRAPPER)
             build_package(source, manifest, archive)
         release, manifest = install_package(archive, root / 'strategy-releases')
         self.strategy = LoadedStrategy.from_strategy_package(release, trusted=True)

@@ -88,6 +88,9 @@ class DeploymentStore:
             identity TEXT NOT NULL, evidence TEXT NOT NULL);
           CREATE TABLE IF NOT EXISTS instance_runtime_bindings(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,
             binding TEXT NOT NULL, PRIMARY KEY(instance_id,package_id));
+          CREATE TABLE IF NOT EXISTS instance_runtime_admissions(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,
+            runtime_sha256 TEXT NOT NULL, previous_runtime_sha256 TEXT NOT NULL, admitted_at REAL NOT NULL,
+            PRIMARY KEY(instance_id,package_id,runtime_sha256));
           CREATE TABLE IF NOT EXISTS instance_checkpoints(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,
             checkpoint TEXT NOT NULL, PRIMARY KEY(instance_id,package_id));
           CREATE TABLE IF NOT EXISTS instance_migrations(instance_id TEXT NOT NULL, switch_id INTEGER NOT NULL,
@@ -413,15 +416,49 @@ class DeploymentStore:
             raise ValueError('decision input identity conflict')
         return decode(json.loads(row['result']))
 
-    def bind_runtime(self, package_id, binding):
-        payload = dumps(binding)
+    def _runtime_binding(self, package_id):
+        return self._rows('runtime_bindings', 'package_id=?', (package_id,)).fetchone()
+
+    def _require_runtime_binding(self, package_id, binding, original):
+        if original is None:
+            raise ValueError('original instance runtime binding required')
+        baseline = decode(json.loads(original['binding']))
+        runtime = binding['runtime_sha256']
+        if dumps(dict(binding, runtime_sha256=baseline['runtime_sha256'])) != original['binding']:
+            raise ValueError('instance runtime identity changed')
+        if runtime != baseline['runtime_sha256'] and self._rows(
+            'runtime_admissions', 'package_id=? AND runtime_sha256=?', (package_id, runtime),
+        ).fetchone() is None:
+            raise ValueError('instance runtime identity changed')
+
+    def admit_runtime_upgrade(self, package_id, previous, replacement):
+        """Admit a verified executor upgrade without replacing the rollback binding."""
+        if (previous['package_id'] != package_id
+                or dumps(dict(replacement, runtime_sha256=previous['runtime_sha256'])) != dumps(previous)):
+            raise ValueError('runtime upgrade changes strategy identity')
         with self.atomic():
-            row = self.db.execute('SELECT binding FROM instance_runtime_bindings WHERE instance_id=? AND package_id=?',
-                                  (self.instance_id, package_id)).fetchone()
-            if row is not None and row[0] != payload:
-                raise ValueError('instance runtime identity changed')
-            self.db.execute('INSERT OR IGNORE INTO instance_runtime_bindings VALUES(?,?,?)',
-                            (self.instance_id, package_id, payload))
+            if (self.snapshot()['active'] != package_id or self.pending() is not None
+                    or self.activation_callback() is not None):
+                raise ValueError('runtime upgrade requires a stable active package')
+            original = self._runtime_binding(package_id)
+            self._require_runtime_binding(package_id, previous, original)
+            runtime = replacement['runtime_sha256']
+            if runtime == previous['runtime_sha256']:
+                return False
+            if self._rows('runtime_admissions', 'package_id=? AND runtime_sha256=?', (package_id, runtime),
+                          ).fetchone() is not None:
+                return False
+            self._insert('runtime_admissions', dict(package_id=package_id, runtime_sha256=runtime,
+                previous_runtime_sha256=previous['runtime_sha256'], admitted_at=time()))
+            return True
+
+    def bind_runtime(self, package_id, binding):
+        with self.atomic():
+            original = self._runtime_binding(package_id)
+            if original is None:
+                self._insert('runtime_bindings', dict(package_id=package_id, binding=dumps(binding)))
+            else:
+                self._require_runtime_binding(package_id, binding, original)
 
     def outstanding(self, package_id):
         return [decode(json.loads(row[0])) for row in self.db.execute('''SELECT d.result FROM instance_decisions d
