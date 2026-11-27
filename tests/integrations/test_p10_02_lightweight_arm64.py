@@ -869,3 +869,51 @@ def test_market_cache_lru_still_detects_tampering(tmp_path):
     parquet.write_bytes(parquet.read_bytes() + b'tamper')
     with pytest.raises(ValueError, match='cache generation integrity failure'):
         cache.load(series)
+
+
+def test_grid_timestamp_preserves_nanosecond_ordering_and_replay_detection():
+    """Verify stdlib naive timestamp parser preserves nanosecond precision without pandas,
+    rejecting out-of-order sub-microsecond observations, replay timestamp changes, and
+    unsupported sub-nanosecond precision.
+    """
+    from factorlab.strategies.grid import GridConfig, _parse_naive_timestamp
+    from factorlab.strategies.grid_execution import GridAccount, GridExecution, GridRules
+    from factorlab.trading.contracts import Market
+
+    ts_hi = _parse_naive_timestamp('2026-01-01T00:00:00.123456900')
+    ts_lo = _parse_naive_timestamp('2026-01-01T00:00:00.123456100')
+    assert ts_lo < ts_hi
+    assert ts_hi.isoformat() == '2026-01-01T00:00:00.123456900'
+    assert ts_lo.isoformat() == '2026-01-01T00:00:00.123456100'
+    with pytest.raises(ValueError, match='sub-nanosecond'):
+        _parse_naive_timestamp('2026-01-01T00:00:00.1234567891')
+
+    cfg = GridConfig(
+        mode='arithmetic', lower=95.0, upper=105.0, levels=4,
+        initial_cash=5000.0, initial_inventory=0, initial_price=100.0,
+        quantity=1, max_inventory=10, max_cash_committed=2000.0,
+        breakout='pause', order_ttl=50,
+    )
+    rules = GridRules(D('0.1'), D('0.01'), D('0.01'), D('0.01'), D('5'))
+    grid = GridExecution(
+        cfg, rules, deployment_id='p10ns1', account_id='acct-ns',
+        market=Market.BINANCE_USDM, instrument_id='NVDAUSDT', initial_equity=D('5000'),
+    )
+    acct = GridAccount(
+        inventory=D('0'), available=D('5000'), equity=D('5000'),
+        committed=D('0'), turnover=D('0'), account_id='acct-ns',
+        instrument_id='NVDAUSDT', market=Market.BINANCE_USDM,
+    )
+    ev1 = {'id': 'obs-1', 'time': '2026-01-01T00:00:00.123456900', 'price': D('100'), 'volume': 1}
+    grid.observe(ev1, acct, delivery=1)
+    assert grid.timestamp.isoformat() == '2026-01-01T00:00:00.123456900'
+
+    # Out-of-order observation differing only in nanoseconds must be rejected
+    ev_out_of_order = {'id': 'obs-2', 'time': '2026-01-01T00:00:00.123456100', 'price': D('100'), 'volume': 1}
+    with pytest.raises(ValueError, match='observation time regression'):
+        grid.observe(ev_out_of_order, acct, delivery=2)
+
+    # Delivery replay with nanosecond-only timestamp change must be rejected as conflict
+    ev1_mutated = {'id': 'obs-1', 'time': '2026-01-01T00:00:00.123456800', 'price': D('100'), 'volume': 1}
+    with pytest.raises(ValueError):
+        grid.observe(ev1_mutated, acct, delivery=1)

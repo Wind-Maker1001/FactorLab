@@ -2,17 +2,85 @@
 from dataclasses import asdict, dataclass
 from datetime import date, datetime
 import math
+import re
 
 from factorlab.errors import ConfigurationError
 
+_ISO_FRAC_RE = re.compile(r"[.,](\d+)$")
 
-def _parse_naive_timestamp(value):
+
+class _NaiveTimestamp(datetime):
+    """Timezone-free datetime subclass preserving nanosecond precision without pandas."""
+
+    __slots__ = ("nanosecond",)
+
+    def __new__(
+        cls, year, month, day, hour=0, minute=0, second=0, microsecond=0,
+        tzinfo=None, *, fold=0, nanosecond=0,
+    ):
+        obj = super().__new__(cls, year, month, day, hour, minute, second, microsecond, tzinfo, fold=fold)
+        obj.nanosecond = int(nanosecond)
+        return obj
+
+    def isoformat(self, sep="T", timespec="auto") -> str:
+        if not self.nanosecond or timespec != "auto":
+            return super().isoformat(sep=sep, timespec=timespec)
+        return f"{super().isoformat(sep=sep, timespec='seconds')}.{self.microsecond:06d}{self.nanosecond:03d}"
+
+    def _ns_pair(self, other):
+        if isinstance(other, datetime):
+            if other.tzinfo is not None:
+                return NotImplemented
+            return (
+                (self.year, self.month, self.day, self.hour, self.minute, self.second, self.microsecond, self.nanosecond),
+                (other.year, other.month, other.day, other.hour, other.minute, other.second, other.microsecond, int(getattr(other, "nanosecond", 0))),
+            )
+        return NotImplemented
+
+    def __eq__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] == pair[1]
+
+    def __ne__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] != pair[1]
+
+    def __lt__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] < pair[1]
+
+    def __le__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] <= pair[1]
+
+    def __gt__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] > pair[1]
+
+    def __ge__(self, other):
+        pair = self._ns_pair(other)
+        return NotImplemented if pair is NotImplemented else pair[0] >= pair[1]
+
+    def __hash__(self):
+        return hash((super().__hash__(), self.nanosecond))
+
+
+def _make_naive_timestamp(dt: datetime, nanosecond: int = 0) -> _NaiveTimestamp:
+    return _NaiveTimestamp(
+        dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.microsecond,
+        nanosecond=nanosecond,
+    )
+
+
+def _parse_naive_timestamp(value) -> _NaiveTimestamp:
     if value is None or isinstance(value, bool):
         raise ValueError("invalid timestamp")
+    if isinstance(value, _NaiveTimestamp):
+        return value
     if isinstance(value, datetime):
         if value.tzinfo is not None:
             raise ValueError("timezone-free timestamp required")
-        return value
+        return _make_naive_timestamp(value, int(getattr(value, "nanosecond", 0)))
     if isinstance(value, str):
         text = value.strip()
         if not text or text.lower() in {"nat", "nan", "none"}:
@@ -26,7 +94,14 @@ def _parse_naive_timestamp(value):
         if parsed is not None:
             if parsed.tzinfo is not None:
                 raise ValueError("timezone-free timestamp required")
-            return parsed
+            match = _ISO_FRAC_RE.search(text)
+            if match is not None:
+                frac = match.group(1)
+                if len(frac) > 9 and any(ch != "0" for ch in frac[9:]):
+                    raise ValueError("unsupported sub-nanosecond timestamp precision")
+                padded = (frac + "000000000")[:9]
+                return _make_naive_timestamp(parsed.replace(microsecond=int(padded[:6])), int(padded[6:9]))
+            return _make_naive_timestamp(parsed, 0)
     try:
         import pandas as pd
     except ModuleNotFoundError as exc:
@@ -34,7 +109,7 @@ def _parse_naive_timestamp(value):
     ts = pd.Timestamp(value)
     if pd.isna(ts) or ts.tzinfo is not None:
         raise ValueError("timezone-free timestamp required")
-    return ts.to_pydatetime()
+    return _make_naive_timestamp(ts, int(ts.nanosecond))
 
 
 @dataclass(frozen=True)
