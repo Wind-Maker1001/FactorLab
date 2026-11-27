@@ -3,6 +3,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import tempfile
 from uuid import uuid4
@@ -27,7 +28,7 @@ def deploy(args):
                               f'sudo sh {remote}/tools/install_alpaca_paper_runtime.sh {remote}/release.tar '
                               f'{revision} /opt/factorlab/python/cpython-3.13-linux-x86_64-gnu/bin/python3'], check=True)
     finally:
-        subprocess.run(ssh + [f'rm -rf {remote}'], check=False)
+        subprocess.run(ssh + [f'rm -rf -- {shlex.quote(remote)}'], check=False)
     if args.credential_file:
         from factorlab.integrations.alpaca.market_data.client import Credentials
         credentials = Credentials.from_dpapi(args.credential_file)

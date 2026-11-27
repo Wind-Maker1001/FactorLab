@@ -621,3 +621,43 @@ def test_post_confirm_readback_time_error_preserves_submitted_order_as_unknown(n
         monkeypatch.setattr(bridge.session.adapter, 'query_order', original_query)
         bridge.recover()
         assert not bridge.session.status()['unknown']
+
+
+@pytest.mark.parametrize('time_failure', [TimeoutError('time socket timeout'), Response(500, {}, b'{"code":-1000,"msg":"err"}'), Response(400, {}, b'{"code":-1100,"msg":"bad"}')])
+def test_pre_write_time_refresh_transport_or_http_error_cleans_placeholder(network_grid, monkeypatch, time_failure):
+    from factorlab.integrations.binance_futures_trading.protocol import TimeCalibrationError
+    root, store, factory, _, _, requests = network_grid
+    initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        original_request = bridge.session.client.request
+
+        def expire_at_post(method, path, params=None, *, signed=True):
+            if method == 'POST' and path == '/fapi/v1/order':
+                bridge.session.client._demo_time_valid = False
+            return original_request(method, path, params, signed=signed)
+
+        with monkeypatch.context() as patch:
+            patch.setattr(bridge.session.client, 'request', expire_at_post)
+            inject(patch, [time_failure], endpoint=TIME)
+            requests.clear()
+            with pytest.raises(TimeCalibrationError):
+                observe(bridge)
+        assert not writes(requests)
+        assert not bridge.session.status()['unknown']
+        assert bridge.session.adapter.db.execute('SELECT count(*) FROM futures_orders').fetchone()[0] == 0
+        assert bridge.session.adapter.db.execute('SELECT count(*) FROM futures_rejections').fetchone()[0] == 0
+        assert bridge.runtime.db.execute("SELECT count(*) FROM dispatches WHERE method='POST'").fetchone()[0] == 0
+
+
+def test_direct_unadmitted_write_never_triggers_time_refresh(network_grid):
+    from factorlab.integrations.binance_futures_trading.protocol import TimeCalibrationError
+    root, store, factory, _, _, requests = network_grid
+    initialize(root, store)
+    with open_grid_session(root, store, factory, continuous=True) as bridge:
+        bridge.recover()
+        bridge.session.client._demo_time_valid = False
+        requests.clear()
+        with pytest.raises(TimeCalibrationError):
+            bridge.session.client.request('POST', '/fapi/v1/order', {'symbol': 'NVDAUSDT'})
+        assert requests == []

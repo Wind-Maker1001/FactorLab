@@ -455,13 +455,18 @@ class FuturesClient:
         refresh_write = False
         if method != 'GET' and (method, path) in WRITE_PATHS and not isinstance(self.transport, OfflineTransport):
             from .network import demo_network_permitted
-            refresh_write = demo_network_permitted(self)
+            refresh_write = demo_network_permitted(self) and bool(self.transport._admission)
         if (self.environment is Environment.DEMO and signed
                 and ((method == 'GET' and path in READ_PATHS) or refresh_write)
                 and self.credentials is not None
                 and (self._demo_sample is not None or not isinstance(self.transport, OfflineTransport))):
             with self.demo_clock.lock:
-                self.demo_time(allow_refresh=window is None)
+                try:
+                    self.demo_time(allow_refresh=window is None)
+                except (ExchangeError, DataQualityError) as error:
+                    if refresh_write and not isinstance(error, TimeCalibrationError):
+                        raise TimeCalibrationError('Demo time calibration refresh failed before write') from error
+                    raise
                 sample = self._demo_sample
         else:
             sample = None

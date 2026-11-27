@@ -1,4 +1,4 @@
-﻿{
+{
   "captured_at_utc": "2026-11-26T10:31:56.850401+00:00",
   "host": {
     "hostname": "factorlab-demo-01",
@@ -888,7 +888,7 @@
     },
     "official_account": {
       "id": "ec3132ce-9768-4c6f-a640-050119d464c4",
-      "account_number": "PA3GRNP6K",
+      "account_number": "<REDACTED_PAPER_ACCOUNT_NUMBER>",
       "status": "ACTIVE",
       "currency": "USD",
       "cash": "100000.05",

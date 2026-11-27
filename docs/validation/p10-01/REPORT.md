@@ -10,7 +10,7 @@
 | --- | --- |
 | 基线提交（`origin/main`，已含 PR #255/#256/#257/#260/#261） | `388a8ee0f28e4b90ee7dbb20403a29c7fe085898` |
 | 独立 Worktree 与发布分支 | `D:\Code\FactorLab-worktrees\p10-01-dual-market-release` / `deployment/p10-01-dual-market-release` |
-| 实际部署可追溯提交 SHA | `12335ebd56fda7a2d0e709176806d96e3e7b7b67` |
+| 实际部署可追溯提交 SHA | `12335ebd56fda7a2d0e709176806d96e3e7b7b67`（PR 后续审查加固提交未重复触发 Azure 重启，以保持 `T0` 长周期观测窗口连续性） |
 | 目标主机 | Azure VM `factorlab-demo-01`（马来西亚区，AMD EPYC 7763 2 vCPU，887 MiB RAM + 2.0 GiB Swap，61 GiB Root Disk） |
 | 升级前运行版本 | Binance Demo / Alpaca Paper：`ea9cbbdd7519e5400df097e5661b0d6c47b6c4da`；TradFi Observer：`a74fec9404e4c4ff0f699595d7ad5a6b03d1ec45-continuous1` |
 | 升级后源码与运行一致性验证时间 | `2026-11-26T15:24:19Z`（完整证据见 `source-consistency.json`） |
@@ -178,7 +178,7 @@
 | `/var/backups/factorlab-alpaca-paper` | 169 MiB | 667 MiB | 新增 `p10-01-pre-12335eb-20261126T103849Z`（498 MiB） |
 | `/var/log`（含 `syslog` / `journal`） | 1.1 GiB（`syslog` 876 MiB） | 1.1 GiB | 需与 P10-02 协调长期日志压缩/瘦身 |
 | 内存（887 MiB total） | used 349 MiB / available 537 MiB / Swap used 556 MiB | used 482 MiB / available 404 MiB / Swap used 522 MiB | 稳定运行无 OOM |
-| 业务进程 RSS / CPU（稳态实测） | Demo Execute 17.5 MiB / TradFi 24.7 MiB / Alpaca 30.9 MiB | Demo Execute 34.5 MiB (5.1% CPU 启动后回落) / Alpaca 23.1 MiB (1.5% CPU) / TradFi 19.2 MiB (0.6% CPU) | 2 vCPU 负载低，资源充裕 |
+| 业务进程 RSS / CPU（稳态实测） | Demo Execute 17.1 MiB / TradFi 24.1 MiB / Alpaca 30.2 MiB | Demo Execute 33.7 MiB (5.1% CPU 启动后回落) / Alpaca 22.6 MiB (1.5% CPU) / TradFi 18.8 MiB (0.6% CPU) | 2 vCPU 负载低，资源充裕 |
 
 ---
 
@@ -191,7 +191,11 @@
 - **健康检查与告警恢复**：`factorlab-demo-health.service`、`factorlab-demo-tradfi-health.service`、`factorlab-alpaca-paper-health.service` 实测全部返回 `rc=0`；`/var/lib/factorlab-demo/monitoring/alert-state.json` 确认 `active_alerts={}`、`consecutive_healthy_since_restart=5`。
 - **每日报告**：手动触发 `factorlab-demo-daily-report.service` 返回 `rc=0`，成功刷新 `daily-report-latest.md`（2,893 bytes）。
 - **数据过期自动恢复**：在感恩节休市盘口短暂静默期间实际观测到 Binance Demo 触发 `STALE_OR_FUTURE_QUOTE` 自动暂停、随后新报价到达后自动恢复 `RUNNING` 与对账。
-- **非破坏性单服务网络中断与进程重启（Alpaca Paper）**：通过 `systemctl set-property --runtime factorlab-alpaca-paper.service IPAddressDeny=any` 隔离 6 秒后解除（未影响主机全局网络及 Binance Demo），随后执行 `systemctl restart factorlab-alpaca-paper.service`，确认 PID `726025 -> 767635`、`starts: 21 -> 22`、`healthy=true`、`trade_stream=CONNECTED`、`market=CONNECTED`。
+- **非破坏性单服务网络中断与进程重启（Alpaca Paper）**：通过 `systemctl set-property --runtime factorlab-alpaca-paper.service IPAddressDeny=any` 隔离 6 秒后解除（未影响主机全局网络及 Binance Demo），解除隔离后双流恢复 `CONNECTED`（瞬时采样点 `alpaca_after_network_fault` 中 `healthy=false`），随后执行 `systemctl restart factorlab-alpaca-paper.service`，确认新进程 PID `726025 -> 767635`、`starts: 21 -> 22`、`healthy=true`、`trade_stream=CONNECTED`、`market=CONNECTED`。
+- **过夜连续无人值守实测快照（`2026-11-27T01:58:12Z`，距 `T0` 约 10.4 小时）**：
+  - Binance Demo（PID `767167` 全程零重启，`starts=46`）：`status=RUNNING`, `account_recovered=true`, `unknown_count=0`, `active_alerts={}`；期间自然轮换两代网格（`g-0003b -> g-0003c -> g-0003d`，累计 POST `125 -> 127`），Campaign 窗口连续 3 次全自动续期至 `2026-11-27T03:21:08Z`，凌晨 `00:05Z` 自动生成 `daily-report-2026-11-27.md`（`Result=success`）。
+  - Alpaca Paper（PID `767635` 全程零重启，`starts=22`）：期间观测到休市 IEX 行情流空闲断连（`01:56Z` `StreamDisconnected -> RECONNECTING -> RECOVERING`）并在同进程免重启下自动恢复为 `CONNECTED` 与 `healthy=true`（`01:58Z`）。
+  - 根分区磁盘使用率 `45.0%`（可用 `33.51 GiB`，10.4 小时净增 `0.41 GiB`）。
 
 ### 7.2 已知问题与 P10-02 协调项（不阻塞当前部署）
 
@@ -228,21 +232,21 @@
 ### 8.2 Alpaca Paper 一键代码回滚命令
 
 ```bash
-ssh -i D:/Environments/factorlab-demo-01_key.pem azureuser@85.211.193.242 \
+ssh -i <SSH_KEY_PATH> <USER>@<VM_HOST> \
   "sudo sh /opt/factorlab-alpaca/releases/12335ebd56fda7a2d0e709176806d96e3e7b7b67/source/tools/rollback_alpaca_paper_runtime.sh ea9cbbdd7519e5400df097e5661b0d6c47b6c4da"
 ```
 
 回滚后验证：
 
 ```bash
-ssh -i D:/Environments/factorlab-demo-01_key.pem azureuser@85.211.193.242 \
+ssh -i <SSH_KEY_PATH> <USER>@<VM_HOST> \
   "readlink /opt/factorlab-alpaca/current && sudo -u factorlab-alpaca /opt/factorlab-alpaca/current/venv/bin/python -m factorlab.integrations.alpaca.cloud_runtime health"
 ```
 
 ### 8.3 Binance Demo 同账本代码回滚命令
 
 ```bash
-ssh -i D:/Environments/factorlab-demo-01_key.pem azureuser@85.211.193.242 "sudo python3 - <<'PY'
+ssh -i <SSH_KEY_PATH> <USER>@<VM_HOST> "sudo python3 - <<'PY'
 import pathlib, subprocess
 OLD = 'ea9cbbdd7519e5400df097e5661b0d6c47b6c4da'
 py = f'/opt/factorlab/releases/{OLD}/venv/bin/python'
@@ -267,7 +271,7 @@ PY"
 回滚后验证 `account_recovered=true` 与 `unknown_count=0`：
 
 ```bash
-ssh -i D:/Environments/factorlab-demo-01_key.pem azureuser@85.211.193.242 \
+ssh -i <SSH_KEY_PATH> <USER>@<VM_HOST> \
   "sudo systemctl start factorlab-demo-health.service && sudo jq '{pid,status,account_recovered,unknown_count,nav_usdt,open_orders}' /var/lib/factorlab-demo/execute-state/cloud-health.json"
 ```
 
