@@ -1,0 +1,81 @@
+{
+  "protocol": "MC-COLAB-02-v1",
+  "seeds": [
+    104729,
+    130363,
+    155921,
+    181081,
+    205019
+  ],
+  "timing_repeats": 2,
+  "bootstrap_resamples": 199,
+  "input_seed": 1729,
+  "host_memory_budget_mb": 8192,
+  "budget_seconds": 803.527890655,
+  "blas_threads": 1,
+  "cells": [
+    {
+      "name": "gbm-1m-b1024",
+      "model": "gbm",
+      "n_paths": 1000000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "gbm-1m-b4096",
+      "model": "gbm",
+      "n_paths": 1000000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 4096,
+      "gpu_memory_limit_mb": 4096
+    },
+    {
+      "name": "bootstrap-1m",
+      "model": "moving_block_bootstrap",
+      "n_paths": 1000000,
+      "n_steps": 252,
+      "assets": 1,
+      "batch_size": 4096,
+      "gpu_memory_limit_mb": 4096
+    },
+    {
+      "name": "gbm-8assets",
+      "model": "gbm",
+      "n_paths": 100000,
+      "n_steps": 252,
+      "assets": 8,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "gbm-32assets",
+      "model": "gbm",
+      "n_paths": 100000,
+      "n_steps": 252,
+      "assets": 32,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "gbm-168steps",
+      "model": "gbm",
+      "n_paths": 100000,
+      "n_steps": 168,
+      "assets": 1,
+      "batch_size": 1024,
+      "gpu_memory_limit_mb": 1024
+    },
+    {
+      "name": "gbm-8760steps",
+      "model": "gbm",
+      "n_paths": 100000,
+      "n_steps": 8760,
+      "assets": 1,
+      "batch_size": 256,
+      "gpu_memory_limit_mb": 1024
+    }
+  ]
+}
