@@ -11,6 +11,17 @@ def task(entry='gbm'):
                 outputs=['report.json', 'samples.npz'])
 
 
+def test_manifest_control_import_needs_only_standard_library():
+    import subprocess
+    import sys
+    from pathlib import Path
+    source = str(Path(__file__).resolve().parents[2]/'src')
+    code = (f'import sys; sys.path.insert(0, {source!r}); '
+            'from factorlab.experiments.research_tasks import validate_manifest; '
+            "assert not {'numpy','pandas','scipy'} & set(sys.modules)")
+    subprocess.run([sys.executable, '-I', '-S', '-c', code], check=True)
+
+
 def test_default_and_overridden_mc_dimensions(tmp_path):
     value = task()
     assert admission_task(value, tmp_path)['parameters'] == dict(
