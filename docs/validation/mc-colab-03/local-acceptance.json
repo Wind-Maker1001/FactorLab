@@ -1,0 +1,293 @@
+{
+  "commit": "33a8894a7157187da2c68a10905b67b12d9705ae",
+  "state": "PARTIAL",
+  "elapsed_seconds": 63.94363809999777,
+  "tasks": [
+    {
+      "id": "cpu-gbm",
+      "state": "SUCCEEDED",
+      "worker_seconds": 19.428832900011912,
+      "selection": {
+        "device": "cpu",
+        "compute_device": "cpu",
+        "reason": "explicit CPU placement; no fallback",
+        "estimated_seconds": null,
+        "estimated_cost_cu": null,
+        "estimated_host_bytes": 417447776,
+        "estimated_gpu_bytes": 0,
+        "evidence": [
+          {
+            "batch_size": 4096,
+            "model_bytes": 77664,
+            "workspace_bytes": 219152384,
+            "result_bytes": 64000000,
+            "full_path_bytes": 0,
+            "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+          }
+        ]
+      },
+      "environment": {
+        "pid": 63040,
+        "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+        "loaded_versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.16.3"
+        },
+        "dependency_constraints_validated": true
+      },
+      "research_seconds": 15.585253699973691,
+      "retained_samples": true
+    },
+    {
+      "id": "cpu-bootstrap",
+      "state": "SUCCEEDED",
+      "worker_seconds": 16.578372399962973,
+      "selection": {
+        "device": "cpu",
+        "compute_device": "cpu",
+        "reason": "explicit CPU placement; no fallback",
+        "estimated_seconds": null,
+        "estimated_cost_cu": null,
+        "estimated_host_bytes": 417570784,
+        "estimated_gpu_bytes": 0,
+        "evidence": [
+          {
+            "batch_size": 4096,
+            "model_bytes": 200672,
+            "workspace_bytes": 219152384,
+            "result_bytes": 64000000,
+            "full_path_bytes": 0,
+            "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+          }
+        ]
+      },
+      "environment": {
+        "pid": 43308,
+        "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+        "loaded_versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.16.3"
+        },
+        "dependency_constraints_validated": true
+      },
+      "research_seconds": 14.539957400003914,
+      "retained_samples": true
+    },
+    {
+      "id": "cpu-static_grid",
+      "state": "SUCCEEDED",
+      "worker_seconds": 3.6640474999439903,
+      "selection": {
+        "device": "cpu",
+        "compute_device": "cpu",
+        "reason": "explicit CPU placement; no fallback",
+        "estimated_seconds": null,
+        "estimated_cost_cu": null,
+        "estimated_host_bytes": 308921248,
+        "estimated_gpu_bytes": 0,
+        "evidence": [
+          {
+            "batch_size": 4096,
+            "model_bytes": 73632,
+            "workspace_bytes": 153092096,
+            "result_bytes": 16000000,
+            "full_path_bytes": 5537792,
+            "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+          }
+        ]
+      },
+      "environment": {
+        "pid": 54288,
+        "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+        "loaded_versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.16.3"
+        },
+        "dependency_constraints_validated": true
+      },
+      "research_seconds": 1.3289106000447646,
+      "retained_samples": false
+    },
+    {
+      "id": "local_gpu-gbm",
+      "state": "SUCCEEDED",
+      "worker_seconds": 7.585689400031697,
+      "selection": {
+        "device": "local_gpu",
+        "compute_device": "gpu",
+        "reason": "explicit local GPU placement; no fallback",
+        "estimated_seconds": null,
+        "estimated_cost_cu": null,
+        "estimated_host_bytes": 417447776,
+        "estimated_gpu_bytes": 487665504,
+        "evidence": [
+          {
+            "batch_size": 4096,
+            "model_bytes": 77664,
+            "workspace_bytes": 219152384,
+            "result_bytes": 64000000,
+            "full_path_bytes": 0,
+            "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+          }
+        ],
+        "gpu_index": 0
+      },
+      "environment": {
+        "pid": 30960,
+        "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+        "loaded_versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.16.3",
+          "cupy-cuda13x": "14.2.0"
+        },
+        "dependency_constraints_validated": true
+      },
+      "research_seconds": 4.034151800035033,
+      "retained_samples": true
+    },
+    {
+      "id": "local_gpu-bootstrap",
+      "state": "SUCCEEDED",
+      "worker_seconds": 6.6535332999774255,
+      "selection": {
+        "device": "local_gpu",
+        "compute_device": "gpu",
+        "reason": "explicit local GPU placement; no fallback",
+        "estimated_seconds": null,
+        "estimated_cost_cu": null,
+        "estimated_host_bytes": 417570784,
+        "estimated_gpu_bytes": 487788512,
+        "evidence": [
+          {
+            "batch_size": 4096,
+            "model_bytes": 200672,
+            "workspace_bytes": 219152384,
+            "result_bytes": 64000000,
+            "full_path_bytes": 0,
+            "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+          }
+        ],
+        "gpu_index": 0
+      },
+      "environment": {
+        "pid": 56872,
+        "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+        "loaded_versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.16.3",
+          "cupy-cuda13x": "14.2.0"
+        },
+        "dependency_constraints_validated": true
+      },
+      "research_seconds": 3.897083699994255,
+      "retained_samples": true
+    },
+    {
+      "id": "local_gpu-static_grid",
+      "state": "SUCCEEDED",
+      "worker_seconds": 4.893719100044109,
+      "selection": {
+        "device": "local_gpu",
+        "compute_device": "gpu",
+        "reason": "explicit local GPU placement; no fallback",
+        "estimated_seconds": null,
+        "estimated_cost_cu": null,
+        "estimated_host_bytes": 308921248,
+        "estimated_gpu_bytes": 421601184,
+        "evidence": [
+          {
+            "batch_size": 4096,
+            "model_bytes": 73632,
+            "workspace_bytes": 153092096,
+            "result_bytes": 16000000,
+            "full_path_bytes": 5537792,
+            "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+          }
+        ],
+        "gpu_index": 0
+      },
+      "environment": {
+        "pid": 64896,
+        "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+        "loaded_versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.16.3",
+          "cupy-cuda13x": "14.2.0"
+        },
+        "dependency_constraints_validated": true
+      },
+      "research_seconds": 2.122683599998709,
+      "retained_samples": false
+    },
+    {
+      "id": "retained-failure",
+      "state": "FAILED",
+      "worker_seconds": 2.4182423999882303,
+      "selection": {
+        "device": "cpu",
+        "compute_device": "cpu",
+        "reason": "explicit CPU placement; no fallback",
+        "estimated_seconds": null,
+        "estimated_cost_cu": null,
+        "estimated_host_bytes": 134955680,
+        "estimated_gpu_bytes": 0,
+        "evidence": [
+          {
+            "batch_size": 100,
+            "model_bytes": 65952,
+            "workspace_bytes": 665600,
+            "result_bytes": 6400,
+            "full_path_bytes": 0,
+            "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+          }
+        ]
+      },
+      "environment": {
+        "pid": 41664,
+        "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+        "loaded_versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.16.3"
+        },
+        "dependency_constraints_validated": true
+      },
+      "research_seconds": 0.004240899987053126,
+      "retained_samples": true
+    },
+    {
+      "id": "after-failure",
+      "state": "SUCCEEDED",
+      "worker_seconds": 2.391597100009676,
+      "selection": {
+        "device": "cpu",
+        "compute_device": "cpu",
+        "reason": "explicit CPU placement; no fallback",
+        "estimated_seconds": null,
+        "estimated_cost_cu": null,
+        "estimated_host_bytes": 134955680,
+        "estimated_gpu_bytes": 0,
+        "evidence": [
+          {
+            "batch_size": 100,
+            "model_bytes": 65952,
+            "workspace_bytes": 665600,
+            "result_bytes": 6400,
+            "full_path_bytes": 0,
+            "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+          }
+        ]
+      },
+      "environment": {
+        "pid": 30256,
+        "python": "3.13.9 (main, Oct 14 2025, 21:22:32) [MSC v.1944 64 bit (AMD64)]",
+        "loaded_versions": {
+          "numpy": "2.3.5",
+          "scipy": "1.16.3"
+        },
+        "dependency_constraints_validated": true
+      },
+      "research_seconds": 0.004503600008320063,
+      "retained_samples": true
+    }
+  ]
+}

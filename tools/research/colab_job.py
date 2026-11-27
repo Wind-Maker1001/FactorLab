@@ -123,7 +123,7 @@ class Job:
             if timeout <= 0:
                 raise TimeoutError("Task wall-clock deadline reached")
         command = [self.data["colab"], "--auth", "adc", "--config",
-                   str(self.root / "sessions.json"), *map(str, args)]
+                   self.data.get("session_config", str(self.root / "sessions.json")), *map(str, args)]
         with (self.root / "controller.log").open("a+", encoding="utf-8") as log:
             log.write(f"\n$ {shlex.join(command)}\n")
             log.flush()
@@ -181,6 +181,8 @@ class Job:
             version = self.cli("version")
             if version.strip() != "Version: 0.8.0":
                 raise ValueError("This adapter requires google-colab-cli==0.8.0")
+            # Initialize the official CLI's state locks before allocating a paid runtime.
+            self.cli("sessions")
             before = usage(self.cli("usage"))
             self.save(cli_version=version.strip(), usage_before=before)
             if before["assignments"] != 0:
@@ -359,7 +361,9 @@ def main():
         args.job.mkdir(mode=0o700, parents=True, exist_ok=False)
         root = args.job.resolve()
         session = "fl-" + uuid.uuid4().hex
-        data = {"session": session, "state": "submitted", "colab": executable,
+        session_root = Path.home() / ".local/state/factorlab-colab/sessions" / session
+        session_root.mkdir(mode=0o700, parents=True, exist_ok=False)
+        data = {"session_config": str(session_root / "sessions.json"), "session": session, "state": "submitted", "colab": executable,
                 "gpu": args.gpu, "budget_cu": args.budget_cu, "timeout": args.timeout,
                 "wheel": str(args.wheel.resolve()), "script": str(args.script.resolve()),
                 "commit": args.commit, "paths": args.paths, "steps": args.steps, "seed": args.seed}

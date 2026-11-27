@@ -56,6 +56,29 @@ def test_cli_argv_and_live_log(job, monkeypatch):
     assert "allocated" in (job.root / "controller.log").read_text()
 
 
+def test_native_session_config_used(job, monkeypatch):
+    job.save(session_config="/native/private/sessions.json")
+    def run(argv, **kwargs):
+        assert argv[4] == "/native/private/sessions.json"
+        return subprocess.CompletedProcess(argv, 0)
+    monkeypatch.setattr(module.subprocess, "run", run)
+    job.cli("sessions")
+
+
+def test_session_storage_failure_prevents_allocation(job, monkeypatch):
+    calls = []
+    def cli(*args, **kwargs):
+        calls.append(args[0])
+        if args[0] == "version":
+            return "Version: 0.8.0"
+        raise PermissionError("session lock permissions")
+    monkeypatch.setattr(job, "cli", cli)
+    with pytest.raises(PermissionError):
+        job.run()
+    assert "new" not in calls
+    assert not job.data.get("allocation_attempted")
+
+
 def test_nonzero_cli_fails(job, monkeypatch):
     monkeypatch.setattr(module.subprocess, "run", lambda *a, **kw: subprocess.CompletedProcess(a, 1))
     with pytest.raises(subprocess.CalledProcessError):

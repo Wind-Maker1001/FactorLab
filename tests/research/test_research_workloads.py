@@ -42,6 +42,20 @@ def test_grid_uses_input_horizon_and_streamed_batch(tmp_path):
         paths=1000, steps=168, assets=1, batch_size=128, seed=1729)
 
 
+def test_bootstrap_admission_reads_archive_shape_without_materializing_history(tmp_path):
+    import numpy as np
+    from factorlab.experiments.research_selection import select_task
+    value = task('bootstrap')
+    value['parameters'] = {'paths': 100, 'assets': 2, 'steps': 8, 'batch_size': 16}
+    value['inputs'] = {'returns': 'history.npz'}
+    np.savez(tmp_path/'history.npz', returns=np.zeros((10000, 2)),
+             timestamps=np.arange(10000).astype('datetime64[D]'))
+    admitted = admission_task(value, tmp_path)
+    assert admitted['parameters']['history_rows'] == 10000
+    selected = select_task(admitted, {'host_available_bytes': 8*1024**3, 'gpus': []})
+    assert selected['evidence'][0]['model_bytes'] > 10000*2*8
+
+
 def test_small_registered_cpu_tasks_produce_population_outputs(tmp_path):
     import numpy as np
     for entry in ('gbm', 'bootstrap'):

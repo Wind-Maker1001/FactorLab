@@ -67,9 +67,9 @@ def validate_manifest(manifest, root=None):
         if set(task) != required:
             raise ValueError('Unsupported or missing task fields')
         name = task['id']
-        if not isinstance(name, str) or not re.fullmatch('[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}', name) or name in ids:
+        if not isinstance(name, str) or not re.fullmatch('[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}', name) or name.casefold() in ids:
             raise ValueError('Unique filesystem-safe task IDs are required')
-        ids.add(name)
+        ids.add(name.casefold())
         if task['entry'] not in ENTRIES or task['device'] not in DEVICES:
             raise ValueError('Unregistered research entry or placement')
         if task['device'] == 'colab' and budget <= 0:
