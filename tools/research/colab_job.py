@@ -17,6 +17,33 @@ import uuid
 
 GPUS = ("T4", "L4", "G4", "H100", "A100")
 CLEANUP_SECONDS = 120
+SALVAGE_SECONDS = 30
+
+
+def manifest_inputs(path):
+    """Resolve only explicitly declared files within the manifest directory."""
+    root = path.resolve().parent
+    from factorlab.experiments.research_tasks import load_manifest
+    document = load_manifest(path)
+    files = {}
+    for task in document["tasks"]:
+        for name in task.get("inputs", {}).values():
+            relative = Path(name)
+            if (relative.is_absolute() or ".." in relative.parts or "\\" in name
+                    or ":" in name or not relative.parts or name == "manifest.json"):
+                raise ValueError(f"Input must be a manifest-root relative path: {name}")
+            source = root / relative
+            if (not source.resolve().is_relative_to(root) or not source.is_file()
+                    or any((root / Path(*relative.parts[:i])).is_symlink()
+                           for i in range(1, len(relative.parts) + 1))):
+                raise ValueError(f"Input must be a regular file inside manifest root: {name}")
+            if any(part.startswith(".") or re.search(
+                    r"(?i)(secret|credential|token|password|private[_-]?key|id_rsa|id_ed25519)", part)
+                   or part.lower().endswith((".pem", ".key", ".p12", ".pfx"))
+                   for part in relative.parts):
+                raise ValueError(f"Secret-like input is not uploadable: {name}")
+            files[relative.as_posix()] = str(source)
+    return document, files
 
 
 def usage(text):
@@ -72,6 +99,16 @@ class Job:
         self.path = self.root / "job.json"
         self.data = json.loads(self.path.read_text(encoding="utf-8"))
         self.deadline = None
+        self.timings = {}
+
+    @contextmanager
+    def timed(self, phase):
+        started = time.monotonic()
+        try:
+            yield
+        finally:
+            self.timings[phase] = time.monotonic() - started
+            self.save(timings=self.timings)
 
     def save(self, **fields):
         self.data.update(fields)
@@ -86,7 +123,7 @@ class Job:
             if timeout <= 0:
                 raise TimeoutError("Task wall-clock deadline reached")
         command = [self.data["colab"], "--auth", "adc", "--config",
-                   str(self.root / "sessions.json"), *map(str, args)]
+                   self.data.get("session_config", str(self.root / "sessions.json")), *map(str, args)]
         with (self.root / "controller.log").open("a+", encoding="utf-8") as log:
             log.write(f"\n$ {shlex.join(command)}\n")
             log.flush()
@@ -120,6 +157,8 @@ class Job:
         endpoint = self.data.get("endpoint")
         named = f"[{self.data['session']}] "
         if named in listing:
+            if endpoint and named + endpoint + " |" not in listing:
+                raise RuntimeError("Session name now identifies a different runtime; refusing release")
             self.cli("stop", "-s", self.data["session"], bounded=False)
             listing = self.cli("sessions", bounded=False)
         if named in listing or (endpoint and endpoint in listing):
@@ -133,13 +172,18 @@ class Job:
 
     def run(self):
         started = time.monotonic()
-        self.deadline = started + self.data["timeout"] - CLEANUP_SECONDS
+        lifecycle_deadline = started + self.data["timeout"]
+        self.deadline = lifecycle_deadline - CLEANUP_SECONDS
         self.save(state="preflight", started_at=time.time())
         failure = None
         try:
+            if self.data.get("manifest"):
+                manifest_inputs(Path(self.data["manifest"]))
             version = self.cli("version")
             if version.strip() != "Version: 0.8.0":
                 raise ValueError("This adapter requires google-colab-cli==0.8.0")
+            # Initialize the official CLI's state locks before allocating a paid runtime.
+            self.cli("sessions")
             before = usage(self.cli("usage"))
             self.save(cli_version=version.strip(), usage_before=before)
             if before["assignments"] != 0:
@@ -160,6 +204,7 @@ class Job:
                                        after["rate_per_hour"] + 0.005, time.monotonic() - started,
                                        self.data["timeout"])
             self.deadline = time.monotonic() + remaining
+            lifecycle_deadline = min(lifecycle_deadline, self.deadline + CLEANUP_SECONDS)
             self.save(usage_allocated=after, work_deadline=time.time() + remaining)
             hardware = self.execute(
                 "import json, os, platform, subprocess\n"
@@ -171,50 +216,98 @@ class Job:
             record = next(line.split("=", 1)[1] for line in hardware.splitlines()
                           if line.startswith("FACTORLAB_HARDWARE="))
             self.save(hardware=json.loads(record), state="installing")
-            self.cli("upload", "-s", self.data["session"], self.data["wheel"], "/content/factorlab.whl")
-            # Preserve the valid wheel filename for pip's wheel-name validation.
-            wheel_name = Path(self.data["wheel"]).name
-            self.execute(
-                "import os, subprocess, sys\n"
-                f"os.rename('/content/factorlab.whl', {('/content/' + wheel_name)!r})\n"
-                f"subprocess.run([sys.executable, '-m', 'pip', 'install', "
-                f"{('/content/' + wheel_name + '[monte-carlo-cuda]')!r}], check=True)\n")
-            self.cli("upload", "-s", self.data["session"], self.data["script"], "/content/monte_carlo.py")
+            with self.timed("deployment"):
+                self.deploy()
             self.save(state="running")
-            arguments = ["/content/monte_carlo.py", "--paths", str(self.data["paths"]),
-                         "--steps", str(self.data["steps"]), "--seed", str(self.data["seed"]),
-                         "--commit", self.data["commit"]]
+            if self.data.get("manifest"):
+                arguments = ["-m", "factorlab.experiments.research_batch", "remote",
+                             "--manifest", "/content/factorlab-input/manifest.json",
+                             "--output", "/content/factorlab-result", "--commit", self.data["commit"],
+                             "--timeout", str(self.deadline - time.monotonic()),
+                             "--cu-rate-per-hour", str(after["rate_per_hour"]),
+                             "--cu-balance", str(after["balance"])]
+            else:
+                arguments = ["/content/monte_carlo.py", "--paths", str(self.data["paths"]),
+                             "--steps", str(self.data["steps"]), "--seed", str(self.data["seed"]),
+                             "--commit", self.data["commit"]]
             try:
-                self.execute(research_code(arguments))
+                with self.timed("execution"):
+                    self.execute(research_code(arguments))
             except (Exception, KeyboardInterrupt):
+                now = time.monotonic()
+                if self.deadline <= now:
+                    # Spend only the salvage share of the existing cleanup reserve.
+                    self.deadline = min(now + SALVAGE_SECONDS,
+                                        lifecycle_deadline - (CLEANUP_SECONDS - SALVAGE_SECONDS))
                 try:
-                    self.download()
+                    with self.timed("download"):
+                        self.download()
                 except (Exception, KeyboardInterrupt) as exc:
                     self.save(failure_artifact_error=f"{type(exc).__name__}: {exc}")
                 else:
                     self.save(failure_artifacts_downloaded=True)
                 raise
             self.save(state="downloading")
-            self.download()
-            self.save(state="completed")
+            with self.timed("download"):
+                self.download()
+            self.save(state="completed", outcome="completed")
         except (Exception, KeyboardInterrupt) as exc:
             failure = exc
-            self.save(state="failed", error=f"{type(exc).__name__}: {exc}")
+            self.save(state="failed", outcome="failed", error=f"{type(exc).__name__}: {exc}")
         finally:
             self.deadline = None
             try:
-                self.release()
+                with self.timed("release"):
+                    self.release()
+                self.save(cleanup_outcome="released")
             except Exception as exc:
-                self.save(state="cleanup_failed", cleanup_error=f"{type(exc).__name__}: {exc}")
+                self.save(state="cleanup_failed", cleanup_outcome="failed",
+                          cleanup_error=f"{type(exc).__name__}: {exc}")
                 if failure is None:
                     failure = exc
             try:
-                self.save(usage_after=usage(self.cli("usage", bounded=False)))
+                final_usage = usage(self.cli("usage", bounded=False))
+                observations = {"usage_after": final_usage}
+                if "usage_before" in self.data:
+                    observations["observed_cu_consumed"] = (
+                        self.data["usage_before"]["balance"] - final_usage["balance"])
+                self.save(**observations)
             except Exception as exc:
                 self.save(usage_after_error=str(exc))
             self.save(elapsed_seconds=time.monotonic() - started, finished_at=time.time())
         if failure is not None:
             raise failure
+
+    def deploy(self):
+        self.cli("upload", "-s", self.data["session"], self.data["wheel"], "/content/factorlab.whl")
+        wheel_name = Path(self.data["wheel"]).name
+        extras = "monte-carlo-cuda"
+        if self.data.get("manifest"):
+            extras += ",monte-carlo-benchmark,monte-carlo-native"
+        self.execute(
+            "import os, subprocess, sys\n"
+            f"os.rename('/content/factorlab.whl', {('/content/' + wheel_name)!r})\n"
+            f"subprocess.run([sys.executable, '-m', 'pip', 'install', "
+            f"{('/content/' + wheel_name + '[' + extras + ']')!r}], check=True)\n")
+        if not self.data.get("manifest"):
+            self.cli("upload", "-s", self.data["session"], self.data["script"], "/content/monte_carlo.py")
+            return
+        document, files = manifest_inputs(Path(self.data["manifest"]))
+        if (document["commit"] != self.data["commit"]
+                or document["budget_cu"] != self.data["budget_cu"]
+                or document["timeout_seconds"] != self.data["timeout"]):
+            raise ValueError("Manifest job limits changed after submission")
+        directories = sorted({str(Path(name).parent.as_posix()) for name in files})
+        self.execute(
+            "from pathlib import Path\n"
+            "root = Path('/content/factorlab-input')\n"
+            "root.mkdir(mode=0o700)\n"
+            f"for directory in {directories!r}:\n"
+            "    (root / directory).mkdir(parents=True, exist_ok=True)\n")
+        self.cli("upload", "-s", self.data["session"], self.data["manifest"],
+                 "/content/factorlab-input/manifest.json")
+        for name, source in files.items():
+            self.cli("upload", "-s", self.data["session"], source, "/content/factorlab-input/" + name)
 
     def download(self):
         destination = self.root / "results"
@@ -236,8 +329,10 @@ def main():
     parser.add_argument("--colab", default="colab")
     parser.add_argument("--gpu", choices=GPUS, default="L4")
     parser.add_argument("--budget-cu", type=float)
-    parser.add_argument("--timeout", type=float, default=1800)
+    parser.add_argument("--timeout", type=float)
     parser.add_argument("--wheel", type=Path)
+    parser.add_argument("--manifest", type=Path)
+    parser.add_argument("--wait", action="store_true", help="Wait for the supervised batch to finish")
     parser.add_argument("--script", type=Path, default=Path(__file__).with_name("colab_monte_carlo.py"))
     parser.add_argument("--commit")
     parser.add_argument("--paths", type=int, default=1_000_000)
@@ -245,12 +340,23 @@ def main():
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
     if args.action == "submit":
+        if args.manifest is not None:
+            document, _ = manifest_inputs(args.manifest)
+            for option, field in (("commit", "commit"), ("budget_cu", "budget_cu"),
+                                  ("timeout", "timeout_seconds")):
+                value = getattr(args, option)
+                if value is not None and value != document[field]:
+                    parser.error(f"--{option.replace('_', '-')} conflicts with manifest")
+                setattr(args, option, document[field])
+        if args.timeout is None:
+            args.timeout = 1800
         if (args.budget_cu is None or not math.isfinite(args.budget_cu) or args.budget_cu <= 0
                 or not math.isfinite(args.timeout) or args.timeout <= CLEANUP_SECONDS
                 or args.paths <= 0 or args.steps <= 0 or not 0 <= args.seed < 2**32
                 or not args.commit or re.fullmatch(r"[a-f0-9]{40}", args.commit) is None):
             parser.error("Positive CU budget, timeout > 120, valid simulation parameters and full commit required")
-        if args.wheel is None or not args.wheel.is_file() or not args.script.is_file():
+        if (args.wheel is None or not args.wheel.is_file()
+                or (args.manifest is None and not args.script.is_file())):
             parser.error("Existing FactorLab wheel and research script required")
         import shutil
         executable = shutil.which(args.colab)
@@ -259,10 +365,14 @@ def main():
         args.job.mkdir(mode=0o700, parents=True, exist_ok=False)
         root = args.job.resolve()
         session = "fl-" + uuid.uuid4().hex
-        data = {"session": session, "state": "submitted", "colab": executable,
+        session_root = Path.home() / ".local/state/factorlab-colab/sessions" / session
+        session_root.mkdir(mode=0o700, parents=True, exist_ok=False)
+        data = {"session_config": str(session_root / "sessions.json"), "session": session, "state": "submitted", "colab": executable,
                 "gpu": args.gpu, "budget_cu": args.budget_cu, "timeout": args.timeout,
                 "wheel": str(args.wheel.resolve()), "script": str(args.script.resolve()),
                 "commit": args.commit, "paths": args.paths, "steps": args.steps, "seed": args.seed}
+        if args.manifest is not None:
+            data["manifest"] = str(args.manifest.resolve())
         (root / "job.json").write_text(json.dumps(data, indent=2), encoding="utf-8")
         base = [sys.executable, str(Path(__file__).resolve())]
         cleanup = shlex.join([*base, "recover", "--job", str(root)])
@@ -278,6 +388,8 @@ def main():
                    f"--property=ExecStopPost={cleanup}",
                    *[f"--setenv={name}" for name in proxy_names],
                    *base, "run", "--job", str(root)]
+        if args.wait:
+            command.insert(command.index("systemd-run") + 1, "--wait")
         subprocess.run(command, check=True)
         print(json.dumps({"job": str(root), "unit": session}))
         return

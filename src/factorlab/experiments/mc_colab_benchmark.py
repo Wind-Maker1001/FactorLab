@@ -252,13 +252,8 @@ def _worker(job):
 
 
 def memory_plan(cell, workers=1, device='cpu'):
-    # Conservative admission estimate, not a measured RSS bound.
-    per_path = 8*((8*cell['assets']+16)*cell['n_steps']+128)+4096
-    working = min(cell['batch_size'] or 4096,cell['n_paths'])*(per_path if device=='cpu' else 32)
-    samples_and_statistics = cell['n_paths']*128
-    return dict(estimated_in_memory_bytes=workers*(working+samples_and_statistics+256*1024**2),
-        estimated_disk_working_bytes=workers*(working+256*1024**2),
-        disk_bytes_per_job=cell['n_paths']*40)
+    from factorlab.experiments.research_workloads import benchmark_memory
+    return benchmark_memory(cell, workers, device)
 
 
 def launch_job(job):
@@ -268,12 +263,18 @@ def launch_job(job):
     env = dict(os.environ)
     for key in ('OMP_NUM_THREADS','OPENBLAS_NUM_THREADS','MKL_NUM_THREADS','NUMEXPR_NUM_THREADS'):
         env[key] = str(job['config']['blas_threads'])
-    with Path(job['output']).with_suffix('.log').open('x',encoding='utf-8') as log:
-        process = subprocess.run([sys.executable,'-m','factorlab.experiments.mc_colab_benchmark',
-            '--worker',str(path)],env=env,stdout=log,stderr=subprocess.STDOUT)
-    if process.returncode:
+    from factorlab.experiments.research_process import run_process
+    try:
+        with Path(job['output']).with_suffix('.log').open('x',encoding='utf-8') as log:
+            code = run_process([sys.executable,'-m','factorlab.experiments.mc_colab_benchmark',
+                '--worker',str(path)], timeout=job.get('timeout_seconds', job['config']['budget_seconds']),
+                env=env,stdout=log,stderr=subprocess.STDOUT)
+    except subprocess.TimeoutExpired:
         rows=[json.loads(p.read_text(encoding='utf-8')) for p in sorted(Path(job['output']).glob('run-*.json'))]
-        return dict(status='FAILED', job=str(path), exit_code=process.returncode, rows=rows)
+        return dict(status='FAILED', reason='TIMED_OUT', job=str(path), rows=rows)
+    if code:
+        rows=[json.loads(p.read_text(encoding='utf-8')) for p in sorted(Path(job['output']).glob('run-*.json'))]
+        return dict(status='FAILED', job=str(path), exit_code=code, rows=rows)
     return dict(status='SUCCEEDED', job=str(path),
         resources=json.loads((Path(job['output'])/'worker-resources.json').read_text(encoding='utf-8')),
         rows=json.loads((Path(job['output'])/'completed.json').read_text(encoding='utf-8'))['rows'])
@@ -290,7 +291,8 @@ def host_identity():
         total_ram_bytes=psutil.virtual_memory().total)
 
 
-def run_study(config, output, *, device='cpu', workers=1, statistics=True, profile=False, first_seed_only=False):
+def run_study(config, output, *, device='cpu', workers=1, statistics=True, profile=False,
+              first_seed_only=False, source_commit=None):
     validate_config(config)
     if device not in ('cpu','gpu') or type(workers) is not int or workers<1:
         raise ValueError('explicit cpu/gpu device and positive workers required')
@@ -308,17 +310,20 @@ def run_study(config, output, *, device='cpu', workers=1, statistics=True, profi
         'src/factorlab/research/monte_carlo/reliability.py'):
         destination=source/relative
         destination.parent.mkdir(parents=True,exist_ok=True)
-        shutil.copyfile(root/relative,destination)
+        installed = Path(__file__).resolve().parents[1] / Path(relative).relative_to('src/factorlab')
+        shutil.copyfile(installed,destination)
     write_json(output/'provenance.json',dict(
-        baseline_commit=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip(),
-        working_tree_status=subprocess.check_output(['git','-C',str(root),'status','--porcelain'],text=True),
+        baseline_commit=source_commit if source_commit is not None else subprocess.check_output(
+            ['git','-C',str(root),'rev-parse','HEAD'],text=True).strip(),
+        working_tree_status=None if source_commit is not None else subprocess.check_output(
+            ['git','-C',str(root),'status','--porcelain'],text=True),
         source_snapshot='source/',command=sys.argv))
     started = perf_counter()
     outcomes = []
     skipped = []
     seeds = config['seeds'][:1] if first_seed_only else config['seeds']
     for cell in config['cells']:
-        memory = memory_plan(cell,workers,device)
+        memory = memory_plan(cell,min(workers, len(seeds)),device)
         budget = config['host_memory_budget_mb']*1024**2
         disk = memory['estimated_in_memory_bytes'] > budget
         if disk and (statistics or memory['estimated_disk_working_bytes'] > budget):
@@ -330,7 +335,9 @@ def run_study(config, output, *, device='cpu', workers=1, statistics=True, profi
                 break
             jobs=[dict(config=config,cell=cell,seed=seed,device=device,
                 output=str(output/f'{cell["name"]}-{seed}'),disk=disk,
-                statistics=statistics,profile=profile) for seed in seeds[begin:begin+workers]]
+                statistics=statistics,profile=profile,
+                timeout_seconds=max(.001, config['budget_seconds']-(perf_counter()-started)))
+                for seed in seeds[begin:begin+workers]]
             wave_started=perf_counter()
             with Resources('cpu', include_children=True) as aggregate_resources:
                 with ThreadPoolExecutor(max_workers=workers) as pool:

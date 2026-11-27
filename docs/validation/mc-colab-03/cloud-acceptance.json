@@ -1,0 +1,156 @@
+{
+  "commit": "38c444414dbc3e249d5037e2973e22a800de43e5",
+  "hardware": {
+    "gpu": "NVIDIA L4, 23034 MiB, 580.82.07",
+    "cpu_count": 12,
+    "python": "3.13.16"
+  },
+  "usage_before": {
+    "balance": 198.88,
+    "rate_per_hour": 0.0,
+    "assignments": 0.0
+  },
+  "usage_allocated": {
+    "balance": 198.88,
+    "rate_per_hour": 2.33,
+    "assignments": 1.0
+  },
+  "usage_after": {
+    "balance": 198.88,
+    "rate_per_hour": 0.0,
+    "assignments": 0.0
+  },
+  "timings": {
+    "deployment": 85.845057511,
+    "execution": 37.07232639700004,
+    "download": 7.60406558699998,
+    "release": 11.884524922000026
+  },
+  "elapsed_seconds": 263.06664983999997,
+  "released": true,
+  "sessions_after_release": "[colab] No active sessions found on server.\n",
+  "cleanup_outcome": "released",
+  "batch": {
+    "state": "SUCCEEDED",
+    "elapsed_seconds": 16.96004242800001,
+    "estimated_execution_cu": 0.01097691634923334,
+    "outcomes": [
+      {
+        "id": "gbm",
+        "state": "SUCCEEDED",
+        "selection": {
+          "device": "colab",
+          "compute_device": "gpu",
+          "reason": "explicit local GPU placement; no fallback",
+          "estimated_seconds": null,
+          "estimated_cost_cu": null,
+          "estimated_host_bytes": 417447776,
+          "estimated_gpu_bytes": 487665504,
+          "evidence": [
+            {
+              "batch_size": 4096,
+              "model_bytes": 77664,
+              "workspace_bytes": 219152384,
+              "result_bytes": 64000000,
+              "full_path_bytes": 0,
+              "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+            }
+          ],
+          "gpu_index": 0
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 7.435596109999949
+      },
+      {
+        "id": "bootstrap",
+        "state": "SUCCEEDED",
+        "selection": {
+          "device": "colab",
+          "compute_device": "gpu",
+          "reason": "explicit local GPU placement; no fallback",
+          "estimated_seconds": null,
+          "estimated_cost_cu": null,
+          "estimated_host_bytes": 417570784,
+          "estimated_gpu_bytes": 487788512,
+          "evidence": [
+            {
+              "batch_size": 4096,
+              "model_bytes": 200672,
+              "workspace_bytes": 219152384,
+              "result_bytes": 64000000,
+              "full_path_bytes": 0,
+              "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+            }
+          ],
+          "gpu_index": 0
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 5.175985826999977
+      },
+      {
+        "id": "static-grid",
+        "state": "SUCCEEDED",
+        "selection": {
+          "device": "colab",
+          "compute_device": "gpu",
+          "reason": "explicit local GPU placement; no fallback",
+          "estimated_seconds": null,
+          "estimated_cost_cu": null,
+          "estimated_host_bytes": 308921248,
+          "estimated_gpu_bytes": 421601184,
+          "evidence": [
+            {
+              "batch_size": 4096,
+              "model_bytes": 73632,
+              "workspace_bytes": 153092096,
+              "result_bytes": 16000000,
+              "full_path_bytes": 5537792,
+              "memory_basis": "float64, bounded batch planner, 8 result/summary vectors, host/CUDA reserves"
+            }
+          ],
+          "gpu_index": 0
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 4.273915293000016
+      }
+    ]
+  },
+  "workers": {
+    "bootstrap": {
+      "pid": 1116,
+      "executable": "/usr/bin/python3",
+      "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+      "factorlab": "/usr/local/lib/python3.13/dist-packages/factorlab",
+      "loaded_versions": {
+        "numpy": "2.3.5",
+        "scipy": "1.16.3",
+        "cupy-cuda13x": "14.0.1"
+      },
+      "dependency_constraints_validated": true
+    },
+    "gbm": {
+      "pid": 1081,
+      "executable": "/usr/bin/python3",
+      "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+      "factorlab": "/usr/local/lib/python3.13/dist-packages/factorlab",
+      "loaded_versions": {
+        "numpy": "2.3.5",
+        "scipy": "1.16.3",
+        "cupy-cuda13x": "14.0.1"
+      },
+      "dependency_constraints_validated": true
+    },
+    "static-grid": {
+      "pid": 1143,
+      "executable": "/usr/bin/python3",
+      "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+      "factorlab": "/usr/local/lib/python3.13/dist-packages/factorlab",
+      "loaded_versions": {
+        "numpy": "2.3.5",
+        "scipy": "1.16.3",
+        "cupy-cuda13x": "14.0.1"
+      },
+      "dependency_constraints_validated": true
+    }
+  }
+}

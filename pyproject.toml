@@ -51,16 +51,17 @@ monte-carlo-cuda = [
 ]
 monte-carlo-benchmark = [
     "numpy>=1.26.4,<2.4", "pandas>=2.2.3,<3", "scipy>=1.13.1,<1.17",
-    "psutil>=5.9,<8", "nvidia-ml-py>=12,<14",
+    "psutil>=5.9,<8", "nvidia-ml-py>=12,<14", "packaging>=24,<27", "threadpoolctl>=3.5,<4",
 ]
 monte-carlo-native = [
     "numpy>=1.26.4,<2.4", "pandas>=2.2.3,<3", "scipy>=1.13.1,<1.17",
-    "ziglang>=0.15,<0.16",
+    "ziglang>=0.15,<0.16", "packaging>=24,<27",
 ]
 
 [project.scripts]
 factorlab = "factorlab.cli:main"
 factorlab-demo = "factorlab.integrations.binance_futures_trading.demo_cli:main"
+factorlab-research = "factorlab.experiments.research_batch:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -75,4 +76,4 @@ addopts = '-ra -m "not network"'
 markers = ["network: external services excluded from offline acceptance", "integration: crosses subsystems", "slow: long running"]
 
 [tool.setuptools.package-data]
-factorlab = ["resources/*.yaml", "console/static/*.html", "console/static/*.css", "console/static/*.js", "research/grid_simulation/*.cu"]
+factorlab = ["resources/*.yaml", "resources/*.json", "resources/*.py", "console/static/*.html", "console/static/*.css", "console/static/*.js", "research/grid_simulation/*.cu"]

@@ -1,6 +1,5 @@
 """Frozen GBM Grid risk study, with separately labelled full Paper audit sampling."""
 import argparse
-from decimal import Decimal
 import json
 from pathlib import Path
 import platform
@@ -8,30 +7,8 @@ from time import perf_counter
 
 import numpy as np
 
-from factorlab.research.grid_simulation import BatchGridConfig, BatchGridResult, COLUMNS, freeze_prices, simulate
-from factorlab.strategies.grid import GridConfig
-from factorlab.strategies.grid_execution import GridRules
-
-
-def configuration(path):
-    definition = json.loads(path.read_text())
-    config = BatchGridConfig(GridConfig(**definition['grid']),
-        GridRules(**{k: Decimal(v) for k, v in definition['rules'].items()}),
-        fee_rate=Decimal(definition['costs']['fee_rate']),
-        slippage=Decimal(definition['costs']['slippage']), capacity=Decimal(definition['capacity']))
-    return definition, config
-
-
-def batches(definition, size, batch_size, seed):
-    rng = np.random.default_rng(seed)
-    data = definition['dataset']
-    steps = definition['experiment']['steps']
-    for begin in range(0, size, batch_size):
-        count = min(batch_size, size - begin)
-        shocks = rng.normal(data['drift'] - .5*data['volatility']**2,
-                            data['volatility'], (count, steps))
-        prices = data['initial_price'] * np.exp(np.column_stack((np.zeros(count), shocks.cumsum(axis=1))))
-        yield begin, freeze_prices(prices)
+from factorlab.research.grid_simulation import BatchGridResult, COLUMNS, simulate
+from factorlab.experiments.grid_batch import batches, configuration
 
 
 def audit(output, definition, config, size, batch_size, seed, terminal, sample_size):

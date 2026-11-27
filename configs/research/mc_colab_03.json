@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "commit": "afbc80f585985116691bdc1a16337337fe50f502",
+  "timeout_seconds": 900,
+  "budget_cu": 1,
+  "tasks": [
+    {"id": "gbm", "entry": "gbm", "parameters": {"paths": 1000000, "steps": 252, "assets": 1, "batch_size": 4096, "seed": 1729}, "inputs": {}, "device": "colab", "memory_budget_mb": 8192, "gpu_memory_limit_mb": 4096, "timeout_seconds": 120, "outputs": ["report.json", "samples.npz"]},
+    {"id": "bootstrap", "entry": "bootstrap", "parameters": {"paths": 1000000, "steps": 252, "assets": 1, "batch_size": 4096, "seed": 1729}, "inputs": {}, "device": "colab", "memory_budget_mb": 8192, "gpu_memory_limit_mb": 4096, "timeout_seconds": 120, "outputs": ["report.json", "samples.npz"]},
+    {"id": "static-grid", "entry": "static_grid", "parameters": {"paths": 100000, "batch_size": 4096, "seed": 1729}, "inputs": {"definition": "grid.json"}, "device": "colab", "memory_budget_mb": 8192, "gpu_memory_limit_mb": 4096, "timeout_seconds": 120, "outputs": ["report.json", "terminal.npy"]}
+  ]
+}
