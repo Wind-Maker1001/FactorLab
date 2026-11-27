@@ -1,0 +1,182 @@
+[
+  {
+    "observed_at": 1795776701.7714882,
+    "execute_healthy": true,
+    "market_batch_age_seconds": 3.6338305473327637,
+    "account_age_seconds": 0.683237168006599,
+    "last_recovery_seconds": 0.836016780056525,
+    "api_total_requests": 101020,
+    "api_total_errors": 7,
+    "api_total_seconds": 29898.864546,
+    "api_max_seconds": 5.298177,
+    "api_round_p95_seconds": null,
+    "safety_events": {
+      "CLOCK_SKEW": 0,
+      "R13_QUOTE_GAP": 0,
+      "STALE_ACCOUNT": 3,
+      "STALE_POLL": 0
+    },
+    "last_exception": "STALE_OR_FUTURE_QUOTE",
+    "systemd": {
+      "active_state": "active",
+      "available": true,
+      "exec_main_status": 0,
+      "main_pid": 959008,
+      "n_restarts": 0,
+      "result": "success",
+      "sub_state": "running",
+      "unit": "factorlab-demo-execute.service"
+    },
+    "disk_free_bytes": 34695487488
+  },
+  {
+    "observed_at": 1795776762.7684278,
+    "execute_healthy": true,
+    "market_batch_age_seconds": 2.953933000564575,
+    "account_age_seconds": 0.8500879619969055,
+    "last_recovery_seconds": 0.8855852130218409,
+    "api_total_requests": 101263,
+    "api_total_errors": 7,
+    "api_total_seconds": 29967.955563,
+    "api_max_seconds": 5.298177,
+    "api_round_p95_seconds": null,
+    "safety_events": {
+      "CLOCK_SKEW": 0,
+      "R13_QUOTE_GAP": 0,
+      "STALE_ACCOUNT": 3,
+      "STALE_POLL": 0
+    },
+    "last_exception": "STALE_OR_FUTURE_QUOTE",
+    "systemd": {
+      "active_state": "active",
+      "available": true,
+      "exec_main_status": 0,
+      "main_pid": 959008,
+      "n_restarts": 0,
+      "result": "success",
+      "sub_state": "running",
+      "unit": "factorlab-demo-execute.service"
+    },
+    "disk_free_bytes": 34617233408
+  },
+  {
+    "observed_at": 1795776822.6877797,
+    "execute_healthy": true,
+    "market_batch_age_seconds": 4.432765007019043,
+    "account_age_seconds": 0.9834230369888246,
+    "last_recovery_seconds": 1.136877872981131,
+    "api_total_requests": 101481,
+    "api_total_errors": 7,
+    "api_total_seconds": 30030.886821,
+    "api_max_seconds": 5.298177,
+    "api_round_p95_seconds": null,
+    "safety_events": {
+      "CLOCK_SKEW": 0,
+      "R13_QUOTE_GAP": 0,
+      "STALE_ACCOUNT": 3,
+      "STALE_POLL": 0
+    },
+    "last_exception": "STALE_OR_FUTURE_QUOTE",
+    "systemd": {
+      "active_state": "active",
+      "available": true,
+      "exec_main_status": 0,
+      "main_pid": 959008,
+      "n_restarts": 0,
+      "result": "success",
+      "sub_state": "running",
+      "unit": "factorlab-demo-execute.service"
+    },
+    "disk_free_bytes": 34630623232
+  },
+  {
+    "observed_at": 1795776882.5362175,
+    "execute_healthy": true,
+    "market_batch_age_seconds": 3.115224838256836,
+    "account_age_seconds": 0.7293296029674821,
+    "last_recovery_seconds": 0.8886910399887711,
+    "api_total_requests": 101690,
+    "api_total_errors": 7,
+    "api_total_seconds": 30091.563937,
+    "api_max_seconds": 5.298177,
+    "api_round_p95_seconds": null,
+    "safety_events": {
+      "CLOCK_SKEW": 0,
+      "R13_QUOTE_GAP": 0,
+      "STALE_ACCOUNT": 3,
+      "STALE_POLL": 0
+    },
+    "last_exception": "STALE_OR_FUTURE_QUOTE",
+    "systemd": {
+      "active_state": "active",
+      "available": true,
+      "exec_main_status": 0,
+      "main_pid": 959008,
+      "n_restarts": 0,
+      "result": "success",
+      "sub_state": "running",
+      "unit": "factorlab-demo-execute.service"
+    },
+    "disk_free_bytes": 34611658752
+  },
+  {
+    "observed_at": 1795776942.6591833,
+    "execute_healthy": true,
+    "market_batch_age_seconds": 2.1865267753601074,
+    "account_age_seconds": 0.7080190349952318,
+    "last_recovery_seconds": 0.8400357060017996,
+    "api_total_requests": 101920,
+    "api_total_errors": 7,
+    "api_total_seconds": 30157.256192,
+    "api_max_seconds": 5.298177,
+    "api_round_p95_seconds": null,
+    "safety_events": {
+      "CLOCK_SKEW": 0,
+      "R13_QUOTE_GAP": 0,
+      "STALE_ACCOUNT": 3,
+      "STALE_POLL": 0
+    },
+    "last_exception": "STALE_OR_FUTURE_QUOTE",
+    "systemd": {
+      "active_state": "active",
+      "available": true,
+      "exec_main_status": 0,
+      "main_pid": 959008,
+      "n_restarts": 0,
+      "result": "success",
+      "sub_state": "running",
+      "unit": "factorlab-demo-execute.service"
+    },
+    "disk_free_bytes": 34596470784
+  },
+  {
+    "observed_at": 1795777002.7027678,
+    "execute_healthy": true,
+    "market_batch_age_seconds": 3.3592398166656494,
+    "account_age_seconds": 0.9795826619956642,
+    "last_recovery_seconds": 1.1436809509759769,
+    "api_total_requests": 102151,
+    "api_total_errors": 7,
+    "api_total_seconds": 30224.016406,
+    "api_max_seconds": 5.298177,
+    "api_round_p95_seconds": null,
+    "safety_events": {
+      "CLOCK_SKEW": 0,
+      "R13_QUOTE_GAP": 0,
+      "STALE_ACCOUNT": 3,
+      "STALE_POLL": 0
+    },
+    "last_exception": "STALE_OR_FUTURE_QUOTE",
+    "systemd": {
+      "active_state": "active",
+      "available": true,
+      "exec_main_status": 0,
+      "main_pid": 959008,
+      "n_restarts": 0,
+      "result": "success",
+      "sub_state": "running",
+      "unit": "factorlab-demo-execute.service"
+    },
+    "disk_free_bytes": 34596184064
+  }
+]

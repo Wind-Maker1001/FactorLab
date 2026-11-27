@@ -1,0 +1,60 @@
+{
+  "before": {
+    "time": 1795776795.5053117,
+    "available_kib": 525304,
+    "swap_used_kib": 626404,
+    "pswpin": 63708910,
+    "pswpout": 63415707,
+    "oom_kill": 0,
+    "memory_pressure": "some avg10=1.22 avg60=2.38 avg300=3.15 total=4726244675\nfull avg10=0.86 avg60=2.10 avg300=2.83 total=4336482316\n",
+    "cpu_pressure": "some avg10=7.33 avg60=4.20 avg300=5.01 total=6903265478\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n"
+  },
+  "after": {
+    "time": 1795776901.4901676,
+    "available_kib": 440316,
+    "swap_used_kib": 641552,
+    "pswpin": 63794035,
+    "pswpout": 63500985,
+    "oom_kill": 0,
+    "memory_pressure": "some avg10=1.84 avg60=5.67 avg300=4.16 total=4733428317\nfull avg10=1.58 avg60=4.88 avg300=3.65 total=4342653851\n",
+    "cpu_pressure": "some avg10=37.22 avg60=20.17 avg300=10.17 total=6927421398\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n"
+  },
+  "minimum_available_kib": 357836,
+  "samples": 106,
+  "wall_seconds": 105.98485589027405,
+  "memory_peak_bytes": 170225664,
+  "memory_events": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0,
+    "sock_throttled": 0
+  },
+  "cpu_stat": {
+    "usage_usec": 12100432,
+    "user_usec": 10180301,
+    "system_usec": 1920131,
+    "nice_usec": 0,
+    "core_sched.force_idle_usec": 0,
+    "nr_periods": 709,
+    "nr_throttled": 429,
+    "throttled_usec": 28087071,
+    "nr_bursts": 0,
+    "burst_usec": 0
+  },
+  "cpu_percent_one_core": 11.417133040712493,
+  "memory_pressure": "some avg10=0.07 avg60=0.53 avg300=0.21 total=893232\nfull avg10=0.07 avg60=0.53 avg300=0.21 total=891408\n",
+  "cpu_pressure": "some avg10=29.78 avg60=15.07 avg300=5.30 total=19090150\nfull avg10=29.78 avg60=15.07 avg300=5.30 total=19070255\n",
+  "disk_bytes": {
+    "controller.log": 6144,
+    "payload.py": 282,
+    "resources.jsonl": 42267,
+    "sessions.json": 2,
+    "sessions.json.lock": 0,
+    "job.json": 2942,
+    "results/samples.npz": 14968262,
+    "results/report.json": 20050
+  }
+}
