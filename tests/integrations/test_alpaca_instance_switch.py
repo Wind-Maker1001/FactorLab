@@ -13,11 +13,11 @@ from test_alpaca_portfolio import NOW
 from test_alpaca_scheduling import calendar
 
 
-def package(tmp_path, version, symbols=('SPY', 'IWM')):
+def package(tmp_path, version, symbols=('SPY', 'IWM'), *, decision_kind='quantity_deltas'):
     source = tmp_path / ('source-' + version)
     source.mkdir()
     spec = replace(BalancedPortfolio('paper', capital='40').describe(), version=version, symbols=symbols,
-                   decision_kind='quantity_deltas', data=dict(data_types=['order_event'],
+                   decision_kind=decision_kind, data=dict(data_types=['order_event'],
                        history_limit=1, historical_observations=False))
     (source / 'strategy.py').write_text('''from decimal import Decimal
 from factorlab.strategies.protocol import StrategySpecV2, DecisionV2
@@ -25,7 +25,7 @@ class Strategy:
     def describe(self):
         return StrategySpecV2(**SPEC)
     def decide(self, event, state):
-        return DecisionV2('quantity_deltas', state={'events': state.get('events', 0) + 1})
+        return DecisionV2(self.describe().decision_kind, state={'events': state.get('events', 0) + 1})
 '''.replace('SPEC', repr(asdict(spec))), encoding='utf-8')
     fields = asdict(spec)
     requirements = {key: fields[key] for key in ('data', 'schedule', 'state', 'capital', 'execution')}

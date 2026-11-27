@@ -204,7 +204,8 @@ class AlpacaAdapter:
                                (AssetBalance("USD", facts.cash, reserved),),
                                tuple(Position(p["symbol"], D(p["qty"]), D(p["avg_entry_price"]),
                                               D(p["current_price"]), "USD") for p in rows),
-                               tuple(orders), facts.observed_at, self.reconciled)
+                               tuple(orders), facts.observed_at, self.reconciled,
+                               official_equity=facts.equity, official_available=facts.buying_power)
 
     def _admission(self, intent, price, account, facts):
         if facts.status != "ACTIVE" or facts.account_blocked or facts.trading_blocked:

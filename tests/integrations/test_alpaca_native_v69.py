@@ -132,3 +132,46 @@ def test_native_package_decision_matches_legacy_plan_and_freezes_before_dispatch
     assert execution.store.plan(original_id)['request']['signal_inputs']['checkpoint'] == expected['state']
     assert execution.view.checkpoint()['original'] == expected
     execution.close()
+
+
+
+def test_native_acknowledged_buy_plan_protects_donor_cash_across_restart(tmp_path):
+    from contextlib import closing
+    from dataclasses import replace
+    from factorlab.integrations.alpaca.strategy_instances import StrategyInstances
+
+    class OfficialAccount(Account):
+        def read_account(self):
+            return replace(super().read_account(), official_equity=D(100))
+
+    binding = dict(market='ALPACA_US_EQUITY', account_id='paper', strategy_id='V69_CAUSAL',
+                   instance_id='V69_CAUSAL', allocation_id='v69-original')
+    configuration = dict(releases=tmp_path / 'releases', trusted_python=True,
+        capital_policy=dict(currency='USD', budget='100', fee_rate='0'),
+        instances=[dict(binding=binding, native_v69=True, funding=dict(capital='40', initial_cash='40'))])
+    account = OfficialAccount()
+    prepared = dict(inputs(), decision=dict(weights=dict.fromkeys(ASSETS, .04),
+        orders=[dict(symbol='AAPL', side='buy', adjusted_quantity=1)],
+        state={'last_week': [2026, 48]}))
+    with closing(StrategyInstances(tmp_path, account, configuration, clock=lambda: NOW,
+                                  revision='a' * 40)) as host:
+        native = host.native['V69_CAUSAL']
+        identity = native.resume_prepared(prepared)
+        assert native.view.outstanding(native.package_id) == []
+        assert host.store.orders(identity) == []
+        deltas = host.store.plan(identity)['request']['quantity_deltas']
+        assert {symbol: delta for symbol, delta in deltas.items() if delta} == {'AAPL': D(1)}
+
+    with closing(StrategyInstances(tmp_path, account, configuration, clock=lambda: NOW,
+                                  revision='a' * 40)) as host:
+        blocked = host.capital.change(account_id='paper', event_id='withdraw-native-in-flight',
+            source='V69_CAUSAL', destination=None, amount=D(40))
+        assert blocked.status == 'INSUFFICIENT_CAPITAL' and blocked.applied == 0
+        assert host.store.cash('paper', 'V69_CAUSAL') == D(40)
+        result = host.runner.executor.expire(identity)
+        assert result.phase == 'COMPLETE' and result.order_ids == ()
+        complete = host.capital.change(account_id='paper', event_id='withdraw-native-after-expiry',
+            source='V69_CAUSAL', destination=None, amount=D(40))
+        assert complete.applied == D(40)
+        assert host.store.cash('paper', 'V69_CAUSAL') == 0
+        assert not account.posts

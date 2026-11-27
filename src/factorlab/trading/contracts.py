@@ -209,6 +209,8 @@ class AccountSnapshot:
     open_orders: tuple[OrderSnapshot, ...]
     observed_at: datetime
     reconciled: bool = False
+    official_equity: Decimal | None = None
+    official_available: Decimal | None = None
 
     def __post_init__(self):
         utc(self.observed_at)
