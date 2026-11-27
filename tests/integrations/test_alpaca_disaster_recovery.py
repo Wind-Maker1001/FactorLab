@@ -33,18 +33,24 @@ def test_restore_recovers_original_lost_post_and_later_partial_fill(tmp_path):
     store.close()
 
     with_cash = RuntimeStore(tmp_path)
-    with_cash.report(NOW, {'source': 'ALPACA_PAPER_ACCOUNT', 'cash': '100', 'cash_observed_at': NOW.isoformat()})
+    cash_window_end = NOW + timedelta(seconds=2)
+    with_cash.report(cash_window_end, {
+        'source': 'ALPACA_PAPER_ACCOUNT', 'cash': '100',
+        'cash_request_started_at': (NOW + timedelta(seconds=1)).isoformat(),
+        'cash_observed_at': cash_window_end.isoformat(),
+    })
     with_cash.db.close()
     account = AlpacaStore(tmp_path / 'account.sqlite3')
     account.put('account_id', 'paper')
     account.admit(original, original.limit_price)
     account.close()
 
-    execution_at = (NOW + timedelta(seconds=1)).isoformat()
+    # The broker formed the USD 100 response before a fill arrived in flight.
+    execution_at = (cash_window_end - timedelta(milliseconds=500)).isoformat()
     order = dict(id='broker-order', client_order_id=original.client_order_id, symbol='AAPL', side='buy',
                  type='limit', qty=str(original.quantity), time_in_force=original.time_in_force.lower(),
                  limit_price=str(original.limit_price), status='partially_filled', filled_qty='1',
-                 filled_avg_price='10', created_at=NOW.isoformat(),
+                 filled_avg_price='10', created_at=(NOW - timedelta(seconds=5)).isoformat(),
                  submitted_at=(NOW - timedelta(seconds=5)).isoformat(), updated_at=execution_at)
     fills = [dict(id='fill-a', order_id=order['id'], qty='1', price='10',
                   symbol='AAPL', side='buy', transaction_time=execution_at)]
@@ -78,7 +84,7 @@ def test_restore_recovers_original_lost_post_and_later_partial_fill(tmp_path):
     assert partial.cumulative_filled_quantity == Decimal(1)
     store.close()
 
-    later_at = (NOW + timedelta(seconds=2)).isoformat()
+    later_at = (cash_window_end + timedelta(seconds=1)).isoformat()
     order.update(status='filled', filled_qty=str(original.quantity), updated_at=later_at)
     fills.append(dict(fills[0], id='fill-b', qty=str(original.quantity - 1), transaction_time=later_at))
     cash = 100 - original.quantity * 10

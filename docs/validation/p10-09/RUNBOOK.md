@@ -5,7 +5,7 @@
 ## 主节点和异地副本
 
 1. 按 P10-01/P10-02 的版本安装方式部署同一份已审查的 Git 提交。记录实际安装版本和有效启动配置，包括执行模式、服务单位、两端状态路径、实例或包目录、外部 TaskMailbox 路径以及私有配置文件的摘要。把这些信息保存为一份按市场管理、两端内容完全一致的 launch contract 文件。密钥通过 systemd 凭证单独配置。
-2. Binance 沿用 C07 的备份 unit、timer 和 TaskMailbox drop-in。给备份 unit 增加 `Environment=FACTORLAB_DR_REVISION=<已部署的完整 Git SHA>`。P10-01 更新实际部署时应一并更新此值。Alpaca 安装 `factorlab-alpaca-backup.service` 和对应 timer，把 `/var/backups/factorlab-alpaca-paper` 建成 `factorlab-alpaca` 所有、权限 0700 的目录。Alpaca 从 `current` 指向的发布目录读取版本。两端安排不同时间的巡检和验证，避免同时耗尽 VM 的余量。
+2. Binance 沿用 C07 的备份 unit、timer 和 TaskMailbox drop-in。给备份 unit 增加 `Environment=FACTORLAB_DR_REVISION=<已部署的完整 Git SHA>`。P10-01 更新实际部署时应一并更新此值。Alpaca 安装 `factorlab-alpaca-backup.service` 和对应 timer，把 `/var/backups/factorlab-alpaca-paper` 建成 `factorlab-alpaca` 所有、权限 0700 的目录。Alpaca 从 `current` 指向的发布目录读取版本；最终切换前应在该版本中完成至少一次账户对账并保存官方现金请求区间。两端安排不同时间的巡检和验证，避免同时耗尽 VM 的余量。
 3. 为日本接收节点的 `factorlab-backup` 用户创建独立 SSH 密钥，按市场保存在 root 所有的 `/etc/factorlab-dr/binance.ssh-key` 和 `alpaca.ssh-key` 中。主节点创建仅用于拉取的 `factorlab-backup-reader`，具有 `/bin/sh`、锁定的密码和 root 管理的专用 authorized keys 文件。两个市场的服务用户继续使用 `nologin`。固定主节点 SSH 主机公钥，并通过控制台或原可信连接核实。
 4. 在日本准备 `/var/backups/factorlab-offsite/binance` 和 `/var/backups/factorlab-offsite/alpaca`，所有者均为 `factorlab-backup`，权限 0700。确认实际承载该目录的现有 Azure 托管磁盘使用静态加密，将磁盘资源 ID 和控制面返回的加密类型记入维护证据。SSH 加密传输，静态加密由该磁盘提供。无需新资源。
 5. 安装 offsite service/timer 和失败告警 unit。在 `/etc/factorlab-dr/<市场>.env` 填写下面三项，配置 `/etc/factorlab-dr/ssh_config` 中相应 Host。首次拉取成功后验证两个市场的独立副本，再启用两个 timer。失败 unit 输出 `SYSLOG_IDENTIFIER=factorlab-dr`、优先级 error 的事件，由已有告警接收器消费。

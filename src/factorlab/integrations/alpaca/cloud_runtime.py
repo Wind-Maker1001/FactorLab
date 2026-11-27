@@ -320,6 +320,7 @@ class Supervisor:
         self.health.update(account_recovered=False, market_rest=None, error=None)
         try:
             snapshot = self.adapter.recover()
+            cash_request_started_at = now()
             facts = self.adapter.read_account_details()
             cash_observed_at = now()
             self.health.update(account_recovered=snapshot.reconciled,
@@ -352,11 +353,13 @@ class Supervisor:
                     self.symbols = self.execution.symbols
                     self.market.replace_symbols(self.symbols)
                 snapshot = self.adapter.recover()
+                cash_request_started_at = now()
                 facts = self.adapter.read_account_details()
                 cash_observed_at = now()
                 self.health['account_recovered'] = snapshot.reconciled
             report = {'observed_at': at.isoformat(), 'source': 'ALPACA_PAPER_ACCOUNT',
                       'equity': str(facts.equity), 'cash': str(facts.cash),
+                      'cash_request_started_at': cash_request_started_at.isoformat() if snapshot.reconciled else None,
                       'cash_observed_at': cash_observed_at.isoformat() if snapshot.reconciled else None,
                       'positions': self.adapter.http.request('GET', '/v2/positions'),
                       'target_weights': None, 'actual_weights': {},

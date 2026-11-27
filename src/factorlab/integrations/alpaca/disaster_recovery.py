@@ -4,6 +4,7 @@ from collections import defaultdict
 from contextlib import closing
 from datetime import timedelta
 from decimal import Decimal
+from itertools import groupby
 import json
 import os
 import sqlite3
@@ -57,12 +58,52 @@ def _cash_baseline(root):
     with closing(sqlite3.connect(uri, uri=True)) as db:
         row = db.execute(
             "SELECT payload FROM daily_reports WHERE json_extract(payload, '$.source')='ALPACA_PAPER_ACCOUNT' "
+            "AND json_extract(payload, '$.cash_request_started_at') IS NOT NULL "
             "AND json_extract(payload, '$.cash_observed_at') IS NOT NULL ORDER BY observed_at DESC LIMIT 1"
         ).fetchone()
     if row is not None:
         report = json.loads(row[0])
-        return instant(report['cash_observed_at']), Decimal(report['cash'])
-    return None, None
+        return (instant(report['cash_request_started_at']), instant(report['cash_observed_at']),
+                Decimal(report['cash']))
+    return None
+
+
+def _cash_evidence(adapter, baseline, fills, current_cash):
+    started, observed, cash = baseline
+    before_observed = _nontrades(adapter, started - timedelta(microseconds=1))
+    after_observed = _nontrades(adapter, observed)
+    for row in after_observed.values():
+        if row['activity_type'] in CORPORATE_ACTIVITY_TYPES:
+            cash += Decimal(row['net_amount'])
+    # Account activity creation time bounds the query. A settlement within the
+    # cash request has no proved ordering relative to the executions in it.
+    ambiguous_corporate = any(before_observed[receipt]['activity_type'] in CORPORATE_ACTIVITY_TYPES
+                              for receipt in before_observed.keys() - after_observed.keys())
+    if ambiguous_corporate:
+        return None, 'CASH_AND_CORPORATE_SETTLEMENT_OVERLAP'
+
+    uncertain = []
+    for fill in fills:
+        at = instant(fill['transaction_time'])
+        if at < started:
+            continue
+        amount = Decimal(fill['qty']) * Decimal(fill['price'])
+        delta = amount if fill['side'] == 'sell' else -amount
+        if at > observed:
+            cash += delta
+        else:
+            uncertain.append((at, delta))
+
+    # Check each ordered boundary in the request interval. Replaying journaled
+    # fills always uses their original identities, independently of this check.
+    candidates = [cash]
+    for _, group in groupby(sorted(uncertain, reverse=True), key=lambda fill: fill[0]):
+        candidates.append(candidates[-1] + sum((delta for _, delta in group), ZERO))
+    if candidates.count(current_cash) == 1:
+        return '0', None
+    if len(candidates) == 1:
+        return str(current_cash - candidates[0]), 'CASH_MISMATCH'
+    return None, 'CASH_REQUEST_BOUNDARY_UNRESOLVED'
 
 
 def _retain_activities(adapter, receipts):
@@ -130,9 +171,9 @@ def _recover_portfolio(root, adapter, snapshot, fills, receipts, reasons, *, equ
 
 def recover_paper(root, http, *, since):
     """Advance the local journals from official facts and report any admission blockers."""
-    cash_at, base_cash = _cash_baseline(root)
-    if cash_at is not None:
-        since = min(since, cash_at)
+    cash_baseline = _cash_baseline(root)
+    if cash_baseline is not None:
+        since = min(since, cash_baseline[0])
     floor = since - timedelta(seconds=1)
     path = root / 'account.sqlite3'
     if not path.is_file():
@@ -174,19 +215,12 @@ def recover_paper(root, http, *, since):
         if facts.account_blocked or facts.trading_blocked or facts.status != 'ACTIVE':
             reasons.append('BROKER_ACCOUNT_BLOCKED')
         cash_residual = None
-        if cash_at is None:
+        if cash_baseline is None:
             reasons.append('OFFICIAL_CASH_ANCHOR_MISSING')
         else:
-            for fill in fills:
-                if instant(fill['transaction_time']) > cash_at:
-                    amount = Decimal(fill['qty']) * Decimal(fill['price'])
-                    base_cash += amount if fill['side'] == 'sell' else -amount
-            for row in _nontrades(adapter, cash_at).values():
-                if row['activity_type'] in CORPORATE_ACTIVITY_TYPES:
-                    base_cash += Decimal(row['net_amount'])
-            cash_residual = str(facts.cash - base_cash)
-            if facts.cash != base_cash:
-                reasons.append('CASH_MISMATCH')
+            cash_residual, blocker = _cash_evidence(adapter, cash_baseline, fills, facts.cash)
+            if blocker:
+                reasons.append(blocker)
         return {'reconciled': not reasons, 'blockers': reasons, 'since': since.isoformat(),
                 'fill_count': len(fills), 'unowned_orders': len(unknown_orders),
                 'nontrade_receipts': len(nontrades), 'cash_residual': cash_residual, 'budget': budget}
