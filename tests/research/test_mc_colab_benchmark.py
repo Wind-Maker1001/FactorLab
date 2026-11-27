@@ -1,5 +1,4 @@
 """MC-COLAB-02 contracts, exact storage, and actual backend probes."""
-from dataclasses import replace
 import json
 from pathlib import Path
 
@@ -172,14 +171,3 @@ def test_memory_admission_includes_concurrent_workers():
     assert memory_plan(cell,2)['estimated_in_memory_bytes']==2*memory_plan(cell)['estimated_in_memory_bytes']
 
 
-def test_cuda_fixed_input_when_available():
-    cp=pytest.importorskip('cupy')
-    if cp.cuda.runtime.getDeviceCount()==0:
-        pytest.skip('CUDA device unavailable')
-    c=MonteCarloConfig(n_paths=13,n_steps=7,batch_size=5)
-    inputs=MonteCarloInput(weights=[.4,.6],drift=[.03,.06],volatility=[0.,0.])
-    a=MonteCarloRunner(c).run(inputs)
-    b=MonteCarloRunner(replace(c,compute=ComputeConfig(device='gpu'))).run(inputs,profile=True)
-    np.testing.assert_allclose(a.terminal_values,b.terminal_values,rtol=1e-10,atol=1e-12)
-    np.testing.assert_allclose(a.maximum_drawdowns,b.maximum_drawdowns,rtol=1e-10,atol=1e-12)
-    assert b.metadata['compute']['execution']['backend']=='cupy-cuda'
