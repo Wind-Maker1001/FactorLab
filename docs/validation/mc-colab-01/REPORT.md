@@ -236,9 +236,12 @@ A real transient systemd unit acquired the account lock and exported cgroup
 resource evidence; a separate transient unit confirmed the proxy environment
 arrived intact. Mirrored networking reached the Google OAuth endpoint through
 the existing Windows localhost proxy after NAT direct access had timed out.
-Browser ADC consent remains the next interactive step before an authenticated
-account-query/remote-task claim can be made. No Colab runtime was allocated
-by these local environment tests.
+Independent browser ADC consent completed successfully. The official local
+`colab --auth adc usage` query returned balance **199.35 CU**, rate **0.00/hour**
+and **zero active assignments**. This establishes authenticated local control
+connectivity; no Colab runtime was allocated by these local environment tests.
+The on-demand local controller is ready for separately authorized research
+jobs, independent of the unqualified shared Azure deployment.
 
 ### Concurrency and regression evidence
 
