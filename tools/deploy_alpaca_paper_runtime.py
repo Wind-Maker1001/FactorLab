@@ -3,6 +3,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import tempfile
 from uuid import uuid4
@@ -17,15 +18,18 @@ def deploy(args):
            f'{args.user}@{args.host}']
     remote = f'/tmp/factorlab-alpaca-{revision}-{uuid4().hex}'
     subprocess.run(ssh + [f'umask 077; mkdir {remote}'], check=True)
-    with tempfile.TemporaryDirectory(prefix='factorlab-alpaca-') as directory:
-        bundle = Path(directory) / 'release.tar'
-        subprocess.run(['git', '-C', str(repo), 'archive', '-o', str(bundle), revision], check=True)
-        subprocess.run(['scp', '-q', '-i', args.key, str(bundle),
-                        f'{args.user}@{args.host}:{remote}/'], check=True)
-    python_arg = getattr(args, 'python', None) or 'auto'
-    subprocess.run(ssh + [f'tar -xf {remote}/release.tar -C {remote} tools/install_alpaca_paper_runtime.sh && '
-                          f'sudo sh {remote}/tools/install_alpaca_paper_runtime.sh {remote}/release.tar '
-                          f'{revision} {python_arg}'], check=True)
+    try:
+        with tempfile.TemporaryDirectory(prefix='factorlab-alpaca-') as directory:
+            bundle = Path(directory) / 'release.tar'
+            subprocess.run(['git', '-C', str(repo), 'archive', '-o', str(bundle), revision], check=True)
+            subprocess.run(['scp', '-q', '-i', args.key, str(bundle),
+                            f'{args.user}@{args.host}:{remote}/'], check=True)
+        python_arg = getattr(args, 'python', None) or 'auto'
+        subprocess.run(ssh + [f'tar -xf {remote}/release.tar -C {remote} tools/install_alpaca_paper_runtime.sh && '
+                              f'sudo sh {remote}/tools/install_alpaca_paper_runtime.sh {remote}/release.tar '
+                              f'{revision} {shlex.quote(python_arg)}'], check=True)
+    finally:
+        subprocess.run(ssh + [f'rm -rf -- {shlex.quote(remote)}'], check=False)
     if args.credential_file:
         from factorlab.integrations.alpaca.market_data.client import Credentials
         credentials = Credentials.from_dpapi(args.credential_file)
