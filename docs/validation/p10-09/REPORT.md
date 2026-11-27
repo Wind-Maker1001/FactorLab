@@ -40,7 +40,7 @@ C07 原 SQLite Backup API 仍负责跨库快照，异地传输只消费已发布
 | STOPPED/HALTED | Binance 追赶测试覆盖两个状态。原授权消耗和退出保留。 |
 | 跨架构 | CI 将 x64 生成的两市场快照作为同一件 tar 工件送到原生 Linux ARM64，由 ARM64 验证同一组文件并检查 SQLite 中的控制、现金、预算和原订单 ID。 |
 
-Windows 的 C07 和 Binance 定向回归共 45 项通过。Linux x64 的七组定向测试共 65 项通过。原生 ARM64 的结果以本 PR 的 `FactorLab disaster recovery offline` 工作流为准。可信 PR 验证仍走仓库 `FactorLab PR validation` 的基线定义。期间不需要 Azure 凭证或真实账户。
+Windows 的 C07 和 Binance 定向回归共 45 项通过。Linux x64 的七组定向测试共 65 项通过，随后更新的封存、恢复与策略包用例共 5 项通过。原生 ARM64 的结果以本 PR 的 `FactorLab disaster recovery offline` 工作流为准。可信 PR 验证仍走仓库 `FactorLab PR validation` 的基线定义。期间不需要 Azure 凭证或真实账户。
 
 ```bash
 python -m pytest -q tests/integrations/test_disaster_recovery.py \

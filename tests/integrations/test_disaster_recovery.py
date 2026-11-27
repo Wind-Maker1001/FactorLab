@@ -9,6 +9,9 @@ from factorlab.integrations import disaster_recovery as dr
 from factorlab.integrations.binance_futures_trading import demo_cloud_storage as storage
 from factorlab.integrations.binance_futures_trading.demo_runtime import operator_lock
 from factorlab.integrations.binance_futures_trading.protocol import SafetyBlocked
+from factorlab.strategies.package import install_package, load_package
+
+from test_strategy_deployment_s03 import package
 
 
 SOURCE = '1' * 32
@@ -41,6 +44,19 @@ def test_corrupt_copy_cannot_leave_quarantine_boundary(source, tmp_path):
     with pytest.raises(SafetyBlocked, match='digest mismatch'):
         dr.recover(snapshot, tmp_path / 'recovered')
     assert not (tmp_path / 'recovered').exists()
+
+
+def test_snapshot_restores_the_referenced_strategy_package_without_credentials(source, tmp_path, package):
+    archive, _ = package
+    release, manifest = install_package(archive, source / 'strategy-releases')
+    credentials = source / 'paper-secret.json'
+    credentials.write_text('{"secret":"fixture-only"}', encoding='utf-8')
+    os.chmod(credentials, 0o600)
+    snapshot = storage.recovery_snapshot(source, tmp_path / 'backup', 'binance', REVISION)
+    verified = storage.verify_snapshot(snapshot)
+    restored = storage.restore_verified_state(snapshot, tmp_path / 'restore', verified)
+    assert load_package(restored / 'strategy-releases' / release.name) == manifest
+    assert 'paper-secret.json' not in verified['files']
 
 
 def test_stale_internal_state_remains_read_only_after_clean_official_facts(source, tmp_path, monkeypatch):

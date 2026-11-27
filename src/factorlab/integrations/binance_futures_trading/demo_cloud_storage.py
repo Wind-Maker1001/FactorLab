@@ -251,11 +251,11 @@ def _copy_databases(root, staging, databases, *, task_mailbox=None):
 
 
 def _strategy_files(root):
-    from factorlab.strategies.package import load_package
-
     releases = root / 'strategy-releases'
     if not releases.exists():
         return []
+    from factorlab.strategies.package import load_package
+
     files = []
     for release in sorted(releases.iterdir()):
         # Package installation publishes an immutable directory by rename.
