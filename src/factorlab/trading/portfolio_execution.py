@@ -240,6 +240,36 @@ class PortfolioStore(PaperStore):
             cash += decode(json.loads(payload))['cash_flow']
         return cash
 
+    def unprepared_buy_owners(self, account_id):
+        """Owners with unfinished buy legs that have no order reservation yet."""
+        owners = set()
+        rows = self.db.execute('SELECT strategy,payload FROM portfolio_plans WHERE account=?', (account_id,))
+        for owner, payload in rows:
+            if owner in owners:
+                continue
+            plan = decode(json.loads(payload))
+            if plan['phase'] in {'COMPLETE', 'ABANDONED'} or plan.get('stop_reason'):
+                continue
+            request = plan['request']
+            if 'direct_orders' in request:
+                continue  # Intent and reservation were committed with the plan.
+            deltas = request.get('quantity_deltas')
+            if deltas is not None:
+                candidates = {symbol for symbol, delta in deltas.items() if delta > ZERO}
+            else:
+                held = self.holdings(account_id, owner)
+                targets = plan['targets']
+                candidates = {symbol for symbol, weight in request['weights'].items()
+                              if weight > ZERO and (symbol not in targets or targets[symbol] > held[symbol])}
+            if candidates:
+                # Preparation assigns at most one child to each symbol in this
+                # plan. Even a terminal child accounts for that planned leg.
+                prepared = {order['record'].snapshot.intent.instrument_id
+                            for order in self.orders(plan['id'])}
+                if candidates - prepared:
+                    owners.add(owner)
+        return owners
+
     def plan(self, identity):
         row = self.db.execute('SELECT payload FROM portfolio_plans WHERE id=?', (identity,)).fetchone()
         if row is None:

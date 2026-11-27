@@ -129,11 +129,21 @@ class StrategyInstances:
         return self.runner.executor.capital
 
     def pending_commitments(self, account_id):
-        # Decision recovery and capital commands run on the same account owner.
-        # Keep an unacknowledged decision funded until normal plan recovery.
-        return {owner: None for owner, view in self.views.items()
-                if view.binding()['account_id'] == account_id
-                and (active := view.snapshot()['active']) is not None and view.outstanding(active)}
+        # The capital command holds the portfolio writer lock. Orders already
+        # materialized by a plan reserve their exact residual through store.cash.
+        pending = self.store.unprepared_buy_owners(account_id)
+        for owner, view in self.views.items():
+            if owner in pending or view.binding()['account_id'] != account_id:
+                continue
+            active = view.snapshot()['active']
+            if active is None:
+                continue
+            execution = (self.native[owner].runtime.adapter if owner in self.native else AlpacaDecisionExecution)
+            for receipt in view.outstanding(active):
+                if self.store.plan(execution.plan_id(receipt)) is None:
+                    pending.add(owner)
+                    break
+        return dict.fromkeys(pending)
 
     @property
     def symbols(self):

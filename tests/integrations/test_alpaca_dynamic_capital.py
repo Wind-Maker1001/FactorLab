@@ -1,9 +1,12 @@
 """Capital operations on the real Alpaca Paper adapter with an offline HTTP transport."""
-from contextlib import ExitStack
+from contextlib import ExitStack, closing
 from decimal import Decimal as D
 
 from factorlab.integrations.alpaca.corporate_actions import CorporateReceiptJournal
+from factorlab.integrations.alpaca.strategy_instances import StrategyInstances
 from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side
+from factorlab.trading.portfolio_execution import ExecutionQuote, InstrumentRules
+from test_alpaca_execution import adapter as alpaca_http_adapter
 from test_shared_portfolio_execution import (
     ACCOUNT, NOW, SharedOfficial, advance, create, fill_plan, open_runner, setup_pair,
 )
@@ -144,3 +147,73 @@ def test_http_dividend_stays_with_eligible_instances_after_capital_transfer(tmp_
         assert report['corporate_cash_flow'] == cash_by_owner['B'] - D(300)
         assert report['returns'].absolute_pnl == report['corporate_cash_flow']
         assert report['returns'].capital_in == D(100)
+
+
+
+def test_http_sell_then_partially_prepare_buy_legs_before_releasing_unused_capital(tmp_path):
+    official = CapitalOfficial()
+    configuration = dict(instances=[], releases=tmp_path / 'releases', trusted_python=True)
+
+    def open_host(stack):
+        adapter, _ = alpaca_http_adapter(tmp_path, official)
+        stack.callback(adapter.close)
+        return stack.enter_context(closing(StrategyInstances(
+            tmp_path, adapter, configuration, clock=lambda: NOW)))
+
+    def turn(runner, identity, *symbols):
+        quotes = {symbol: ExecutionQuote(symbol, D(100), D(100), NOW, NOW,
+                  'test-session', 'offline-http') for symbol in symbols}
+        rules = {symbol: InstrumentRules(D('.001'), D(1), time_in_force='DAY') for symbol in symbols}
+        return runner.run_once(identity, quotes=quotes, rules=rules)
+
+    with ExitStack() as stack:
+        host = open_host(stack)
+        runner, store = host.runner, host.store
+        setup_pair(runner, store)
+        fill_plan(runner, store, official, create(runner, 'A', {'AAPL': D('.25')}, 'initial-inventory'))
+        rotate = runner.executor.create(account_id=ACCOUNT, strategy_id='A', strategy_version='1',
+            trading_session='test-session', rebalance_id='sell-then-two-buys', weights={},
+            owned_symbols=('AAPL', 'MSFT', 'JPM'), now=NOW,
+            quantity_deltas={'AAPL': D(-1), 'MSFT': D(1), 'JPM': D(1)})
+        turn(runner, rotate, 'AAPL', 'MSFT', 'JPM')
+        sale, = store.orders(rotate)
+        sold = sale['record'].snapshot.intent
+        assert sold.side is Side.SELL
+        official.fill(sold.client_order_id)
+        assert turn(runner, rotate).phase == 'BLOCKED'
+        assert store.cash(ACCOUNT, 'A', reserve=False) == D(400)
+        assert sleeve(host.capital, 'A').pending_decisions
+        withdrawal = host.capital.change(account_id=ACCOUNT, event_id='before-buy-sizing',
+            source='A', destination=None, amount=D(400))
+        assert withdrawal.status == 'INSUFFICIENT_CAPITAL' and withdrawal.applied == 0
+
+        independent = create(runner, 'B', {'IWM': D('.25')}, 'independent-decision')
+        turn(runner, independent, 'IWM')
+        official.fill(official.post_ids[-1])
+        assert turn(runner, independent, 'IWM').phase == 'COMPLETE'
+        assert store.holdings(ACCOUNT, 'B')['IWM'] == D(1)
+        assert not sleeve(host.capital, 'B').pending_decisions
+
+        turn(runner, rotate, 'MSFT')
+        first_buy = sleeve(host.capital, 'A')
+        assert first_buy.pending_decisions and first_buy.withdrawable == 0
+        assert first_buy.reserved == D(101)
+
+    with ExitStack() as stack:
+        host = open_host(stack)
+        runner, store = host.runner, host.store
+        assert sleeve(host.capital, 'A').pending_decisions
+        turn(runner, rotate, 'JPM')
+        prepared = sleeve(host.capital, 'A')
+        assert not prepared.pending_decisions
+        assert prepared.reserved == D(202)
+        assert prepared.withdrawable == D(198)
+        wallet = D(official.cash)
+        moved = host.capital.change(account_id=ACCOUNT, event_id='after-both-buy-reservations',
+            source='A', destination='B', amount=D(198))
+        assert moved.status == 'COMPLETE' and moved.applied == D(198)
+        assert D(official.cash) == wallet
+        assert host.store.cash(ACCOUNT, 'A') == 0
+        assert host.store.cash(ACCOUNT, 'A', reserve=False) == D(202)
+        assert host.store.cash(ACCOUNT, 'B', reserve=False) == D(498)
+        assert host.store.allocated_capital(ACCOUNT) == D(800)
