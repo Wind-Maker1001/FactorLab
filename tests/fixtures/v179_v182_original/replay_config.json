@@ -1,0 +1,64 @@
+{
+  "windows": {
+    "target": {
+      "start": "2023-01-01",
+      "end": "2026-11-23",
+      "market": "fixtures/target",
+      "index": "fixtures/target/benchmark.parquet"
+    },
+    "dev_a": {
+      "start": "2013-01-01",
+      "end": "2018-12-31",
+      "market": "fixtures/history",
+      "index": "fixtures/history/dev_benchmark.parquet"
+    },
+    "dev_b": {
+      "start": "2019-01-01",
+      "end": "2022-12-31",
+      "market": "fixtures/history",
+      "index": "fixtures/history/dev_benchmark.parquet"
+    },
+    "twenty": {
+      "start": "2006-11-20",
+      "end": "2026-11-20",
+      "market": "fixtures/history",
+      "index": "fixtures/history/long_benchmark.parquet"
+    },
+    "dev_crisis": {
+      "start": "2006-11-20",
+      "end": "2012-12-31",
+      "market": "fixtures/history",
+      "index": "fixtures/history/long_benchmark.parquet"
+    },
+    "challenge": {
+      "start": "2001-01-02",
+      "end": "2006-11-17",
+      "market": "fixtures/history",
+      "index": "fixtures/history/long_benchmark.parquet"
+    }
+  },
+  "cap": 0.9,
+  "capital_usd": 300000,
+  "cost": {
+    "normal": 0.001,
+    "stress": 0.003,
+    "no_sndk": 0.001
+  },
+  "internal_benchmark": "QQQ",
+  "performance_benchmark": "S&P 500 Total Return (^SP500TR)",
+  "tickers": [
+    "AAPL",
+    "SNDK",
+    "BA",
+    "C",
+    "JPM",
+    "GE",
+    "TQQQ",
+    "QQQ"
+  ],
+  "strategy_entries": {
+    "v182": "v182.strategy.Strategy",
+    "v179": "v179.strategy.Strategy"
+  },
+  "schedule": "weekly / first exchange session open / prior session close"
+}

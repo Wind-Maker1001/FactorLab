@@ -43,6 +43,8 @@ def main():
         'unbound_golden':('tests/research/fixtures/factor_golden/real.parquet',b'synthetic unbound sentinel'),
         'unbound_v69':('tests/fixtures/v69_original/fixture/v69_target_normal/unknown.parquet',b'synthetic unbound sentinel'),
         'changed_v69':('tests/fixtures/v69_original/fixture/v69_target_normal/daily.parquet',b'synthetic changed sentinel'),
+        'unbound_v179_v182':('tests/fixtures/v179_v182_original/fixtures/target/unknown.parquet',b'synthetic unbound sentinel'),
+        'changed_v179_v182':('tests/fixtures/v179_v182_original/fixtures/target/benchmark.parquet',b'synthetic changed sentinel'),
         'duplicate_zip':('duplicate',b''),
         'zip_link':('factorlab/link.py',b'../../outside'),
         'tar_link':('link',b''),

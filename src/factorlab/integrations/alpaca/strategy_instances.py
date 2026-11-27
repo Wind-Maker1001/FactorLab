@@ -6,7 +6,7 @@ from uuid import uuid4
 from factorlab.strategies.decision_runtime import InstanceDecisionRuntime
 from factorlab.strategies.deployment import DeploymentController, DeploymentStore
 from factorlab.strategies.loader import LoadedStrategy, StrategyPackageError
-from factorlab.strategies.package import manifest_spec
+from factorlab.strategies.package import load_package_sources, manifest_spec
 from factorlab.trading.portfolio_execution import PortfolioStore
 from .http import AlpacaError
 from .adapter import OrderNotFound
@@ -22,9 +22,24 @@ from .market_data.cache import MarketCache
 
 
 class StrategyInstances:
-    def __init__(self, root, adapter, configuration, *, clock, revision='unknown', reference_provider=None):
+    def __init__(self, root, adapter, configuration, *, clock, revision='unknown',
+                 reference_provider=None, benchmark_provider=None):
         self.root, self.adapter, self.clock = Path(root), adapter, clock
         self.reference_provider = reference_provider
+        self.benchmark_provider = benchmark_provider
+        if self.benchmark_provider is None and configuration.get('benchmark_source'):
+            from .benchmark_data import LocalBenchmarkProvider
+            src = configuration['benchmark_source']
+            if isinstance(src, (str, Path)):
+                self.benchmark_provider = LocalBenchmarkProvider(src, clock=clock)
+            elif isinstance(src, dict):
+                self.benchmark_provider = LocalBenchmarkProvider(
+                    src['path'],
+                    series_id=src.get('series_id', '^SP500TR'),
+                    source=src.get('source', 'LOCAL_SNAPSHOT:^SP500TR'),
+                    clock=clock,
+                    expected_sha256=src.get('sha256'),
+                )
         self.store = PortfolioStore(self.root / 'portfolio.sqlite3')
         self.runner = AlpacaPortfolioRunner(adapter, self.store, order_not_found=OrderNotFound,
                                            rejection_error=AlpacaError, clock=clock)
@@ -96,7 +111,15 @@ class StrategyInstances:
     def attach(self, owner, package, account):
         self._bind(owner, package, account)
         deployment = AlpacaDeployment(self.instances[owner], self.views[owner], boot_id=self.boot_id)
-        self.controllers[owner] = DeploymentController(self.views[owner], deployment, load_strategy=self.load)
+        self.controllers[owner] = DeploymentController(
+            self.views[owner],
+            deployment,
+            load_strategy=self.load,
+            load_sources=self.load_sources,
+        )
+
+    def load_sources(self, package_id):
+        return load_package_sources(self.releases / package_id)[1]
 
     def load(self, package_id):
         if package_id not in self.loaded:
@@ -108,7 +131,12 @@ class StrategyInstances:
         view = self.views[owner]
         spec = manifest_spec(view.manifest(package_id))
         assets = StrategyAssets(self.adapter, self.store, clock=self.clock)
-        data = StrategyData(assets, clock=self.clock, reference_provider=self.reference_provider)
+        data = StrategyData(
+            assets,
+            clock=self.clock,
+            reference_provider=self.reference_provider,
+            benchmark_provider=self.benchmark_provider,
+        )
         instance = AlpacaInstance(self.root, view.binding(), package_id, spec,
             None, self.runner, data, clock=self.clock)
         try:
