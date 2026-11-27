@@ -616,3 +616,77 @@ def test_month_boundary_empty_prediction_month_crossyear_holiday_and_restart(
     assert cold_restarted['weights'] == cy_trunc['weights']
     assert cold_restarted['orders'] == cy_trunc['orders']
     assert cold_restarted['state'] == cy_trunc['state']
+
+
+@pytest.mark.parametrize(
+    'prev_month_end,first_session,month_key,next_week_exec',
+    [
+        ('2025-11-28', '2025-12-01', '2025-12', '2025-12-08'),  # Month starts on Monday
+        ('2025-07-31', '2025-08-01', '2025-08', '2025-08-04'),  # Month starts on Friday (tight weekend window)
+        ('2023-12-29', '2024-01-02', '2024-01', '2024-01-08'),  # Cross-year + New Year's Day Monday holiday
+    ],
+)
+def test_monthly_training_timing_truncated_history_matches_full_after_first_session(
+    frozen_target_market, frozen_artifacts, prev_month_end, first_session, month_key, next_week_exec
+):
+    """P2 regression: data ending at prior month-end cannot produce month M's model;
+    adding month M's first completed trading session matures the 5-day forward label
+    and reproduces the exact original full-history model for month M.
+    """
+    close, volume, _, index = frozen_target_market
+    full_artifact = frozen_artifacts[False]
+    cal = _make_calendar(close.index)
+
+    end_prev = pd.Timestamp(prev_month_end)
+    d0 = pd.Timestamp(first_session)
+    exec_day = pd.Timestamp(next_week_exec)
+    assert cal.shift(d0, -1) == end_prev
+    assert exec_day > d0
+
+    # 1. History ending on prior month's last completed session does NOT produce month M's model.
+    art_prev = train_monthly_ridge_artifact(close.loc[:end_prev], index.loc[:end_prev], omit_sndk=False)
+    assert month_key not in art_prev['models']
+    assert art_prev['covered_end'] == prev_month_end
+
+    # 2. Once month M's first trading session d0 completes close, the 5-day forward label for
+    #    train_cutoff = calendar[i - 5] matures at d0 close and produces the exact month M model.
+    art_d0 = train_monthly_ridge_artifact(close.loc[:d0], index.loc[:d0], omit_sndk=False)
+    assert month_key in art_d0['models']
+    assert art_d0['covered_end'] == first_session
+    m_d0 = art_d0['models'][month_key]
+    m_full = full_artifact['models'][month_key]
+
+    assert m_d0['train_start'] == m_full['train_start']
+    assert m_d0['train_cutoff'] == m_full['train_cutoff']
+    assert m_d0['label_maturity_date'] == first_session
+    assert m_d0['effective_from_signal_date'] == first_session
+    assert pd.Timestamp(m_d0['train_cutoff']) < pd.Timestamp(m_d0['label_maturity_date']) <= pd.Timestamp(m_d0['effective_from_signal_date']) < exec_day
+    assert m_d0['train_days'] == m_full['train_days']
+    assert m_d0['train_rows'] == m_full['train_rows']
+    np.testing.assert_allclose(m_d0['scaler_mean'], m_full['scaler_mean'], rtol=1e-12, atol=1e-12)
+    np.testing.assert_allclose(m_d0['scaler_scale'], m_full['scaler_scale'], rtol=1e-12, atol=1e-12)
+    np.testing.assert_allclose(m_d0['ridge_coef'], m_full['ridge_coef'], rtol=1e-12, atol=1e-12)
+    np.testing.assert_allclose(m_d0['ridge_intercept'], m_full['ridge_intercept'], rtol=1e-12, atol=1e-12)
+
+    # 3. First natural-week rebalance using a month-M signal succeeds with art_d0 and matches full_artifact.
+    sig_day = cal.shift(exec_day, -1)
+    assert str(sig_day.to_period('M')) == month_key
+    win = close.loc[:sig_day].iloc[-252:].index
+    event = dict(
+        session=exec_day,
+        calendar=cal,
+        close=close.loc[win],
+        volume=volume.loc[win],
+        market_index=index.loc[win],
+        benchmark_series=BENCHMARK_SERIES,
+        holdings={},
+        cash=50_000.0,
+    )
+    for cls in (V179Strategy, V182Strategy):
+        with pytest.raises(ModelArtifactStaleError):
+            cls(art_prev, strict_model_month=True).decide(event, {})
+        dec_d0 = cls(art_d0, strict_model_month=True).decide(event, {})
+        dec_full = cls(full_artifact, strict_model_month=True).decide(event, {})
+        assert dec_d0['diagnostics']['ridge_month'] == month_key
+        assert dec_d0['weights'] == pytest.approx(dec_full['weights'], rel=1e-12, abs=1e-12)
+        assert dec_d0['orders'] == dec_full['orders']

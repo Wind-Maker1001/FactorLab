@@ -110,10 +110,10 @@ Band (V48/V50: MA28, 21日波动带 0.5*vol, QQQ>MA63 约束, 市场宽度>=2/3 
 |---|---|---|
 | 云端运行依赖 | `numpy`, `pandas` | `cloud_qlib_dependency=false`, `cloud_sklearn_dependency=false` |
 | 研究端离线训练依赖 | `numpy`, `pandas`, `scikit-learn` | 仅在 `train_monthly_ridge_artifact` 内惰性导入 |
-| 离线 Ridge 模型工件大小 | `170,878` Bytes (`~167 KB`) | 覆盖 2011–2026 共 179 个拟合月 |
-| V2 策略包大小 (`v179.zip` / `v182.zip`) | `173,250` / `173,253` Bytes | 内含 `strategy.py` + `model_artifact.py` + `manifest.json` |
-| 在线单次 252 日推断延迟 (`V179` / `V182`) | `334.47 ms` / `322.96 ms` | 单核 Python 实测 |
-| 在线单次 252 日峰值内存 (`V179` / `V182`) | `0.975 MiB` / `0.959 MiB` | `tracemalloc` 峰值统计 |
+| 离线 Ridge 模型工件大小 | `178,804` Bytes (`~175 KB`) | 覆盖 2011–2026 共 179 个拟合月（含 `label_maturity_date`） |
+| V2 策略包大小 (`v179.zip` / `v182.zip`) | `181,460` / `181,463` Bytes | 内含 `strategy.py` + `model_artifact.py` + `manifest.json`（`migration="artifact_refresh"`） |
+| 在线单次 252 日推断延迟 (`V179` / `V182`) | `335.43 ms` / `325.81 ms` | 单核 Python 实测 |
+| 在线单次 252 日峰值内存 (`V179` / `V182`) | `0.974 MiB` / `0.959 MiB` | `tracemalloc` 峰值统计（远低于 2 vCPU / 1 GiB 云端约束） |
 
 ---
 
@@ -155,5 +155,21 @@ Band (V48/V50: MA28, 21日波动带 0.5*vol, QQQ>MA63 约束, 市场宽度>=2/3 
   - 按既有 `v69_original` 先例，在 `tools/migration/scan_distribution.py` 绑定 `tests/fixtures/v179_v182_original/source-manifest.json` 全部 13 个冻结 Parquet 精确路径与 SHA-256，并在 `tools/migration/check_distribution_rejections.py` 新增 `unbound_v179_v182` 与 `changed_v179_v182` 两项归档篡改拒绝用例。
   - 本地 Python 3.14 完整通过 `python -m build`、`inspect_distributions.py`（509 模块，0 违规）、`check_distribution_rejections.py`（23 项归档攻击全部拒绝）与 `packaging_ci.py`（wheel/sdist 独立 core-only venv 安装、导入、CLI、demo 与 0 findings 扫描）。
 - **联合复验结果**：
-  - Python 3.13.9：`test_v179_v182_equivalence.py` **22 passed**、`test_alpaca_v179_v182_runtime.py` **4 passed**；全量 V69 + Alpaca 集成套件零回归。
+  - Python 3.13.9：`test_v179_v182_equivalence.py` **25 passed**、`test_alpaca_v179_v182_runtime.py` **5 passed**；全量 V69 + V2 部署/切换/恢复 + Alpaca 集成套件零回归。
   - 23 归档账户全链路重放再次确认：`max_weight_diff = 9.714e-17`、`max_requested_qty_diff = 1.455e-10`、`max_nav_diff_usd = 0.0107` USD。
+
+---
+
+## 10. PR #262 第二轮审查修复记录（带仓月度模型更新与月度训练时机）
+
+- **P1（保留持仓的兼容月度模型工件更新与回滚）**：
+  - 完整复用既有 `StrategyPackage`、`DeploymentStore`、`DeploymentController` 与 `AlpacaDeployment` 状态机，不引入第二套部署状态机，并与 P10-11 冻结模型身份合同对齐：
+    - `src/factorlab/strategies/package.py`：在 V2 manifest 中新增结构化 `model_artifact` 元数据（`kind / schema_version / file / artifact_sha256 / covered_start / covered_end / omit_sndk / fitted_months`）、显式 `migration="artifact_refresh"` 策略与 `FACTORLAB_MODEL_REFRESH_V2`（`model_refresh_candidate`）请求凭证（无需伪造 Champion 晋升）。
+    - `src/factorlab/strategies/qlib_blend_ridge.py`：新增零执行纯 AST 解析器 `extract_frozen_artifact_from_module_source`（杜绝经由 `model_artifact.py` 夹带任意可执行代码）与历史月份兼容性校验 `verify_ridge_artifact_compatibility`（确保已拟合历史月份参数不可被回填改写，升级覆盖期单调不收缩）。
+    - `src/factorlab/strategies/deployment.py`：`DeploymentStore.request()` 与 `DeploymentController._step()` 双重门禁校验新旧包除 `model_artifact.py` 与相关版本/摘要/证据外，逻辑策略、实例、账户、`allocation_id`、标的、执行合同、配置、依赖、状态 schema 及全部策略源码字节完全一致；严格保留未确认/`UNKNOWN`/未追踪/未终态订单与未结决策对账门禁，绝不绕过；仅在全部订单终态且兼容性通过时保留持仓、现金、绩效账本、checkpoint 与水位完成切换或兼容回滚（普通非兼容变更继续严格遵循 `wait_flat`/`reduce_only`）。
+    - `src/factorlab/integrations/alpaca/strategy_deployment.py`：修复带仓切换事件日志序列化时 `Decimal` 持仓数量改为精确字符串 `str(quantity)`，避免 `TypeError`；`v179_v182_runtime.py` 统一以 UTF-8 LF 写入策略包成员保证跨平台 `package_id` 一致。
+  - 新增 `test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards` 真实 Alpaca 离线 HTTP 全链路验证：持有多只证券时完成月度模型更新（零新增交易、持仓/资金/checkpoint/水位完全保留）、新月份周调仓使用新模型、旧决策与订单保留原模型身份、外部未追踪挂单及未终态子单严格阻塞、激活回调中断后重启恢复、篡改历史月份参数与夹带可执行代码均自动失败回滚、兼容模型回滚不强制清仓、修改 `strategy.py`/配置与普通 `wait_flat` 升级均不得绕过约束。
+- **P2（修正月度训练时机与五类时间点语义）**：
+  - 保持原始 5 交易日前瞻标签、508 交易日回看窗口、Ridge `alpha=80` 及 `strict_model_month=True` 因果语义，在每个拟合月记录 `label_maturity_date` 并于 `validate_ridge_artifact` 强制校验 `train_start <= train_cutoff < label_maturity_date <= effective_from_signal_date`。
+  - 明确区分五个时间点：训练样本截止日 `train_cutoff`（`calendar[i-5]`）、标签成熟时间 `label_maturity_date`（当月首交易日 `d_0 = calendar[i]` 收盘）、模型生成时间 `generated_at`（`d_0` 收盘且全部行情与 `^SP500TR` 可用后）、模型生效信号日 `effective_from_signal_date`（`d_0`）与实际执行日 `execution_session`（严格晚于 `d_0` 的首个当月信号自然周开盘）。
+  - 更新 `examples/v179_v182_alpaca/README.md` 与 `tools/research/train_v179_v182_ridge.py`，覆盖月初周一（`2025-12-01`）、月初周五（`2025-08-01`）与跨年节假日顺延（`2024-01-02` 周二）场景，并新增参数化截断历史回归 `test_monthly_training_timing_truncated_history_matches_full_after_first_session` 验证仅用上月末数据不生成当月模型、加入当月首日后与完整历史模型误差 `< 1e-12`。

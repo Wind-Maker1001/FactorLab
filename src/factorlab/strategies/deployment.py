@@ -8,7 +8,15 @@ from threading import Lock
 from .controller_lock import controller_lock
 
 from factorlab.trading.storage import dumps, decode
-from .package import encoded, validate_manifest, candidate_package, digest
+from .package import (
+    can_artifact_refresh_manifests,
+    candidate_package,
+    digest,
+    encoded,
+    validate_manifest,
+    verify_artifact_refresh_manifests,
+    verify_artifact_refresh_packages,
+)
 from .protocol import V2, validate_binding, json_value
 from .identity import content_identity
 
@@ -304,6 +312,8 @@ class DeploymentStore:
                 raise ValueError('champion already active')
             if not self.legacy and state['active'] and self.outstanding(state['active']):
                 raise ValueError('recover outstanding decisions before switching')
+            if not self.legacy and manifest['migration'] == 'artifact_refresh' and state['active'] is not None:
+                verify_artifact_refresh_manifests(self.manifest(state['active']), manifest, direction='upgrade')
             self.db.execute('INSERT OR IGNORE INTO packages VALUES(?,?)',
                             (manifest['package_id'], encoded(manifest).decode()))
             now = time()
@@ -329,13 +339,23 @@ class DeploymentStore:
             target = state['previous'] or fallback
             if current:
                 target = current['old'] if current['old'] is not None else fallback
-                self._update('switches', dict(new=target, phase='ROLLBACK', policy='wait_flat', reason=reason, updated=time()),
+                rb_policy = 'wait_flat'
+                if not self.legacy and target is not None and state['active'] is not None:
+                    if target == state['active'] and current['policy'] == 'artifact_refresh':
+                        rb_policy = 'artifact_refresh'
+                    elif can_artifact_refresh_manifests(self.manifest(state['active']), self.manifest(target), direction='rollback'):
+                        rb_policy = 'artifact_refresh'
+                self._update('switches', dict(new=target, phase='ROLLBACK', policy=rb_policy, reason=reason, updated=time()),
                              'id=?', (current['id'],))
                 switch_id = current['id']
             else:
+                rb_policy = 'wait_flat'
+                if (not self.legacy and target is not None and state['active'] is not None
+                        and can_artifact_refresh_manifests(self.manifest(state['active']), self.manifest(target), direction='rollback')):
+                    rb_policy = 'artifact_refresh'
                 now = time()
                 cursor = self._insert('switches', dict(old=state['active'], new=target, phase='ROLLBACK', mode='hot',
-                    policy='wait_flat', watermark=state['watermark'], boot='', reason=reason, created=now, updated=now))
+                    policy=rb_policy, watermark=state['watermark'], boot='', reason=reason, created=now, updated=now))
                 switch_id = cursor.lastrowid
             self.event(switch_id, 'ROLLBACK_REQUESTED', old=state['active'], new=target, reason=reason,
                        failed_new=current['new'] if current else state['active'])
@@ -445,7 +465,7 @@ class DeploymentStore:
         if not self.is_current(switch):
             raise SupersededSwitch()
         if switch['phase'] == 'ROLLBACK':
-            if state['active'] == switch['new']:
+            if state['active'] == switch['new'] or switch['policy'] == 'artifact_refresh':
                 return state['checkpoint']
             row = self.db.execute('SELECT checkpoint FROM instance_checkpoints WHERE instance_id=? AND package_id=?',
                                   (self.instance_id, switch['new'])).fetchone()
@@ -560,7 +580,27 @@ class DeploymentController:
             if orders or facts.get('pending_cancellations'):
                 s.transition(switch, switch['phase'], reason='WAIT_TERMINAL_ORDERS')
                 return s.snapshot()
-            if facts['positions']:
+            artifact_refresh = (
+                switch['policy'] == 'artifact_refresh'
+                and not s.legacy
+                and switch['old'] is not None
+                and switch['new'] is not None
+            )
+            prepared_strategy = None
+            if artifact_refresh:
+                old_manifest = s.manifest(switch['old'])
+                new_manifest = s.manifest(switch['new'])
+                old_strategy = self.load_strategy(switch['old'])
+                new_strategy = old_strategy if switch['new'] == switch['old'] else self.load_strategy(switch['new'])
+                verify_artifact_refresh_packages(
+                    old_manifest,
+                    new_manifest,
+                    old_sources=old_strategy.sources,
+                    new_sources=new_strategy.sources,
+                    direction='rollback' if switch['phase'] == 'ROLLBACK' else 'upgrade',
+                )
+                prepared_strategy = new_strategy
+            if facts['positions'] and not artifact_refresh:
                 if switch['policy'] == 'reduce_only' and switch['phase'] != 'ROLLBACK':
                     a.reduce(switch['id'], switch['new'])
                 s.transition(switch, switch['phase'], reason='WAIT_OLD_POSITIONS')
@@ -572,7 +612,9 @@ class DeploymentController:
                 s.transition(switch, 'ROLLBACK', reason='NO_FALLBACK_PACKAGE')
                 return s.snapshot()
             a.prepare(switch['new'])
-            strategy = self.load_strategy(switch['new']) if not s.legacy else None
+            strategy = prepared_strategy if prepared_strategy is not None else (
+                self.load_strategy(switch['new']) if not s.legacy else None
+            )
             if strategy is not None:
                 from .package import manifest_spec
                 if strategy.spec != manifest_spec(s.manifest(switch['new'])):

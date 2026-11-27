@@ -1,6 +1,6 @@
 {
   "alpha": 80.0,
-  "artifact_sha256": "042f0f87d51d3965eb5182b20532fe0a8b5afbfaa42e40d1a0e855efb4e8b443",
+  "artifact_sha256": "644397bc065149d508f8a2d56d6b2f6870ec553e1b4acebd1e12cb237e81e042",
   "covered_end": "2026-11-23",
   "covered_months": [
     "2011-01",
@@ -234,6 +234,7 @@
   "models": {
     "2012-01": {
       "effective_from_signal_date": "2012-01-03",
+      "label_maturity_date": "2012-01-03",
       "month": "2012-01",
       "ridge_coef": [
         0.020793857042746017,
@@ -267,6 +268,7 @@
     },
     "2012-02": {
       "effective_from_signal_date": "2012-02-01",
+      "label_maturity_date": "2012-02-01",
       "month": "2012-02",
       "ridge_coef": [
         0.015474518218897348,
@@ -300,6 +302,7 @@
     },
     "2012-03": {
       "effective_from_signal_date": "2012-03-01",
+      "label_maturity_date": "2012-03-01",
       "month": "2012-03",
       "ridge_coef": [
         0.060487547741620455,
@@ -333,6 +336,7 @@
     },
     "2012-04": {
       "effective_from_signal_date": "2012-04-02",
+      "label_maturity_date": "2012-04-02",
       "month": "2012-04",
       "ridge_coef": [
         0.10484754809878102,
@@ -366,6 +370,7 @@
     },
     "2012-05": {
       "effective_from_signal_date": "2012-05-01",
+      "label_maturity_date": "2012-05-01",
       "month": "2012-05",
       "ridge_coef": [
         0.06458429401337228,
@@ -399,6 +404,7 @@
     },
     "2012-06": {
       "effective_from_signal_date": "2012-06-01",
+      "label_maturity_date": "2012-06-01",
       "month": "2012-06",
       "ridge_coef": [
         0.056608865860025344,
@@ -432,6 +438,7 @@
     },
     "2012-07": {
       "effective_from_signal_date": "2012-07-02",
+      "label_maturity_date": "2012-07-02",
       "month": "2012-07",
       "ridge_coef": [
         0.053524210722024804,
@@ -465,6 +472,7 @@
     },
     "2012-08": {
       "effective_from_signal_date": "2012-08-01",
+      "label_maturity_date": "2012-08-01",
       "month": "2012-08",
       "ridge_coef": [
         0.05371009469851832,
@@ -498,6 +506,7 @@
     },
     "2012-09": {
       "effective_from_signal_date": "2012-09-04",
+      "label_maturity_date": "2012-09-04",
       "month": "2012-09",
       "ridge_coef": [
         0.05138059099519718,
@@ -531,6 +540,7 @@
     },
     "2012-10": {
       "effective_from_signal_date": "2012-10-01",
+      "label_maturity_date": "2012-10-01",
       "month": "2012-10",
       "ridge_coef": [
         0.050968397212083856,
@@ -564,6 +574,7 @@
     },
     "2012-11": {
       "effective_from_signal_date": "2012-11-01",
+      "label_maturity_date": "2012-11-01",
       "month": "2012-11",
       "ridge_coef": [
         0.04269291499033373,
@@ -597,6 +608,7 @@
     },
     "2012-12": {
       "effective_from_signal_date": "2012-12-03",
+      "label_maturity_date": "2012-12-03",
       "month": "2012-12",
       "ridge_coef": [
         0.025503319274199177,
@@ -630,6 +642,7 @@
     },
     "2013-01": {
       "effective_from_signal_date": "2013-01-02",
+      "label_maturity_date": "2013-01-02",
       "month": "2013-01",
       "ridge_coef": [
         0.04281184178494242,
@@ -663,6 +676,7 @@
     },
     "2013-02": {
       "effective_from_signal_date": "2013-02-01",
+      "label_maturity_date": "2013-02-01",
       "month": "2013-02",
       "ridge_coef": [
         0.05324628175039983,
@@ -696,6 +710,7 @@
     },
     "2013-03": {
       "effective_from_signal_date": "2013-03-01",
+      "label_maturity_date": "2013-03-01",
       "month": "2013-03",
       "ridge_coef": [
         0.05196675366496209,
@@ -729,6 +744,7 @@
     },
     "2013-04": {
       "effective_from_signal_date": "2013-04-01",
+      "label_maturity_date": "2013-04-01",
       "month": "2013-04",
       "ridge_coef": [
         0.04699122299924931,
@@ -762,6 +778,7 @@
     },
     "2013-05": {
       "effective_from_signal_date": "2013-05-01",
+      "label_maturity_date": "2013-05-01",
       "month": "2013-05",
       "ridge_coef": [
         0.059667845484362755,
@@ -795,6 +812,7 @@
     },
     "2013-06": {
       "effective_from_signal_date": "2013-06-03",
+      "label_maturity_date": "2013-06-03",
       "month": "2013-06",
       "ridge_coef": [
         0.056056275430718575,
@@ -828,6 +846,7 @@
     },
     "2013-07": {
       "effective_from_signal_date": "2013-07-01",
+      "label_maturity_date": "2013-07-01",
       "month": "2013-07",
       "ridge_coef": [
         0.06072656038697362,
@@ -861,6 +880,7 @@
     },
     "2013-08": {
       "effective_from_signal_date": "2013-08-01",
+      "label_maturity_date": "2013-08-01",
       "month": "2013-08",
       "ridge_coef": [
         0.053192897398073695,
@@ -894,6 +914,7 @@
     },
     "2013-09": {
       "effective_from_signal_date": "2013-09-03",
+      "label_maturity_date": "2013-09-03",
       "month": "2013-09",
       "ridge_coef": [
         0.04815264228826123,
@@ -927,6 +948,7 @@
     },
     "2013-10": {
       "effective_from_signal_date": "2013-10-01",
+      "label_maturity_date": "2013-10-01",
       "month": "2013-10",
       "ridge_coef": [
         0.046171731543586565,
@@ -960,6 +982,7 @@
     },
     "2013-11": {
       "effective_from_signal_date": "2013-11-01",
+      "label_maturity_date": "2013-11-01",
       "month": "2013-11",
       "ridge_coef": [
         0.048536541834708735,
@@ -993,6 +1016,7 @@
     },
     "2013-12": {
       "effective_from_signal_date": "2013-12-02",
+      "label_maturity_date": "2013-12-02",
       "month": "2013-12",
       "ridge_coef": [
         0.045839172448159965,
@@ -1026,6 +1050,7 @@
     },
     "2014-01": {
       "effective_from_signal_date": "2014-01-02",
+      "label_maturity_date": "2014-01-02",
       "month": "2014-01",
       "ridge_coef": [
         0.05480050043805161,
@@ -1059,6 +1084,7 @@
     },
     "2014-02": {
       "effective_from_signal_date": "2014-02-03",
+      "label_maturity_date": "2014-02-03",
       "month": "2014-02",
       "ridge_coef": [
         0.05321300976494096,
@@ -1092,6 +1118,7 @@
     },
     "2014-03": {
       "effective_from_signal_date": "2014-03-03",
+      "label_maturity_date": "2014-03-03",
       "month": "2014-03",
       "ridge_coef": [
         0.053852262999917994,
@@ -1125,6 +1152,7 @@
     },
     "2014-04": {
       "effective_from_signal_date": "2014-04-01",
+      "label_maturity_date": "2014-04-01",
       "month": "2014-04",
       "ridge_coef": [
         0.02157937956609602,
@@ -1158,6 +1186,7 @@
     },
     "2014-05": {
       "effective_from_signal_date": "2014-05-01",
+      "label_maturity_date": "2014-05-01",
       "month": "2014-05",
       "ridge_coef": [
         0.017307895946764292,
@@ -1191,6 +1220,7 @@
     },
     "2014-06": {
       "effective_from_signal_date": "2014-06-02",
+      "label_maturity_date": "2014-06-02",
       "month": "2014-06",
       "ridge_coef": [
         0.02649842435999621,
@@ -1224,6 +1254,7 @@
     },
     "2014-07": {
       "effective_from_signal_date": "2014-07-01",
+      "label_maturity_date": "2014-07-01",
       "month": "2014-07",
       "ridge_coef": [
         0.025649655053929063,
@@ -1257,6 +1288,7 @@
     },
     "2014-08": {
       "effective_from_signal_date": "2014-08-01",
+      "label_maturity_date": "2014-08-01",
       "month": "2014-08",
       "ridge_coef": [
         0.03287918091968265,
@@ -1290,6 +1322,7 @@
     },
     "2014-09": {
       "effective_from_signal_date": "2014-09-02",
+      "label_maturity_date": "2014-09-02",
       "month": "2014-09",
       "ridge_coef": [
         0.02865608021302041,
@@ -1323,6 +1356,7 @@
     },
     "2014-10": {
       "effective_from_signal_date": "2014-10-01",
+      "label_maturity_date": "2014-10-01",
       "month": "2014-10",
       "ridge_coef": [
         0.023679112893932583,
@@ -1356,6 +1390,7 @@
     },
     "2014-11": {
       "effective_from_signal_date": "2014-11-03",
+      "label_maturity_date": "2014-11-03",
       "month": "2014-11",
       "ridge_coef": [
         0.03477850695716456,
@@ -1389,6 +1424,7 @@
     },
     "2014-12": {
       "effective_from_signal_date": "2014-12-01",
+      "label_maturity_date": "2014-12-01",
       "month": "2014-12",
       "ridge_coef": [
         0.04740168825736585,
@@ -1422,6 +1458,7 @@
     },
     "2015-01": {
       "effective_from_signal_date": "2015-01-02",
+      "label_maturity_date": "2015-01-02",
       "month": "2015-01",
       "ridge_coef": [
         0.024129249161831085,
@@ -1455,6 +1492,7 @@
     },
     "2015-02": {
       "effective_from_signal_date": "2015-02-02",
+      "label_maturity_date": "2015-02-02",
       "month": "2015-02",
       "ridge_coef": [
         0.02158864747109857,
@@ -1488,6 +1526,7 @@
     },
     "2015-03": {
       "effective_from_signal_date": "2015-03-02",
+      "label_maturity_date": "2015-03-02",
       "month": "2015-03",
       "ridge_coef": [
         0.013167940023840207,
@@ -1521,6 +1560,7 @@
     },
     "2015-04": {
       "effective_from_signal_date": "2015-04-01",
+      "label_maturity_date": "2015-04-01",
       "month": "2015-04",
       "ridge_coef": [
         0.00416174801337427,
@@ -1554,6 +1594,7 @@
     },
     "2015-05": {
       "effective_from_signal_date": "2015-05-01",
+      "label_maturity_date": "2015-05-01",
       "month": "2015-05",
       "ridge_coef": [
         -0.007852656350257066,
@@ -1587,6 +1628,7 @@
     },
     "2015-06": {
       "effective_from_signal_date": "2015-06-01",
+      "label_maturity_date": "2015-06-01",
       "month": "2015-06",
       "ridge_coef": [
         -0.007316703537792528,
@@ -1620,6 +1662,7 @@
     },
     "2015-07": {
       "effective_from_signal_date": "2015-07-01",
+      "label_maturity_date": "2015-07-01",
       "month": "2015-07",
       "ridge_coef": [
         0.0018860624033126127,
@@ -1653,6 +1696,7 @@
     },
     "2015-08": {
       "effective_from_signal_date": "2015-08-03",
+      "label_maturity_date": "2015-08-03",
       "month": "2015-08",
       "ridge_coef": [
         0.007595281040375106,
@@ -1686,6 +1730,7 @@
     },
     "2015-09": {
       "effective_from_signal_date": "2015-09-01",
+      "label_maturity_date": "2015-09-01",
       "month": "2015-09",
       "ridge_coef": [
         0.010116391846377314,
@@ -1719,6 +1764,7 @@
     },
     "2015-10": {
       "effective_from_signal_date": "2015-10-01",
+      "label_maturity_date": "2015-10-01",
       "month": "2015-10",
       "ridge_coef": [
         0.0011411656764094022,
@@ -1752,6 +1798,7 @@
     },
     "2015-11": {
       "effective_from_signal_date": "2015-11-02",
+      "label_maturity_date": "2015-11-02",
       "month": "2015-11",
       "ridge_coef": [
         -0.0035277221635517135,
@@ -1785,6 +1832,7 @@
     },
     "2015-12": {
       "effective_from_signal_date": "2015-12-01",
+      "label_maturity_date": "2015-12-01",
       "month": "2015-12",
       "ridge_coef": [
         0.0004061468430392514,
@@ -1818,6 +1866,7 @@
     },
     "2016-01": {
       "effective_from_signal_date": "2016-01-04",
+      "label_maturity_date": "2016-01-04",
       "month": "2016-01",
       "ridge_coef": [
         -0.00450427192795078,
@@ -1851,6 +1900,7 @@
     },
     "2016-02": {
       "effective_from_signal_date": "2016-02-01",
+      "label_maturity_date": "2016-02-01",
       "month": "2016-02",
       "ridge_coef": [
         -0.0011851371385369423,
@@ -1884,6 +1934,7 @@
     },
     "2016-03": {
       "effective_from_signal_date": "2016-03-01",
+      "label_maturity_date": "2016-03-01",
       "month": "2016-03",
       "ridge_coef": [
         0.0014732483223013559,
@@ -1917,6 +1968,7 @@
     },
     "2016-04": {
       "effective_from_signal_date": "2016-04-01",
+      "label_maturity_date": "2016-04-01",
       "month": "2016-04",
       "ridge_coef": [
         0.007435090013301783,
@@ -1950,6 +2002,7 @@
     },
     "2016-05": {
       "effective_from_signal_date": "2016-05-02",
+      "label_maturity_date": "2016-05-02",
       "month": "2016-05",
       "ridge_coef": [
         0.009935906972583435,
@@ -1983,6 +2036,7 @@
     },
     "2016-06": {
       "effective_from_signal_date": "2016-06-01",
+      "label_maturity_date": "2016-06-01",
       "month": "2016-06",
       "ridge_coef": [
         0.009131232609865795,
@@ -2016,6 +2070,7 @@
     },
     "2016-07": {
       "effective_from_signal_date": "2016-07-01",
+      "label_maturity_date": "2016-07-01",
       "month": "2016-07",
       "ridge_coef": [
         0.005287180610513245,
@@ -2049,6 +2104,7 @@
     },
     "2016-08": {
       "effective_from_signal_date": "2016-08-01",
+      "label_maturity_date": "2016-08-01",
       "month": "2016-08",
       "ridge_coef": [
         -0.015347570386124505,
@@ -2082,6 +2138,7 @@
     },
     "2016-09": {
       "effective_from_signal_date": "2016-09-01",
+      "label_maturity_date": "2016-09-01",
       "month": "2016-09",
       "ridge_coef": [
         -0.018010393235405944,
@@ -2115,6 +2172,7 @@
     },
     "2016-10": {
       "effective_from_signal_date": "2016-10-03",
+      "label_maturity_date": "2016-10-03",
       "month": "2016-10",
       "ridge_coef": [
         0.013641684842861377,
@@ -2148,6 +2206,7 @@
     },
     "2016-11": {
       "effective_from_signal_date": "2016-11-01",
+      "label_maturity_date": "2016-11-01",
       "month": "2016-11",
       "ridge_coef": [
         0.030907689161891544,
@@ -2181,6 +2240,7 @@
     },
     "2016-12": {
       "effective_from_signal_date": "2016-12-01",
+      "label_maturity_date": "2016-12-01",
       "month": "2016-12",
       "ridge_coef": [
         0.027569261696314178,
@@ -2214,6 +2274,7 @@
     },
     "2017-01": {
       "effective_from_signal_date": "2017-01-03",
+      "label_maturity_date": "2017-01-03",
       "month": "2017-01",
       "ridge_coef": [
         0.04431131906331343,
@@ -2247,6 +2308,7 @@
     },
     "2017-02": {
       "effective_from_signal_date": "2017-02-01",
+      "label_maturity_date": "2017-02-01",
       "month": "2017-02",
       "ridge_coef": [
         0.03389142124538959,
@@ -2280,6 +2342,7 @@
     },
     "2017-03": {
       "effective_from_signal_date": "2017-03-01",
+      "label_maturity_date": "2017-03-01",
       "month": "2017-03",
       "ridge_coef": [
         0.056875378730577936,
@@ -2313,6 +2376,7 @@
     },
     "2017-04": {
       "effective_from_signal_date": "2017-04-03",
+      "label_maturity_date": "2017-04-03",
       "month": "2017-04",
       "ridge_coef": [
         0.07636931302013233,
@@ -2346,6 +2410,7 @@
     },
     "2017-05": {
       "effective_from_signal_date": "2017-05-01",
+      "label_maturity_date": "2017-05-01",
       "month": "2017-05",
       "ridge_coef": [
         0.07647349008270825,
@@ -2379,6 +2444,7 @@
     },
     "2017-06": {
       "effective_from_signal_date": "2017-06-01",
+      "label_maturity_date": "2017-06-01",
       "month": "2017-06",
       "ridge_coef": [
         0.09769470533982819,
@@ -2412,6 +2478,7 @@
     },
     "2017-07": {
       "effective_from_signal_date": "2017-07-03",
+      "label_maturity_date": "2017-07-03",
       "month": "2017-07",
       "ridge_coef": [
         0.07300757604635703,
@@ -2445,6 +2512,7 @@
     },
     "2017-08": {
       "effective_from_signal_date": "2017-08-01",
+      "label_maturity_date": "2017-08-01",
       "month": "2017-08",
       "ridge_coef": [
         0.08919045649023803,
@@ -2478,6 +2546,7 @@
     },
     "2017-09": {
       "effective_from_signal_date": "2017-09-01",
+      "label_maturity_date": "2017-09-01",
       "month": "2017-09",
       "ridge_coef": [
         0.08687033996676394,
@@ -2511,6 +2580,7 @@
     },
     "2017-10": {
       "effective_from_signal_date": "2017-10-02",
+      "label_maturity_date": "2017-10-02",
       "month": "2017-10",
       "ridge_coef": [
         0.08560407310388513,
@@ -2544,6 +2614,7 @@
     },
     "2017-11": {
       "effective_from_signal_date": "2017-11-01",
+      "label_maturity_date": "2017-11-01",
       "month": "2017-11",
       "ridge_coef": [
         0.0790418157172553,
@@ -2577,6 +2648,7 @@
     },
     "2017-12": {
       "effective_from_signal_date": "2017-12-01",
+      "label_maturity_date": "2017-12-01",
       "month": "2017-12",
       "ridge_coef": [
         0.06527617137787596,
@@ -2610,6 +2682,7 @@
     },
     "2018-01": {
       "effective_from_signal_date": "2018-01-02",
+      "label_maturity_date": "2018-01-02",
       "month": "2018-01",
       "ridge_coef": [
         0.06768494826271351,
@@ -2643,6 +2716,7 @@
     },
     "2018-02": {
       "effective_from_signal_date": "2018-02-01",
+      "label_maturity_date": "2018-02-01",
       "month": "2018-02",
       "ridge_coef": [
         0.09394764596443252,
@@ -2676,6 +2750,7 @@
     },
     "2018-03": {
       "effective_from_signal_date": "2018-03-01",
+      "label_maturity_date": "2018-03-01",
       "month": "2018-03",
       "ridge_coef": [
         0.08690106324404177,
@@ -2709,6 +2784,7 @@
     },
     "2018-04": {
       "effective_from_signal_date": "2018-04-02",
+      "label_maturity_date": "2018-04-02",
       "month": "2018-04",
       "ridge_coef": [
         0.08188682698549488,
@@ -2742,6 +2818,7 @@
     },
     "2018-05": {
       "effective_from_signal_date": "2018-05-01",
+      "label_maturity_date": "2018-05-01",
       "month": "2018-05",
       "ridge_coef": [
         0.08922411563179211,
@@ -2775,6 +2852,7 @@
     },
     "2018-06": {
       "effective_from_signal_date": "2018-06-01",
+      "label_maturity_date": "2018-06-01",
       "month": "2018-06",
       "ridge_coef": [
         0.08796794557559513,
@@ -2808,6 +2886,7 @@
     },
     "2018-07": {
       "effective_from_signal_date": "2018-07-02",
+      "label_maturity_date": "2018-07-02",
       "month": "2018-07",
       "ridge_coef": [
         0.08400715359224335,
@@ -2841,6 +2920,7 @@
     },
     "2018-08": {
       "effective_from_signal_date": "2018-08-01",
+      "label_maturity_date": "2018-08-01",
       "month": "2018-08",
       "ridge_coef": [
         0.08079046176673567,
@@ -2874,6 +2954,7 @@
     },
     "2018-09": {
       "effective_from_signal_date": "2018-09-04",
+      "label_maturity_date": "2018-09-04",
       "month": "2018-09",
       "ridge_coef": [
         0.08831683173796487,
@@ -2907,6 +2988,7 @@
     },
     "2018-10": {
       "effective_from_signal_date": "2018-10-01",
+      "label_maturity_date": "2018-10-01",
       "month": "2018-10",
       "ridge_coef": [
         0.0720462406722499,
@@ -2940,6 +3022,7 @@
     },
     "2018-11": {
       "effective_from_signal_date": "2018-11-01",
+      "label_maturity_date": "2018-11-01",
       "month": "2018-11",
       "ridge_coef": [
         0.06674206925876366,
@@ -2973,6 +3056,7 @@
     },
     "2018-12": {
       "effective_from_signal_date": "2018-12-03",
+      "label_maturity_date": "2018-12-03",
       "month": "2018-12",
       "ridge_coef": [
         0.06154551831864565,
@@ -3006,6 +3090,7 @@
     },
     "2019-01": {
       "effective_from_signal_date": "2019-01-02",
+      "label_maturity_date": "2019-01-02",
       "month": "2019-01",
       "ridge_coef": [
         0.049747627058851156,
@@ -3039,6 +3124,7 @@
     },
     "2019-02": {
       "effective_from_signal_date": "2019-02-01",
+      "label_maturity_date": "2019-02-01",
       "month": "2019-02",
       "ridge_coef": [
         0.04446311846552559,
@@ -3072,6 +3158,7 @@
     },
     "2019-03": {
       "effective_from_signal_date": "2019-03-01",
+      "label_maturity_date": "2019-03-01",
       "month": "2019-03",
       "ridge_coef": [
         0.03582789175079741,
@@ -3105,6 +3192,7 @@
     },
     "2019-04": {
       "effective_from_signal_date": "2019-04-01",
+      "label_maturity_date": "2019-04-01",
       "month": "2019-04",
       "ridge_coef": [
         0.012900224236902156,
@@ -3138,6 +3226,7 @@
     },
     "2019-05": {
       "effective_from_signal_date": "2019-05-01",
+      "label_maturity_date": "2019-05-01",
       "month": "2019-05",
       "ridge_coef": [
         0.0031267146032604217,
@@ -3171,6 +3260,7 @@
     },
     "2019-06": {
       "effective_from_signal_date": "2019-06-03",
+      "label_maturity_date": "2019-06-03",
       "month": "2019-06",
       "ridge_coef": [
         -0.025420576386512246,
@@ -3204,6 +3294,7 @@
     },
     "2019-07": {
       "effective_from_signal_date": "2019-07-01",
+      "label_maturity_date": "2019-07-01",
       "month": "2019-07",
       "ridge_coef": [
         -0.015972483557480027,
@@ -3237,6 +3328,7 @@
     },
     "2019-08": {
       "effective_from_signal_date": "2019-08-01",
+      "label_maturity_date": "2019-08-01",
       "month": "2019-08",
       "ridge_coef": [
         -0.03037782109193827,
@@ -3270,6 +3362,7 @@
     },
     "2019-09": {
       "effective_from_signal_date": "2019-09-03",
+      "label_maturity_date": "2019-09-03",
       "month": "2019-09",
       "ridge_coef": [
         -0.04023577433890516,
@@ -3303,6 +3396,7 @@
     },
     "2019-10": {
       "effective_from_signal_date": "2019-10-01",
+      "label_maturity_date": "2019-10-01",
       "month": "2019-10",
       "ridge_coef": [
         -0.03492579938490966,
@@ -3336,6 +3430,7 @@
     },
     "2019-11": {
       "effective_from_signal_date": "2019-11-01",
+      "label_maturity_date": "2019-11-01",
       "month": "2019-11",
       "ridge_coef": [
         -0.03601648654910769,
@@ -3369,6 +3464,7 @@
     },
     "2019-12": {
       "effective_from_signal_date": "2019-12-02",
+      "label_maturity_date": "2019-12-02",
       "month": "2019-12",
       "ridge_coef": [
         -0.019547153223424825,
@@ -3402,6 +3498,7 @@
     },
     "2020-01": {
       "effective_from_signal_date": "2020-01-02",
+      "label_maturity_date": "2020-01-02",
       "month": "2020-01",
       "ridge_coef": [
         -0.019561824448345862,
@@ -3435,6 +3532,7 @@
     },
     "2020-02": {
       "effective_from_signal_date": "2020-02-03",
+      "label_maturity_date": "2020-02-03",
       "month": "2020-02",
       "ridge_coef": [
         -0.04620264864405636,
@@ -3468,6 +3566,7 @@
     },
     "2020-03": {
       "effective_from_signal_date": "2020-03-02",
+      "label_maturity_date": "2020-03-02",
       "month": "2020-03",
       "ridge_coef": [
         -0.047913235816798676,
@@ -3501,6 +3600,7 @@
     },
     "2020-04": {
       "effective_from_signal_date": "2020-04-01",
+      "label_maturity_date": "2020-04-01",
       "month": "2020-04",
       "ridge_coef": [
         -0.026459270314870022,
@@ -3534,6 +3634,7 @@
     },
     "2020-05": {
       "effective_from_signal_date": "2020-05-01",
+      "label_maturity_date": "2020-05-01",
       "month": "2020-05",
       "ridge_coef": [
         -0.019103620651131997,
@@ -3567,6 +3668,7 @@
     },
     "2020-06": {
       "effective_from_signal_date": "2020-06-01",
+      "label_maturity_date": "2020-06-01",
       "month": "2020-06",
       "ridge_coef": [
         -0.017885151696013145,
@@ -3600,6 +3702,7 @@
     },
     "2020-07": {
       "effective_from_signal_date": "2020-07-01",
+      "label_maturity_date": "2020-07-01",
       "month": "2020-07",
       "ridge_coef": [
         -0.01199241234937084,
@@ -3633,6 +3736,7 @@
     },
     "2020-08": {
       "effective_from_signal_date": "2020-08-03",
+      "label_maturity_date": "2020-08-03",
       "month": "2020-08",
       "ridge_coef": [
         7.215928312147474e-05,
@@ -3666,6 +3770,7 @@
     },
     "2020-09": {
       "effective_from_signal_date": "2020-09-01",
+      "label_maturity_date": "2020-09-01",
       "month": "2020-09",
       "ridge_coef": [
         0.030859175295202844,
@@ -3699,6 +3804,7 @@
     },
     "2020-10": {
       "effective_from_signal_date": "2020-10-01",
+      "label_maturity_date": "2020-10-01",
       "month": "2020-10",
       "ridge_coef": [
         0.0236447915630732,
@@ -3732,6 +3838,7 @@
     },
     "2020-11": {
       "effective_from_signal_date": "2020-11-02",
+      "label_maturity_date": "2020-11-02",
       "month": "2020-11",
       "ridge_coef": [
         0.029403530200123238,
@@ -3765,6 +3872,7 @@
     },
     "2020-12": {
       "effective_from_signal_date": "2020-12-01",
+      "label_maturity_date": "2020-12-01",
       "month": "2020-12",
       "ridge_coef": [
         0.03679371612488756,
@@ -3798,6 +3906,7 @@
     },
     "2021-01": {
       "effective_from_signal_date": "2021-01-04",
+      "label_maturity_date": "2021-01-04",
       "month": "2021-01",
       "ridge_coef": [
         0.037037256742048906,
@@ -3831,6 +3940,7 @@
     },
     "2021-02": {
       "effective_from_signal_date": "2021-02-01",
+      "label_maturity_date": "2021-02-01",
       "month": "2021-02",
       "ridge_coef": [
         0.04493664372059521,
@@ -3864,6 +3974,7 @@
     },
     "2021-03": {
       "effective_from_signal_date": "2021-03-01",
+      "label_maturity_date": "2021-03-01",
       "month": "2021-03",
       "ridge_coef": [
         0.03756864862323902,
@@ -3897,6 +4008,7 @@
     },
     "2021-04": {
       "effective_from_signal_date": "2021-04-01",
+      "label_maturity_date": "2021-04-01",
       "month": "2021-04",
       "ridge_coef": [
         0.050837274257159386,
@@ -3930,6 +4042,7 @@
     },
     "2021-05": {
       "effective_from_signal_date": "2021-05-03",
+      "label_maturity_date": "2021-05-03",
       "month": "2021-05",
       "ridge_coef": [
         0.04305327173129696,
@@ -3963,6 +4076,7 @@
     },
     "2021-06": {
       "effective_from_signal_date": "2021-06-01",
+      "label_maturity_date": "2021-06-01",
       "month": "2021-06",
       "ridge_coef": [
         0.038716615495327074,
@@ -3996,6 +4110,7 @@
     },
     "2021-07": {
       "effective_from_signal_date": "2021-07-01",
+      "label_maturity_date": "2021-07-01",
       "month": "2021-07",
       "ridge_coef": [
         0.025027967411991335,
@@ -4029,6 +4144,7 @@
     },
     "2021-08": {
       "effective_from_signal_date": "2021-08-02",
+      "label_maturity_date": "2021-08-02",
       "month": "2021-08",
       "ridge_coef": [
         0.0228773494219053,
@@ -4062,6 +4178,7 @@
     },
     "2021-09": {
       "effective_from_signal_date": "2021-09-01",
+      "label_maturity_date": "2021-09-01",
       "month": "2021-09",
       "ridge_coef": [
         0.01632924269449349,
@@ -4095,6 +4212,7 @@
     },
     "2021-10": {
       "effective_from_signal_date": "2021-10-01",
+      "label_maturity_date": "2021-10-01",
       "month": "2021-10",
       "ridge_coef": [
         0.02007925563725962,
@@ -4128,6 +4246,7 @@
     },
     "2021-11": {
       "effective_from_signal_date": "2021-11-01",
+      "label_maturity_date": "2021-11-01",
       "month": "2021-11",
       "ridge_coef": [
         0.024723742419711286,
@@ -4161,6 +4280,7 @@
     },
     "2021-12": {
       "effective_from_signal_date": "2021-12-01",
+      "label_maturity_date": "2021-12-01",
       "month": "2021-12",
       "ridge_coef": [
         0.01902791353696008,
@@ -4194,6 +4314,7 @@
     },
     "2022-01": {
       "effective_from_signal_date": "2022-01-03",
+      "label_maturity_date": "2022-01-03",
       "month": "2022-01",
       "ridge_coef": [
         0.0333660478950212,
@@ -4227,6 +4348,7 @@
     },
     "2022-02": {
       "effective_from_signal_date": "2022-02-01",
+      "label_maturity_date": "2022-02-01",
       "month": "2022-02",
       "ridge_coef": [
         0.0008146485911866446,
@@ -4260,6 +4382,7 @@
     },
     "2022-03": {
       "effective_from_signal_date": "2022-03-01",
+      "label_maturity_date": "2022-03-01",
       "month": "2022-03",
       "ridge_coef": [
         -0.010099832124230233,
@@ -4293,6 +4416,7 @@
     },
     "2022-04": {
       "effective_from_signal_date": "2022-04-01",
+      "label_maturity_date": "2022-04-01",
       "month": "2022-04",
       "ridge_coef": [
         -0.03465022905868639,
@@ -4326,6 +4450,7 @@
     },
     "2022-05": {
       "effective_from_signal_date": "2022-05-02",
+      "label_maturity_date": "2022-05-02",
       "month": "2022-05",
       "ridge_coef": [
         -0.030168226765762283,
@@ -4359,6 +4484,7 @@
     },
     "2022-06": {
       "effective_from_signal_date": "2022-06-01",
+      "label_maturity_date": "2022-06-01",
       "month": "2022-06",
       "ridge_coef": [
         -0.04268575666719144,
@@ -4392,6 +4518,7 @@
     },
     "2022-07": {
       "effective_from_signal_date": "2022-07-01",
+      "label_maturity_date": "2022-07-01",
       "month": "2022-07",
       "ridge_coef": [
         -0.04510218235329828,
@@ -4425,6 +4552,7 @@
     },
     "2022-08": {
       "effective_from_signal_date": "2022-08-01",
+      "label_maturity_date": "2022-08-01",
       "month": "2022-08",
       "ridge_coef": [
         -0.04829596022548775,
@@ -4458,6 +4586,7 @@
     },
     "2022-09": {
       "effective_from_signal_date": "2022-09-01",
+      "label_maturity_date": "2022-09-01",
       "month": "2022-09",
       "ridge_coef": [
         -0.07881843818885982,
@@ -4491,6 +4620,7 @@
     },
     "2022-10": {
       "effective_from_signal_date": "2022-10-03",
+      "label_maturity_date": "2022-10-03",
       "month": "2022-10",
       "ridge_coef": [
         -0.08140320179354384,
@@ -4524,6 +4654,7 @@
     },
     "2022-11": {
       "effective_from_signal_date": "2022-11-01",
+      "label_maturity_date": "2022-11-01",
       "month": "2022-11",
       "ridge_coef": [
         -0.08140594947606818,
@@ -4557,6 +4688,7 @@
     },
     "2022-12": {
       "effective_from_signal_date": "2022-12-01",
+      "label_maturity_date": "2022-12-01",
       "month": "2022-12",
       "ridge_coef": [
         -0.0835115588168285,
@@ -4590,6 +4722,7 @@
     },
     "2023-01": {
       "effective_from_signal_date": "2023-01-03",
+      "label_maturity_date": "2023-01-03",
       "month": "2023-01",
       "ridge_coef": [
         -0.075821928683479,
@@ -4623,6 +4756,7 @@
     },
     "2023-02": {
       "effective_from_signal_date": "2023-02-01",
+      "label_maturity_date": "2023-02-01",
       "month": "2023-02",
       "ridge_coef": [
         -0.07367088771136844,
@@ -4656,6 +4790,7 @@
     },
     "2023-03": {
       "effective_from_signal_date": "2023-03-01",
+      "label_maturity_date": "2023-03-01",
       "month": "2023-03",
       "ridge_coef": [
         -0.06392803237394501,
@@ -4689,6 +4824,7 @@
     },
     "2023-04": {
       "effective_from_signal_date": "2023-04-03",
+      "label_maturity_date": "2023-04-03",
       "month": "2023-04",
       "ridge_coef": [
         -0.04788006951177687,
@@ -4722,6 +4858,7 @@
     },
     "2023-05": {
       "effective_from_signal_date": "2023-05-01",
+      "label_maturity_date": "2023-05-01",
       "month": "2023-05",
       "ridge_coef": [
         -0.036287723989970544,
@@ -4755,6 +4892,7 @@
     },
     "2023-06": {
       "effective_from_signal_date": "2023-06-01",
+      "label_maturity_date": "2023-06-01",
       "month": "2023-06",
       "ridge_coef": [
         -0.025906926204141395,
@@ -4788,6 +4926,7 @@
     },
     "2023-07": {
       "effective_from_signal_date": "2023-07-03",
+      "label_maturity_date": "2023-07-03",
       "month": "2023-07",
       "ridge_coef": [
         -0.006770488418675819,
@@ -4821,6 +4960,7 @@
     },
     "2023-08": {
       "effective_from_signal_date": "2023-08-01",
+      "label_maturity_date": "2023-08-01",
       "month": "2023-08",
       "ridge_coef": [
         -0.014716903628711146,
@@ -4854,6 +4994,7 @@
     },
     "2023-09": {
       "effective_from_signal_date": "2023-09-01",
+      "label_maturity_date": "2023-09-01",
       "month": "2023-09",
       "ridge_coef": [
         -0.004596043407747329,
@@ -4887,6 +5028,7 @@
     },
     "2023-10": {
       "effective_from_signal_date": "2023-10-02",
+      "label_maturity_date": "2023-10-02",
       "month": "2023-10",
       "ridge_coef": [
         -0.013572442235140121,
@@ -4920,6 +5062,7 @@
     },
     "2023-11": {
       "effective_from_signal_date": "2023-11-01",
+      "label_maturity_date": "2023-11-01",
       "month": "2023-11",
       "ridge_coef": [
         -0.01164638351318241,
@@ -4953,6 +5096,7 @@
     },
     "2023-12": {
       "effective_from_signal_date": "2023-12-01",
+      "label_maturity_date": "2023-12-01",
       "month": "2023-12",
       "ridge_coef": [
         -0.013326463511913316,
@@ -4986,6 +5130,7 @@
     },
     "2024-01": {
       "effective_from_signal_date": "2024-01-02",
+      "label_maturity_date": "2024-01-02",
       "month": "2024-01",
       "ridge_coef": [
         -0.03161711646222458,
@@ -5019,6 +5164,7 @@
     },
     "2024-02": {
       "effective_from_signal_date": "2024-02-01",
+      "label_maturity_date": "2024-02-01",
       "month": "2024-02",
       "ridge_coef": [
         -0.03034625101829556,
@@ -5052,6 +5198,7 @@
     },
     "2024-03": {
       "effective_from_signal_date": "2024-03-01",
+      "label_maturity_date": "2024-03-01",
       "month": "2024-03",
       "ridge_coef": [
         -0.0008997949931184543,
@@ -5085,6 +5232,7 @@
     },
     "2024-04": {
       "effective_from_signal_date": "2024-04-01",
+      "label_maturity_date": "2024-04-01",
       "month": "2024-04",
       "ridge_coef": [
         0.05347100484017406,
@@ -5118,6 +5266,7 @@
     },
     "2024-05": {
       "effective_from_signal_date": "2024-05-01",
+      "label_maturity_date": "2024-05-01",
       "month": "2024-05",
       "ridge_coef": [
         0.05694696927693716,
@@ -5151,6 +5300,7 @@
     },
     "2024-06": {
       "effective_from_signal_date": "2024-06-03",
+      "label_maturity_date": "2024-06-03",
       "month": "2024-06",
       "ridge_coef": [
         0.05301478922244861,
@@ -5184,6 +5334,7 @@
     },
     "2024-07": {
       "effective_from_signal_date": "2024-07-01",
+      "label_maturity_date": "2024-07-01",
       "month": "2024-07",
       "ridge_coef": [
         0.05210550899333244,
@@ -5217,6 +5368,7 @@
     },
     "2024-08": {
       "effective_from_signal_date": "2024-08-01",
+      "label_maturity_date": "2024-08-01",
       "month": "2024-08",
       "ridge_coef": [
         0.0508981527861233,
@@ -5250,6 +5402,7 @@
     },
     "2024-09": {
       "effective_from_signal_date": "2024-09-03",
+      "label_maturity_date": "2024-09-03",
       "month": "2024-09",
       "ridge_coef": [
         0.055849082972006046,
@@ -5283,6 +5436,7 @@
     },
     "2024-10": {
       "effective_from_signal_date": "2024-10-01",
+      "label_maturity_date": "2024-10-01",
       "month": "2024-10",
       "ridge_coef": [
         0.062488826201413605,
@@ -5316,6 +5470,7 @@
     },
     "2024-11": {
       "effective_from_signal_date": "2024-11-01",
+      "label_maturity_date": "2024-11-01",
       "month": "2024-11",
       "ridge_coef": [
         0.06691108903484051,
@@ -5349,6 +5504,7 @@
     },
     "2024-12": {
       "effective_from_signal_date": "2024-12-02",
+      "label_maturity_date": "2024-12-02",
       "month": "2024-12",
       "ridge_coef": [
         0.07605907606470858,
@@ -5382,6 +5538,7 @@
     },
     "2025-01": {
       "effective_from_signal_date": "2025-01-02",
+      "label_maturity_date": "2025-01-02",
       "month": "2025-01",
       "ridge_coef": [
         0.07038909153777775,
@@ -5415,6 +5572,7 @@
     },
     "2025-02": {
       "effective_from_signal_date": "2025-02-03",
+      "label_maturity_date": "2025-02-03",
       "month": "2025-02",
       "ridge_coef": [
         0.05818647738276535,
@@ -5448,6 +5606,7 @@
     },
     "2025-03": {
       "effective_from_signal_date": "2025-03-03",
+      "label_maturity_date": "2025-03-03",
       "month": "2025-03",
       "ridge_coef": [
         0.05706155120877155,
@@ -5481,6 +5640,7 @@
     },
     "2025-04": {
       "effective_from_signal_date": "2025-04-01",
+      "label_maturity_date": "2025-04-01",
       "month": "2025-04",
       "ridge_coef": [
         0.03639036092944081,
@@ -5514,6 +5674,7 @@
     },
     "2025-05": {
       "effective_from_signal_date": "2025-05-01",
+      "label_maturity_date": "2025-05-01",
       "month": "2025-05",
       "ridge_coef": [
         0.039443995452225426,
@@ -5547,6 +5708,7 @@
     },
     "2025-06": {
       "effective_from_signal_date": "2025-06-02",
+      "label_maturity_date": "2025-06-02",
       "month": "2025-06",
       "ridge_coef": [
         0.03500850520630979,
@@ -5580,6 +5742,7 @@
     },
     "2025-07": {
       "effective_from_signal_date": "2025-07-01",
+      "label_maturity_date": "2025-07-01",
       "month": "2025-07",
       "ridge_coef": [
         0.03440230954690308,
@@ -5613,6 +5776,7 @@
     },
     "2025-08": {
       "effective_from_signal_date": "2025-08-01",
+      "label_maturity_date": "2025-08-01",
       "month": "2025-08",
       "ridge_coef": [
         0.04000020624918251,
@@ -5646,6 +5810,7 @@
     },
     "2025-09": {
       "effective_from_signal_date": "2025-09-02",
+      "label_maturity_date": "2025-09-02",
       "month": "2025-09",
       "ridge_coef": [
         0.025137136460939673,
@@ -5679,6 +5844,7 @@
     },
     "2025-10": {
       "effective_from_signal_date": "2025-10-01",
+      "label_maturity_date": "2025-10-01",
       "month": "2025-10",
       "ridge_coef": [
         0.012576341460293456,
@@ -5712,6 +5878,7 @@
     },
     "2025-11": {
       "effective_from_signal_date": "2025-11-03",
+      "label_maturity_date": "2025-11-03",
       "month": "2025-11",
       "ridge_coef": [
         0.018535962783783607,
@@ -5745,6 +5912,7 @@
     },
     "2025-12": {
       "effective_from_signal_date": "2025-12-01",
+      "label_maturity_date": "2025-12-01",
       "month": "2025-12",
       "ridge_coef": [
         0.03411283907524888,
@@ -5778,6 +5946,7 @@
     },
     "2026-01": {
       "effective_from_signal_date": "2026-01-02",
+      "label_maturity_date": "2026-01-02",
       "month": "2026-01",
       "ridge_coef": [
         0.015922606678935126,
@@ -5811,6 +5980,7 @@
     },
     "2026-02": {
       "effective_from_signal_date": "2026-02-02",
+      "label_maturity_date": "2026-02-02",
       "month": "2026-02",
       "ridge_coef": [
         0.03785342237292748,
@@ -5844,6 +6014,7 @@
     },
     "2026-03": {
       "effective_from_signal_date": "2026-03-02",
+      "label_maturity_date": "2026-03-02",
       "month": "2026-03",
       "ridge_coef": [
         0.010779224716687094,
@@ -5877,6 +6048,7 @@
     },
     "2026-04": {
       "effective_from_signal_date": "2026-04-01",
+      "label_maturity_date": "2026-04-01",
       "month": "2026-04",
       "ridge_coef": [
         -0.03378024934929365,
@@ -5910,6 +6082,7 @@
     },
     "2026-05": {
       "effective_from_signal_date": "2026-05-01",
+      "label_maturity_date": "2026-05-01",
       "month": "2026-05",
       "ridge_coef": [
         -0.05408161094278257,
@@ -5943,6 +6116,7 @@
     },
     "2026-06": {
       "effective_from_signal_date": "2026-06-01",
+      "label_maturity_date": "2026-06-01",
       "month": "2026-06",
       "ridge_coef": [
         -0.039374403829216226,
@@ -5976,6 +6150,7 @@
     },
     "2026-07": {
       "effective_from_signal_date": "2026-07-01",
+      "label_maturity_date": "2026-07-01",
       "month": "2026-07",
       "ridge_coef": [
         -0.06812585968443947,
@@ -6009,6 +6184,7 @@
     },
     "2026-08": {
       "effective_from_signal_date": "2026-08-03",
+      "label_maturity_date": "2026-08-03",
       "month": "2026-08",
       "ridge_coef": [
         -0.0675512316362318,
@@ -6042,6 +6218,7 @@
     },
     "2026-09": {
       "effective_from_signal_date": "2026-09-01",
+      "label_maturity_date": "2026-09-01",
       "month": "2026-09",
       "ridge_coef": [
         -0.06207735354928757,
@@ -6075,6 +6252,7 @@
     },
     "2026-10": {
       "effective_from_signal_date": "2026-10-01",
+      "label_maturity_date": "2026-10-01",
       "month": "2026-10",
       "ridge_coef": [
         -0.06256862076694548,
@@ -6108,6 +6286,7 @@
     },
     "2026-11": {
       "effective_from_signal_date": "2026-11-02",
+      "label_maturity_date": "2026-11-02",
       "month": "2026-11",
       "ridge_coef": [
         -0.05710365052238897,
@@ -6144,6 +6323,7 @@
   "provenance": {
     "benchmark_file": "benchmark.parquet",
     "benchmark_series": "^SP500TR",
+    "generated_at": "2026-11-23T22:00:00+00:00",
     "input_sha256": {
       "AAPL.parquet": "199f06127b499ae73624340de69d038ff55306a28eb1906734d59499dc599914",
       "BA.parquet": "70aca4f4ee73e51edb1104329b6cf13c925a004396cb37ccf0c4bd029a5a05f6",

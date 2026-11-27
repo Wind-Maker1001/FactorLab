@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from factorlab.trading.contracts import Market
-from .package import build_package
+from .package import build_package, model_refresh_candidate
 from .protocol import DecisionV2, StrategySpecV2
 from .qlib_blend_ridge import dump_artifact_python_module, validate_ridge_artifact
 from .v179_v182 import (
@@ -271,6 +271,7 @@ def build_blend_strategy_package(
     strict_model_month: bool = True,
     feed: str | None = None,
     history_limit: int = 252,
+    migration: str = 'artifact_refresh',
     staging_dir: Path | str | None = None,
 ) -> dict:
     """Build a content-addressed V2 StrategyPackage zip containing strategy.py + model_artifact.py."""
@@ -328,20 +329,30 @@ def build_blend_strategy_package(
         configuration=config,
         dependencies=[],
         evidence=dict(evidence, model_artifact_sha256=validated_artifact['artifact_sha256']),
-        migration='wait_flat',
+        model_artifact=dict(
+            kind=validated_artifact['kind'],
+            schema_version=validated_artifact['schema_version'],
+            file='model_artifact.py',
+            artifact_sha256=validated_artifact['artifact_sha256'],
+            covered_start=validated_artifact['covered_start'],
+            covered_end=validated_artifact['covered_end'],
+            omit_sndk=bool(validated_artifact['omit_sndk']),
+            fitted_months=len(validated_artifact['models']),
+        ),
+        migration=migration,
     )
 
     if staging_dir is not None:
         source = Path(staging_dir)
         source.mkdir(parents=True, exist_ok=True)
-        (source / 'strategy.py').write_text(entry_source, encoding='utf-8')
-        (source / 'model_artifact.py').write_text(artifact_source, encoding='utf-8')
+        (source / 'strategy.py').write_bytes(entry_source.encode('utf-8'))
+        (source / 'model_artifact.py').write_bytes(artifact_source.encode('utf-8'))
         return build_package(source, manifest, Path(destination))
 
     with tempfile.TemporaryDirectory(prefix=f'factorlab-{key}-pkg-') as tmp:
         source = Path(tmp)
-        (source / 'strategy.py').write_text(entry_source, encoding='utf-8')
-        (source / 'model_artifact.py').write_text(artifact_source, encoding='utf-8')
+        (source / 'strategy.py').write_bytes(entry_source.encode('utf-8'))
+        (source / 'model_artifact.py').write_bytes(artifact_source.encode('utf-8'))
         return build_package(source, manifest, Path(destination))
 
 
@@ -359,4 +370,5 @@ __all__ = [
     'build_blend_strategy_package',
     'build_v179_package',
     'build_v182_package',
+    'model_refresh_candidate',
 ]

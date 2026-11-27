@@ -38,7 +38,12 @@ from factorlab.integrations.alpaca.market_data.sessions import AlpacaSessionCale
 from factorlab.integrations.alpaca.strategy_instances import StrategyInstances
 from factorlab.strategies.deployment import DeploymentStore
 from factorlab.strategies.loader import LoadedStrategy
-from factorlab.strategies.package import install_package
+from factorlab.strategies.package import build_package, install_package, model_refresh_candidate
+from factorlab.strategies.qlib_blend_ridge import (
+    canonical_artifact_digest,
+    dump_artifact_python_module,
+    train_monthly_ridge_artifact,
+)
 from factorlab.strategies.v179_v182 import ASSETS, BENCHMARK_SERIES
 from factorlab.strategies.v179_v182_runtime import (
     V179AlpacaStrategy,
@@ -146,6 +151,14 @@ class OfflineAlpacaPaperServer:
             if status_filter == 'open':
                 items = [o for o in items if o['status'] not in {'filled', 'canceled', 'rejected', 'expired'}]
             return 200, items
+        if method == 'DELETE' and path.startswith('/v2/orders/'):
+            oid = path.split('/')[-1]
+            for order in self.orders_by_cid.values():
+                if order['id'] == oid:
+                    if order['status'] not in {'filled', 'canceled', 'rejected', 'expired'}:
+                        order['status'] = 'canceled'
+                    return 204, {}
+            return 404, {'message': 'order not found'}
         if method == 'GET' and path == '/v2/orders:by_client_order_id':
             cid = params['client_order_id']
             order = self.orders_by_cid.get(cid)
@@ -508,8 +521,8 @@ def test_v179_v182_packages_coexist_with_v69_isolated_state_restart_upgrade_and_
     restarted.tick(service, win, clock(), adapter.read_account_details())
     assert len(server.posts) == posts_after_exec
 
-    # Phase 5: Package upgrade on V182 (while flat on a second upgrade package or with wait_flat)
-    # Build v182 v2 (different code_commit) and verify checkpoint preservation without duplicate trades.
+    # Phase 5: Package upgrade on V182 using explicit wait_flat still waits while holding positions
+    # without duplicate orders or state corruption.
     pkg_v182_v2 = build_v182_package(
         account_id='paper-p10-03',
         capital='5000',
@@ -518,11 +531,12 @@ def test_v179_v182_packages_coexist_with_v69_isolated_state_restart_upgrade_and_
         destination=tmp_path / 'v182-v2.zip',
         evidence={'p10_03': 'v182-v2', 'champion_promoted': False},
         feed='iex',
+        migration='wait_flat',
     )
     install_package(tmp_path / 'v182-v2.zip', releases)
     _promote(restarted.views['V182_RECOVERY'], pkg_v182_v2, 'upgrade-v182')
     restarted.tick(service, win, clock(), adapter.read_account_details())
-    # Since V182 holds positions and migration='wait_flat', switch cleanly waits without duplicate orders or corruption.
+    assert restarted.views['V182_RECOVERY'].pending()['reason'] == 'WAIT_OLD_POSITIONS'
     assert len(server.posts) == posts_after_exec
     restarted.close()
     adapter.store.db.close()
@@ -854,4 +868,346 @@ def test_benchmark_advancing_clock_http_delay_explicit_received_at_pit_and_isola
     assert host_ok.state['instances']['V182_RECOVERY']['state'] == 'RUNNING'
     host_ok.close()
     store.db.close()
+    adapter.store.db.close()
+
+
+def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
+    tmp_path, frozen_market_slice
+):
+    """P1 regression: real Alpaca offline HTTP integration for artifact-only monthly model
+    refresh while holding multiple securities, preserving holdings/cash/checkpoint/decisions,
+    honoring order reconciliation boundaries, restart recovery, validation failure rollback,
+    compatible rollback, and strict rejection of incompatible packages.
+    """
+    bars, _, _ = frozen_market_slice
+    # Load full frozen target market to train exact causal truncated artifacts for Sep & Oct 2026.
+    full_mkt = ROOT / 'fixtures' / 'target'
+    full_close = pd.DataFrame({s: pd.read_parquet(full_mkt / f'{s}.parquet')['close'] for s in ASSETS})
+    full_bench = pd.read_parquet(BENCHMARK_PARQUET)['close']
+
+    # Sep artifact trained strictly through 2026-09-25 (covers 2026-09, no 2026-10).
+    art_sep = train_monthly_ridge_artifact(full_close.loc[:'2026-09-25'], full_bench.loc[:'2026-09-25'])
+    assert '2026-09' in art_sep['models'] and '2026-10' not in art_sep['models']
+
+    # Oct artifact trained after 2026-10-01 (first session of Oct 2026) completes close -> covers 2026-10.
+    art_oct = train_monthly_ridge_artifact(full_close.loc[:'2026-10-01'], full_bench.loc[:'2026-10-01'])
+    assert '2026-10' in art_oct['models']
+
+    # Nov artifact trained after 2026-11-02 completes close (for testing failure/guards later).
+    art_nov = train_monthly_ridge_artifact(full_close.loc[:'2026-11-02'], full_bench.loc[:'2026-11-02'])
+    assert '2026-11' in art_nov['models']
+
+    # Advancing clock starting on Week 1 Monday 2026-09-28 open (signal date 2026-09-25).
+    clock_state = [datetime(2026, 9, 28, 13, 35, 0, tzinfo=timezone.utc)]
+
+    def clock():
+        return clock_state[0]
+
+    def tick_clock():
+        clock_state[0] = clock_state[0] + timedelta(milliseconds=50)
+        return clock_state[0]
+
+    server = OfflineAlpacaPaperServer(
+        account_id='paper-p1-refresh',
+        initial_cash=D('40000'),
+        bars=bars,
+        now_fn=clock,
+    )
+    # Anchor prices to 2026-09-25 close for Week 1.
+    server.last_prices = {
+        s: D(str(round(float(bars[s].loc[:'2026-09-25', 'close'].iloc[-1]), 2)))
+        for s in ASSETS
+    }
+
+    adapter = AlpacaAdapter(
+        PaperHTTP(AlpacaConfig('key', 'secret', 'https://paper-api.alpaca.markets'), transport=server.paper_transport),
+        tmp_path / 'account.sqlite3',
+        limits=RiskLimits(D('50000'), D('50000'), D('50000'), 100),
+    )
+    client = MarketDataClient(Credentials('key', 'secret'), feed='iex', request=server.market_transport, now=tick_clock)
+    service = MarketDataService.connect(client, MarketCache(tmp_path / 'history'), start='2025-08-01', end='2026-11-23')
+
+    releases = tmp_path / 'releases'
+    pkg_sep = build_v179_package(
+        account_id='paper-p1-refresh', capital='10000', model_artifact=art_sep,
+        code_commit='1' * 40, destination=tmp_path / 'v179-sep.zip',
+        evidence={'month': '2026-09'}, feed='iex', migration='artifact_refresh',
+    )
+    pkg_oct = build_v179_package(
+        account_id='paper-p1-refresh', capital='10000', model_artifact=art_oct,
+        code_commit='2' * 40, destination=tmp_path / 'v179-oct.zip',
+        evidence={'month': '2026-10'}, feed='iex', migration='artifact_refresh',
+    )
+    install_package(tmp_path / 'v179-sep.zip', releases)
+    install_package(tmp_path / 'v179-oct.zip', releases)
+
+    b_v69 = dict(market='ALPACA_US_EQUITY', account_id='paper-p1-refresh', strategy_id='V69_CAUSAL',
+                 instance_id='V69_CAUSAL', allocation_id='v69-original')
+    b_v179 = dict(market='ALPACA_US_EQUITY', account_id='paper-p1-refresh', strategy_id='V179_TREND_BLEND',
+                  instance_id='V179_TREND', allocation_id='v179-usd')
+
+    dep = DeploymentStore(tmp_path / 'deployments.sqlite3')
+    dep.register_instance(b_v179)
+    vw = dep.for_instance('V179_TREND')
+    _promote(vw, pkg_sep, 'init-v179-sep')
+    vw.close()
+    dep.close()
+
+    cfg = dict(
+        releases=str(releases),
+        trusted_python=True,
+        capital_policy=dict(
+            currency='USD', budget='35000', fee_rate='0',
+            mode=CapitalPolicyMode.SHARED_SAME_DIRECTION.value,
+        ),
+        instances=[
+            dict(binding=b_v69, native_v69=True, funding={'capital': '20000', 'initial_cash': '20000'}),
+            dict(binding=b_v179, funding={'capital': '10000', 'initial_cash': '10000'}),
+        ],
+    )
+    bench_provider = LocalBenchmarkProvider(BENCHMARK_PARQUET, clock=tick_clock)
+
+    # --- Step 1: Week 1 (2026-09-28) executes under pkg_sep and opens multi-security holdings ---
+    host = StrategyInstances(tmp_path, adapter, cfg, clock=tick_clock, revision='1' * 40, benchmark_provider=bench_provider)
+    win_w1 = weekly_window(service.calendar, clock())
+    for _ in range(6):
+        host.tick(service, win_w1, clock(), adapter.read_account_details())
+        if (
+            host.state['instances']['V69_CAUSAL']['state'] == 'WEEK_COMPLETE'
+            and host.state['instances']['V179_TREND']['state'] == 'RUNNING'
+            and host.store.plan(host.report()['V179_TREND']['task'])['phase'] == 'COMPLETE'
+        ):
+            break
+    assert host.state['instances']['V69_CAUSAL']['state'] == 'WEEK_COMPLETE'
+    assert host.state['instances']['V179_TREND']['state'] == 'RUNNING'
+    holdings_before = dict(host.store.holdings('paper-p1-refresh', 'V179_TREND'))
+    cash_before = host.store.cash('paper-p1-refresh', 'V179_TREND')
+    ckpt_before = dict(host.views['V179_TREND'].checkpoint())
+    watermark_before = host.views['V179_TREND'].snapshot()['watermark']
+    posts_before_refresh = len(server.posts)
+    w1_plan_id = host.report()['V179_TREND']['task']
+    assert len([s for s, q in holdings_before.items() if q > 0]) >= 2
+    assert ckpt_before['checkpoint']['last_week'] == [2026, 40]
+    assert ckpt_before['checkpoint']['last_ridge_month'] == '2026-09'
+
+    # --- Step 2: Order-reconciliation boundary (unconfirmed/untracked & open partial orders MUST block refresh) ---
+    # 2a. Simulate an untracked broker open order -> reconcile() reports untracked_orders -> MUST block!
+    host.views['V179_TREND'].request(
+        pkg_oct,
+        model_refresh_candidate(b_v179, pkg_oct, expected_active=pkg_sep['package_id'], selection_id='refresh-2026-10'),
+    )
+    server.orders_by_cid['untracked-ext-order'] = {
+        'id': 'alpaca-ext-1', 'client_order_id': 'untracked-ext-order', 'symbol': 'AAPL',
+        'side': 'buy', 'type': 'limit', 'time_in_force': 'day', 'qty': '1', 'filled_qty': '0',
+        'filled_avg_price': None, 'limit_price': str(server.last_prices['AAPL']),
+        'status': 'new', 'created_at': clock().isoformat().replace('+00:00', 'Z'),
+        'updated_at': clock().isoformat().replace('+00:00', 'Z'),
+    }
+    host.tick(service, win_w1, clock(), adapter.read_account_details())
+    assert host.state['instances']['V179_TREND']['state'] == 'SWITCHING'
+    assert host.views['V179_TREND'].pending()['reason'] == 'ORDER_STATE_UNCONFIRMED'
+    assert host.views['V179_TREND'].snapshot()['active'] == pkg_sep['package_id']
+
+    # 2b. Cancel untracked order and verify an owned open partially-filled order (with UNKNOWN/open state)
+    #     ALSO blocks refresh at WAIT_TERMINAL_ORDERS / ORDER_STATE_UNCONFIRMED until reconciled & terminal!
+    server.orders_by_cid['untracked-ext-order']['status'] = 'canceled'
+    orig_reconcile = host.controllers['V179_TREND'].adapter.reconcile
+
+    def partial_open_reconcile():
+        facts = orig_reconcile()
+        facts['orders'] = list(facts['orders']) + [
+            dict(client_id='sim-partial-child', status='PARTIALLY_FILLED', reduce_only=False)
+        ]
+        return facts
+
+    orig_cancel = host.controllers['V179_TREND'].adapter.cancel
+    canceled_ids = []
+    host.controllers['V179_TREND'].adapter.reconcile = partial_open_reconcile
+    host.controllers['V179_TREND'].adapter.cancel = lambda cid: canceled_ids.append(cid)
+    host.tick(service, win_w1, clock(), adapter.read_account_details())
+    assert canceled_ids == ['sim-partial-child']
+    assert host.state['instances']['V179_TREND']['state'] == 'SWITCHING'
+    assert host.views['V179_TREND'].pending()['reason'] == 'WAIT_TERMINAL_ORDERS'
+    assert host.views['V179_TREND'].snapshot()['active'] == pkg_sep['package_id']
+
+    # Restore real reconcile/cancel now that all orders are reconciled and terminal.
+    host.controllers['V179_TREND'].adapter.reconcile = orig_reconcile
+    host.controllers['V179_TREND'].adapter.cancel = orig_cancel
+
+    # --- Step 3: Interruption during activation callback + restart recovery ---
+    def fail_once(version):
+        raise OSError('simulated crash before activation callback completes')
+
+    host.controllers['V179_TREND'].adapter.activated = fail_once
+    host.tick(service, win_w1, clock(), adapter.read_account_details())
+    assert host.views['V179_TREND'].pending() is None
+    assert host.views['V179_TREND'].activation_callback()['reason'] == 'OSError'
+    assert host.state['instances']['V179_TREND']['state'] == 'SWITCHING'
+    host.close()
+
+    # Restart host process -> finishes activation callback cleanly, ZERO new trades, holdings/cash/checkpoint preserved!
+    host = StrategyInstances(tmp_path, adapter, cfg, clock=tick_clock, revision='1' * 40, benchmark_provider=bench_provider)
+    host.tick(service, win_w1, clock(), adapter.read_account_details())
+    assert host.views['V179_TREND'].pending() is None
+    assert host.views['V179_TREND'].activation_callback() is None
+    assert host.views['V179_TREND'].snapshot()['active'] == pkg_oct['package_id']
+    assert host.views['V179_TREND'].snapshot()['previous'] == pkg_sep['package_id']
+    assert host.state['instances']['V179_TREND']['state'] == 'RUNNING'
+    assert len(server.posts) == posts_before_refresh  # ZERO new trades from model refresh!
+    assert host.store.holdings('paper-p1-refresh', 'V179_TREND') == holdings_before
+    assert host.store.cash('paper-p1-refresh', 'V179_TREND') == cash_before
+    assert host.views['V179_TREND'].checkpoint() == ckpt_before
+    assert host.views['V179_TREND'].snapshot()['watermark'] == watermark_before
+
+    # --- Step 4: Next natural-week open (2026-10-05) uses NEW 2026-10 model; old decisions retain pkg_sep ---
+    clock_state[0] = datetime(2026, 10, 5, 13, 35, 0, tzinfo=timezone.utc)
+    server.last_prices = {
+        s: D(str(round(float(bars[s].loc[:'2026-10-02', 'close'].iloc[-1]), 2)))
+        for s in ASSETS
+    }
+    win_w2 = weekly_window(service.calendar, clock())
+    for _ in range(6):
+        host.tick(service, win_w2, clock(), adapter.read_account_details())
+        if (
+            host.state['instances']['V179_TREND']['state'] == 'RUNNING'
+            and host.views['V179_TREND'].checkpoint()['checkpoint']['last_week'] == [2026, 41]
+            and host.store.plan(host.report()['V179_TREND']['task'])['phase'] == 'COMPLETE'
+        ):
+            break
+    assert host.views['V179_TREND'].checkpoint()['checkpoint']['last_week'] == [2026, 41]
+    assert host.views['V179_TREND'].checkpoint()['checkpoint']['last_ridge_month'] == '2026-10'
+    assert host.views['V179_TREND'].checkpoint()['checkpoint']['model_artifact_sha256'] == art_oct['artifact_sha256']
+    assert len(server.posts) > posts_before_refresh
+    # Old Week 1 decision and plan stay permanently bound to pkg_sep; Week 2 bound to pkg_oct!
+    decision_versions = [
+        (r['version'], r['watermark'])
+        for r in host.views['V179_TREND'].db.execute(
+            'SELECT version, watermark FROM instance_decisions WHERE instance_id=? ORDER BY rowid',
+            ('V179_TREND',),
+        ).fetchall()
+    ]
+    assert (pkg_sep['package_id'], 'natural_week_open:2026-09-28') in decision_versions
+    assert (pkg_oct['package_id'], 'natural_week_open:2026-10-05') in decision_versions
+    w1_plan = host.store.plan(w1_plan_id)
+    w2_plan = host.store.plan(host.report()['V179_TREND']['task'])
+    assert w1_plan['request']['signal_inputs']['package_id'] == pkg_sep['package_id']
+    assert w2_plan['request']['signal_inputs']['package_id'] == pkg_oct['package_id']
+    assert w1_plan['id'] != w2_plan['id']
+
+    # --- Step 5: Model validation failures (rewritten history & smuggled code) fail closed & rollback ---
+    # 5a. Rewritten historical month Ridge intercept (valid artifact_sha256, violates history immutability).
+    art_rewritten = json.loads(json.dumps(art_nov))
+    art_rewritten['models']['2026-09']['ridge_intercept'] += 0.5
+    art_rewritten['artifact_sha256'] = canonical_artifact_digest(art_rewritten)
+    pkg_rewritten = build_v179_package(
+        account_id='paper-p1-refresh', capital='10000', model_artifact=art_rewritten,
+        code_commit='3' * 40, destination=tmp_path / 'v179-rewritten.zip',
+        evidence={'month': '2026-11-rewritten'}, feed='iex', migration='artifact_refresh',
+    )
+    install_package(tmp_path / 'v179-rewritten.zip', releases)
+    host.views['V179_TREND'].request(
+        pkg_rewritten,
+        model_refresh_candidate(b_v179, pkg_rewritten, expected_active=pkg_oct['package_id'], selection_id='bad-history'),
+    )
+    posts_before_bad = len(server.posts)
+    holdings_w2 = dict(host.store.holdings('paper-p1-refresh', 'V179_TREND'))
+    cash_w2 = host.store.cash('paper-p1-refresh', 'V179_TREND')
+    ckpt_w2 = dict(host.views['V179_TREND'].checkpoint())
+    # Tick 1: fails verify_artifact_refresh_packages -> enters ROLLBACK (artifact_refresh); Tick 2: completes rollback!
+    host.tick(service, win_w2, clock(), adapter.read_account_details())
+    assert host.views['V179_TREND'].pending()['phase'] == 'ROLLBACK'
+    host.tick(service, win_w2, clock(), adapter.read_account_details())
+    assert host.views['V179_TREND'].pending() is None
+    assert host.views['V179_TREND'].snapshot()['active'] == pkg_oct['package_id']
+    assert host.store.holdings('paper-p1-refresh', 'V179_TREND') == holdings_w2
+    assert host.store.cash('paper-p1-refresh', 'V179_TREND') == cash_w2
+    assert len(server.posts) == posts_before_bad
+
+    # 5b. Smuggled executable Python statement inside model_artifact.py -> rejected by AST validator!
+    smuggle_src = tmp_path / 'smuggle-src'
+    smuggle_src.mkdir()
+    oct_release = releases / pkg_oct['package_id']
+    (smuggle_src / 'strategy.py').write_bytes((oct_release / 'strategy.py').read_bytes())
+    (smuggle_src / 'model_artifact.py').write_bytes(
+        (dump_artifact_python_module(art_nov) + '\n_SMUGGLED_EXEC = 1\n').encode('utf-8')
+    )
+    smuggle_manifest = dict(pkg_oct)
+    smuggle_manifest.pop('package_id')
+    smuggle_manifest['evidence'] = {'month': '2026-11-smuggled', 'model_artifact_sha256': art_nov['artifact_sha256']}
+    smuggle_manifest['model_artifact'] = dict(
+        pkg_oct['model_artifact'],
+        artifact_sha256=art_nov['artifact_sha256'],
+        covered_end=art_nov['covered_end'],
+        fitted_months=len(art_nov['models']),
+    )
+    pkg_smuggled = build_package(smuggle_src, smuggle_manifest, tmp_path / 'v179-smuggled.zip')
+    install_package(tmp_path / 'v179-smuggled.zip', releases)
+    host.views['V179_TREND'].request(
+        pkg_smuggled,
+        model_refresh_candidate(b_v179, pkg_smuggled, expected_active=pkg_oct['package_id'], selection_id='bad-ast'),
+    )
+    host.tick(service, win_w2, clock(), adapter.read_account_details())
+    assert host.views['V179_TREND'].pending()['phase'] == 'ROLLBACK'
+    host.tick(service, win_w2, clock(), adapter.read_account_details())
+    assert host.views['V179_TREND'].pending() is None
+    assert host.views['V179_TREND'].snapshot()['active'] == pkg_oct['package_id']
+    assert len(server.posts) == posts_before_bad
+
+    # --- Step 6: Compatible model rollback (pkg_oct -> pkg_sep) while holding positions ---
+    host.views['V179_TREND'].rollback('operator_compatible_rollback', expected_active=pkg_oct['package_id'])
+    assert host.views['V179_TREND'].pending()['policy'] == 'artifact_refresh'
+    host.tick(service, win_w2, clock(), adapter.read_account_details())
+    assert host.views['V179_TREND'].pending() is None
+    assert host.views['V179_TREND'].snapshot()['active'] == pkg_sep['package_id']
+    assert host.store.holdings('paper-p1-refresh', 'V179_TREND') == holdings_w2
+    assert host.store.cash('paper-p1-refresh', 'V179_TREND') == cash_w2
+    assert host.views['V179_TREND'].checkpoint() == ckpt_w2  # checkpoint preserved (no week rewind!)
+    assert len(server.posts) == posts_before_bad
+
+    # --- Step 7: Incompatible packages MUST NOT bypass wait_flat via artifact_refresh ---
+    # 7a. Changed configuration (omit_sndk=True) rejected at request().
+    art_no_sndk = train_monthly_ridge_artifact(full_close.loc[:'2026-10-01'], full_bench.loc[:'2026-10-01'], omit_sndk=True)
+    pkg_incompat_cfg = build_v179_package(
+        account_id='paper-p1-refresh', capital='10000', model_artifact=art_no_sndk,
+        code_commit='4' * 40, destination=tmp_path / 'v179-nosndk.zip',
+        evidence={'month': '2026-10-nosndk'}, feed='iex', omit_sndk=True, migration='artifact_refresh',
+    )
+    with pytest.raises(ValueError, match='incompatible artifact_refresh'):
+        host.views['V179_TREND'].request(
+            pkg_incompat_cfg,
+            model_refresh_candidate(b_v179, pkg_incompat_cfg, expected_active=pkg_sep['package_id'], selection_id='bad-cfg'),
+        )
+
+    # 7b. Modified strategy.py code file rejected at request().
+    code_mod_src = tmp_path / 'code-mod-src'
+    code_mod_src.mkdir()
+    (code_mod_src / 'strategy.py').write_text(
+        (oct_release / 'strategy.py').read_text(encoding='utf-8') + '\n# modified strategy logic\n',
+        encoding='utf-8',
+    )
+    (code_mod_src / 'model_artifact.py').write_text(dump_artifact_python_module(art_oct), encoding='utf-8')
+    code_mod_manifest = dict(pkg_oct)
+    code_mod_manifest.pop('package_id')
+    code_mod_manifest['evidence'] = {'month': '2026-10-codemod', 'model_artifact_sha256': art_oct['artifact_sha256']}
+    pkg_codemod = build_package(code_mod_src, code_mod_manifest, tmp_path / 'v179-codemod.zip')
+    with pytest.raises(ValueError, match='incompatible artifact_refresh: non-artifact strategy code files changed'):
+        host.views['V179_TREND'].request(
+            pkg_codemod,
+            model_refresh_candidate(b_v179, pkg_codemod, expected_active=pkg_sep['package_id'], selection_id='bad-code'),
+        )
+
+    # 7c. Ordinary wait_flat package while holding positions STILL waits at WAIT_OLD_POSITIONS!
+    pkg_wait_flat = build_v179_package(
+        account_id='paper-p1-refresh', capital='10000', model_artifact=art_nov,
+        code_commit='5' * 40, destination=tmp_path / 'v179-waitflat.zip',
+        evidence={'month': '2026-11-waitflat'}, feed='iex', migration='wait_flat',
+    )
+    install_package(tmp_path / 'v179-waitflat.zip', releases)
+    _promote(host.views['V179_TREND'], pkg_wait_flat, 'ordinary-wait-flat')
+    host.tick(service, win_w2, clock(), adapter.read_account_details())
+    assert host.views['V179_TREND'].pending()['reason'] == 'WAIT_OLD_POSITIONS'
+    assert host.views['V179_TREND'].snapshot()['active'] == pkg_sep['package_id']
+    assert len(server.posts) == posts_before_bad
+
+    host.close()
     adapter.store.db.close()

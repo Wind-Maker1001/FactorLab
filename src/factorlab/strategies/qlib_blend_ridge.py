@@ -6,6 +6,7 @@ online causal inference (runtime/cloud side, pure NumPy/Pandas only, never impor
 """
 from __future__ import annotations
 
+import ast
 from hashlib import sha256
 import json
 from typing import Mapping
@@ -158,6 +159,7 @@ def train_monthly_ridge_artifact(
         models[month_key] = {
             'month': month_key,
             'effective_from_signal_date': str(days[0].date()),
+            'label_maturity_date': str(days[0].date()),
             'train_start': str(start_day.date()),
             'train_cutoff': str(cutoff_day.date()),
             'train_days': int(learn.index.nunique()),
@@ -215,8 +217,12 @@ def validate_ridge_artifact(artifact: Mapping, *, expected_omit_sndk: bool | Non
         eff = pd.Timestamp(entry['effective_from_signal_date'])
         cutoff = pd.Timestamp(entry['train_cutoff'])
         start = pd.Timestamp(entry['train_start'])
-        if not (start <= cutoff < eff):
-            raise ModelArtifactError(f'noncausal training window in month {month_key}: {start}..{cutoff} vs {eff}')
+        maturity = pd.Timestamp(entry.get('label_maturity_date', entry['effective_from_signal_date']))
+        if not (start <= cutoff < maturity <= eff):
+            raise ModelArtifactError(
+                f'noncausal training window in month {month_key}: '
+                f'{start}..{cutoff} (maturity {maturity}) vs {eff}'
+            )
         if int(entry['train_days']) < MIN_TRAIN_DAYS:
             raise ModelArtifactError(f'insufficient train_days in month {month_key}')
         for vector_key in ('scaler_mean', 'scaler_scale', 'ridge_coef'):
@@ -402,3 +408,106 @@ def dump_artifact_python_module(artifact: Mapping, *, variable_name: str = 'MODE
         'import json\n\n'
         f'{variable_name} = json.loads({body!r})\n'
     )
+
+
+def extract_frozen_artifact_from_module_source(source: str, *, variable_name: str = 'MODEL_ARTIFACT') -> dict:
+    """Parse a frozen artifact Python module via AST only (zero execution) and validate it.
+
+    Guarantees that an artifact-only package refresh cannot smuggle arbitrary Python code
+    inside ``model_artifact.py``.
+    """
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as exc:
+        raise ModelArtifactError('invalid syntax in model artifact module') from exc
+    stmts = list(tree.body)
+    if (
+        stmts
+        and isinstance(stmts[0], ast.Expr)
+        and isinstance(stmts[0].value, ast.Constant)
+        and isinstance(stmts[0].value.value, str)
+    ):
+        stmts = stmts[1:]
+    if len(stmts) != 2:
+        raise ModelArtifactError('model artifact module must contain only import json and artifact assignment')
+    imp, assign = stmts
+    if (
+        not isinstance(imp, ast.Import)
+        or len(imp.names) != 1
+        or imp.names[0].name != 'json'
+        or imp.names[0].asname is not None
+    ):
+        raise ModelArtifactError('model artifact module may only import json')
+    if (
+        not isinstance(assign, ast.Assign)
+        or len(assign.targets) != 1
+        or not isinstance(assign.targets[0], ast.Name)
+        or assign.targets[0].id != variable_name
+        or not isinstance(assign.value, ast.Call)
+        or not isinstance(assign.value.func, ast.Attribute)
+        or not isinstance(assign.value.func.value, ast.Name)
+        or assign.value.func.value.id != 'json'
+        or assign.value.func.attr != 'loads'
+        or len(assign.value.args) != 1
+        or assign.value.keywords
+        or not isinstance(assign.value.args[0], ast.Constant)
+        or not isinstance(assign.value.args[0].value, str)
+    ):
+        raise ModelArtifactError('model artifact module must assign MODEL_ARTIFACT = json.loads(<str>)')
+    try:
+        payload = json.loads(assign.value.args[0].value)
+    except json.JSONDecodeError as exc:
+        raise ModelArtifactError('invalid JSON payload in model artifact module') from exc
+    return validate_ridge_artifact(payload)
+
+
+def verify_ridge_artifact_compatibility(
+    old_artifact: Mapping,
+    new_artifact: Mapping,
+    *,
+    direction: str = 'upgrade',
+    atol: float = 1e-9,
+    rtol: float = 1e-9,
+) -> None:
+    """Verify two frozen Ridge artifacts are compatible for position-preserving refresh or rollback."""
+    if direction not in {'upgrade', 'rollback'}:
+        raise ModelArtifactError(f'unsupported compatibility direction: {direction!r}')
+    old = validate_ridge_artifact(old_artifact)
+    new = validate_ridge_artifact(new_artifact)
+    for key in (
+        'schema_version',
+        'kind',
+        'alpha',
+        'min_train_days',
+        'train_lookback_sessions',
+        'label_maturity_sessions',
+        'feature_names',
+        'eligible_symbols',
+        'omit_sndk',
+    ):
+        if old.get(key) != new.get(key):
+            raise ModelArtifactError(f'incompatible Ridge artifact metadata: {key}')
+
+    old_models = old['models']
+    new_models = new['models']
+    if direction == 'upgrade':
+        if old.get('covered_end') and new.get('covered_end'):
+            if pd.Timestamp(new['covered_end']) < pd.Timestamp(old['covered_end']):
+                raise ModelArtifactError('model refresh cannot shrink covered_end on upgrade')
+        missing_history = sorted(set(old_models) - set(new_models))
+        if missing_history:
+            raise ModelArtifactError(
+                f'model refresh dropped previously fitted months: {", ".join(missing_history[:5])}'
+            )
+
+    common_months = sorted(set(old_models) & set(new_models))
+    for month_key in common_months:
+        om, nm = old_models[month_key], new_models[month_key]
+        for field in ('train_start', 'train_cutoff', 'effective_from_signal_date', 'train_days', 'train_rows'):
+            if om.get(field) != nm.get(field):
+                raise ModelArtifactError(f'historical month {month_key} changed {field}')
+        for vec_field in ('scaler_mean', 'scaler_scale', 'ridge_coef'):
+            if not np.allclose(om[vec_field], nm[vec_field], rtol=rtol, atol=atol):
+                raise ModelArtifactError(f'historical month {month_key} changed {vec_field}')
+        if not np.isclose(om['ridge_intercept'], nm['ridge_intercept'], rtol=rtol, atol=atol):
+            raise ModelArtifactError(f'historical month {month_key} changed ridge_intercept')

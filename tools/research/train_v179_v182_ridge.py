@@ -1,11 +1,18 @@
 """Offline monthly Ridge model trainer & V2 StrategyPackage builder for native V179/V182.
 
-Enforces the FactorLab cloud boundary:
+Enforces the FactorLab cloud boundary and original monthly causal training timing:
 - Model training runs strictly offline in research environments (uses scikit-learn lazily).
-- Produces a lightweight, SHA-256 content-addressed JSON model artifact (~50 KB) with
-  strict per-month causal training cutoffs (train_cutoff < effective_from_signal_date).
-- Optionally builds content-addressed V2 StrategyPackage archives for V179 and V182 that
-  embed the frozen artifact as a pure-Python module (zero runtime scikit-learn dependency).
+- Preserves the exact 5-trading-day forward label (LABEL_MATURITY_SESSIONS=5), 508-session
+  lookback window, and Ridge(alpha=80.0).
+- Monthly training MUST run AFTER the first trading session of month M completes close and
+  all 8 equities + ^SP500TR benchmark close bars are available (so the 5-trading-day label
+  for train_cutoff = calendar[i - 5] has matured at d_0 = calendar[i]), and BEFORE the first
+  natural-week open rebalance that uses a month-M signal (which always occurs strictly after d_0).
+- Produces a lightweight, SHA-256 content-addressed JSON model artifact (~170 KB) with
+  strict per-month causal metadata (train_start <= train_cutoff < label_maturity_date ==
+  effective_from_signal_date).
+- Optionally builds content-addressed V2 StrategyPackage archives (default migration='artifact_refresh')
+  that embed the frozen artifact as a pure-Python data module for position-preserving monthly refreshes.
 
 Example usage:
   python tools/research/train_v179_v182_ridge.py \
@@ -16,6 +23,7 @@ Example usage:
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -66,9 +74,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument('--account-id', default='paper-example')
     parser.add_argument('--capital', default='50000')
     parser.add_argument('--code-commit', default='0' * 40)
+    parser.add_argument(
+        '--migration',
+        default='artifact_refresh',
+        choices=('artifact_refresh', 'wait_flat'),
+        help='StrategyPackage migration policy (default: artifact_refresh for position-preserving monthly refresh)',
+    )
+    parser.add_argument('--generated-at', default=None, help='Optional ISO-8601 UTC generation timestamp')
     args = parser.parse_args(argv)
 
     close, market_index, file_hashes = load_frozen_market(args.market_dir, args.benchmark, end=args.end)
+    generated_at = args.generated_at or datetime.now(timezone.utc).isoformat()
     artifact = train_monthly_ridge_artifact(
         close,
         market_index,
@@ -79,18 +95,26 @@ def main(argv: list[str] | None = None) -> int:
             'benchmark_file': args.benchmark.name,
             'input_sha256': file_hashes,
             'requested_end': args.end,
+            'generated_at': generated_at,
         },
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(artifact, indent=2, sort_keys=True, allow_nan=False) + '\n', encoding='utf-8')
+    latest_month = sorted(artifact['models'])[-1] if artifact['models'] else None
+    latest_entry = artifact['models'][latest_month] if latest_month else None
     summary = {
         'output': str(args.output),
         'artifact_sha256': artifact['artifact_sha256'],
         'omit_sndk': artifact['omit_sndk'],
         'covered_start': artifact['covered_start'],
         'covered_end': artifact['covered_end'],
+        'generated_at': generated_at,
         'fitted_months': len(artifact['models']),
         'insufficient_months': len(artifact['insufficient_months']),
+        'latest_model_month': latest_month,
+        'latest_train_cutoff': None if latest_entry is None else latest_entry['train_cutoff'],
+        'latest_label_maturity_date': None if latest_entry is None else latest_entry.get('label_maturity_date'),
+        'latest_effective_from_signal_date': None if latest_entry is None else latest_entry['effective_from_signal_date'],
         'size_bytes': args.output.stat().st_size,
     }
     if args.build_packages_dir is not None:
@@ -99,6 +123,7 @@ def main(argv: list[str] | None = None) -> int:
             'offline_training': True,
             'benchmark_series': '^SP500TR',
             'covered_end': artifact['covered_end'],
+            'generated_at': generated_at,
         }
         v179_manifest = build_v179_package(
             account_id=args.account_id,
@@ -108,6 +133,7 @@ def main(argv: list[str] | None = None) -> int:
             destination=args.build_packages_dir / 'v179_trend_blend.zip',
             evidence=evidence,
             omit_sndk=args.omit_sndk,
+            migration=args.migration,
         )
         v182_manifest = build_v182_package(
             account_id=args.account_id,
@@ -117,6 +143,7 @@ def main(argv: list[str] | None = None) -> int:
             destination=args.build_packages_dir / 'v182_recovery_blend.zip',
             evidence=evidence,
             omit_sndk=args.omit_sndk,
+            migration=args.migration,
         )
         summary['v179_package_id'] = v179_manifest['package_id']
         summary['v182_package_id'] = v182_manifest['package_id']

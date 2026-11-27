@@ -42,7 +42,7 @@ class AlpacaDeployment:
                      if order.intent.client_order_id not in tracked]
         holdings = store.holdings(instance.binding['account_id'], instance.binding['instance_id'])
         return dict(reconciled=account.reconciled, unknown=unknown, untracked_orders=untracked,
-                    orders=owned, positions=[dict(symbol=symbol, quantity=quantity)
+                    orders=owned, positions=[dict(symbol=symbol, quantity=str(quantity))
                         for symbol, quantity in holdings.items() if quantity])
 
     def watermark(self):

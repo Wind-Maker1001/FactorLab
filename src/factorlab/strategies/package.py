@@ -96,7 +96,7 @@ def validate_manifest(m, *, qualify=None):
             raise ValueError('positive interval_seconds required')
     if 'package' in m and not isinstance(m['package'], bool):
         raise ValueError('package flag must be a boolean')
-    if m['migration'] not in {'wait_flat', 'reduce_only'}:
+    if m['migration'] not in {'wait_flat', 'reduce_only', 'artifact_refresh'}:
         raise ValueError('explicit position migration policy required')
     if m['migration'] == 'reduce_only' and m.get('reduction', {}).get('explicitly_allowed') is not True:
         raise ValueError('reduction requires an explicit preconfigured rule')
@@ -121,6 +121,31 @@ def validate_manifest(m, *, qualify=None):
             raise ValueError('invalid package source member')
     if package_entrypoint_file(m)[0] not in files:
         raise ValueError('entrypoint missing from source inventory')
+    if 'model_artifact' in m:
+        if interface != V2:
+            raise ValueError('model_artifact metadata requires V2 StrategyPackage')
+        ma = m['model_artifact']
+        required_ma = {'kind', 'schema_version', 'file', 'artifact_sha256', 'covered_start', 'covered_end'}
+        if not isinstance(ma, dict) or not required_ma <= set(ma):
+            raise ValueError('invalid model_artifact metadata')
+        if (not isinstance(ma['kind'], str) or not ma['kind']
+                or type(ma['schema_version']) is not int or ma['schema_version'] < 1
+                or not isinstance(ma['file'], str) or ma['file'] not in files
+                or ma['file'] == package_entrypoint_file(m)[0]
+                or not isinstance(ma['artifact_sha256'], str)
+                or not re.fullmatch(r'[0-9a-f]{64}', ma['artifact_sha256'])
+                or not isinstance(ma['covered_start'], str)
+                or not isinstance(ma['covered_end'], str)
+                or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', ma['covered_start'])
+                or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', ma['covered_end'])
+                or ma['covered_start'] > ma['covered_end']):
+            raise ValueError('invalid model_artifact metadata fields')
+        if 'model_artifact_sha256' in m['evidence'] and m['evidence']['model_artifact_sha256'] != ma['artifact_sha256']:
+            raise ValueError('evidence model_artifact_sha256 differs from model_artifact metadata')
+    if m['migration'] == 'artifact_refresh':
+        if (interface != V2 or 'model_artifact' not in m
+                or m['requirements']['state'].get('migration') != 'preserve'):
+            raise ValueError('artifact_refresh requires V2 package with model_artifact metadata and preserve state migration')
     if m.get('package_id') != digest({k: v for k, v in m.items() if k != 'package_id'}):
         raise ValueError('package identity mismatch')
     if qualify is not None:
@@ -197,9 +222,132 @@ def load_package(path, *, qualify=None):
     return m
 
 
+def verify_artifact_refresh_manifests(old_manifest, new_manifest, *, direction='upgrade'):
+    """Verify two V2 manifests differ ONLY in their declared frozen model artifact and metadata."""
+    if direction not in {'upgrade', 'rollback'}:
+        raise ValueError(f'unsupported artifact refresh direction: {direction!r}')
+    validate_manifest(old_manifest)
+    validate_manifest(new_manifest)
+    if old_manifest['interface'] != V2 or new_manifest['interface'] != V2:
+        raise ValueError('artifact_refresh requires V2 StrategyPackages')
+    if 'model_artifact' not in old_manifest or 'model_artifact' not in new_manifest:
+        raise ValueError('artifact_refresh requires model_artifact metadata on both old and new packages')
+    for field in (
+        'strategy_id',
+        'strategy_version',
+        'market',
+        'account_id',
+        'symbols',
+        'execution_mode',
+        'requirements',
+        'entrypoint',
+        'dependencies',
+        'configuration',
+    ):
+        if old_manifest[field] != new_manifest[field]:
+            raise ValueError(f'incompatible artifact_refresh: {field} changed')
+    if bool(old_manifest.get('package', False)) != bool(new_manifest.get('package', False)):
+        raise ValueError('incompatible artifact_refresh: package layout changed')
+    if old_manifest['requirements']['state'].get('migration') != 'preserve':
+        raise ValueError('incompatible artifact_refresh: state migration must be preserve')
+
+    old_ma, new_ma = old_manifest['model_artifact'], new_manifest['model_artifact']
+    for field in ('kind', 'schema_version', 'file'):
+        if old_ma[field] != new_ma[field]:
+            raise ValueError(f'incompatible artifact_refresh: model_artifact.{field} changed')
+    if old_ma.get('omit_sndk') != new_ma.get('omit_sndk'):
+        raise ValueError('incompatible artifact_refresh: model_artifact.omit_sndk changed')
+    artifact_file = old_ma['file']
+    old_code_files = {k: v for k, v in old_manifest['files'].items() if k != artifact_file}
+    new_code_files = {k: v for k, v in new_manifest['files'].items() if k != artifact_file}
+    if old_code_files != new_code_files:
+        raise ValueError('incompatible artifact_refresh: non-artifact strategy code files changed')
+    if direction == 'upgrade' and new_ma['covered_end'] < old_ma['covered_end']:
+        raise ValueError('incompatible artifact_refresh: covered_end cannot move backwards on upgrade')
+
+
+def can_artifact_refresh_manifests(old_manifest, new_manifest, *, direction='upgrade') -> bool:
+    try:
+        verify_artifact_refresh_manifests(old_manifest, new_manifest, direction=direction)
+    except ValueError:
+        return False
+    return True
+
+
+def verify_artifact_refresh_packages(
+    old_manifest,
+    new_manifest,
+    *,
+    old_sources,
+    new_sources,
+    direction='upgrade',
+):
+    """Full manifest + pure-AST frozen artifact payload compatibility check (zero code execution)."""
+    verify_artifact_refresh_manifests(old_manifest, new_manifest, direction=direction)
+    old_ma, new_ma = old_manifest['model_artifact'], new_manifest['model_artifact']
+    artifact_file = old_ma['file']
+    if artifact_file not in old_sources or artifact_file not in new_sources:
+        raise ValueError('incompatible artifact_refresh: missing model artifact source file')
+    for label, src_map, manifest in (('old', old_sources, old_manifest), ('new', new_sources, new_manifest)):
+        raw_text = src_map[artifact_file]
+        expected_hash = manifest['files'][artifact_file]
+        lf_hash = sha256(raw_text.encode('utf-8')).hexdigest()
+        crlf_hash = sha256(raw_text.replace('\r\n', '\n').replace('\n', '\r\n').encode('utf-8')).hexdigest()
+        if expected_hash not in {lf_hash, crlf_hash}:
+            raise ValueError(f'incompatible artifact_refresh: {label} model artifact source digest mismatch')
+
+    kind = old_ma['kind']
+    if kind == 'qlib_v100_monthly_ridge':
+        from .qlib_blend_ridge import (
+            extract_frozen_artifact_from_module_source,
+            verify_ridge_artifact_compatibility,
+        )
+        old_art = extract_frozen_artifact_from_module_source(old_sources[artifact_file])
+        new_art = extract_frozen_artifact_from_module_source(new_sources[artifact_file])
+        for label, art, ma in (('old', old_art, old_ma), ('new', new_art, new_ma)):
+            if art['artifact_sha256'] != ma['artifact_sha256']:
+                raise ValueError(f'incompatible artifact_refresh: {label} artifact_sha256 mismatch')
+            if art['covered_start'] != ma['covered_start'] or art['covered_end'] != ma['covered_end']:
+                raise ValueError(f'incompatible artifact_refresh: {label} coverage metadata mismatch')
+            if 'omit_sndk' in ma and bool(art['omit_sndk']) != bool(ma['omit_sndk']):
+                raise ValueError(f'incompatible artifact_refresh: {label} omit_sndk mismatch')
+            if 'fitted_months' in ma and len(art['models']) != int(ma['fitted_months']):
+                raise ValueError(f'incompatible artifact_refresh: {label} fitted_months mismatch')
+        verify_ridge_artifact_compatibility(old_art, new_art, direction=direction)
+    else:
+        raise ValueError(f'unsupported model_artifact kind for artifact_refresh: {kind!r}')
+
+
+def model_refresh_candidate(binding, manifest, *, expected_active, selection_id):
+    """Build an evidence-bound FACTORLAB_MODEL_REFRESH_V2 request (not a Champion promotion)."""
+    validate_manifest(manifest)
+    if manifest['interface'] != V2 or manifest['migration'] != 'artifact_refresh' or 'model_artifact' not in manifest:
+        raise ValueError('model_refresh_candidate requires a V2 artifact_refresh StrategyPackage')
+    return dict(
+        schema='FACTORLAB_MODEL_REFRESH_V2',
+        binding=dict(binding),
+        selection_id=str(selection_id),
+        decision='REFRESH_MODEL',
+        qualified=True,
+        expected_active=expected_active,
+        package_id=manifest['package_id'],
+        model_artifact_sha256=manifest['model_artifact']['artifact_sha256'],
+        evidence=manifest['evidence'],
+    )
+
+
 def candidate_package(candidate, manifest):
-    """Bind promotion evidence, without interpreting research metrics."""
+    """Bind promotion or compatible model-refresh evidence, without interpreting research metrics."""
     v2 = manifest['interface'] == V2
+    if v2 and candidate.get('schema') == 'FACTORLAB_MODEL_REFRESH_V2':
+        if (manifest['migration'] != 'artifact_refresh' or 'model_artifact' not in manifest
+                or candidate.get('decision') != 'REFRESH_MODEL' or candidate.get('qualified') is not True
+                or candidate.get('package_id') != manifest['package_id']
+                or candidate.get('model_artifact_sha256') != manifest['model_artifact']['artifact_sha256']
+                or candidate.get('evidence') != manifest['evidence'] or not candidate.get('selection_id')):
+            raise ValueError('qualified, artifact-bound model refresh request required')
+        manifest_spec(manifest).require_binding(candidate['binding'])
+        return str(candidate['selection_id'])
     if ((candidate.get('schema') != 'FACTORLAB_CHAMPION_PROMOTION_V2' if v2 else candidate.get('schema_version') != 1)
             or candidate.get('decision') != 'PROMOTE' or candidate.get('qualified') is not True
             or candidate.get('strictly_better') is not True or candidate.get('package_id') != manifest['package_id']
