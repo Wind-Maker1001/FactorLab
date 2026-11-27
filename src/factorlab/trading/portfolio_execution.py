@@ -1028,14 +1028,16 @@ class PortfolioExecutor:
         self.store.db.execute('INSERT INTO portfolio_confirmations VALUES (?,?,?)',
                               (account, event.event_id, payload))
 
-    def _recover(self, plan):
+    def _recover(self, plan, query_order=None):
+        if query_order is None:
+            query_order = self.adapter.query_order
         for order in self.store.orders(plan['id']):
             if (order['record'].snapshot.status in {OrderStatus.FILLED, OrderStatus.REJECTED}
                     and not order['uncertain']):
                 continue
             identity = order['record'].snapshot.intent.client_order_id
             try:
-                event = self.adapter.query_order(identity)
+                event = query_order(identity)
             except SubmissionNotAttempted:
                 order['attempted'], order['uncertain'] = False, False
                 self.store.save_order(order)
@@ -1055,21 +1057,24 @@ class PortfolioExecutor:
                 continue
             self._accept(plan, order, event)
 
-    def _recover_account(self, account_id):
+    def _recover_account(self, account_id, query_order=None):
         for identity, in self.store.db.execute(
                 'SELECT id FROM portfolio_plans WHERE account=? ORDER BY rowid', (account_id,)).fetchall():
             plan = self.store.plan(identity)
-            self._recover(plan)
+            self._recover(plan, query_order)
             self.store.save_plan(plan)
 
-    def reconcile(self, account_id):
-        """Persist original-order observations without planning, submitting or canceling.
-
-        Broker reads may update fills, fees, ownership and terminal reservations
-        in the existing journal. This is execution-free, not storage-read-only.
-        """
+    def reconcile(self, account_id, *, observe=None):
+        """Recover the journal, optionally from one account and original-order observation."""
         with self.store.transaction():
-            self._recover_account(account_id)
+            if observe is None:
+                self._recover_account(account_id)
+                return None
+            account, query_order = observe()
+            if account.account_id != account_id:
+                raise ValueError('matching official account required')
+            self._recover_account(account_id, query_order)
+            return account
 
     def _account_uncertain(self, account_id, symbols=None):
         if symbols is not None and not self._shared_policy(account_id):

@@ -39,10 +39,20 @@ class AlpacaPortfolioAdapter:
         # account recovery, invalidating its inventory/cash admission snapshot.
         return self.adapter.recover()
 
-    def query_order(self, client_order_id):
+    def observe_recovery(self):
+        """Import exactly the original orders seen by the account recovery turn."""
+        account, read_order = self.adapter.recover(with_orders=True)
+        def query_order(client_order_id):
+            return self.query_order(client_order_id, read_order=read_order)
+        return account, query_order
+
+    def query_order(self, client_order_id, *, read_order=None):
         try:
-            details = self.adapter.read_order_details(client_order_id)
-            executions = self.adapter.read_order_executions(client_order_id)
+            if read_order is None:
+                details = self.adapter.read_order_details(client_order_id)
+                executions = self.adapter.read_order_executions(client_order_id)
+            else:
+                details, executions = read_order(client_order_id)
         except self.order_not_found:
             rejection = self.adapter.store.get('rejection:' + client_order_id)
             if rejection is not None:
@@ -139,6 +149,9 @@ class AlpacaPortfolioRunner:
         self.bridge = AlpacaPortfolioAdapter(adapter, store, order_not_found=order_not_found,
                                             rejection_error=rejection_error, clock=clock)
         self.executor = PortfolioExecutor(self.bridge, store, quote_currency='USD', clock=clock)
+
+    def reconcile_account(self, account_id):
+        return self.executor.reconcile(account_id, observe=self.bridge.observe_recovery)
 
     def run_once(self, identity, *, quotes, rules, not_before=None):
         self.adapter.recover()

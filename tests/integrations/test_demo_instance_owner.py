@@ -184,10 +184,12 @@ def test_poll_blocks_pending_execution_until_instance_activation_recovers(tmp_pa
     store = PaperStore(tmp_path / 'activation-outbox.sqlite3')
     store.db.execute('CREATE TABLE demo_instance_outbox (id TEXT, payload TEXT, completed INTEGER)')
     calls = []
+    risk_accounts = []
     session = SimpleNamespace(_now=lambda: NOW, adapter=SimpleNamespace(account_id='account',
-        read_facts=lambda: SimpleNamespace(usdt=lambda: dict(
+        read_facts=lambda: SimpleNamespace(account_id='account', usdt=lambda: dict(
             walletBalance=Decimal(5000), unrealizedProfit=Decimal(0)))))
     execution = SimpleNamespace(session=session, store=store,
+        executor=SimpleNamespace(enforce_portfolio_risk=risk_accounts.append),
         advance=lambda decision_id, **kwargs: calls.append(decision_id) or 'WAITING')
     owner = DemoInstanceOwner(session, execution)
     callback = {'package_id': 'package'}
@@ -209,6 +211,7 @@ def test_poll_blocks_pending_execution_until_instance_activation_recovers(tmp_pa
         calls.clear()
         assert owner.poll() == {'blocked': 'WAITING', 'healthy': 'WAITING'}
         assert calls == ['blocked', 'healthy']
+        assert risk_accounts == ['account', 'account']
     finally:
         store.close()
 

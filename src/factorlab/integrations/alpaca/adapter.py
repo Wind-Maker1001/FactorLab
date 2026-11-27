@@ -162,7 +162,10 @@ class AlpacaAdapter:
         needing execution-exact cash flows use read_order_executions instead.
         """
         self._apply(self._lookup(client_order_id), emit=False)
-        row = self.store.order(client_order_id)[1]
+        return self._order_details(self.store.order(client_order_id)[1])
+
+    @staticmethod
+    def _order_details(row):
         return {"client_order_id": row["client_order_id"], "exchange_order_id": row["id"],
                 "status": order_status(row), "filled_quantity": D(row["filled_qty"]),
                 "filled_avg_price": D(row["filled_avg_price"]) if row["filled_avg_price"] else None,
@@ -189,11 +192,13 @@ class AlpacaAdapter:
     def read_account(self):
         return self._snapshot(self.read_account_details())
 
-    def _snapshot(self, facts):
+    def _snapshot(self, facts, *, recovered_orders=None):
         rows = self._positions()
         orders, reserved = [], Z
         official_ids = set()
-        for _, (intent, row, uncertain, price) in self.store.orders():
+        if recovered_orders is None:
+            recovered_orders = self.store.orders()
+        for _, (intent, row, uncertain, price) in recovered_orders:
             if self.store.get("rejection:" + intent.client_order_id) is not None and row is None:
                 continue
             if row is not None and order_status(row) in TERMINAL and not uncertain:
@@ -372,7 +377,7 @@ class AlpacaAdapter:
             until = next_until
         raise ValueError("order pagination budget exceeded")
 
-    def recover(self, *, with_details=False):
+    def recover(self, *, with_details=False, with_orders=False):
         self.reconciled = False
         self.read_account_details()
         activities = self.read_activities()
@@ -381,6 +386,7 @@ class AlpacaAdapter:
                 self.store.activity(activity)
         for row in self._all_orders():
             self._apply(row, activities=(), emit=False)
+        absent = set()
         for key, (_, row, uncertain, _) in self.store.orders():
             if row is None and self.store.get("rejection:" + key) is not None:
                 continue
@@ -389,18 +395,21 @@ class AlpacaAdapter:
                     self._apply(self._lookup(key), activities=(), emit=False)
                 except OrderNotFound:
                     # Absence is not proof a timed-out POST cannot still arrive.
-                    pass
+                    absent.add(key)
         activities = self.read_activities()
         with self.store.transaction():
             for row in activities:
                 self.store.activity(row)
-        totals = {}
+        totals, executions = {}, {}
         for row in self.store.activities():
             key = row["order_id"]
             qty, amount = totals.get(key, (Z, Z))
             totals[key] = qty + D(row["qty"]), amount + D(row["qty"]) * D(row["price"])
+            if with_orders:
+                executions.setdefault(key, []).append(row)
         complete = True
-        for key, (_, row, uncertain, _) in self.store.orders():
+        orders = self.store.orders()
+        for key, (_, row, uncertain, _) in orders:
             if row is None and self.store.get("rejection:" + key) is not None:
                 continue
             if uncertain or row is None:
@@ -413,6 +422,16 @@ class AlpacaAdapter:
                 if abs(amount - qty * D(row["filled_avg_price"] or "0")) > qty * D("0.0001"):
                     complete = False
         self.reconciled = complete
+        if with_orders:
+            by_client_id = dict(orders)
+            def read_order(client_id):
+                saved = by_client_id.get(client_id)
+                if client_id in absent or saved is None or saved[1] is None or saved[2]:
+                    raise OrderNotFound(404)
+                row = saved[1]
+                return self._order_details(row), executions.get(row["id"], ())
+            facts = self.read_account_details()
+            return self._snapshot(facts, recovered_orders=orders), read_order
         if with_details:
             facts = self.read_account_details()
             return self._snapshot(facts), facts

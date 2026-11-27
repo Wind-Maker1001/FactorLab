@@ -179,10 +179,7 @@ class PortfolioRisk:
     def _nav_history(self, account, equity, observed_at, limits, healthy):
         if equity is None or not healthy:
             return None, None, None
-        # If external cash-flow facts are supplied, subtract them from NAV so a
-        # contribution or withdrawal cannot masquerade as trading P&L.
         flow = account.cumulative_external_cash_flow
-        nav = equity - flow if flow is not None else equity
         account_id = account.account_id
         hour = int(observed_at.timestamp()) // 3600
         day = hour // 24
@@ -193,13 +190,19 @@ class PortfolioRisk:
             return None, None, None
         if previous and flow is None and previous['flow_adjusted']:
             return None, None, None
-        if previous and flow is not None and not previous['flow_adjusted']:
-            # The normalized baseline cannot be reconstructed from raw NAV.
+        if previous and flow is not None and previous.get('initial_flow') is None:
+            # Raw and legacy adjusted observations lack the starting external
+            # flow. Start a new series with the first observed reference.
             self.db.execute('DELETE FROM portfolio_risk_hour WHERE account=?', (account_id,))
             previous = None
+        initial_flow = flow if previous is None else previous.get('initial_flow')
+        # Keep the first observed equity as the reference and remove
+        # subsequent account external cash movements.
+        nav = equity if initial_flow is None else equity - (flow - initial_flow)
         peak = nav if previous is None else max(nav, previous['peak'])
         start = nav if previous is None or day != previous['day'] else previous['start']
-        point = dict(at=observed_at, peak=peak, start=start, day=day, flow_adjusted=flow is not None)
+        point = dict(at=observed_at, peak=peak, start=start, day=day,
+                     flow_adjusted=initial_flow is not None, initial_flow=initial_flow)
         if point != previous:
             self.db.execute('INSERT INTO portfolio_risk_nav VALUES (?,?) '
                             'ON CONFLICT(account) DO UPDATE SET payload=excluded.payload',

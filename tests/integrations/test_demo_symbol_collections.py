@@ -139,9 +139,11 @@ def test_blocked_symbol_reader_does_not_block_other_symbol_or_owner(tmp_path):
             _fresh_book=lambda payload, **kwargs: dict(payload, time_utc=now,
                 bidPrice=Decimal(payload['bidPrice']), askPrice=Decimal(payload['askPrice'])),
             _now=lambda: now,
-            adapter=SimpleNamespace(read_facts=lambda: SimpleNamespace(usdt=lambda:
+            adapter=SimpleNamespace(read_facts=lambda: SimpleNamespace(account_id='account', usdt=lambda:
                 {'walletBalance': Decimal(5000), 'unrealizedProfit': Decimal(0)})))
+        risk_accounts = []
         execution = SimpleNamespace(session=session, store=store,
+            executor=SimpleNamespace(enforce_portfolio_risk=risk_accounts.append),
             advance=lambda decision_id, **kwargs: calls.append(decision_id) or 'WAITING')
         owner = DemoInstanceOwner(session, execution)
         owner.market_sources = sources
@@ -151,6 +153,7 @@ def test_blocked_symbol_reader_does_not_block_other_symbol_or_owner(tmp_path):
                     (decision_id, dumps(dict(intents=[replace(intent(decision_id), instrument_id=symbol)]))))
             assert owner.poll() == {'healthy': 'WAITING'}
             assert calls == ['healthy']
+            assert risk_accounts == ['account']
         finally:
             store.close()
         assert not release.is_set()

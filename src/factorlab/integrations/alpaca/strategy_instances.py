@@ -135,7 +135,10 @@ class StrategyInstances:
     def tick(self, service, window, at, facts):
         from zoneinfo import ZoneInfo
         service.cache = self.cache
-        account = self.adapter.recover()
+        if self.store.portfolio_risk.config(facts.account_id) is None:
+            account = self.adapter.recover()
+        else:
+            account = self.runner.reconcile_account(facts.account_id)
         for owner, view in self.views.items():
             if owner not in self.instances and owner not in self.native:
                 pending = view.pending()

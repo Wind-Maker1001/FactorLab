@@ -6,10 +6,12 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal as D
 import json
 from threading import Barrier
+from types import SimpleNamespace
 
 import pytest
 
 from factorlab.integrations.alpaca.corporate_actions import CorporateReceiptJournal
+from factorlab.integrations.alpaca.strategy_instances import StrategyInstances
 from factorlab.integrations.binance.client import Response
 from factorlab.integrations.binance_futures_trading.adapter import FuturesAdapter
 from factorlab.integrations.binance_futures_trading.fake import FakeTransport, MS, NOW as BINANCE_NOW
@@ -21,6 +23,7 @@ from factorlab.trading.portfolio_execution import (
 )
 from factorlab.trading.portfolio_risk import PortfolioRiskLimits
 from factorlab.trading.storage import PaperStore
+from test_alpaca_execution import adapter as alpaca_http_adapter
 from test_shared_portfolio_execution import ACCOUNT, SharedOfficial, open_runner, qualify, setup_pair
 
 
@@ -241,6 +244,87 @@ def test_alpaca_partial_fill_retains_uncertain_remainder_through_restart(tmp_pat
         assert http.post_ids == ['partial-open', 'allowed-after-cancel']
 
 
+def test_alpaca_owner_tick_reconciles_partial_fill_before_risk_cancellation(tmp_path):
+    class RecordingHTTP(AlpacaRiskHTTP):
+        def __init__(self):
+            super().__init__()
+            self.requests = []
+
+        def __call__(self, method, path, params, body):
+            self.requests.append((method, path))
+            if path == '/v2/corporate_actions/announcements':
+                return 200, []
+            return super().__call__(method, path, params, body)
+
+    http = RecordingHTTP()
+    configuration = dict(instances=[], releases=tmp_path / 'releases', trusted_python=True)
+
+    def open_host(stack):
+        actual, _ = alpaca_http_adapter(tmp_path, http)
+        stack.callback(actual.close)
+        host = StrategyInstances(tmp_path, actual, configuration, clock=wall_clock)
+        stack.callback(host.close)
+        return host
+
+    def tick(host):
+        facts = host.adapter.read_account_details()
+        host.tick(SimpleNamespace(), {}, wall_clock(), facts)
+
+    with ExitStack() as stack:
+        host = open_host(stack)
+        runner, store = host.runner, host.store
+        setup_pair(runner, store)
+        runner.executor.configure_portfolio_risk(ACCOUNT, PortfolioRiskLimits(
+            max_gross_exposure=D(100), cancel_open_on_breach=True))
+        original = alpaca_direct(runner, 'A', 'AAPL', 'tick-partial', quantity=D('.2'))
+        alpaca_advance(runner, original)
+        http.fill('tick-partial', D('.1'))
+
+        http.requests.clear()
+        tick(host)
+        assert http.requests.count(('GET', '/v2/positions')) == 1
+        assert http.requests.count(('GET', '/v2/orders:by_client_order_id')) == 1
+        assert all(method != 'DELETE' for method, _ in http.requests)
+        assert store.holdings(ACCOUNT, 'A')['AAPL'] == D('.1')
+        partial = alpaca_snapshot(runner, http)
+        assert partial.gross_exposure == partial.pending_open_exposure == D(10)
+        assert partial.projected_gross_exposure == D(20)
+        assert 'ownership' not in partial.missing
+
+        # A mark move puts the portfolio over 100 USD despite the same residual.
+        http.positions[0]['current_price'] = '1000'
+        http.lose_cancel_reply = True
+        tick(host)
+        assert http.pending_cancel == 'tick-partial'
+        assert sum(method == 'DELETE' for method, _ in http.requests) == 1
+        uncertain = alpaca_snapshot(runner, http)
+        assert uncertain.pending_cancel_exposure == D(10)
+        assert uncertain.projected_gross_exposure == D(110)
+
+    with ExitStack() as stack:
+        host = open_host(stack)
+        runner, store = host.runner, host.store
+        http.requests.clear()
+        tick(host)
+        assert all(method != 'DELETE' for method, _ in http.requests)
+        assert alpaca_snapshot(runner, http).pending_cancel_exposure == D(10)
+        http.confirm_cancel()
+        http.lose_cancel_reply = False
+        http.positions[0]['current_price'] = '100'
+        tick(host)
+        assert alpaca_snapshot(runner, http).pending_open_exposure == ZERO
+
+        pending = alpaca_direct(runner, 'B', 'MSFT', 'tick-unknown-owner', quantity=D('.2'))
+        alpaca_advance(runner, pending, 'MSFT')
+        http.positions.append(dict(symbol='NVDA', qty='.1', avg_entry_price='100', current_price='100'))
+        tick(host)
+        assert http.orders['tick-unknown-owner']['status'] == 'canceled'
+        assert 'ownership' in alpaca_snapshot(runner, http).missing
+        assert 'NVDA' not in store.holdings(ACCOUNT)
+        with pytest.raises(ValueError, match='PORTFOLIO_RISK_OWNERSHIP'):
+            alpaca_direct(runner, 'B', 'MSFT', 'tick-opening-with-unknown-owner', quantity=D('.1'))
+
+
 def test_alpaca_tqqq_dividend_and_split_keep_nominal_cash_separate(tmp_path):
     http = AlpacaRiskHTTP()
     with ExitStack() as stack:
@@ -409,7 +493,7 @@ class BinanceRiskHTTP(FakeTransport):
         super().__init__()
         self.income = []
         self.now = BINANCE_NOW
-        self.cumulative_external_cash_flow = D(0)
+        self.cumulative_external_cash_flow = self.cash
 
     def __call__(self, request, timeout):
         response = super().__call__(request, timeout)
@@ -492,8 +576,10 @@ def test_binance_official_margin_missing_margin_and_funding_through_http(tmp_pat
             policy.bind(account_id='offline', strategy_id=owner, instance_id=owner,
                         allocation_id=owner + '-usdt')
         executor.configure_portfolio_risk('offline', PortfolioRiskLimits(max_margin=D(150),
-            max_gross_exposure=D(150), max_daily_loss=D(20)))
+            max_gross_exposure=D(150), max_daily_loss=D(20), max_drawdown=D('.05')))
         executor.adapter.sync_funding(start_time=http.now, end_time=http.now)
+        initial = executor.portfolio_risk_snapshot('offline', official_equity=http.cash)
+        assert initial.drawdown == ZERO
         opened = binance_direct(executor, 'A', 'binance-open')
         with pytest.raises(ValueError, match='PORTFOLIO_GROSS_EXPOSURE_LIMIT'):
             binance_direct(executor, 'B', 'binance-portfolio-block')
@@ -504,6 +590,7 @@ def test_binance_official_margin_missing_margin_and_funding_through_http(tmp_pat
         before = executor.portfolio_risk_snapshot('offline', official_equity=http.cash)
         assert before.gross_exposure == D(100)
         assert before.initial_margin == D(100)
+        assert before.drawdown == (initial.official_equity - before.official_equity) / initial.official_equity
 
         http.initial_margin = D(151)
         with pytest.raises(ValueError, match='PORTFOLIO_MARGIN_LIMIT'):
