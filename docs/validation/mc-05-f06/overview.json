@@ -1,0 +1,46 @@
+[
+  {
+    "steps": 168,
+    "model": "gbm",
+    "n": 1000000,
+    "seeds": 5,
+    "mean_return": -3.801759017605095e-05,
+    "loss_probability": 0.2991972,
+    "zero_fill_probability": 0.387935,
+    "var99": 0.0032260345254928684,
+    "cvar99": 0.004146319393724634
+  },
+  {
+    "steps": 168,
+    "model": "moving_block_bootstrap",
+    "n": 1000000,
+    "seeds": 5,
+    "mean_return": -5.335588643538024e-05,
+    "loss_probability": 0.27095460000000005,
+    "zero_fill_probability": 0.4600416,
+    "var99": 0.003061183759114093,
+    "cvar99": 0.004129359820435197
+  },
+  {
+    "steps": 168,
+    "model": "regime_historical",
+    "n": 1000000,
+    "seeds": 5,
+    "mean_return": 0.00010162264358541659,
+    "loss_probability": 0.1520358,
+    "zero_fill_probability": 0.575774,
+    "var99": 0.002189317192409606,
+    "cvar99": 0.003257012679326477
+  },
+  {
+    "steps": 168,
+    "model": "jump_down",
+    "n": 1000000,
+    "seeds": 5,
+    "mean_return": -0.0035436739491932307,
+    "loss_probability": 0.5930207999999999,
+    "zero_fill_probability": 0.21382459999999998,
+    "var99": 0.0224612567207687,
+    "cvar99": 0.026207261260475994
+  }
+]

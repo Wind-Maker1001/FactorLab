@@ -1,0 +1,135 @@
+{
+  "dataset": {
+    "acquired_at": "2026-11-13T17:12:50.891167+00:00",
+    "as_of": "2026-11-14T00:00:00+00:00",
+    "availability": "max(observation close, snapshot acquisition); not retrospective research availability",
+    "bars_sha256": "16aa66258880efdace966880f59691a29cb74f4f87428240a5ef247ad044a2ab",
+    "data_version": "352d960fad24e50f1423ff173d838a994a29603d2629652f46c7edc76e5e2a83",
+    "drift": -1.2254443425042917e-05,
+    "dt": 1,
+    "gbm_estimator": "sample log-return mean + half sample variance; ddof=1 volatility",
+    "initial_price": 204.34,
+    "observations": [
+      "2026-05-14T02:00:00+00:00",
+      "2026-08-12T00:00:00+00:00"
+    ],
+    "price_anchor": "frozen Grid initial price; historical returns, not historical price levels",
+    "returns": 2159,
+    "source": "BINANCE_USDM_PUBLIC_DATA",
+    "time_unit": "hour",
+    "volatility": 0.004451385931577554
+  },
+  "grid": {
+    "atr_multiplier": 1,
+    "atr_window": 72,
+    "breakout": "pause",
+    "budget": null,
+    "center_rule": "last_close",
+    "expiry_reseed_interval": 100,
+    "expiry_reseed_limit": 0,
+    "fee_bps": 4,
+    "initial_cash": 1000,
+    "initial_inventory": 0,
+    "initial_price": 204.34,
+    "levels": 8,
+    "lower": 163.472,
+    "max_cash_committed": 1000,
+    "max_drawdown": 0.2,
+    "max_inventory": 100,
+    "max_turnover": 10,
+    "min_rebuild_interval": 72,
+    "minimum_price": 0.01,
+    "minimum_quantity": 1,
+    "mode": "geometric",
+    "order_ttl": 100,
+    "quantity": 10,
+    "rebuild_threshold": 2,
+    "slippage_bps": 6,
+    "upper": 245.208
+  },
+  "rules": {
+    "min_notional": "5",
+    "min_quantity": "0.01",
+    "quantity_unit": "0.01",
+    "step_size": "0.01",
+    "tick_size": "0.01"
+  },
+  "as_of": "2026-11-14T00:00:00+00:00",
+  "start": "2026-11-15T00:00:00Z",
+  "threshold_as_of": "2026-06-28T00:00:00Z",
+  "capacity": "0.10",
+  "costs": {
+    "fee_rate": ".0004",
+    "funding": "NOT_SIMULATED",
+    "slippage": ".0006"
+  },
+  "experiment": {
+    "seeds": [
+      1729,
+      2718,
+      31415
+    ],
+    "sizes": [
+      16,
+      64,
+      128
+    ],
+    "batch_size": 8,
+    "steps": 168,
+    "resamples": 999,
+    "budget_seconds": 900,
+    "cost_safety_factor": 1.2
+  },
+  "models": [
+    "gbm",
+    "moving_block_bootstrap",
+    "regime_historical",
+    "jump_down"
+  ],
+  "protocol": "MC-05-F06-v1",
+  "frozen_definition": "configs/mc05_grid_tail.json",
+  "seeds": [
+    1729,
+    2718,
+    31415,
+    57721,
+    65537
+  ],
+  "sizes": [
+    10000,
+    100000,
+    1000000
+  ],
+  "horizons": [
+    168,
+    720,
+    2160
+  ],
+  "generation_chunk_size": 1000,
+  "execution_batch_size": 1000,
+  "generator_batch_size": 128,
+  "bootstrap_block_size": 24,
+  "audit_random_paths": 2,
+  "rng": {
+    "version": "F06-U32-PERMUTATION-v1",
+    "multiplier": 2654435761,
+    "increment": 1013904223,
+    "chunk_bits": 20,
+    "seed_slots": 8,
+    "horizon_slots": 4,
+    "interpretation": "unique effective seed identities, not a proof of disjoint RNG subsequences"
+  },
+  "statistics": {
+    "coverage": 0.95,
+    "tail_confidences": [
+      0.95,
+      0.99
+    ],
+    "financial_tolerance": null,
+    "decision": "PRECISION_REPORTED_CONVERGENCE_NOT_ESTABLISHED",
+    "nested_levels": "paired shared prefixes; never independent replications",
+    "calibration_uncertainty": "NOT_ESTIMATED"
+  },
+  "extensions": "Complete the entire 168h matrix first; decide longer-horizon sizes from measured cost and precision.",
+  "funding": "NOT_SIMULATED"
+}
