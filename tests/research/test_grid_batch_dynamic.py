@@ -5,7 +5,7 @@ from decimal import Decimal as D
 import numpy as np
 import pytest
 
-from factorlab.experiments.grid_funding_adaptive import VolatilityPolicy
+from factorlab.experiments.grid_funding_adaptive import FundingPolicy, VolatilityPolicy
 from factorlab.research.grid_simulation import BatchGridConfig, COLUMNS, simulate
 from factorlab.research.grid_simulation.inputs import BatchMarketInputs
 from factorlab.research.grid_simulation.paper import canonical_order_events
@@ -89,6 +89,34 @@ def test_volatility_real_subclass_fallback_and_extreme(warmup, backend):
             reference_vol_1h=.004, min_rebuild_interval=1, extreme_vol_mult=2.))
     paper, _ = assert_parity(prices, config, market_inputs(prices, warmup_closes=warmup), backend)
     assert np.all(paper.trace[0, :, COLUMNS.index('volatility')] > 0)
+
+
+@pytest.mark.parametrize('profile', ['C', 'ATR', 'B'])
+def test_continuous_history_order_capacity(profile, backend):
+    prices = np.full((1, 2004), 100.)
+    config = dynamic_config(order_ttl=1)
+    if profile == 'C':
+        config = replace(config, grid=replace(config.grid, levels=1, lower=98, upper=102),
+            volatility_policy=VolatilityPolicy(vol_window_hours=3,
+                reference_vol_1h=.004, min_rebuild_interval=1))
+        market = market_inputs(prices, warmup_closes=[100.])
+    elif profile == 'ATR':
+        prices[0] = 100. + np.arange(prices.shape[1]) % 2
+        config = replace(config, grid=replace(config.grid, mode='atr', atr_window=1,
+            atr_multiplier=2., rebuild_threshold=.01))
+        market = market_inputs(prices, highs=prices + 2, lows=prices - 2)
+    else:
+        config = replace(config, funding_policy=FundingPolicy(
+            entry_max_bps_h=1., min_net_margin_bps=0., exit_mode='none'))
+        settlement = market_inputs(prices).observation_times[0] - timedelta(hours=1)
+        market = market_inputs(prices, funding_times=[settlement], funding_rates=[D('0')],
+            funding_marks=[D('100')], expected_funding_times=[settlement])
+    paper, native = assert_parity(prices, config, market, backend)
+    proposals = paper.events[0][paper.events[0][:, 1] == 1]
+    assert len(proposals) > 1000
+    np.testing.assert_allclose(native.terminal, paper.terminal, rtol=1e-12, atol=5e-10)
+    if profile == 'ATR':
+        assert paper.terminal[0, COLUMNS.index('rebuilds')] > 100
 
 
 def test_future_ohlc_and_prices_do_not_change_past(backend):

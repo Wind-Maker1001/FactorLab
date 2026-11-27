@@ -78,7 +78,7 @@ def run_paper_reference(values, config, prepared, trace):
         elif config.volatility_policy is not None:
             factory, options = VolatilityAdaptiveGrid, dict(vol_policy=config.volatility_policy,
                 warmup_closes=list(prepared.warmup[path]))
-        store = PaperStore(':memory:')
+        store = PaperStore(':memory:', continuous_capacity=True)
         try:
             controller = TradingController(broker, store, clock=lambda: now[0],
                 initialize_state=initialize,
@@ -86,7 +86,7 @@ def run_paper_reference(values, config, prepared, trace):
             grid = factory(replace(config.grid, initial_cash=float(config.capital)), config.rules,
                 deployment_id='research', account_id=_ACCOUNT, market=Market.BINANCE_USDM,
                 instrument_id=_SYMBOL, initial_equity=config.capital, fee_rate=config.fee_rate,
-                **options)
+                continuous_capacity=True, **options)
             fees = slip = funding_total = ZERO
             peak = config.capital
             maximum_drawdown = 0.

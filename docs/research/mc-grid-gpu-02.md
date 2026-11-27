@@ -14,6 +14,8 @@ A rebuild requests cancellation, retains reservations until confirmation and sup
 
 Trading realized gross PnL excludes funding; funding, actual fees and embedded execution-price slippage are separately reported. Slippage attribution must not be subtracted twice.
 
+The Paper oracle enables existing continuous capacity in both GridExecution and PaperStore: cumulative proposal history and journal history are not active-order limits. This removes only operational lifetime budgets; account capital, inventory, reservations, proposal admission, controller submission-rate limits and the native 128-slot working-order capacity remain unchanged.
+
 ## Implementation and evidence
 
 The shared transition source contains event-time funding, rebuild/ATR state and separate B/C policy branches, with bounded history workspace and optional event audit output. The complete 64-test CPU suite passed on Windows Python 3.14, including funding-sensitive spike, age and margin exits. Stepwise accounts, fills and canonical order-event receipts match Paper at the original tolerances. RTX2070 acceptance passed all 45 explicit CUDA tests. The 1k/10k/100k/1m-path, 168-hour CPU/CUDA pilot completed for static, ATR, C and B profiles, including selected Paper event audits. Timing, resource and financial evidence is in [the validation report](../validation/mc-grid-gpu-02/README.md). Debian Linux under WSL with Python 3.13.18 also passed all 64 CPU/Paper tests.

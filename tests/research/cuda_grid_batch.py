@@ -20,6 +20,7 @@ from tests.research.test_grid_batch_dynamic import (
     test_atr_same_point_complete_bar_cancels_remain_pending,
     test_volatility_real_subclass_fallback_and_extreme,
     test_future_ohlc_and_prices_do_not_change_past,
+    test_continuous_history_order_capacity,
 )
 from tests.research.test_grid_batch_funding import (
     test_funding_own_mark_and_prefill_inventory,
