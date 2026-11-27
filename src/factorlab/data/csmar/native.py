@@ -6,7 +6,6 @@ does not evaluate formulas or infer dates, missing sentinels or security IDs.
 
 from contextlib import contextmanager
 import hashlib
-import ctypes
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -16,6 +15,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 import zipfile
 
+from factorlab._process_memory import peak_memory_bytes
 from factorlab.data.evidence import fail, require_hash
 from factorlab.data.tdx import safe_path
 
@@ -24,28 +24,6 @@ MAX_EXPANDED = 4 * 1024 ** 3
 MAX_SMALL_XML = 16 * 1024 ** 2
 MAX_ROWS = 1048576
 NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
-
-
-def peak_memory_bytes():
-    """OS process lifetime peak; not an estimate of whole-machine memory."""
-    if os.name == "nt":
-        class Counters(ctypes.Structure):
-            _fields_ = [("cb", ctypes.c_ulong), ("faults", ctypes.c_ulong)] + [
-                (n, ctypes.c_size_t) for n in ("peak_rss", "rss", "peak_pool", "pool", "peak_nonpage", "nonpage", "pagefile", "peak_pagefile")]
-        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
-        psapi = ctypes.WinDLL("psapi", use_last_error=True)
-        kernel.GetCurrentProcess.restype = ctypes.c_void_p
-        psapi.GetProcessMemoryInfo.argtypes = [ctypes.c_void_p, ctypes.POINTER(Counters), ctypes.c_ulong]
-        counters = Counters()
-        counters.cb = ctypes.sizeof(counters)
-        if not psapi.GetProcessMemoryInfo(kernel.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
-            raise ctypes.WinError()
-        return counters.peak_rss
-    if os.name == "posix":
-        import resource
-        import sys
-        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * (1 if sys.platform == "darwin" else 1024)
-    return None
 
 
 def stat_key(info):

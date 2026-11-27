@@ -271,7 +271,9 @@ class DemoExecutionGateway(FuturesPaperGateway):
         assets = tuple(AssetBalance(a.currency, a.total,
             a.total - min(a.available, next(b.available for b in remote.assets if b.currency == a.currency)))
             for a in local.assets)
-        return replace(local, assets=assets, reconciled=remote.reconciled)
+        return replace(remote, assets=assets, positions=local.positions, open_orders=local.open_orders,
+                       observed_at=local.observed_at, official_observed_at=remote.observed_at,
+                       official_positions=remote.positions)
 
     def recover(self, controller, *, initial_facts=None):
         # No order identity means there are no order deltas to import or replay.

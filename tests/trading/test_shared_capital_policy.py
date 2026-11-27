@@ -202,7 +202,7 @@ def test_aggregate_symbol_limit_is_not_multiplied_by_instance_count(tmp_path, un
         with store.transaction():
             store.db.execute('INSERT INTO portfolio_plans VALUES (?,?,?,?,?)',
                              ('second-plan', 'paper', 'two', '2026-11-24', dumps({})))
-            store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
+            store.db.execute('INSERT INTO portfolio_orders (id,plan,payload) VALUES (?,?,?)',
                              ('second', 'second-plan', dumps(order)))
             executor.capital_policy.validate_orders(broker.read_account(), 'two')
     assert len(store.orders(first)) == 1

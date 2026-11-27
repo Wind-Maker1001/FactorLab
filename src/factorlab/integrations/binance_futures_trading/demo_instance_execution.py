@@ -48,22 +48,25 @@ class DemoInstanceExecutionAdapter:
             dict(binding=binding, symbols=sorted(spec.symbols), allocation=allocation,
                  shorting=spec.execution['shorting']))
 
-    def pending_commitments(self, account_id):
-        """Read the durable acceptance journal while the portfolio writer is locked."""
+    def pending_orders(self, account_id):
+        """Read unmaterialized intents under the portfolio writer lock."""
         capital = self.executor.store.db
-        commitments = {}
         for raw, in self.store.db.execute('SELECT payload FROM demo_instance_outbox WHERE completed=0'):
             accepted = decode(json.loads(raw))
             binding = accepted['receipt']['binding']
             if binding['account_id'] != account_id:
                 continue
-            owner = binding['instance_id']
             for intent in accepted['intents']:
-                prepared = capital.execute('SELECT 1 FROM portfolio_orders WHERE id=?',
-                                           (intent.client_order_id,)).fetchone()
-                if prepared is None:
-                    notional = intent.quantity * intent.limit_price if intent.side == Side.BUY else ZERO
-                    commitments[owner] = commitments.get(owner, ZERO) + notional
+                if capital.execute('SELECT 1 FROM portfolio_orders WHERE id=?',
+                                   (intent.client_order_id,)).fetchone() is None:
+                    yield binding['instance_id'], intent, intent.limit_price
+
+    def pending_commitments(self, account_id):
+        """Read the durable acceptance journal while the portfolio writer is locked."""
+        commitments = {}
+        for owner, intent, price in self.pending_orders(account_id):
+            notional = intent.quantity * price if intent.side == Side.BUY else ZERO
+            commitments[owner] = commitments.get(owner, ZERO) + notional
         return commitments
 
     def prepare_plan(self, decision_id, *, now):
@@ -90,7 +93,8 @@ class DemoInstanceExecutionAdapter:
                 weights={}, owned_symbols=configured['symbols'], now=now,
                 rebalance_id=decision_id, signal_inputs=dict(input_identity=receipt['input_identity']),
                 direct_orders=[(intent, intent.limit_price) for intent in accepted['intents']],
-                concurrent_direct_orders=receipt['decision']['kind'] == 'orders')
+                concurrent_direct_orders=receipt['decision']['kind'] == 'orders',
+                record_risk_rejection=True)
 
     def _prepare_or_reject(self, decision_id, *, now):
         try:

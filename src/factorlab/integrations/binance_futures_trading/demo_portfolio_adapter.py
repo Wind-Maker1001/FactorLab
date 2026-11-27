@@ -23,6 +23,9 @@ class DemoPortfolioAdapter:
     def read_account(self):
         return self.session.gateway.read_account()
 
+    def risk_account(self, account):
+        return self.session.adapter.risk_account(account)
+
     def funding_events(self):
         return self.session.adapter.funding_events()
 
@@ -40,6 +43,9 @@ class DemoPortfolioAdapter:
         account = session.gateway.recover(session.controller, initial_facts=initial)
         return account, session.adapter.facts
 
+    def observed_margin_facts(self):
+        return self.session.adapter.facts
+
     def _confirmed(self, client_id):
         record, notional = self.session.adapter._load(client_id)
         if record.snapshot.reconcile_required:
@@ -47,13 +53,17 @@ class DemoPortfolioAdapter:
         event = self.session.gateway.state.confirmations[client_id]
         return replace(event, cumulative_filled_notional=notional)
 
-    def submit_order(self, intent):
+    def submit_risk_checked(self, intent, admit):
+        return self.submit_order(intent, risk_admission=admit)
+
+    def submit_order(self, intent, *, risk_admission=None):
         owner = self.owners.owner(intent.client_order_id)
         if owner is None or owner[2] != intent.instrument_id:
             raise SafetyBlocked('durable instance order ownership required')
         authorization, guard = self.capability(intent, owner)
+        options = {} if risk_admission is None else dict(risk_admission=risk_admission)
         self.session.submit_instance_intent(intent, instance_id=owner[0],
-            allocation_id=owner[1], authorization=authorization, guard=guard)
+            allocation_id=owner[1], authorization=authorization, guard=guard, **options)
         return self._confirmed(intent.client_order_id)
 
     def query_order(self, client_order_id):

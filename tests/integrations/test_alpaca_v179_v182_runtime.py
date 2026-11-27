@@ -53,6 +53,8 @@ from factorlab.strategies.v179_v182_runtime import (
 )
 from factorlab.trading.capital import CapitalPolicyMode
 from factorlab.trading.control import RiskLimits
+from factorlab.trading.portfolio_risk import PortfolioRiskLimits
+from factorlab.trading.storage import decode
 
 ROOT = Path(__file__).parents[1] / 'fixtures' / 'v179_v182_original'
 ARTIFACT_PATH = Path(__file__).parents[2] / 'examples' / 'v179_v182_alpaca' / 'artifacts' / 'v179_v182_ridge_target.json'
@@ -348,7 +350,7 @@ def test_alpaca_benchmark_capability_and_yahoo_offline_http(frozen_market_slice)
 
 
 def test_v179_v182_packages_coexist_with_v69_isolated_state_restart_upgrade_and_missing_benchmark(
-    tmp_path, frozen_market_slice
+    tmp_path, frozen_market_slice, monkeypatch
 ):
     bars, bench, artifact = frozen_market_slice
     # Execution session: Monday 2026-10-05 (active positive AAPL, TQQQ, QQQ weights for V69/V179/V182).
@@ -360,6 +362,13 @@ def test_v179_v182_packages_coexist_with_v69_isolated_state_restart_upgrade_and_
     def tick_clock():
         now_box[0] = now_box[0] + timedelta(milliseconds=10)
         return now_box[0]
+
+    class AccountClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock().astimezone(tz)
+
+    monkeypatch.setattr('factorlab.integrations.alpaca.models.datetime', AccountClock)
 
     # Use non-trivial corporate-action adjustment factor (0.5 on AAPL) to validate raw share conversion.
     server = OfflineAlpacaPaperServer(
@@ -447,6 +456,8 @@ def test_v179_v182_packages_coexist_with_v69_isolated_state_restart_upgrade_and_
     host_missing = StrategyInstances(
         tmp_path, adapter, configuration, clock=tick_clock, revision='a' * 40, benchmark_provider=None
     )
+    host_missing.runner.executor.configure_portfolio_risk(
+        'paper-p10-03', PortfolioRiskLimits(max_gross_exposure=D('100000')))
     for _ in range(6):
         host_missing.tick(service, win, clock(), adapter.read_account_details())
         if host_missing.state['instances']['V69_CAUSAL']['state'] == 'WEEK_COMPLETE':
@@ -500,6 +511,15 @@ def test_v179_v182_packages_coexist_with_v69_isolated_state_restart_upgrade_and_
     # Verify TQQQ economic multiplier recorded on V179/V182 plans.
     plan_179 = host.store.plan(reports['V179_TREND']['task'])
     assert plan_179['request']['multipliers'] == {'TQQQ': D(3)}
+    risk = host.runner.executor.portfolio_risk_snapshot('paper-p10-03')
+    expected_gross = sum(
+        D(position['qty']) * server.last_prices[symbol] * (3 if symbol == 'TQQQ' else 1)
+        for symbol, position in server.positions.items())
+    assert risk.valid, risk.missing
+    assert risk.gross_exposure == expected_gross
+    assert risk.symbol_exposure['TQQQ'] == D(server.positions['TQQQ']['qty']) * server.last_prices['TQQQ'] * 3
+    assert sum(item.gross_exposure for item in risk.strategies.values()) == expected_gross
+    assert set(risk.strategies) == {'V69_CAUSAL', 'V179_TREND', 'V182_RECOVERY'}
 
     # Phase 3: Repeated ticks & full process restart produce ZERO duplicate rebalances/orders.
     host.tick(service, win, clock(), adapter.read_account_details())
@@ -600,7 +620,7 @@ def test_small_paper_account_fractional_shares_and_equity_scaling(tmp_path, froz
 
 
 def test_benchmark_advancing_clock_http_delay_explicit_received_at_pit_and_isolation(
-    tmp_path, frozen_market_slice
+    tmp_path, frozen_market_slice, monkeypatch
 ):
     """P1 regression: advancing clock, simulated HTTP delay, explicit received_at,
     future-data rejection, historical PIT replay, and V69 isolation under Yahoo failures.
@@ -872,7 +892,7 @@ def test_benchmark_advancing_clock_http_delay_explicit_received_at_pit_and_isola
 
 
 def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
-    tmp_path, frozen_market_slice
+    tmp_path, frozen_market_slice, monkeypatch
 ):
     """P1 regression: real Alpaca offline HTTP integration for artifact-only monthly model
     refresh while holding multiple securities, preserving holdings/cash/checkpoint/decisions,
@@ -906,6 +926,13 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
     def tick_clock():
         clock_state[0] = clock_state[0] + timedelta(milliseconds=50)
         return clock_state[0]
+
+    class AccountClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock().astimezone(tz)
+
+    monkeypatch.setattr('factorlab.integrations.alpaca.models.datetime', AccountClock)
 
     server = OfflineAlpacaPaperServer(
         account_id='paper-p1-refresh',
@@ -969,6 +996,8 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
 
     # --- Step 1: Week 1 (2026-09-28) executes under pkg_sep and opens multi-security holdings ---
     host = StrategyInstances(tmp_path, adapter, cfg, clock=tick_clock, revision='1' * 40, benchmark_provider=bench_provider)
+    host.runner.executor.configure_portfolio_risk(
+        'paper-p1-refresh', PortfolioRiskLimits(max_gross_exposure=D('100000')))
     win_w1 = weekly_window(service.calendar, clock())
     for _ in range(6):
         host.tick(service, win_w1, clock(), adapter.read_account_details())
@@ -1004,6 +1033,10 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
     ckpt_before = dict(host.views['V179_TREND'].checkpoint())
     watermark_before = host.views['V179_TREND'].snapshot()['watermark']
     posts_before_refresh = len(server.posts)
+    risk_before_refresh = host.runner.executor.portfolio_risk_snapshot(account_id)
+    assert risk_before_refresh.valid, risk_before_refresh.missing
+    risk_nav_before = decode(json.loads(host.store.db.execute(
+        'SELECT payload FROM portfolio_risk_nav WHERE account=?', (account_id,)).fetchone()[0]))
     w1_plan_id = host.report()['V179_TREND']['task']
     assert len([s for s, q in holdings_before.items() if q > 0]) >= 2
     assert ckpt_before['checkpoint']['last_week'] == [2026, 40]
@@ -1091,6 +1124,14 @@ def test_position_preserving_monthly_model_refresh_rollback_recovery_and_guards(
     assert host.store.cash('paper-p1-refresh', 'V179_TREND') == cash_before
     assert host.views['V179_TREND'].checkpoint() == ckpt_before
     assert host.views['V179_TREND'].snapshot()['watermark'] == watermark_before
+    risk_after_refresh = host.runner.executor.portfolio_risk_snapshot(account_id)
+    assert risk_after_refresh.valid, risk_after_refresh.missing
+    assert risk_after_refresh.gross_exposure == risk_before_refresh.gross_exposure
+    assert risk_after_refresh.drawdown == risk_before_refresh.drawdown
+    risk_nav_after = decode(json.loads(host.store.db.execute(
+        'SELECT payload FROM portfolio_risk_nav WHERE account=?', (account_id,)).fetchone()[0]))
+    assert risk_nav_after['peak'] == risk_nav_before['peak']
+    assert risk_nav_after['initial_flow'] == risk_nav_before['initial_flow']
     allocation = host.instances[owner].allocation(adapter.recover())
     assert allocation['allocation_id'] == b_v179['allocation_id']
     assert allocation['capital'] == D('10500')

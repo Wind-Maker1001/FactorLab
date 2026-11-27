@@ -37,13 +37,25 @@ class AlpacaPortfolioAdapter:
     def read_account(self):
         # Original-order recovery can observe a fill after the runner's initial
         # account recovery, invalidating its inventory/cash admission snapshot.
-        self.adapter.recover()
-        return self.adapter.read_account()
+        return self.adapter.recover()
 
-    def query_order(self, client_order_id):
+    def risk_account(self, account):
+        return self.adapter.risk_account(account)
+
+    def observe_recovery(self):
+        """Import exactly the original orders seen by the account recovery turn."""
+        account, read_order = self.adapter.recover(with_orders=True)
+        def query_order(client_order_id):
+            return self.query_order(client_order_id, read_order=read_order)
+        return account, query_order
+
+    def query_order(self, client_order_id, *, read_order=None):
         try:
-            details = self.adapter.read_order_details(client_order_id)
-            executions = self.adapter.read_order_executions(client_order_id)
+            if read_order is None:
+                details = self.adapter.read_order_details(client_order_id)
+                executions = self.adapter.read_order_executions(client_order_id)
+            else:
+                details, executions = read_order(client_order_id)
         except self.order_not_found:
             return self._absent_order(client_order_id)
         return self._project_order(client_order_id, details, executions)
@@ -105,7 +117,10 @@ class AlpacaPortfolioAdapter:
             quantity, price, details['observed_at'], 'alpaca-paper-execution-activities', event_id,
             cumulative_filled_notional=notional)
 
-    def submit_order(self, intent):
+    def submit_risk_checked(self, intent, admit):
+        return self.submit_order(intent, risk_admission=admit)
+
+    def submit_order(self, intent, *, risk_admission=None):
         price = intent.limit_price
         if price is None:
             row = self.store.db.execute('SELECT plan FROM portfolio_orders WHERE id=?',
@@ -113,7 +128,10 @@ class AlpacaPortfolioAdapter:
             price = next(order['reservation_price'] for order in self.store.orders(row[0])
                          if order['record'].snapshot.intent.client_order_id == intent.client_order_id)
         try:
-            self.adapter.submit_order(intent, reservation_price=price)
+            if risk_admission is None:
+                self.adapter.submit_order(intent, reservation_price=price)
+            else:
+                self.adapter.submit_order(intent, reservation_price=price, risk_admission=risk_admission)
         except RiskRejected as error:
             return OrderEvent(intent.client_order_id, None, OrderStatus.REJECTED, D(0), None,
                 self.clock(), 'alpaca-local-admission:' + error.decision.reason,
@@ -138,6 +156,9 @@ class AlpacaPortfolioRunner:
         self.bridge = AlpacaPortfolioAdapter(adapter, store, order_not_found=order_not_found,
                                             rejection_error=rejection_error, clock=clock)
         self.executor = PortfolioExecutor(self.bridge, store, quote_currency='USD', clock=clock)
+
+    def reconcile_account(self, account_id):
+        return self.executor.reconcile(account_id, observe=self.bridge.observe_recovery)
 
     def run_once(self, identity, *, quotes, rules, not_before=None):
         self.adapter.recover()

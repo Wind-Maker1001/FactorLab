@@ -1,11 +1,13 @@
 """Capital operations on the real Alpaca Paper adapter with an offline HTTP transport."""
 from contextlib import ExitStack, closing
+from datetime import datetime, timezone
 from decimal import Decimal as D
 
 from factorlab.integrations.alpaca.corporate_actions import CorporateReceiptJournal
 from factorlab.integrations.alpaca.strategy_instances import StrategyInstances
 from factorlab.trading.contracts import Market, OrderIntent, OrderType, Side
 from factorlab.trading.portfolio_execution import ExecutionQuote, InstrumentRules
+from factorlab.trading.portfolio_risk import PortfolioRiskLimits
 from test_alpaca_execution import adapter as alpaca_http_adapter
 from test_shared_portfolio_execution import (
     ACCOUNT, NOW, SharedOfficial, advance, create, fill_plan, open_runner, setup_pair,
@@ -13,8 +15,9 @@ from test_shared_portfolio_execution import (
 
 
 class CapitalOfficial(SharedOfficial):
-    def __init__(self):
+    def __init__(self, *, clock=lambda: NOW):
         super().__init__()
+        self.clock = clock
         self.cancel_requests = []
 
     def __call__(self, method, path, params, body):
@@ -26,10 +29,21 @@ class CapitalOfficial(SharedOfficial):
         if path == '/v2/account':
             equity = D(self.cash) + sum(D(p['qty']) * D(p['current_price']) for p in self.positions)
             payload['equity'] = str(equity)
+        elif path == '/v2/orders' and method == 'POST':
+            at = self.clock().isoformat()
+            timestamps = dict(created_at=at, submitted_at=at, updated_at=at)
+            self.orders[body['client_order_id']].update(timestamps)
+            payload.update(timestamps)
         return status, payload
 
+    def fill(self, client_id, cumulative=None):
+        super().fill(client_id, cumulative)
+        at = self.clock().isoformat()
+        self.orders[client_id].update(filled_at=at, updated_at=at)
+        self.activities[-1]['transaction_time'] = at
+
     def confirm_cancel(self, client_id):
-        self.orders[client_id].update(status='canceled', updated_at='2026-11-24T15:01:00Z')
+        self.orders[client_id].update(status='canceled', updated_at=self.clock().isoformat())
 
 
 def sleeve(capital, owner):
@@ -37,11 +51,13 @@ def sleeve(capital, owner):
 
 
 def test_http_partial_buy_cancel_then_staged_transfer_after_own_sell(tmp_path):
-    official = CapitalOfficial()
+    official = CapitalOfficial(clock=lambda: datetime.now(timezone.utc))
     with ExitStack() as stack:
         runner, store = open_runner(stack, tmp_path, official)
+        runner.clock = runner.executor.clock = lambda: datetime.now(timezone.utc)
         setup_pair(runner, store)
         capital = runner.executor.capital
+        runner.executor.configure_portfolio_risk(ACCOUNT, PortfolioRiskLimits(max_gross_exposure=D(200)))
         fill_plan(runner, store, official, create(runner, 'B', {'AAPL': D('.25')}, 'b-buy'))
         b_inventory = store.holdings(ACCOUNT, 'B')
         buy = create(runner, 'A', {'AAPL': D('.25')}, 'a-buy')
@@ -59,14 +75,20 @@ def test_http_partial_buy_cancel_then_staged_transfer_after_own_sell(tmp_path):
         assert store.holdings(ACCOUNT, 'A') == {'AAPL': D('.5')}
         assert store.cash(ACCOUNT, 'A', reserve=False) == D(350)
         assert sleeve(capital, 'A').withdrawable < D(310)
+        risk = runner.executor.portfolio_risk_snapshot(ACCOUNT)
+        assert risk.gross_exposure == D(150)
+        assert risk.pending_open_exposure == D(50)
+        assert risk.projected_gross_exposure == D(200)
 
         runner.executor.cancel(buy, buy_id)
         assert len(official.cancel_requests) == 1
         assert official.orders[buy_id]['status'] == 'partially_filled'
+        assert runner.executor.portfolio_risk_snapshot(ACCOUNT).projected_gross_exposure == D(200)
         assert sleeve(capital, 'A').withdrawable < D(310)
         official.confirm_cancel(buy_id)
         assert advance(runner, buy).phase == 'COMPLETE'
         cash_before = official.cash
+        before_transfer = runner.executor.portfolio_risk_snapshot(ACCOUNT)
         released = capital.change(account_id=ACCOUNT, event_id='idle-cash',
             source='A', destination=None, amount=D(325))
         assert released.status == 'COMPLETE' and released.applied == D(325)
@@ -77,6 +99,16 @@ def test_http_partial_buy_cancel_then_staged_transfer_after_own_sell(tmp_path):
             source='A', destination='B', amount=D(65), mode='STAGED')
         assert pending.status == 'WAITING' and 0 < pending.applied <= D(25)
         assert pending.remaining == D(65) - pending.applied
+        after_transfer = runner.executor.portfolio_risk_snapshot(ACCOUNT)
+        assert after_transfer.official_equity == before_transfer.official_equity
+        assert after_transfer.daily_loss == before_transfer.daily_loss == 0
+        assert after_transfer.drawdown == before_transfer.drawdown == 0
+        assert after_transfer.realized_pnl == before_transfer.realized_pnl == 0
+        performance = capital.performance(ACCOUNT, 'A')['returns']
+        assert performance.absolute_pnl == performance.twr == 0
+        assert performance.capital_out == D(325) + pending.applied
+        runner.executor.configure_portfolio_risk(ACCOUNT, PortfolioRiskLimits(
+            max_gross_exposure=D(100), min_available_cash=D(1000)))
         assert capital.advance(account_id=ACCOUNT, event_id='a-to-b',
             step_id='before-sell').remaining == pending.remaining
 
@@ -97,6 +129,7 @@ def test_http_partial_buy_cancel_then_staged_transfer_after_own_sell(tmp_path):
 
     with ExitStack() as stack:
         runner, store = open_runner(stack, tmp_path, official)
+        runner.clock = runner.executor.clock = lambda: datetime.now(timezone.utc)
         capital = runner.executor.capital
         assert capital.advance(account_id=ACCOUNT, event_id='a-to-b', step_id='partial-sell', reduction_plan=exit_plan) == partial
         official.fill(exit_id)

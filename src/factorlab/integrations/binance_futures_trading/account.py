@@ -129,5 +129,12 @@ class AccountFacts:
                 complete = False
                 continue
             positions.append(Position(row['symbol'], quantity, row['entry_price'], row['mark_price'], 'USDT'))
+        equity = values['marginBalance']
+        unrealized = values['unrealizedProfit']
+        if equity is None and total is not None and unrealized is not None:
+            equity = total + unrealized
         return AccountSnapshot(Market.BINANCE_USDM, self.account_id, assets, tuple(positions), tuple(orders),
-                               self.observed_at, reconciled and complete)
+            self.observed_at, reconciled and complete, official_equity=equity, official_cash=total,
+            official_available=available, initial_margin=values['initialMargin'],
+            unrealized_pnl=unrealized, official_order_ids=tuple(
+                row['clientOrderId'] for row in self.open_orders))

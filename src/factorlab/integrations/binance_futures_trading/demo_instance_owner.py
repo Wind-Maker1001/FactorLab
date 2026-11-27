@@ -27,6 +27,7 @@ class DemoInstanceOwner:
         execution = DemoInstanceExecutionAdapter(session, executor=executor)
         owner = cls(session, execution)
         executor.capital.pending_commitments = execution.pending_commitments
+        store.portfolio_risk.pending_orders = execution.pending_orders
         def admitted_capability(intent, ownership):
             authorization, guard = capability(intent, ownership)
             def admitted_guard(method, params, plan):
@@ -174,6 +175,7 @@ class DemoInstanceOwner:
                 self.execution.store.db.executemany(
                     'UPDATE demo_instance_outbox SET completed=2 WHERE id=?', retired)
         if not eligible:
+            self.execution.executor.enforce_portfolio_risk(self.session.adapter.account_id)
             return {}
         symbols = {intent.instrument_id for decision_id in eligible
                    for intent in accepted[decision_id]['intents']}
@@ -198,6 +200,7 @@ class DemoInstanceOwner:
             quotes[symbol] = ExecutionQuote(symbol, book['bidPrice'], book['askPrice'],
                 book['time_utc'], at, at.date().isoformat(), 'OFFICIAL_DEMO')
         facts = self.session.adapter.read_facts()
+        self.execution.executor.enforce_portfolio_risk(facts.account_id)
         funds = facts.usdt()
         return self.advance(equity=funds['walletBalance'] + funds['unrealizedProfit'],
                             quotes=quotes, rules=rules, now=self.session._now(), decision_ids=eligible)

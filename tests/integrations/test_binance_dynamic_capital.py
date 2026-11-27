@@ -21,6 +21,7 @@ from factorlab.trading import AccountSnapshot, AssetBalance, Market, OrderStatus
 from factorlab.trading.capital_cli import command_result, enqueue
 from factorlab.trading.portfolio_execution import ExecutionQuote, InstrumentRules, PortfolioExecutor, PortfolioStore
 from factorlab.trading.storage import PaperStore, decode
+from factorlab.trading.portfolio_risk import PortfolioRiskLimits
 from test_binance_demo_execution import NOW, intent
 from test_binance_demo_network import NetworkFixture, wired
 from test_binance_demo_strategy_session import deployment
@@ -72,6 +73,7 @@ def test_demo_http_funding_margin_and_capital_survive_restart(deployment, monkey
                             dict(binding=dict(account_id=account, instance_id=strategy,
                                              allocation_id=allocation_id),
                                  symbols=['NVDAUSDT'], allocation=dict(budget_usdt=D(7))))
+                    executor.configure_portfolio_risk(account, PortfolioRiskLimits(max_gross_exposure=D(4)))
                     entry = intent('di-capital-entry', limit='100', quantity='.04')
                     owner.execution.owners.claim(entry, instance_id='one', allocation_id='one-funded')
                     at = session._now()
@@ -95,9 +97,19 @@ def test_demo_http_funding_margin_and_capital_survive_restart(deployment, monkey
                     assert funded.reserved == D('2.002')
                     executor.cancel(plan, entry.client_order_id)
                     assert store.orders(plan)[0]['record'].snapshot.status is OrderStatus.CANCELED
+                    before_transfer = executor.portfolio_risk_snapshot(account)
                     change = manager.change(account_id=account, event_id='resize',
                         source='one', destination='two', amount=D(4))
                     assert change.applied == D(4)
+                    after_transfer = executor.portfolio_risk_snapshot(account)
+                    assert after_transfer.official_equity == before_transfer.official_equity
+                    assert after_transfer.daily_loss == before_transfer.daily_loss
+                    assert after_transfer.drawdown == before_transfer.drawdown
+                    assert after_transfer.realized_pnl == before_transfer.realized_pnl
+                    assert after_transfer.projected_gross_exposure == D(2)
+                    returns = manager.performance(account, 'one')['returns']
+                    assert returns.capital_out == D(4)
+                    assert returns.absolute_pnl == D('-.022')
                     assert fake.quantity == D('.02')
                 else:
                     replay = manager.change(account_id=account, event_id='resize',
@@ -163,6 +175,7 @@ def test_accepted_buy_protects_capital_until_prepared_and_reconciled(deployment,
                                   capital=D(7), initial_cash=D(7), official_equity=D(1000))
                 store.capital_policy.bind(account_id=account, strategy_id=name, instance_id=name,
                                           allocation_id=name + '-funded')
+            executor.configure_portfolio_risk(account, PortfolioRiskLimits(max_gross_exposure=D(4)))
             binding = dict(account_id=account, instance_id='one', allocation_id='one-funded')
             owner.execution.store.record_metadata('demo:instance:one', dict(binding=binding,
                 symbols=['NVDAUSDT'], shorting=False, allocation=dict(budget_usdt=D(7))))
@@ -176,6 +189,16 @@ def test_accepted_buy_protects_capital_until_prepared_and_reconciled(deployment,
             view = manager.snapshot(account)
             assert view.strategies[0].reserved == D('4.004')
             assert view.strategies[0].withdrawable == D('2.996')
+            pending_risk = executor.portfolio_risk_snapshot(account)
+            assert pending_risk.projected_gross_exposure == D(4)
+            assert pending_risk.pending_open_exposure == D(4)
+            assert len(pending_risk.orders) == 1
+            competing = intent('competing-risk', limit='100', quantity='.01')
+            with pytest.raises(ValueError, match='PORTFOLIO_GROSS_EXPOSURE_LIMIT'):
+                executor.create(account_id=account, strategy_id='two', strategy_version='1',
+                    trading_session='competing', weights={}, owned_symbols=['NVDAUSDT'], now=NOW,
+                    direct_orders=[(competing, D(100))])
+            assert executor.portfolio_risk_snapshot(account).projected_gross_exposure == D(4)
 
             owner.market_sources = SimpleNamespace(require=lambda symbols: None, book=unavailable)
             enqueue(store, account, 'withdraw-too-much', dict(action='change', event_id='too-much',
@@ -215,6 +238,10 @@ def test_accepted_buy_protects_capital_until_prepared_and_reconciled(deployment,
             view = manager.snapshot(account)
             one, two = view.strategies
             assert one.reserved == D('4.004') and not one.pending_decisions
+            prepared_risk = executor.portfolio_risk_snapshot(account)
+            assert prepared_risk.pending_open_exposure == D(4)
+            assert prepared_risk.projected_gross_exposure == D(4)
+            assert len(prepared_risk.orders) == 1
             assert (one.allocated, two.allocated, view.unallocated) == (D('4.5'), D('7.5'), D(15))
             assert view.pool_cash + one.cash + two.cash == view.official_wallet == D(1000)
             at = owner.session._now()
@@ -233,6 +260,9 @@ def test_accepted_buy_protects_capital_until_prepared_and_reconciled(deployment,
                 fault.setattr(executor.adapter, 'query_order', timed_out)
                 unknown = manager.snapshot(account).strategies[0]
                 assert unknown.reserved == D('2.002') and unknown.withdrawable is None
+                risk_unknown = executor.portfolio_risk_snapshot(account)
+                assert risk_unknown.pending_open_exposure == D(2)
+                assert risk_unknown.projected_gross_exposure == D(4)
                 with pytest.raises(ValueError, match='reconciled'):
                     manager.change(account_id=account, event_id='cancel-unknown',
                                    source='one', destination='two', amount=D(1))

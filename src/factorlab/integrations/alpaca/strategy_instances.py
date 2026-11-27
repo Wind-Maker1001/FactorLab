@@ -234,7 +234,10 @@ class StrategyInstances:
         from zoneinfo import ZoneInfo
         from factorlab.trading.capital_cli import process_command
         service.cache = self.cache
-        account = self.adapter.recover()
+        if self.store.portfolio_risk.config(facts.account_id) is None:
+            account = self.adapter.recover()
+        else:
+            account = self.runner.reconcile_account(facts.account_id)
         blocked = self.corporate_actions(at.astimezone(ZoneInfo('America/New_York')).date().isoformat(),
                                          facts.account_id)
         if not blocked:
@@ -249,6 +252,7 @@ class StrategyInstances:
                 package = view.snapshot()['active'] or (pending['new'] if pending else None)
                 if package is not None:
                     self.attach(owner, package, account)
+        self.runner.executor.enforce_portfolio_risk(facts.account_id, account=account)
         for owner, native in self.native.items():
             if owner in retired:
                 continue

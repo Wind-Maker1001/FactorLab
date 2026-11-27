@@ -107,7 +107,7 @@ def adopt_existing(executor, *, receipt_id, account_id, sleeves, official_equity
             store.db.execute('INSERT INTO portfolio_plans VALUES (?,?,?,?,?)',
                               (identity, account_id, owner, session, dumps(plan)))
             for order in orders:
-                store.db.execute('INSERT INTO portfolio_orders VALUES (?,?,?)',
+                store.db.execute('INSERT INTO portfolio_orders (id,plan,payload) VALUES (?,?,?)',
                                   (order['record'].snapshot.intent.client_order_id, identity, dumps(order)))
             for action in actions:
                 store.db.execute('INSERT INTO portfolio_corporate_actions VALUES (?,?,?,?)',
