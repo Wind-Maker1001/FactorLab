@@ -244,6 +244,9 @@ def _copy_databases(root, staging, databases, *, task_mailbox=None):
         # backup API waits for a source write transaction to finish.
         with closing(_connect(source)) as reader, closing(sqlite3.connect(target)) as writer:
             reader.backup(writer)
+            # Keep the snapshot self-contained so read-only integrity checks do
+            # not create WAL or SHM files in the published inventory.
+            writer.execute('PRAGMA journal_mode=DELETE').fetchone()
         _integrity(target)
         with target.open('r+b') as stream:
             os.fsync(stream.fileno())
@@ -401,6 +404,10 @@ def backup_state(root, dest, *, task_mailbox=None):
 
 def restore_state(source, dest):
     """Restore without resetting budgets; persist GET-only recovery quarantine."""
+    source = Path(source)
+    if (source / _RECOVERY_MANIFEST).exists():
+        manifest = verify_snapshot(source)
+        return restore_verified_state(source, dest, manifest)
     return _frozen_snapshot(source, dest, quarantine=True)
 
 

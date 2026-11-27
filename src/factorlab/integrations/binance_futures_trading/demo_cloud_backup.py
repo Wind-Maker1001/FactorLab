@@ -1204,7 +1204,8 @@ def run_scheduled_backup(
         # Persist recovery intent before the stop request reaches systemd.
         stopped_mono = None
         try:
-            if task_mailbox is not None and not skip_service_control:
+            has_task_mailbox = task_mailbox is not None or (state_root / storage._TASK_MAILBOX).is_file()
+            if has_task_mailbox and not skip_service_control:
                 for unit in MAILBOX_WRITER_UNITS:
                     if runner.is_unit_active(unit):
                         window['auxiliary_units'].append(unit)
