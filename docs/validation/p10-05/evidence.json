@@ -1,5 +1,537 @@
 {
   "schema_version": 1,
+  "r01": {
+    "baserev": "53549906c8e08f807c53d57ad45774d243910c97",
+    "release": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+    "migration": {
+      "rehearsal": {
+        "actual_package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+        "live_portfolio_and_account_databases_copied": false,
+        "isolated_old_boot": true,
+        "pre_migration_error": "instance runtime identity changed",
+        "uncommitted_event_rejected": true,
+        "admission": {
+          "admission_created": true,
+          "package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+          "previous_runtime_sha256": "762369d8098312e886d799c8cde3e235a998abf319617a049cbb21c555781600",
+          "runtime_sha256": "16f97f24013fb6664cbccf8fd022808ada81f1a219364cf48b99b6c83885e83b"
+        },
+        "idempotent_repeat": true,
+        "new_boot": true,
+        "previous_binary_rollback": true,
+        "original_binding_preserved": true,
+        "checkpoint_preserved": true
+      },
+      "production_admission": {
+        "admission_created": true,
+        "package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+        "previous_runtime_sha256": "762369d8098312e886d799c8cde3e235a998abf319617a049cbb21c555781600",
+        "runtime_sha256": "16f97f24013fb6664cbccf8fd022808ada81f1a219364cf48b99b6c83885e83b"
+      },
+      "maintenance_start_utc": "2026-11-27T19:08:35.277656834Z",
+      "activation_utc": "2026-11-27T19:09:17.459736740Z",
+      "healthy_heartbeat_utc": "2026-11-27T19:10:20.399301+00:00",
+      "activation_command_seconds": 42.182,
+      "time_to_healthy_heartbeat_seconds": 105.122,
+      "alpaca_online": {
+        "account_recovered": true,
+        "error": null,
+        "execution": {
+          "enabled": true,
+          "state": "IDLE",
+          "task": null
+        },
+        "healthy": true,
+        "heartbeat": "2026-11-27T19:10:20.399301+00:00",
+        "last_recovery_at": "2026-11-27T19:10:05.476749+00:00",
+        "market": {
+          "error": null,
+          "last_event_at": null,
+          "last_rest_at": "2026-11-27T19:10:06.143233+00:00",
+          "recoveries": 2,
+          "state": "CONNECTED"
+        },
+        "market_available": true,
+        "market_rest": {
+          "clock_open": false,
+          "feed": "iex",
+          "fresh_quotes": false,
+          "missing_symbols": [],
+          "received_at": "2026-11-27T19:10:11.334466+00:00"
+        },
+        "mode": "EXECUTE",
+        "pid": 1215558,
+        "revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+        "schedule": {
+          "due": false,
+          "execution_session": "2026-11-23",
+          "market_open": false,
+          "next_open": "2026-11-30T14:30:00+00:00",
+          "signal_cutoff": "2026-11-20",
+          "week": "2026-11-23"
+        },
+        "started_at": "2026-11-27T19:09:20.458642+00:00",
+        "starts": 27,
+        "strategy": {
+          "frequency": "natural-week",
+          "name": "v69-original",
+          "reason": null,
+          "state": "WAITING_NEXT_WEEK"
+        },
+        "trade_stream": "CONNECTED",
+        "heartbeat_age_seconds": 14.919213
+      },
+      "observed_cash_anchor": {
+        "cash": "100000.05",
+        "equity": "100000.05",
+        "cash_request_started_at": "2026-11-27T19:09:39.051288+00:00",
+        "cash_observed_at": "2026-11-27T19:09:39.748572+00:00"
+      },
+      "initial_market_storage": {
+        "bytes": 842973184,
+        "pages": 205804,
+        "free_pages": 0
+      },
+      "active_and_stable": [
+        "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+        "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5"
+      ],
+      "fixture_regressions_passed": 46,
+      "final_focused_regressions_passed": 1,
+      "independent_review_feedback_applied": true,
+      "migration_unified_v2_callers": [
+        "native_v69",
+        "alpaca.strategy_instances",
+        "binance.demo_instance_host"
+      ]
+    },
+    "binance_rollout": {
+      "after_budget": {
+        "consumed": {
+          "posts": 147,
+          "submitted_notional": "917.5849000"
+        },
+        "max_loss": "250",
+        "opening_equity": "5000.00000000",
+        "remaining_notional": "499082.4151000",
+        "remaining_posts": 99853,
+        "state": "RUNNING",
+        "total_notional": "500000",
+        "total_orders": 100000
+      },
+      "before_budget": {
+        "consumed": {
+          "posts": 147,
+          "submitted_notional": "917.5849000"
+        },
+        "max_loss": "250",
+        "opening_equity": "5000.00000000",
+        "remaining_notional": "499082.4151000",
+        "remaining_posts": 99853,
+        "state": "RUNNING",
+        "total_notional": "500000",
+        "total_orders": 100000
+      },
+      "commit": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+      "event": "RUNTIME_DEPLOYED",
+      "ledger_inodes_preserved": true,
+      "old_pid": 1160117,
+      "pid": 1216370,
+      "recovery_seconds": 9.262714624404907,
+      "status": "RUNNING",
+      "unknown": 0
+    },
+    "dr": {
+      "disk_mount": "/dev/sda1",
+      "filesystem": "ext4",
+      "japan_available_bytes_before_pull": 59064213504,
+      "azure_encryption_query_http": {
+        "malaysia": 403,
+        "japan": 403
+      },
+      "japan_limits_bytes": {
+        "binance": 268435456,
+        "alpaca": 2147483648
+      },
+      "japan_retention_count": 2,
+      "forward_rsync_list_verified": true,
+      "reverse_rsync_list_verified": true,
+      "japan_writers_masked": true,
+      "snapshot_pull_enabled": false,
+      "replication_bytes": null,
+      "forward_takeover": null,
+      "failback": null,
+      "final_azure_encryption_query": {
+        "observed_at": "2026-11-27T19:18:25.765016+00:00",
+        "result": {
+          "malaysia": {
+            "http": 403
+          },
+          "japan": {
+            "http": 403
+          }
+        }
+      },
+      "market_local_periodic_read_only_restore": {
+        "binance": {
+          "market": "binance",
+          "snapshot": "backup-20261127T191530Z",
+          "captured_at": "2026-11-27T19:15:34.841441+00:00",
+          "published_for_execution": false,
+          "elapsed_seconds": 7.416547394008376,
+          "ledger": {
+            "reconciled": true,
+            "positions": 0,
+            "open_orders": 0,
+            "requests": {
+              "GET": 32,
+              "POST": 0,
+              "DELETE": 0
+            },
+            "elapsed_seconds": 6.233756223053206,
+            "unknown": [],
+            "cash_residual": "0",
+            "position_residual": {},
+            "unowned_orders": 0,
+            "budget_verified": true
+          }
+        },
+        "alpaca": {
+          "market": "alpaca",
+          "snapshot": "backup-20261127T191227Z",
+          "captured_at": "2026-11-27T19:12:44.367028+00:00",
+          "published_for_execution": false,
+          "elapsed_seconds": 119.63134006696055,
+          "ledger": {
+            "reconciled": true,
+            "blockers": [],
+            "nontrade_receipts": 0,
+            "cash_residual": "0",
+            "api_requests": 11,
+            "budget_verified": true
+          }
+        }
+      },
+      "launch_contracts_staged_both_nodes": [
+        "/etc/factorlab-dr/contracts/binance-r01.json",
+        "/etc/factorlab-dr/contracts/alpaca-r01.json"
+      ],
+      "cross_region_rpo_seconds": null,
+      "cross_region_rto_seconds": null,
+      "cross_region_ledger_difference": null,
+      "reserved_disk_for_two_alpaca_copies_plus_staging_at_actual_size": 2532955398
+    },
+    "resources": {
+      "sample_during_alpaca_backup": {
+        "captured_at": "2026-11-27T19:15:01.048410+00:00",
+        "backup": {
+          "alpaca": {
+            "MemoryCurrent": "210247680",
+            "MemoryPeak": "373608448",
+            "ActiveState": "activating",
+            "SubState": "start"
+          },
+          "binance": {
+            "MemoryCurrent": "[not set]",
+            "MemoryPeak": "[not set]",
+            "ActiveState": "inactive",
+            "SubState": "dead"
+          }
+        },
+        "mem_kib": {
+          "MemAvailable": 463444,
+          "SwapTotal": 2097148,
+          "SwapFree": 1674852
+        },
+        "vmstat": {
+          "pswpin": 69175923,
+          "pswpout": 68430180,
+          "oom_kill": 0
+        }
+      },
+      "alpaca_market_initial_bytes": 707502080,
+      "azure_cpu_credit_metric_http": 403,
+      "full_version_t0": {
+        "observed_at": "2026-11-27T19:17:37.156235+00:00",
+        "services": {
+          "factorlab-demo-execute": {
+            "MainPID": "1218409",
+            "NRestarts": "0",
+            "MemoryPeak": "60604416",
+            "CPUUsageNSec": "5911504000",
+            "PrivateTmp": "yes",
+            "ProtectHome": "yes",
+            "ProtectSystem": "strict",
+            "ActiveState": "active",
+            "SubState": "running",
+            "release": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+            "python": "/opt/factorlab/releases/80d22fa23b2bedd557684dd4db9559e6180ffb9e/venv/bin/python",
+            "proc_mem_kib": {
+              "Rss": 66748,
+              "Pss": 56233,
+              "Swap": 84
+            }
+          },
+          "factorlab-alpaca-paper": {
+            "MainPID": "1218071",
+            "NRestarts": "0",
+            "MemoryPeak": "194265088",
+            "CPUUsageNSec": "2786126000",
+            "PrivateTmp": "yes",
+            "ProtectHome": "yes",
+            "ProtectSystem": "strict",
+            "ActiveState": "active",
+            "SubState": "running",
+            "release": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+            "python": "/opt/factorlab-alpaca/releases/80d22fa23b2bedd557684dd4db9559e6180ffb9e/venv/bin/python",
+            "proc_mem_kib": {
+              "Rss": 68168,
+              "Pss": 56966,
+              "Swap": 30996
+            }
+          },
+          "factorlab-demo-tradfi-observer": {
+            "MainPID": "1218451",
+            "NRestarts": "0",
+            "MemoryPeak": "91779072",
+            "CPUUsageNSec": "957080000",
+            "PrivateTmp": "yes",
+            "ProtectHome": "yes",
+            "ProtectSystem": "strict",
+            "ActiveState": "active",
+            "SubState": "running",
+            "release": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+            "python": "/opt/factorlab/tradfi-observer/current/venv/bin/python",
+            "proc_mem_kib": {
+              "Rss": 81500,
+              "Pss": 69936,
+              "Swap": 0
+            }
+          }
+        },
+        "binance": {
+          "account_recovered": true,
+          "status": "RUNNING",
+          "unknown_count": 0,
+          "global_budget": {
+            "consumed": {
+              "posts": 147,
+              "submitted_notional": "917.5849000"
+            },
+            "max_loss": "250",
+            "opening_equity": "5000.00000000",
+            "remaining_notional": "499082.4151000",
+            "remaining_posts": 99853,
+            "state": "RUNNING",
+            "total_notional": "500000",
+            "total_orders": 100000
+          },
+          "requests": {
+            "DELETE": 0,
+            "GET": 440,
+            "POST": 0
+          },
+          "request_failure_rate": 0,
+          "last_reconciled_at": "2026-11-27T19:17:34.508863+00:00",
+          "positions": [],
+          "open_orders": []
+        },
+        "alpaca": {
+          "account_recovered": true,
+          "healthy": true,
+          "trade_stream": "CONNECTED",
+          "market": {
+            "error": null,
+            "last_event_at": null,
+            "last_rest_at": "2026-11-27T19:17:04.816768+00:00",
+            "recoveries": 5,
+            "state": "CONNECTED"
+          },
+          "schedule": {
+            "due": false,
+            "execution_session": "2026-11-23",
+            "market_open": false,
+            "next_open": "2026-11-30T14:30:00+00:00",
+            "signal_cutoff": "2026-11-20",
+            "week": "2026-11-23"
+          },
+          "strategy": {
+            "frequency": "natural-week",
+            "name": "v69-original",
+            "reason": null,
+            "state": "WAITING_NEXT_WEEK"
+          },
+          "revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+          "started_at": "2026-11-27T19:14:48.364961+00:00",
+          "last_recovery_at": "2026-11-27T19:16:59.897758+00:00",
+          "heartbeat": "2026-11-27T19:17:14.513278+00:00"
+        },
+        "observer": {
+          "observed_at": "2026-11-27T19:17:15.669208+00:00",
+          "market_error": null,
+          "recoveries": 0,
+          "disconnects": 0,
+          "execution_status": "COMPLETED"
+        },
+        "workers": [],
+        "market_sqlite": {
+          "bytes": 842973184,
+          "free_pages": 0,
+          "first_received": "2026-11-24T18:36:50.220598+00:00",
+          "last_received": "2026-11-27T19:00:00.183658+00:00"
+        },
+        "active_and_stable": [
+          "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+          "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5"
+        ],
+        "admission_count": 1,
+        "available_disk_bytes": 30553210880,
+        "mem_kib": {
+          "MemTotal": 908368,
+          "MemAvailable": 438136,
+          "SwapTotal": 2097148,
+          "SwapFree": 1748180
+        },
+        "vmstat": {
+          "pswpin": 69200592,
+          "pswpout": 68449047,
+          "oom_kill": 0
+        },
+        "official_cash": {
+          "cash": "100000.05",
+          "equity": "100000.05",
+          "cash_request_started_at": "2026-11-27T19:17:13.113161+00:00",
+          "cash_observed_at": "2026-11-27T19:17:13.811303+00:00"
+        }
+      },
+      "after_local_recovery": {
+        "observed_at": "2026-11-27T19:20:48.914518+00:00",
+        "same_revision_pids": true,
+        "services": {
+          "factorlab-demo-execute": {
+            "main_pid": 1218409,
+            "n_restarts": 0,
+            "cpu_seconds_delta": 7.431252,
+            "vmem_kib": {
+              "Rss": 37444,
+              "Pss": 29925,
+              "Swap": 25568
+            }
+          },
+          "factorlab-alpaca-paper": {
+            "main_pid": 1218071,
+            "n_restarts": 0,
+            "cpu_seconds_delta": 0.547951,
+            "vmem_kib": {
+              "Rss": 42092,
+              "Pss": 33918,
+              "Swap": 46380
+            }
+          },
+          "factorlab-demo-tradfi-observer": {
+            "main_pid": 1218451,
+            "n_restarts": 0,
+            "cpu_seconds_delta": 0.194678,
+            "vmem_kib": {
+              "Rss": 31464,
+              "Pss": 23259,
+              "Swap": 38928
+            }
+          }
+        },
+        "elapsed_seconds": 191.758283,
+        "vmstat_delta": {
+          "pswpin": 8717,
+          "pswpout": 27386,
+          "oom_kill": 0
+        },
+        "mem_kib": {
+          "MemAvailable": 544360,
+          "SwapTotal": 2097148,
+          "SwapFree": 1662656
+        },
+        "alpaca_market_sqlite_bytes": 842973184
+      }
+    },
+    "status": {
+      "V69_RUNTIME_MIGRATION": "ACCEPTED",
+      "deployment": "DEPLOYMENT_ACCEPTED",
+      "dual_market": "PARTIAL",
+      "resource": "RESOURCE_ACCEPTED",
+      "disaster_recovery": "NOT_VERIFIED"
+    },
+    "deployment": {
+      "malaysia_all_three_running_revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+      "japan_installed_revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+      "japan_running_execution_revision": null,
+      "legacy_grid_ownership_unchanged": true,
+      "previous_overlay_retired": true
+    },
+    "backups": {
+      "alpaca": {
+        "backup_bytes": 844318466,
+        "command_elapsed_seconds": 182.87123252195306,
+        "cpu_seconds": 0.099513089,
+        "maintenance_downtime_seconds": 131.7160365030286,
+        "path": "/var/backups/factorlab-alpaca-paper/backup-20261127T191227Z",
+        "verified": true
+      },
+      "binance": {
+        "backup_path": "/var/backups/factorlab-demo/backup-20261127T191530Z",
+        "backup_bytes": 30523283,
+        "started_at": "2026-11-27T19:15:30.806961+00:00",
+        "completed_at": "2026-11-27T19:16:02.866432+00:00",
+        "status": "SUCCEEDED",
+        "verified": true,
+        "database_count": 14,
+        "c07_downtime_seconds": 2.374,
+        "restore_drill_passed": true
+      },
+      "backup_units": [
+        {
+          "event": "P10_05_R01_BACKUP_RESOURCE",
+          "group": "factorlab-alpaca-backup.service",
+          "memory_peak_bytes": 373608448,
+          "swap_peak_bytes": 75628544,
+          "host_mem_kib": {
+            "MemAvailable": 514360,
+            "SwapFree": 1662384
+          }
+        },
+        {
+          "event": "P10_05_R01_BACKUP_RESOURCE",
+          "group": "factorlab-demo-backup.service",
+          "memory_peak_bytes": 298471424,
+          "swap_peak_bytes": 6774784,
+          "host_mem_kib": {
+            "MemAvailable": 485896,
+            "SwapFree": 1727540
+          }
+        }
+      ]
+    },
+    "soak": {
+      "mixed_revision_end_utc": "2026-11-27T19:08:35.277656834Z",
+      "mixed_observation_seconds": 13477.425,
+      "full_revision_t0_utc": "2026-11-27T19:17:37.156235+00:00",
+      "full_revision_through_utc": "2026-11-27T19:20:48.914518+00:00",
+      "full_revision_observed_seconds": 191.758283,
+      "SOAK_24H": {
+        "status": "IN_PROGRESS",
+        "eligible_at_utc": "2026-11-28T19:17:37.156Z"
+      },
+      "SOAK_72H": {
+        "status": "IN_PROGRESS",
+        "eligible_at_utc": "2026-11-30T19:17:37.156Z"
+      },
+      "SOAK_7D": {
+        "status": "IN_PROGRESS",
+        "eligible_at_utc": "2026-12-04T19:17:37.156Z"
+      },
+      "alpaca_next_natural_window_utc": "2026-11-30T14:30:00+00:00",
+      "alpaca_first_natural_rebalance_on_release": "PENDING"
+    }
+  },
   "repo_revision_requested": "864671649626993bce84629dc9f64d3cc4e3f015",
   "captured_at_utc": "2026-11-27T18:43:59.040316+00:00",
   "status": {
