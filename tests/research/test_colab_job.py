@@ -327,3 +327,123 @@ def test_submit_forwards_proxy_by_name_without_exposing_value(tmp_path, monkeypa
         return subprocess.CompletedProcess(command, 0)
     monkeypatch.setattr(module.subprocess, "run", run)
     module.main()
+
+
+@pytest.fixture
+def batch_manifest(tmp_path):
+    inputs = tmp_path / "inputs"
+    inputs.mkdir()
+    (inputs / "history.npy").write_bytes(b"explicit input")
+    (inputs / "unlisted.json").write_text("not uploaded")
+    manifest = {"schema_version": 1, "commit": "a" * 40, "timeout_seconds": 1800,
+                "budget_cu": 2, "tasks": [{
+                    "id": "bootstrap", "entry": "bootstrap", "parameters": {},
+                    "inputs": {"returns": "inputs/history.npy"}, "device": "colab",
+                    "memory_budget_mb": 512, "gpu_memory_limit_mb": None,
+                    "timeout_seconds": 60, "outputs": ["report.json", "samples.npz"]}]}
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps(manifest))
+    return path
+
+
+def test_batch_deploy_installs_once_and_uploads_only_declared(job, batch_manifest, monkeypatch):
+    job.save(manifest=str(batch_manifest))
+    calls, executions = [], []
+    monkeypatch.setattr(job, "cli", lambda *a, **kw: calls.append(a))
+    monkeypatch.setattr(job, "execute", lambda code: executions.append(code))
+    job.deploy()
+    assert len(executions) == 2
+    assert executions[0].count("'install'") == 1
+    assert "[monte-carlo-cuda,monte-carlo-benchmark,monte-carlo-native]" in executions[0]
+    assert "root.mkdir(mode=0o700)" in executions[1]
+    assert [str(c[-1]) for c in calls] == [
+        "/content/factorlab.whl", "/content/factorlab-input/manifest.json",
+        "/content/factorlab-input/inputs/history.npy"]
+    assert all(c[0] == "upload" for c in calls)
+
+
+def test_batch_submit_uses_manifest_limits(job, batch_manifest, monkeypatch):
+    import os
+    import shutil
+    import sys
+    wheel = job.root / "factorlab-0.1.0-py3-none-any.whl"
+    wheel.touch()
+    destination = job.root / "submitted"
+    monkeypatch.setattr(os, "getuid", lambda: 1000, raising=False)
+    monkeypatch.setattr(shutil, "which", lambda _: "/isolated/bin/colab")
+    monkeypatch.setattr(sys, "argv", ["colab_job.py", "submit", "--job", str(destination),
+                                    "--wheel", str(wheel), "--manifest", str(batch_manifest)])
+    commands = []
+    monkeypatch.setattr(module.subprocess, "run", lambda command, **kw: commands.append(command))
+    module.main()
+    saved = module.Job(destination).data
+    assert saved["manifest"] == str(batch_manifest.resolve())
+    assert saved["timeout"] == 1800 and saved["budget_cu"] == 2
+    assert saved["commit"] == "a" * 40
+    assert len(commands) == 1
+
+
+@pytest.mark.parametrize("name", ["../outside.npy", "/tmp/outside.npy", "inputs/secret.npy",
+                                   "inputs/.env", "inputs/history.py"])
+def test_batch_rejects_unsafe_inputs(batch_manifest, name):
+    document = json.loads(batch_manifest.read_text())
+    document["tasks"][0]["inputs"]["returns"] = name
+    batch_manifest.write_text(json.dumps(document))
+    with pytest.raises(ValueError):
+        module.manifest_inputs(batch_manifest)
+
+
+def test_release_never_stops_reassigned_name(job, monkeypatch):
+    job.save(allocation_attempted=True, endpoint="vm-owned")
+    calls = []
+    def cli(*args, **kwargs):
+        calls.append(args)
+        return "[fl-test] vm-foreign | Hardware: L4"
+    monkeypatch.setattr(job, "cli", cli)
+    with pytest.raises(RuntimeError, match="different runtime"):
+        job.release()
+    assert calls == [("sessions",)]
+
+
+@pytest.mark.parametrize("batch", [False, True])
+def test_expired_work_deadline_salvages_before_release(job, batch_manifest, monkeypatch, batch):
+    if batch:
+        job.save(manifest=str(batch_manifest))
+    calls, executions = [], []
+    def cli(*args, **kwargs):
+        calls.append(args)
+        if args[0] == "version":
+            return "Version: 0.8.0"
+        if args[0] == "usage":
+            count = int(bool(job.data.get("endpoint")) and not job.data.get("released"))
+            return f"Current balance: 200.00 compute units\nUsage rate: 2.33/hr\nActive assignments: {count}"
+        if args[0] == "sessions":
+            return "" if any(c[0] == "stop" for c in calls) else "[fl-test] vm-123 | Hardware: L4"
+        if args[0] == "download":
+            remaining = job.deadline - module.time.monotonic()
+            assert 0 < remaining <= module.SALVAGE_SECONDS
+            assert not any(c[0] == "stop" for c in calls)
+            Path(args[-1]).write_text("salvaged")
+        return ""
+    def execute(code):
+        executions.append(code)
+        if len(executions) == 1:
+            return 'FACTORLAB_HARDWARE={"gpu":"NVIDIA L4"}'
+        if "pip" in code or "root.mkdir" in code:
+            return ""
+        job.deadline = module.time.monotonic() - 1
+        raise TimeoutError("expired work")
+    monkeypatch.setattr(job, "cli", cli)
+    monkeypatch.setattr(job, "execute", execute)
+    with pytest.raises(TimeoutError, match="expired work"):
+        job.run()
+    assert job.data["failure_artifacts_downloaded"]
+    assert job.data["outcome"] == "failed"
+    assert job.data["cleanup_outcome"] == "released"
+    assert set(job.data["timings"]) == {"deployment", "execution", "download", "release"}
+    if batch:
+        remote = executions[-1]
+        assert "factorlab.experiments.research_batch" in remote
+        assert "--timeout" in remote and "--cu-rate-per-hour" in remote and "--cu-balance" in remote
+        assert sum("pip" in code for code in executions) == 1
+    assert ("stop", "-s", "fl-test") in calls

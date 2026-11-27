@@ -32,6 +32,7 @@ monte-carlo-native = ["ziglang>=0.15,<0.16"]
 [project.scripts]
 factorlab = "factorlab.cli:main"
 factorlab-demo = "factorlab.integrations.binance_futures_trading.demo_cli:main"
+factorlab-research = "factorlab.experiments.research_batch:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -46,4 +47,4 @@ addopts = '-ra -m "not network"'
 markers = ["network: external services excluded from offline acceptance", "integration: crosses subsystems", "slow: long running"]
 
 [tool.setuptools.package-data]
-factorlab = ["resources/*.yaml", "console/static/*.html", "console/static/*.css", "console/static/*.js", "research/grid_simulation/*.cu"]
+factorlab = ["resources/*.yaml", "resources/*.json", "resources/*.py", "console/static/*.html", "console/static/*.css", "console/static/*.js", "research/grid_simulation/*.cu"]
