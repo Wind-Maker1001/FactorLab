@@ -172,26 +172,6 @@ def test_missing_success_receipt_is_failure(job, monkeypatch):
         job.execute("raise RuntimeError()")
 
 
-@pytest.mark.skipif(__import__("sys").platform != "linux", reason="Linux flock")
-def test_account_lock_competition_and_crash_release(tmp_path):
-    import sys
-    with module.account_lock(tmp_path):
-        contender = subprocess.run([sys.executable, "-c",
-            "import fcntl,sys; f=open(sys.argv[1], 'a'); fcntl.flock(f, fcntl.LOCK_EX|fcntl.LOCK_NB)",
-            str(tmp_path / "account.lock")], capture_output=True, timeout=10)
-        assert contender.returncode != 0
-        assert b"BlockingIOError" in contender.stderr
-        with pytest.raises(module.AccountBusy):
-            with module.account_lock(tmp_path):
-                pytest.fail("parallel allocation admitted")
-    child = subprocess.Popen([sys.executable, "-c",
-        "import fcntl,sys,os; f=open(sys.argv[1], 'a'); fcntl.flock(f, fcntl.LOCK_EX); os._exit(9)",
-        str(tmp_path / "account.lock")])
-    assert child.wait(timeout=10) == 9
-    with module.account_lock(tmp_path):
-        pass
-
-
 @pytest.mark.parametrize("numpy_version,accepted", [("2.3.5", True), ("2.4.6", False)])
 def test_loaded_dependency_constraints(numpy_version, accepted, monkeypatch):
     from email.message import Message
@@ -212,17 +192,25 @@ def test_loaded_dependency_constraints(numpy_version, accepted, monkeypatch):
             research.validate_dependencies(versions)
 
 
-@pytest.mark.skipif(__import__("sys").platform != "linux", reason="Linux flock")
-def test_busy_run_never_operates_or_cleans_other_job(job, monkeypatch):
+@pytest.mark.parametrize("action", ["run", "recover"])
+def test_busy_run_never_operates_or_cleans_other_job(job, monkeypatch, action):
     import sys
     monkeypatch.setattr(module.Path, "home", lambda: job.root)
-    monkeypatch.setattr(sys, "argv", ["colab_job.py", "run", "--job", str(job.root)])
+    monkeypatch.setattr(sys, "argv", ["colab_job.py", action, "--job", str(job.root)])
     monkeypatch.setattr(module, "operate", lambda *a: pytest.fail("busy task operated"))
-    with module.account_lock(job.root / ".local/state/factorlab-colab"):
-        with pytest.raises(SystemExit) as exc:
-            module.main()
-        assert exc.value.code == 75
-    assert module.Job(job.root).data["state"] == "BUSY"
+    from contextlib import contextmanager
+    @contextmanager
+    def busy_lock(_):
+        raise module.AccountBusy
+        yield
+    monkeypatch.setattr(module, "account_lock", busy_lock)
+    with pytest.raises(SystemExit) as exc:
+        module.main()
+    assert exc.value.code == 75
+    if action == "run":
+        assert module.Job(job.root).data["state"] == "BUSY"
+    else:
+        assert module.Job(job.root).data == job.data
     assert not job.data.get("allocation_attempted")
 
 

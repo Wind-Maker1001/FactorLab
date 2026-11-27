@@ -130,6 +130,16 @@ official CLI exit code, since CLI 0.8.0 can return zero after a remote exception
 Keep the
 original wheel with the private run artifacts.
 
+## Offline and Linux platform acceptance
+
+Run portable controller behavior checks with
+`python -m pytest tests/research/test_colab_job.py` on Windows or Linux.
+Real Linux process contention, crash-unlock and BUSY isolation are a separate
+explicit platform entrypoint:
+`python -m pytest tests/research/acceptance_colab_linux.py`.
+Run that entrypoint inside Linux/WSL; it requires `fcntl` and contains no
+platform skips. Neither command allocates a Colab runtime.
+
 ## Budgets and cleanup
 
 The budget is mandatory and never enables purchases. After allocation the

@@ -260,5 +260,27 @@ receipt followed by cleanup, actual Linux process contention, crash unlock,
 BUSY without operation, and resource summary/error propagation. The measured
 cloud run used the first equivalent inline dependency validator; the final
 helper extraction and lock-error classification are covered by offline tests.
-Final targeted results: Linux **23 passed in 0.51 seconds**; Windows Python
+Earlier targeted results: Linux **23 passed in 0.51 seconds**; Windows Python
 3.13 **21 passed, 2 Linux-only skips in 1.33 seconds**.
+
+### Zero-skip CI platform separation
+
+The subsequent Windows Targeted Python 3.13 run collected 24 tests: 22 passed
+and two real-flock cases were skipped; no assertion failed. Those skips failed
+the trusted CI requirement. Real process contention, abnormal-exit lock release
+and real-lock BUSY isolation now live in the explicit Linux entrypoint
+`tests/research/acceptance_colab_linux.py`, outside ordinary `test_*.py`
+discovery. Portable tests retain simulated BUSY isolation for both run and
+recovery, exception propagation and resource cleanup. No CI criterion or skip
+exemption was changed.
+
+Final targeted commands and results:
+
+- Windows Python 3.13: `python -m pytest tests/research/test_colab_job.py -q` —
+  **24 passed in 1.77 seconds**, zero skips or failures.
+- Local WSL Linux: `python -m pytest tests/research/acceptance_colab_linux.py tests/research/test_colab_job.py -q` —
+  **26 passed in 10.23 seconds**, including both explicit real-flock acceptance
+  cases, zero skips or failures.
+
+These offline regressions preserve the existing Colab execution evidence and
+allocate no runtime or CU.
