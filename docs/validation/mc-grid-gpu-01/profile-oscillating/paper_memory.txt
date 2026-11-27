@@ -1,0 +1,68 @@
+         3095621 function calls (2435125 primitive calls) in 2.236 seconds
+
+   Ordered by: cumulative time
+   List reduced from 893 to 60 due to restriction <60>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    2.313    2.313 profile_grid_batch.py:20(replay)
+        1    0.007    0.007    2.311    2.311 grid_paper.py:90(run_experiment)
+      512    0.005    0.000    2.214    0.004 grid_execution.py:1072(_paper_command)
+      512    0.003    0.000    2.093    0.004 control.py:86(_atomic)
+      512    0.009    0.000    1.719    0.003 grid_execution.py:1077(apply)
+      169    0.004    0.000    1.508    0.009 grid_paper.py:200(match)
+      168    0.000    0.000    1.495    0.009 grid_execution.py:903(fill_paper)
+      168    0.001    0.000    1.113    0.007 paper.py:196(fill)
+      168    0.003    0.000    1.080    0.006 grid_execution.py:924(_admit_paper_fill)
+      168    0.045    0.000    0.979    0.006 grid_execution.py:97(_historical_turnover)
+    29544    0.097    0.000    0.938    0.000 storage.py:373(order_events)
+326898/29718    0.327    0.000    0.626    0.000 storage.py:68(decode)
+      173    0.000    0.000    0.403    0.002 grid_execution.py:964(submit_paper)
+      169    0.001    0.000    0.323    0.002 grid_execution.py:886(observe_paper)
+      513    0.004    0.000    0.313    0.001 storage.py:340(save)
+     1191    0.065    0.000    0.259    0.000 grid_execution.py:746(_authority)
+      513    0.106    0.000    0.257    0.001 storage.py:254(_dumps_paper_state)
+     4260    0.009    0.000    0.246    0.000 storage.py:184(dumps)
+    29718    0.029    0.000    0.223    0.000 __init__.py:299(loads)
+226992/11615    0.152    0.000    0.194    0.000 storage.py:39(encode)
+      512    0.013    0.000    0.189    0.000 grid_execution.py:827(_write_checkpoint)
+      679    0.002    0.000    0.186    0.000 grid_execution.py:775(_read_checkpoint)
+    29718    0.044    0.000    0.183    0.000 decoder.py:340(decode)
+    30061    0.044    0.000    0.178    0.000 contracts.py:115(__post_init__)
+     5963    0.004    0.000    0.175    0.000 dataclasses.py:1338(asdict)
+80256/5963    0.069    0.000    0.167    0.000 dataclasses.py:1362(_asdict_inner)
+     2383    0.004    0.000    0.164    0.000 grid_execution.py:46(_fingerprint)
+     1702    0.007    0.000    0.163    0.000 grid_execution.py:650(deployment)
+    12301    0.019    0.000    0.157    0.000 encoder.py:183(encode)
+      680    0.001    0.000    0.138    0.000 grid_execution.py:772(_paper_deployment)
+    11102    0.130    0.000    0.130    0.000 encoder.py:205(iterencode)
+      512    0.003    0.000    0.100    0.000 grid_execution.py:915(_bind_admission)
+    29718    0.092    0.000    0.092    0.000 decoder.py:351(raw_decode)
+    80292    0.058    0.000    0.075    0.000 contracts.py:44(decimal_value)
+   104685    0.072    0.000    0.072    0.000 {method 'update' of '_hashlib.HASH' objects}
+      853    0.008    0.000    0.068    0.000 grid_execution.py:125(_project_paper_account)
+    31942    0.041    0.000    0.066    0.000 contracts.py:62(utc)
+   367690    0.065    0.000    0.065    0.000 {method 'get' of 'dict' objects}
+     1369    0.034    0.000    0.058    0.000 paper.py:248(read_account)
+     1026    0.009    0.000    0.053    0.000 storage.py:155(_clone_paper_state)
+      343    0.003    0.000    0.051    0.000 paper.py:110(apply)
+     4448    0.050    0.000    0.050    0.000 {method 'execute' of 'sqlite3.Connection' objects}
+15348/13645    0.025    0.000    0.048    0.000 copy.py:119(deepcopy)
+289344/289320    0.045    0.000    0.045    0.000 {built-in method builtins.isinstance}
+      173    0.000    0.000    0.045    0.000 control.py:174(_submit_in_transaction)
+      173    0.001    0.000    0.045    0.000 control.py:176(operation)
+72692/1026    0.039    0.000    0.043    0.000 storage.py:133(_clone_runtime)
+      514    0.003    0.000    0.043    0.000 storage.py:325(load)
+      343    0.002    0.000    0.033    0.000 grid_execution.py:698(_accept_confirmation)
+     6136    0.020    0.000    0.032    0.000 dataclasses.py:1308(fields)
+    59442    0.031    0.000    0.031    0.000 {method 'match' of 're.Pattern' objects}
+166015/166005    0.027    0.000    0.027    0.000 {built-in method builtins.getattr}
+      343    0.001    0.000    0.026    0.000 grid_execution.py:729(_propose_reverse)
+      173    0.001    0.000    0.025    0.000 paper.py:188(submit_order)
+      177    0.004    0.000    0.025    0.000 grid_execution.py:302(_propose)
+    29718    0.015    0.000    0.025    0.000 enum.py:695(__call__)
+196746/196507    0.024    0.000    0.024    0.000 {built-in method builtins.len}
+      343    0.000    0.000    0.024    0.000 storage.py:355(record_event)
+      343    0.001    0.000    0.024    0.000 storage.py:387(record_metadata)
+    31942    0.021    0.000    0.021    0.000 {method 'utcoffset' of 'datetime.datetime' objects}
+
+
