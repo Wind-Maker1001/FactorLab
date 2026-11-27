@@ -1,4 +1,4 @@
-"""Private JSON stdin/stdout worker. Never started with account credentials."""
+"""Private one-shot JSON stdin/stdout worker. Never started with account credentials."""
 import ast
 import contextlib
 import importlib.metadata
@@ -21,8 +21,6 @@ _NUMERIC_TRIGGER_PREFIXES = (
     'factorlab.experiments',
     'factorlab.integrations.alpaca',
 )
-
-
 _NUMERIC_SYMBOL_NAMES = frozenset({'DualMAAdapter', 'DualMAStrategy'})
 
 
@@ -52,6 +50,28 @@ def _needs_numeric_preimport(package: Path, manifest: dict) -> bool:
     return False
 
 
+def _warm_timezones(manifest: dict, *, pandas_module=None):
+    from zoneinfo import ZoneInfo
+
+    tz_names = ['UTC', 'America/New_York']
+    calendar_tz = manifest.get('calendar_timezone')
+    if isinstance(calendar_tz, str) and calendar_tz and calendar_tz not in tz_names:
+        tz_names.append(calendar_tz)
+    for tz_name in tz_names:
+        try:
+            ZoneInfo(tz_name)
+        except Exception:
+            pass
+    if pandas_module is not None:
+        for tz_name in tz_names:
+            if tz_name == 'UTC':
+                continue
+            try:
+                pandas_module.Timestamp('2026-01-01', tz=tz_name)
+            except Exception:
+                pass
+
+
 def _install_guard(allowed):
     def guard(event, args):
         if event == 'open':
@@ -76,6 +96,28 @@ def _check_dependencies(manifest):
         name, version = requirement.split('==')
         if importlib.metadata.version(name) != version:
             raise ValueError('strategy dependency mismatch')
+
+
+def _prepare_runtime(source_root: Path, package: Path, manifest: dict):
+    # Compatible with P10-11 lightweight runtime_profile and model packages:
+    # skip heavyweight adapter/numeric preimports unless actually required.
+    lightweight = 'model' in manifest or manifest.get('runtime_profile') == 'lightweight'
+    if not lightweight:
+        import factorlab.strategies.adapters  # noqa: F401
+        if _needs_numeric_preimport(package, manifest):
+            try:
+                import numpy  # noqa: F401
+                import pandas as pd
+                _warm_timezones(manifest, pandas_module=pd)
+            except ModuleNotFoundError:
+                _warm_timezones(manifest, pandas_module=None)
+        else:
+            _warm_timezones(manifest, pandas_module=None)
+    else:
+        _warm_timezones(manifest, pandas_module=None)
+    _check_dependencies(manifest)
+    allowed = (package, source_root, Path(sys.base_prefix).resolve(), Path(sys.prefix).resolve())
+    _install_guard(allowed)
 
 
 def _load_strategy_module(package: Path, manifest: dict):
@@ -121,90 +163,7 @@ def _execute_request(module, manifest, request, *, protocol_types, validate_even
     return dict(value=value)
 
 
-def _prepare_runtime(source_root: Path, package: Path, manifest: dict):
-    import factorlab.strategies.adapters  # noqa: F401
-    if _needs_numeric_preimport(package, manifest):
-        try:
-            import numpy  # noqa: F401
-            import pandas as pd
-            from zoneinfo import ZoneInfo
-            for tz_name in ('UTC', 'America/New_York'):
-                try:
-                    ZoneInfo(tz_name)
-                except Exception:
-                    pass
-            try:
-                pd.Timestamp('2026-01-01', tz='America/New_York')
-            except Exception:
-                pass
-        except ModuleNotFoundError:
-            pass
-    _check_dependencies(manifest)
-    allowed = (package, source_root, Path(sys.base_prefix).resolve(), Path(sys.prefix).resolve())
-    _install_guard(allowed)
-
-
-def _run_oneshot(source_root: Path, package: Path, *, decode, dumps, protocol_types, validate_event):
-    request = decode(json.loads(sys.stdin.read(_MAX_MESSAGE_BYTES)))
-    manifest = request['manifest']
-    try:
-        _prepare_runtime(source_root, package, manifest)
-    except Exception as error:
-        sys.stdout.write(dumps(dict(error=type(error).__name__ + ': ' + str(error))))
-        return
-    try:
-        module = _load_strategy_module(package, manifest)
-        response = _execute_request(
-            module, manifest, request, protocol_types=protocol_types, validate_event=validate_event,
-        )
-    except Exception as error:
-        response = dict(error=type(error).__name__ + ': ' + str(error))
-    sys.stdout.write(dumps(response))
-
-
-def _run_serve(source_root: Path, package: Path, *, decode, dumps, protocol_types, validate_event):
-    out = sys.stdout
-    raw_init = sys.stdin.readline(_MAX_MESSAGE_BYTES + 1)
-    if not raw_init or len(raw_init) > _MAX_MESSAGE_BYTES:
-        return
-    init = decode(json.loads(raw_init))
-    manifest = init['manifest']
-    try:
-        _prepare_runtime(source_root, package, manifest)
-        module = _load_strategy_module(package, manifest)
-    except Exception as error:
-        out.write(dumps(dict(error=type(error).__name__ + ': ' + str(error))) + '\n')
-        out.flush()
-        return
-    out.write(dumps(dict(ready=True)) + '\n')
-    out.flush()
-
-    while True:
-        line = sys.stdin.readline(_MAX_MESSAGE_BYTES + 1)
-        if not line:
-            break
-        if len(line) > _MAX_MESSAGE_BYTES:
-            out.write(dumps(dict(error='ValueError: strategy request exceeds size limit')) + '\n')
-            out.flush()
-            break
-        try:
-            request = decode(json.loads(line))
-            response = _execute_request(
-                module, manifest, request, protocol_types=protocol_types, validate_event=validate_event,
-            )
-        except Exception as error:
-            response = dict(error=type(error).__name__ + ': ' + str(error))
-        encoded = dumps(response)
-        if len(encoded) > _MAX_MESSAGE_BYTES:
-            out.write(dumps(dict(error='ValueError: strategy response exceeds size limit')) + '\n')
-            out.flush()
-            break
-        out.write(encoded + '\n')
-        out.flush()
-
-
 def main():
-    serve = '--serve' in sys.argv[3:]
     source_root, package = (Path(p).resolve() for p in sys.argv[1:3])
     sys.path.insert(0, str(source_root))
     from factorlab.trading.storage import decode, dumps
@@ -217,16 +176,30 @@ def main():
         Decision, StrategySpec, DecisionV2, StrategySpecV2,
         decision_payload, spec_payload, json_value,
     )
-    if serve:
-        _run_serve(
-            source_root, package, decode=decode, dumps=dumps,
-            protocol_types=protocol_types, validate_event=validate_event,
+
+    raw_request = sys.stdin.read(_MAX_MESSAGE_BYTES + 1)
+    if len(raw_request) > _MAX_MESSAGE_BYTES:
+        sys.stdout.write(dumps(dict(error='ValueError: strategy request exceeds size limit')))
+        return
+    try:
+        request = decode(json.loads(raw_request))
+        manifest = request['manifest']
+        _prepare_runtime(source_root, package, manifest)
+    except Exception as error:
+        sys.stdout.write(dumps(dict(error=type(error).__name__ + ': ' + str(error))))
+        return
+    try:
+        module = _load_strategy_module(package, manifest)
+        response = _execute_request(
+            module, manifest, request, protocol_types=protocol_types, validate_event=validate_event,
         )
-    else:
-        _run_oneshot(
-            source_root, package, decode=decode, dumps=dumps,
-            protocol_types=protocol_types, validate_event=validate_event,
-        )
+    except Exception as error:
+        response = dict(error=type(error).__name__ + ': ' + str(error))
+    encoded = dumps(response)
+    if len(encoded) > _MAX_MESSAGE_BYTES:
+        sys.stdout.write(dumps(dict(error='ValueError: strategy response exceeds size limit')))
+        return
+    sys.stdout.write(encoded)
 
 
 if __name__ == '__main__':

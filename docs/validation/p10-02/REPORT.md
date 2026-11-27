@@ -1,7 +1,7 @@
 # P10-02：FactorLab 执行端轻量化及 ARM64 跨架构适配验证报告
 
-> **状态**：已完成优化、配对基准、ARM64 原生验证与跨架构一致性校验；未修改或升级马来西亚生产模拟主机，未自动合并 PR。  
-> **开发分支**：`perf/p10-02-lightweight-arm64`（独立 worktree，基于 `origin/main` `388a8ee`）  
+> **状态**：已完成依赖审计、轻量化优化、PR #268 Codex Review（P1 逐请求隔离恢复 + P2 原子容量与双层并发上限）修复、ARM64 原生验证、四向金融一致性校验与修复后全量性能复测；未修改或升级马来西亚生产模拟主机，未自动合并 PR。  
+> **开发分支**：`perf/p10-02-lightweight-arm64`（独立 worktree，基于 `origin/main` `388a8ee`，PR #268）  
 > **证据归档目录**：`docs/validation/p10-02/evidence/`
 
 ---
@@ -13,7 +13,7 @@
 | 环境 | 主机 / 规格 | CPU / 架构 | 内存 / Swap | OS / Python | 本任务操作边界 |
 | --- | --- | --- | --- | --- | --- |
 | 生产模拟目标约束 | `factorlab-demo-01`（Azure `MalaysiaWest`，`Standard_B2ats_v2`） | 2 vCPU `x86_64` | 887 MiB 可见 RAM（1 GiB VM），2.0 GiB Swap | Ubuntu 24.04 x64 / CPython 3.13.18 | **P10-01 独占部署与写入**；本任务仅做低影响只读观测 |
-| ARM64 验证环境 | `factorlab-arm-01`（Azure Japan，`Standard_B2pts_v2`） | 2 vCPU `aarch64`（Neoverse-N1） | 944 MiB 可见 RAM（1 GiB VM），2.0 GiB Swap | Ubuntu 24.04.5 LTS / 原生 CPython 3.13.18 (`aarch64`) | 原生安装、全量基线、热点优化、配对基准与持续观测 |
+| ARM64 验证环境 | `factorlab-arm-01`（Azure Japan，`Standard_B2pts_v2`） | 2 vCPU `aarch64`（Neoverse-N1） | 944 MiB 可见 RAM（1 GiB VM），2.0 GiB Swap | Ubuntu 24.04.5 LTS / 原生 CPython 3.13.18 (`aarch64`) | 原生安装、全量基线、热点优化、审查修复后配对复测 |
 | 本地对比环境 | Windows x64 开发机 | AMD64 | — | Windows / CPython 3.13.9 | 跨架构金融结果对比、本地单测与打包校验 |
 
 ### 1.2 生产模拟主机只读基线观测（优化前痛点证据）
@@ -40,7 +40,7 @@
      - `strategies/grid.py`、`strategies/grid_execution.py`、`backtest/fees.py` 仅因用 `pd.Timestamp` 解析 ISO 字符串而顶层 `import pandas`。
      - `trading/strategy.py` 顶层 `import pandas` 与 `dual_ma.crossover_indicators`。
      - `binance_futures_trading/protocol.py -> integrations/binance/__init__.py -> client.py -> data/__init__.py / data/evidence.py / binance/store.py` 与 `rules.py -> binance/market.py` 顶层拉起 `pandas + numpy + pyarrow`。
-   - **暗链 3（策略隔离 Worker 每次决策冷启动风暴）**：`LoadedStrategy._call()` 每次决策都新建临时目录、全量写源码、以 `subprocess.run` 冷启动全新 Python 进程并在 `worker.py` 顶层 `import factorlab.strategies.adapters`（拉起 `scipy + pandas + numpy + pyarrow`，单次决策在 ARM64 耗时 **~810 ms**、瞬时峰值 **~143 MiB RSS**）；且每次 `decide()` 都通过 `runtime_identity()` 对全仓 `src/factorlab/**/*.py` 200+ 文件重新读盘计算 SHA-256。
+   - **暗链 3（one-shot 策略 Worker 因重型顶层导入导致冷启动风暴）**：优化前 `worker.py` 每次决策均在顶层通过 `adapters` 拉起 `scipy + pandas + numpy + pyarrow`，单次决策在 ARM64 耗时 **~810 ms**、瞬时峰值 **~143 MiB RSS**、24 实例每分钟消耗 ~30s CPU（突破 B2pts 持续基线 24s/min）；且每次 `decide()` 都通过 `runtime_identity()` 对全仓 `src/factorlab/**/*.py` 200+ 文件重新读盘计算 SHA-256。
 
 ### 2.2 最小充分运行期依赖分层（已落地并实测 `pip check` 通过）
 
@@ -66,22 +66,24 @@
    - `uname -m` = `aarch64`（2 vCPU `Neoverse-N1`），`/proc/sys/fs/binfmt_misc` 无任何 `qemu-x86_64` 注册项。
    - `uv 0.13.10` 与 `/opt/factorlab/python/cpython-3.13-linux-aarch64-gnu/bin/python3`（`Python 3.13.18`）经 `file -L` 实证均为 `ELF 64-bit LSB pie executable, ARM aarch64, interpreter /lib/ld-linux-aarch64.so.1`。
    - 全部 4 个分层最小 venv 均通过 `--only-binary=:all:` 安装原生 `manylinux_*_aarch64` wheel，`pip check` 均输出 `No broken requirements found.`，真实模块 import 全部通过。
-2. **系统原语逐项验证**（证据见 [parity_arm64_optimized.json](evidence/parity_arm64_optimized.json)）：
+2. **系统原语逐项验证**（证据见 [parity_arm64_optimized.json](evidence/parity_arm64_optimized.json) 与 [lock_arm64.json](evidence/lock_arm64.json)）：
    - **SQLite**：`3.54.1`，`PRAGMA journal_mode=WAL` 与 `PRAGMA integrity_check = ok` 均通过。
    - **systemd**：`systemd 255 (255.4-1ubuntu8.18)`，对 `deploy/systemd/*.service` 与 `*.timer` 全量执行 `systemd-analyze verify`，全部沙箱指令（`LoadCredential`, `ProtectSystem=strict`, `LockPersonality`, `RestrictAddressFamilies` 等）语法与兼容性通过。
    - **文件锁**（证据见 [lock_arm64.json](evidence/lock_arm64.json)）：`owner_lock` 与 `controller_lock` 非阻塞单写入者保护均已跨进程实测通过（持锁期间第二进程分别严格触发 `BlockingIOError` / 返回 `False` 拒绝，释放后可重新获取）；阻塞 `fcntl.flock(LOCK_EX)` 8 独立 `spawn` 进程 × 25 轮（共 200 次并发临界区增量）实测计数精确等于 `200/200`（含 8 进程启动总耗时 `2836.08 ms`）。
    - **WebSocket**：`websockets 16.1.1` 本地回环异步客户端/服务端收发校验通过。
    - **TLS**：`OpenSSL 3.5.9`，`capath=/etc/ssl/certs`，真实 HTTPS 握手（`https://pypi.org/simple/`）返回 `HTTP 200`。
    - **Decimal 与时区/DST**：固定精度乘法/量化/余额校验与 `ZoneInfo('America/New_York')` 春季夏令时跳变（`01:30-05:00` → `03:30-04:00`）及秋季回拨（`01:30-05:00`）全部准确无误。
-3. **ARM64 最小无 `scipy` 环境下离线执行测试套件**：
-   - 在 `venv-opt-dual`（仅 11 个执行包，不含 `scipy`/`sklearn`/`xgboost`/`lightgbm`/`matplotlib`）上运行 16 个核心离线执行、资金核算、订单恢复、热切换、原生 V69、自适应网格 V2、一致性备份与 P10-02 回归测试文件：**227 passed, 1 skipped（Windows Credential Manager 专属用例）, 0 failed**（总耗时 70.85 秒）。
-   - 该轮实测直接发现了两项仅在 Linux 无 `scipy` 环境触发的真实缺陷并已根治：
+3. **ARM64 最小无 `scipy` 环境下离线执行与审查修复后测试套件**：
+   - 修复前全量 16 个核心离线执行/核算/恢复测试文件在 `venv-opt-dual` 上运行：**227 passed, 1 skipped（Windows Credential Manager 专属用例）, 0 failed**（70.85 秒）。
+   - PR #268 P1/P2 修复后，在 ARM64 `venv-opt-dual` 复跑核心执行与新增隔离/并发回归（`test_p10_02_lightweight_arm64.py`、`test_unified_cloud_strategy_s04.py`、`test_alpaca_native_v69.py`、`test_demo_adaptive_grid_v2.py`、`test_alpaca_deployment.py`）：**51 passed, 0 failed**（60.27 秒）。
+   - 在本地 x64 复跑上述全部文件及原研究隔离契约测试 `tests/research/test_p8_perf01_optimizations.py::test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape`：**52 passed, 0 failed**（114.43 秒）。
+   - ARM64 最小环境实测并根治了两项 Linux 专属隐性缺陷：
      1. `DualMAStrategy` 经 `dual_ma.py -> backtest/execution.py -> portfolio/__init__.py -> optimizer.py` 隐式依赖 `scipy`（已通过 `portfolio/__init__.py` 延迟导出与 `dual_ma.py` 回测依赖下沉修复）。
-     2. Linux 隔离策略沙箱下 `V69AlpacaStrategy` 首次本地化 `America/New_York` 访问 `/usr/share/zoneinfo` 被 `addaudithook` 拦截（已在 `worker.py` 沙箱前对数值/日历策略预热 `UTC`/`America/New_York` 时区表修复，不扩大文件白名单）。
+     2. Linux 隔离策略沙箱下 `V69AlpacaStrategy` 首次本地化 `America/New_York` 访问 `/usr/share/zoneinfo` 被 `addaudithook` 拦截（已在 `worker.py` 沙箱前预热 `UTC`/`America/New_York` 及 `calendar_timezone` 修复，不扩大文件白名单）。
 
 ### 3.2 AMD x64 与 ARM64（及优化前后）四向金融结果一致性对照
 
-使用固定行情、固定订单、固定资金费及固定 252 日 8 资产矩阵，在 **AMD x64 基线**、**AMD x64 优化后**、**ARM64 基线**、**ARM64 优化后** 四个组合下运行同一确定性校验脚本（证据见 `evidence/parity_*.json`）：
+使用固定行情、固定订单、固定资金费及固定 252 日 8 资产矩阵，在 **AMD x64 基线**、**AMD x64 修复后最终版**、**ARM64 基线**、**ARM64 修复后最终版** 四个组合下运行同一确定性校验脚本（证据见 `evidence/parity_*.json`）：
 
 | 验证场景 | 核心检验字段 | 一致性标准 | 实测结果（4 向对比） |
 | --- | --- | --- | --- |
@@ -91,129 +93,119 @@
 
 ---
 
-## 四、已实施的热点轻量化优化汇总
+## 四、已实施的轻量化优化与 PR #268 Codex Review 修复说明
 
-所有优化均基于基线实测热点实施，严格保持现有进程隔离、审计沙箱、单账户所有权、SQLite 账本持久性与金融精度，未引入独立调度平台或重量级框架：
+所有优化均严格保持现有 OS 进程隔离、审计沙箱、单账户所有权、SQLite 账本持久性与金融精度，未引入独立常驻调度平台或重量级框架：
 
 1. **切断非必要重型导入链**（`strategies/__init__.py`, `backtest/__init__.py`, `portfolio/__init__.py`, `data/__init__.py`, `data/hub/__init__.py`, `integrations/binance/__init__.py`, `integrations/alpaca/market_data/__init__.py`, `backtest/fees.py`, `strategies/grid.py`, `strategies/grid_execution.py`, `strategies/dual_ma.py`, `trading/strategy.py`, `data/evidence.py`, `integrations/binance/client.py`, `integrations/binance/market.py`）：
    - 包入口全面改为 PEP 562 `__getattr__` 延迟导出，对外公共导入 100% 兼容。
    - `grid.py`、`grid_execution.py`、`backtest/fees.py` 改用纯标准库 ISO 时间解析替代仅为解析日期引入的顶层 `pandas`。
-2. **常驻隔离策略 Worker + 有界 LRU 池 + 增量 `runtime_identity()` 校验**（`strategies/worker.py`, `strategies/loader.py`, `integrations/alpaca/strategy_instances.py`, `integrations/alpaca/native_v69.py`）：
-   - 保持每个策略独立隔离子进程（`-I -B`、空环境变量、`close_fds=True`、`sys.addaudithook`、4 MiB 响应上限与单次超时强杀），且每次请求在进程内重新实例化策略对象，防止隐藏实例状态跨 tick 泄漏。
-   - 通过 `FACTORLAB_STRATEGY_WORKER_POOL_MAX`（默认 `12`）实施有界 LRU 并发背压与空闲回收，防止多实例常驻突破 1 GiB 内存上限。
-   - `worker.py` 基于 AST/manifest 仅在策略确需数值库时预导入 `numpy/pandas` 并预热时区表，纯 Python/Decimal 策略零重型库加载。
-   - `runtime_identity()` 增加目录/文件 `(st_mtime_ns, st_size)` 快速验证缓存，任意源码变动立即触发全量 SHA-256 重算拒绝执行。
-3. **热点查询、缓存与流存储收敛**（`strategies/decision_runtime.py`, `integrations/alpaca/market_data/cache.py`, `integrations/alpaca/cloud_runtime.py`）：
-   - `DecisionJournal._count()` / `_latest()` 由全表扫描改为 `events.id` 主键前缀范围索引查询。
-   - `MarketCache` 增加有界 LRU 内存缓存（默认 32 条），每次 `load()` 仍完整校验磁盘 `bars.parquet` SHA-256（零安全妥协），命中后跳过重复 Parquet 反序列化。
+2. **PR #268 Codex Review P1 修复 — 恢复严格逐请求 one-shot 隔离 Worker**（`strategies/worker.py`, `strategies/loader.py`）：
+   - **初版问题**：初版引入常驻 `--serve` Worker 进程虽将轻量决策降至 ~11 ms，但复用 Python 解释器与模块会导致模块全局变量、类级可变状态、相对导入子模块及解释器全局状态（如 `decimal.getcontext()`）跨请求泄漏，破坏原 `test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape` 逐请求隔离合同。
+   - **最终修复**：彻底移除常驻 `--serve` 模式，恢复**轻量化后的逐请求 one-shot 隔离 Worker**（每次请求独立 OS 子进程 `-I -B`、空环境变量、`close_fds=True`、`sys.addaudithook`、4 MiB 请求/响应上限，执行完毕立即退出并释放全部内存）。
+   - **P10-11 兼容性**：`worker.py` 与 `loader.py` 原生识别 `runtime_profile='lightweight'`、`model` 工件声明与 `calendar_timezone`，轻量包跳过重型预导入并仅预热 stdlib `ZoneInfo`，不重复实现 P10-11 策略协议。
+   - **保留的独立加速**：`runtime_identity()` 保留 `(st_mtime_ns, st_size)` 变更校验缓存；纯 Python/Decimal 策略零 `numpy/pandas/scipy/pyarrow` 加载，单次冷启动从 574 ms 降至 **25.6 ms**（-95.5%）。
+3. **PR #268 Codex Review P2 修复 — 原子容量预留与宿主/VM 双层并发上限**（`strategies/loader.py`）：
+   - **初版问题**：原 `_register_pool_worker()` 与 `call()` 间存在无锁竞争窗口，被驱逐或关闭的 Worker 可能在未持有容量时继续启动子进程，导致实际存活子进程突破上限；且未区分单宿主上限与同机双市场 VM 总上限。
+   - **最终修复**：实现 `_WorkerCapacityPool` 原子容量状态机：
+     - 容量在创建临时目录与 `subprocess.Popen` **之前**原子预留；进入 `Popen` 前在 `slot.lock` 下再次校验 `_closed / cancelled / shutting_down`，确保已关闭策略绝不拉起孤儿进程。
+     - `finally` 块严格执行 `_terminate_and_reap(proc)`，**仅在确认 `proc.poll() is not None`（旧 OS 进程完全退出）后**才释放 VM 槽位锁与宿主容量并唤醒等待者；`close()` 与 `atexit` 均强制终止并等待在途子进程退出。
+     - 显式区分**单宿主进程上限** `FACTORLAB_STRATEGY_WORKER_POOL_MAX`（默认 **`1`**，Binance + Alpaca 同机天然 ≤ 2 并发且保持各自 systemd 隔离）与**跨进程 VM 总上限** `FACTORLAB_STRATEGY_WORKER_VM_MAX` + `FACTORLAB_STRATEGY_WORKER_LOCK_DIR`（基于内核 `fcntl.flock` / `msvcrt.locking` 槽位锁，进程崩溃由 OS 自动回收）。
+4. **热点查询、缓存与流存储收敛**（`strategies/decision_runtime.py`, `integrations/alpaca/market_data/cache.py`, `integrations/alpaca/cloud_runtime.py`）：
+   - `DecisionJournal._count()` / `_latest()` 改为 `events.id` 主键前缀范围索引查询。
+   - `MarketCache` 增加有界 LRU 内存缓存（默认 32 条），每次 `load()` 仍完整校验磁盘 `bars.parquet` SHA-256（零安全妥协）。
    - `MarketWorker` 的行情流缓存库 `market-stream.sqlite3`（非账户账本）启用 WAL 与 7 天滚动窗口清理。
-4. **依赖分层与跨架构安装器适配**（`pyproject.toml`, `requirements/*`, `tools/deploy_*.py`, `tools/install_*.sh`, `tools/install_demo_strategy_runtime.py`）。
+5. **依赖分层与跨架构安装器适配**（`pyproject.toml`, `requirements/*`, `tools/deploy_*.py`, `tools/install_*.sh`, `tools/install_demo_strategy_runtime.py`）。
 
 ---
 
-## 五、优化前后配对实测基准（日本 ARM64 `Standard_B2pts_v2`，2 vCPU / 944 MiB RAM）
+## 五、优化前后与审查修复前后配对实测基准（日本 ARM64 `Standard_B2pts_v2`，2 vCPU / 944 MiB RAM）
 
-> 以下所有优化前/后数据均由同一套基准脚本在 `factorlab-arm-01` 同机采集，原始 JSON 见 [bench_arm64_baseline.json](evidence/bench_arm64_baseline.json) 与 [bench_arm64_optimized.json](evidence/bench_arm64_optimized.json)。
+> **证据分层说明**：
+> - **基线（优化前）**：[bench_arm64_baseline.json](evidence/bench_arm64_baseline.json)
+> - **初版常驻池（PR #268 审查前，存在 P1 跨请求模块状态泄漏风险，已撤回，仅保留作对照）**：[bench_arm64_optimized.json](evidence/bench_arm64_optimized.json)、[soak_arm64.json](evidence/soak_arm64.json)
+> - **最终修复版（轻量化 one-shot 严格隔离 + 宿主/VM 双层有界并发池，当前 HEAD 实测）**：[bench_arm64_post_review.json](evidence/bench_arm64_post_review.json)
 
-### 5.1 冷启动及依赖导入峰值
+### 5.1 冷启动及依赖导入峰值（基线 vs 最终修复版）
 
-| 执行入口模块 | 优化前 Wall (ms) | 优化后 Wall (ms) | 优化前 RSS / PSS (MiB) | 优化后 RSS / PSS (MiB) | 重型导入变化 |
+| 执行入口模块 | 基线 Wall (ms) | 最终版 Wall (ms) | 基线 RSS / PSS (MiB) | 最终版 RSS / PSS (MiB) | 重型导入变化 |
 | --- | ---: | ---: | ---: | ---: | --- |
-| `factorlab.strategies.worker` | 574.3 | **28.6** (-95.0%) | 142.8 / 135.7 | **19.8 / 13.6** (-86.1% / -90.0%) | `numpy,pandas,scipy,pyarrow` → `[]` |
-| `factorlab.strategies.loader` | 589.5 | **60.5** (-89.7%) | 143.6 / 136.4 | **24.2 / 17.7** (-83.1% / -87.0%) | `numpy,pandas,scipy,pyarrow` → `[]` |
-| `factorlab.strategies.grid_execution` | 590.3 | **37.3** (-93.7%) | 143.5 / 136.3 | **22.0 / 15.5** (-84.7% / -88.6%) | `numpy,pandas,scipy,pyarrow` → `[]` |
-| `factorlab.strategies.decision_runtime` | 633.8 | **136.2** (-78.5%) | 145.4 / 138.2 | **29.5 / 23.0** (-79.7% / -83.4%) | `numpy,pandas,scipy,pyarrow` → `[]` |
-| `demo_grid_supervisor`（Binance Execute） | 641.7 | **228.8** (-64.3%) | 147.4 / 140.2 | **32.8 / 26.3** (-77.7% / -81.2%) | `numpy,pandas,scipy,pyarrow` → `[]` |
-| `demo_instance_owner` | 397.2 | **68.4** (-82.8%) | 111.5 / 104.4 | **25.7 / 19.2** (-77.0% / -81.6%) | `numpy,pandas,pyarrow` → `[]` |
-| `alpaca.cloud_runtime` | 641.6 | **479.9** (-25.2%) | 150.8 / 143.6 | **117.5 / 110.3** (-22.1% / -23.2%) | 清除 `scipy`（仅保留所需 `numpy,pandas,pyarrow`） |
-| `alpaca.strategy_instances` | 659.2 | **483.2** (-26.7%) | 151.4 / 144.2 | **116.6 / 109.5** (-23.0% / -24.1%) | 清除 `scipy` |
+| `factorlab.strategies.worker` | 574.3 | **25.6** (-95.5%) | 142.8 / 135.7 | **19.5 / 13.4** (-86.3% / -90.1%) | `numpy,pandas,scipy,pyarrow` → `[]` |
+| `factorlab.strategies.loader` | 589.5 | **40.7** (-93.1%) | 143.6 / 136.4 | **23.0 / 16.8** (-84.0% / -87.7%) | `numpy,pandas,scipy,pyarrow` → `[]` |
+| `factorlab.strategies.decision_runtime` | 633.8 | **75.5** (-88.1%) | 145.4 / 138.2 | **26.1 / 19.9** (-82.0% / -85.6%) | `numpy,pandas,scipy,pyarrow` → `[]` |
+| `demo_grid_supervisor`（Binance Execute） | 641.7 | **111.3** (-82.7%) | 147.4 / 140.2 | **29.6 / 23.3** (-79.9% / -83.4%) | `numpy,pandas,scipy,pyarrow` → `[]` |
+| `alpaca.cloud_runtime` | 641.6 | **405.9** (-36.7%) | 150.8 / 143.6 | **115.5 / 108.7** (-23.4% / -24.3%) | 清除 `scipy`（仅保留所需 `numpy,pandas,pyarrow`） |
 
-### 5.2 历史行情预热峰值（8 资产 × 252 日 + 5 日 1Min Parquet Cache）
+### 5.2 历史行情预热峰值与单/双市场常驻内存（与 Worker 改动独立，均保持有效）
 
-| 指标 | 优化前 | 优化后 | 变化 |
-| --- | ---: | ---: | ---: |
-| 峰值内存 HWM (MiB) | 168.76 | **132.23** | **-21.6%** |
-| 多策略 3× 重复读取耗时 (ms) | 188.30 | **16.17** | **-91.4%（11.6× 加速）** |
-| 缓存磁盘占用 (KiB) | 840.5 | 840.5 | 保持一致（Parquet 完整校验不变） |
+- **历史行情预热（8 资产 × 252 日 + 5 日 1Min Parquet Cache）**：峰值 HWM `168.76 → 132.23 MiB`（-21.6%）；3× 重复读取 `188.30 → 16.17 ms`（-91.4%，11.6× 加速，仍校验完整 SHA-256）。
+- **断线补齐 / 交易高峰 / SQLite 备份与日志轮换**：进程峰值 HWM `150.4 → 33.9 MiB`（-77.5%）；SQLite 一致性备份 `62.2 → 39.7 ms`（-36.2%）；120 根 Bar 补齐恢复 `3,004.4 ms`（完整保留 `synchronous=FULL` 账本语义）。
+- **双市场 + TradFi Observer 3 宿主常驻（无常驻 Worker 占用）**：空载合计 PSS 由基线 `285.8 MiB` 降至 **`181.6 – 193.5 MiB`**（-32% ~ -36%），进程 Swap **`0.0 MiB`**。
 
-### 5.3 单市场与双市场 + 公共组件同机运行
+### 5.3 多策略隔离工作进程扩容阶梯（3 / 6 / 12 / 24 实例，1 分钟周期 — 三阶段对照）
 
-| 场景 | 优化前 RSS / PSS (MiB) | 优化后 RSS / PSS (MiB) | 系统最低可用内存变化 | 进程 Swap |
-| --- | ---: | ---: | ---: | ---: |
-| 单市场：Binance Execute | 148.9 / 141.6 | **30.9 / 24.3** (-79.2% / -82.9%) | — | 0.0 MiB |
-| 单市场：Alpaca Runtime | 156.7 / 149.4 | **121.5 / 114.2** (-22.5% / -23.5%) | — | 0.0 MiB |
-| **双市场 + TradFi Observer 3 进程同机** | **425.6 / 285.8** | **273.1 / 193.5** (-35.8% / -32.3%) | **436.9 → 513.9 MiB (+77.1 MiB)** | **0.0 MiB** |
+> 注：最终修复版采用**轻量化 one-shot 隔离 Worker + 有界并发池**（`POOL_MAX=1` 与 `POOL_MAX=2` 均完整实测，数据一致；表中列 `POOL_MAX=1` 最终实测，详见 [bench_arm64_post_review.json](evidence/bench_arm64_post_review.json)）。与已撤回的初版常驻池相比，最终版**牺牲了约 168 ms 单决策延迟以换取 100% OS 级逐请求状态隔离**，同时将 12–24 实例峰值内存再砍掉 **~163 MiB PSS**（空载 Worker 内存归零）！
 
-优化后同机 3 进程明细：Binance Execute `31.0 MiB RSS / 20.2 MiB PSS`、Alpaca Runtime `121.6 MiB RSS / 87.1 MiB PSS`、TradFi Observer `120.6 MiB RSS / 86.2 MiB PSS`。
+| 实例规模 | 版本阶段 | 初始化 (ms) | 单决策 p50 / p95 / p99 (ms) | 单 Tick 汇总 p50 (ms) | 每分钟总 CPU (s) | B2pts 持续基线占比（24s/m） | 峰值合计 PSS (MiB) | 系统最低可用 RAM (MiB) | 峰值实时 Worker 数 / Swap / OOM |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| **3** | 基线（优化前） | 2,550.4 | 840.1 / 866.1 / 866.1 | 2,531.2 | 3.91 | 16.3% | 141.7 | 525.7 | 1 / 0 MiB / 0 |
+| **3** | 初版常驻池（已撤回） | 387.0 | 12.6 / 17.0 / 17.0 | 38.1 | 0.11 | 0.46% | 70.8 | 579.7 | 3 常驻 / 0 MiB / 0 |
+| **3** | **最终修复版（one-shot 有界池）** | **567.3** | **182.1 / 187.9 / 187.9** | **547.6** | **0.521** | **2.17%** | **41.6** | **599.5** | **1 / 0 MiB / 0** |
+| **6** | 基线（优化前） | 4,846.2 | 804.9 / 815.6 / 815.6 | 4,825.1 | 7.53 | 31.4% | 142.4 | 512.2 | 1 / 0 MiB / 0 |
+| **6** | 初版常驻池（已撤回） | 758.6 | 11.6 / 14.5 / 14.5 | 73.7 | 0.22 | 0.92% | 116.4 | 544.1 | 6 常驻 / 0 MiB / 0 |
+| **6** | **最终修复版（one-shot 有界池）** | **1,153.3** | **179.6 / 194.5 / 194.5** | **1,080.5** | **1.086** | **4.53%** | **42.3** | **608.6** | **1 / 0 MiB / 0** |
+| **12** | 基线（优化前） | 9,798.2 | 806.9 / 839.2 / 842.9 | 9,697.1 | 15.16 | 63.2%（高风险） | 144.4 | 504.2 | 1 / 0 MiB / 0 |
+| **12** | 初版常驻池（已撤回） | 1,513.1 | 11.1 / 14.0 / 15.3 | 139.6 | 0.44 | 1.84% | 206.6 | 455.5 | 12 常驻 / 0 MiB / 0 |
+| **12** | **最终修复版（one-shot 有界池）** | **2,254.7** | **179.5 / 189.3 / 190.6** | **2,173.7** | **2.108** | **8.78%** | **43.8** | **605.3** | **1 / 0 MiB / 0** |
+| **24** | 基线（优化前） | 19,429.5 | 808.5 / 823.9 / 843.2 | 19,426.0 | 30.18 | **125.7%（耗尽积分）** | 147.5 | 498.1 | 1 / 0 MiB / 0 |
+| **24** | 初版常驻池（已撤回） | 3,076.4 | 125.2 / 129.3 / 135.1 | 3,028.2 | 3.50 | 14.6% | 209.1 | 452.6 | 12 常驻 / 0 MiB / 0 |
+| **24** | **最终修复版（one-shot 有界池）** | **4,469.8** | **180.6 / 187.8 / 204.8** | **4,382.1** | **4.266** | **17.77%** | **46.9** | **605.4** | **1 / 0 MiB / 0** |
 
-### 5.4 多策略隔离工作进程扩容阶梯（3 / 6 / 12 / 24 实例，1 分钟周期）
+*说明*：Azure `Standard_B2pts_v2` / `Standard_B2ats_v2`（2 vCPU）的持续 CPU 基础基线为每核 20% = **24 秒 CPU 时间 / 分钟**。最终修复版在严格逐请求 OS 进程隔离下，将 12 实例每分钟 CPU 从基线的 `15.16s`（63.2%）压降至 **`2.11s`（8.78%）**，24 实例从 `30.18s`（125.7%，必耗尽积分）压降至 **`4.27s`（17.77%）**，且峰值内存始终维持在 **~42–47 MiB PSS**（单宿主），较初版常驻池大幅释放 ~160 MiB 宝贵物理内存。
 
-> 注：测试为真实 `LoadedStrategy.from_strategy_package` 独立隔离子进程 + `InstanceDecisionRuntime` + `DeploymentStore` SQLite 持久提交；优化后使用默认池上限 `FACTORLAB_STRATEGY_WORKER_POOL_MAX=12`。
+### 5.4 双市场同机 + TradFi Observer + 轻量与数值策略混合负载实测（最终修复版）
 
-| 实例规模 | 阶段 | 初始化 (ms) | 单决策 p50 / p95 / p99 (ms) | 单 Tick 汇总 p50 (ms) | 3 Tick 子进程 CPU (ms) | 估算每分钟 CPU 占比（2 vCPU 基线 24s/m） | 峰值合计 PSS (MiB) | 系统最低可用 RAM (MiB) | 常驻子进程数 |
-| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| **3** | 优化前 | 2,550.4 | 840.1 / 866.1 / 866.1 | 2,531.2 | 11,733.2 | 16.3% | 141.7 | 525.7 | 0（每次冷启） |
-| **3** | **优化后** | **387.0** | **12.6 / 17.0 / 17.0** | **38.1** | **332.6** | **0.46%** | **70.8** | **579.7** | **3** |
-| **6** | 优化前 | 4,846.2 | 804.9 / 815.6 / 815.6 | 4,825.1 | 22,589.1 | 31.4% | 142.4 | 512.2 | 0 |
-| **6** | **优化后** | **758.6** | **11.6 / 14.5 / 14.5** | **73.7** | **659.2** | **0.92%** | **116.4** | **544.1** | **6** |
-| **12** | 优化前 | 9,798.2 | 806.9 / 839.2 / 842.9 | 9,697.1 | 45,474.5 | 63.2%（高风险） | 144.4 | 504.2 | 0 |
-| **12** | **优化后** | **1,513.1** | **11.1 / 14.0 / 15.3** | **139.6** | **1,327.5** | **1.84%** | **206.6** | **455.5** | **12** |
-| **24** | 优化前 | 19,429.5 | 808.5 / 823.9 / 843.2 | 19,426.0 | 90,536.8 | **125.7%（超基线必耗尽积分）** | 147.5 | 498.1 | 0 |
-| **24** | **优化后** | **3,076.4** | **125.2 / 129.3 / 135.1** | **3,028.2** | **10,507.5** | **14.6%（池轮换）** | **209.1**（封顶） | **452.6** | **12（LRU 封顶）** |
+在 `factorlab-arm-01` 上同机并发启动 **3 个真实宿主 OS 进程**（Binance Execute + Alpaca Runtime + TradFi Observer），共运行 **12 个隔离策略**（Binance 6 个纯 Decimal 轻量策略 + Alpaca 4 个纯 Decimal 轻量策略 + Alpaca 2 个 `numpy/pandas` 数值策略：`DualMAAdapter` + `NumericMomentumStrategy` 含 `America/New_York` 时区转换），配置每宿主 `FACTORLAB_STRATEGY_WORKER_POOL_MAX=2` 且共享 `FACTORLAB_STRATEGY_WORKER_LOCK_DIR` + **`FACTORLAB_STRATEGY_WORKER_VM_MAX=2`**，连续运行 4 轮并发周期（证据见 [bench_arm64_post_review.json](evidence/bench_arm64_post_review.json)）：
 
-*说明*：Azure `Standard_B2pts_v2` / `Standard_B2ats_v2` 为 2 vCPU 可突发实例，持续基础性能基线为单核 20%（合计 40% 单核 = **24 秒 CPU 时间 / 分钟**）。优化前在 12–24 策略下仅依赖短时 CPU 积分才未当场超时，持续运行会耗尽积分导致严重降频；优化后 12 实例每分钟仅需 **0.44 秒 CPU**（基线占比 < 2%），具备真实可持续运行能力。24 实例在 `POOL_MAX=12` 下因每轮发生 LRU 进程驱逐重建，单决策 p50 升至 125.2 ms、每分钟 CPU 占基线 14.6%，虽不超内存但会增加子进程启停开销，因此**不建议在 1 GiB 同机双市场主机上以 24 实例长期常驻**。
-
-### 5.5 断线补齐、交易高峰及 SQLite 写入/备份/日志轮换
-
-| 指标 | 优化前 | 优化后 | 变化 |
-| --- | ---: | ---: | ---: |
-| 断线后 120 根 1m Bar 补齐 + 对账恢复 (ms) | 3,080.5 | **3,004.4** | -2.5%（受 SQLite `synchronous=FULL` 持久提交支配，未妥协） |
-| 交易高峰 12 标的 × 10 波（120 单）p50 / p95 / p99 (ms) | 14.8 / 19.3 / 21.8 | **14.3 / 19.1 / 23.0** | 保持一致 |
-| `DecisionJournal` 300 次决策 p50 / p95 (ms) | 13.2 / 17.7 | **12.8 / 17.3** | 范围索引查询稳定 |
-| SQLite 一致性备份 + 校验耗时 (ms) | 62.2 / 1.9 | **39.7 / 1.9** | **备份耗时 -36.2%** |
-| 2000 行健康日志写入 + 512 KiB 轮换 (ms) | 47.9 | **45.1** | -5.8% |
-| 进程峰值内存 HWM (MiB) | 150.4 | **33.9** | **-77.5%** |
+| 观测指标 | 最终修复版 ARM64 实测值 | 结论 |
+| --- | --- | --- |
+| 最大实时总 OS 进程数（宿主 + Worker） | **`5`**（3 宿主 + 最多 2 实时 Worker） | 严格受控 |
+| 全机最大同时存活 Worker 子进程数 | **`2`**（双宿主各 2 线程并发争抢下严格 ≤ `VM_MAX=2`） | **VM 总上限生效验证通过** |
+| 3 宿主空载常驻合计 PSS | **`181.61 MiB`** | 空载零 Worker 内存驻留 |
+| 并发高峰合计 PSS / RSS | **`286.63 MiB` / `471.75 MiB`** | 较初版 12 常驻池（378.4 MiB）再降 ~92 MiB |
+| 系统最低可用物理内存 `MemAvailable` | **`426.13 MiB`**（总 RAM `944.15 MiB`，保留 **45.1%** 余量） | 充裕 |
+| 进程 Swap / OOM 次数 | **`0.0 MiB` / `0`** | 零 Swap、零 OOM |
+| 轻量策略单决策延迟 p50 / p95 / max | **`180.17 ms` / `1,332.67 ms` / `2,751.01 ms`** | 尾延迟为等待数值 Worker 让出 VM 槽位 |
+| 数值策略（`numpy/pandas`）单决策延迟 p50 / p95 / max | **`727.67 ms` / `1,136.52 ms` / `1,136.52 ms`** | 每次独立沙箱执行完毕即释放全部数值库内存 |
+| 单轮周期完成耗时（Binance / Alpaca）p50 / max | Binance **`1.35s / 2.76s`**；Alpaca **`1.18s / 2.19s`** | 远低于 60s（1 分钟）策略周期 |
+| 全机 12 混合策略每分钟总 CPU | **`2.63 s / min`**（占 B2pts 24s/min 持续基线 **`10.96%`**） | 满足长期无积分耗尽运行要求 |
 
 ---
 
-## 六、持续运行资源观测（Soak Observation）与容量建议
+## 六、推荐的长期同机运行容量（2 vCPU / 1 GiB RAM，Ubuntu 24.04 x64 或 ARM64）
 
-### 6.1 实测持续观测（明确区分基准、压力与持续观测）
+在扣除操作系统内核 + `systemd` + Azure 监控代理（约 250–320 MiB）与双市场 + TradFi Observer 3 宿主基础常驻内存（约 **182–194 MiB PSS**）后，主机保留约 **430–500 MiB** 物理内存用于瞬时 one-shot 策略 Worker、页缓存与每日 SQLite 备份。得益于轻量化 one-shot 架构（空载 Worker 占 `0 MiB`）与双层并发封顶（全机同时至多 `2` 个 Worker），容量建议如下：
 
-- **观测类型**：加速连续运行观测（非 24h/7d 生产长期实测）。
-- **观测时长**：**183.0 秒**（3 分钟连续运行，证据见 [soak_arm64.json](evidence/soak_arm64.json)）。
-- **负载组合**：在 `factorlab-arm-01`（944 MiB 总 RAM）同机并发运行 **15 个真实 OS 进程**：
-  1. Binance Execute（2 秒循环）
-  2. TradFi Observer（10 秒循环）
-  3. Alpaca Runtime + **12 个独立 V2 策略隔离子进程**，以 **10 秒 / 轮**（6× 加速于生产 1 分钟周期）连续完成 **18 轮 / 216 次** 完整隔离决策与 SQLite 持久化。
-- **真实观测结果**：
-  - 全部 15 进程合计 PSS：起始 `377.77 MiB` → 结束 `378.38 MiB`（**净增长 +0.61 MiB，无内存泄漏趋势**），全程进程 Swap = **0.0 MiB**，OOM = **0**。
-  - 系统最低可用内存 `MemAvailable`：**343.68 MiB**（保留 36.4% 物理内存余量），任务退出后迅速恢复至 `645.45 MiB`。
-  - 216 次真实隔离策略决策延迟：**p50 = 13.45 ms、p95 = 19.58 ms、p99 = 26.44 ms**；12 策略单轮汇总最大耗时 **200.38 ms**（仅为 1 分钟周期的 0.33%）。
-
-### 6.2 推荐的长期同机运行容量（2 vCPU / 1 GiB RAM，Ubuntu 24.04 x64 或 ARM64）
-
-在扣除操作系统内核 + `systemd` + Azure 监控代理（约 250–320 MiB）与双市场 + TradFi Observer 基础进程（合计约 **194 MiB PSS**）后，主机剩余约 **430–500 MiB** 可用于策略隔离工作进程、文件系统页缓存与瞬时备份峰值：
-
-| 策略工作负载类型 | 推荐长期稳定运行实例数 | 建议 `FACTORLAB_STRATEGY_WORKER_POOL_MAX` | 预估总 PSS | 预估安全余量 |
+| 策略工作负载组合（1 分钟最短周期） | 推荐长期稳定运行规模（双市场同机合计） | 并发配置建议 | 预估峰值总 PSS | 预估 1m CPU 基线占比 |
 | --- | --- | --- | --- | --- |
-| 纯 Python / Decimal 策略（如网格、动量、规则类 V2 策略，单 worker ~15–20 MiB PSS） | **6 – 12 个实例**（双市场同机） | `8` – `12` | ~290 – 380 MiB | 物理可用 RAM ≥ 250–340 MiB，CPU < 3% 基线 |
-| 含 `numpy/pandas` 数值策略（如 `V69AlpacaStrategy`、`DualMAAdapter`、`AdaptiveGridV2`，单 worker ~70–95 MiB PSS） | **2 – 3 个常驻数值实例** + 最多 **4 – 6 个轻量实例** | `6` – `8` | ~360 – 450 MiB | 需避免 >4 个重型数值 worker 同时常驻，防触发 Swap |
-| 超过 12 个策略实例（13 – 24 实例） | **不推荐在 1 GiB 单机长期满载** | 仅应急轮换 `12` | 封顶 ~380 MiB | 每分钟发生 LRU 进程驱逐重建，CPU 消耗增至 ~15% 基线且 p50 增至 ~125 ms |
+| 纯 Python / Decimal / P10-11 `lightweight` 策略 | **6 – 12 个实例**（充裕）；最多可支撑 **16 – 18 个实例** | 默认每宿主 `POOL_MAX=1`（全机天然 ≤ 2）；或共享锁目录 `POOL_MAX=2, VM_MAX=2` | ~225 – 245 MiB | ~4.5% – 13%（< 24s/min 基线） |
+| 混合负载（轻量 + `numpy/pandas` 数值策略，如 `DualMAAdapter` / `V69` / `AdaptiveGridV2`） | **2 – 4 个数值实例**（含日频/周频 V69）+ **6 – 8 个轻量实例**（合计 8 – 12 实例） | 同上（**严禁全机并发 Worker > 2**，防止 3+ 个数值 Worker 同时启动触发 Swap） | ~285 – 360 MiB | ~11% – 22% |
+| 超过 20 个高频 1 分钟实例（尤其含多数值策略） | **不推荐在 1 GiB / 2 vCPU B2 突发实例长期满载** | — | 内存可控但 CPU 逼近或超过 20%/vCPU 基线 | 长期可能耗尽 Azure CPU 积分导致降频 |
 
 ---
 
 ## 七、已知依赖兼容性、尚未验证边界与风险说明
 
 1. **已验证范围 vs 尚未验证的长时边界**：
-   - 本次在 ARM64 完成了 **183 秒 6× 加速连续运行观测**（等效 ~18 分钟生产 bar 周期），验证了短时无内存泄漏、零 Swap 与低 CPU 占比；**尚未完成 24 小时 / 7 天真实联网行情（含真实交易所断线、WebSocket 抖动、跨日历/夏令时切换、连续多日 Azure Monitor 代理内存波动及每日定时备份叠加）的长期生产观察**。
-   - **Azure CPU 积分**：本次通过精确测量进程 CPU 时间（`RUSAGE_SELF + RUSAGE_CHILDREN`）并与 B2pts/B2ats v2 标称 20%/vCPU 基线对比评估可持续性，未通过 Azure Monitor API 读取云端实时积分余额表。
-2. **已知依赖兼容性约束**：
-   - `AdaptiveGridV2` 内部经 `grid_restore.py` 调用研究模块 `factorlab.experiments.grid_funding_adaptive`（顶层依赖 `numpy` / `pandas`），因此在部署 `AdaptiveGridV2` 的主机上需使用包含 `strategy-numeric` 或 `execution-dual` 的环境（纯 22 MiB `execution-binance` 仅适用于不依赖 `numpy/pandas` 的原生 `GridExecution` 与纯 Decimal V2 策略）。
-   - 研究期/CI 专用锁测试 `tools/ci/lock_acceptance.py` 导入了 `factorlab.forward`（进而导入 `PyYAML`、`scipy`、`scikit-learn`），属于研究测试套件依赖，不属于执行端最小运行期依赖；执行端 `owner_lock`、`controller_lock` 与 `fcntl.flock` 8 进程 200 次并发互斥已在 ARM64 最小环境单独验证通过（[lock_arm64.json](evidence/lock_arm64.json)）。
-   - Python 版本仍严格保持 `>=3.13,<3.15`；Ubuntu 24.04 系统自带 Python 3.12 不可直接运行，须按安装说明部署原生 `cpython-3.13-linux-<arch>-gnu`（且安装至 `/opt/factorlab/python` 保证服务系统用户只读可见，勿指向权限为 `750` 的个人 `$HOME`）。
-3. **生产主机操作边界确认**：
-   - 本任务未对 `factorlab-demo-01`（马来西亚生产模拟机）执行任何写入、部署、重启或 VM 升配操作；亦未在 ARM64 主机配置任何生产账户凭证或启动第二写入者。
+   - 本次完成了 ARM64 修复后 3/6/12/24 实例配对基准、双市场 12 策略轻/数值混合负载实测、四向金融结果一致性验证以及初版 183 秒连续观测；**尚未在真实联网行情下开展 24 小时 / 7 天长期实测**（含真实交易所断线重连、WebSocket 长连接抖动、跨日历/夏令时真实切换、Azure Monitor 代理多日内存波动及每日定时备份叠加）。
+   - **Azure CPU 积分**：本次通过精确测量进程与子进程 CPU 时间（`RUSAGE_SELF + RUSAGE_CHILDREN`）并与 B2pts/B2ats v2 标称 20%/vCPU 基线（24s/min）比对评估可持续性，未通过 Azure Monitor API 读取云端实时积分余额表。
+2. **已知依赖兼容性与 P10-11 协同说明**：
+   - `AdaptiveGridV2` 内部经 `grid_restore.py` 调用研究模块 `factorlab.experiments.grid_funding_adaptive`（顶层依赖 `numpy` / `pandas`），因此在部署 `AdaptiveGridV2` 的主机上需使用包含 `strategy-numeric` 或 `execution-dual` 的环境（纯 22 MiB `execution-binance` 仅适用于不依赖 `numpy/pandas` 的原生 `GridExecution` 与纯 Decimal / P10-11 `lightweight` 策略）。
+   - 与 **P10-11**（`runtime_profile='lightweight'`、模型工件与隔离加载器）保持兼容：`worker.py` 对 `runtime_profile='lightweight'` 与含 `model` 声明的包跳过重型预导入并仅预热 stdlib 时区表；`loader.py` 保留逐请求 one-shot 架构与透传字段，未重复实现 P10-11 策略协议。
+   - 研究期/CI 专用锁测试 `tools/ci/lock_acceptance.py` 及 `tests/research/test_p8_perf01_optimizations.py` 顶层导入了研究依赖（`PyYAML`、`scipy`、`scikit-learn`），属于研究测试套件，不属于执行端最小运行期依赖；执行端隔离/并发回归与文件锁已在 ARM64 最小环境与本地 x64 完整验证。
+   - Python 版本仍严格保持 `>=3.13,<3.15`；Ubuntu 24.04 系统自带 Python 3.12 不可直接运行，须按安装说明部署原生 `cpython-3.13-linux-<arch>-gnu` 至 `/opt/factorlab/python`。
+3. **生产主机与审批边界确认**：
+   - 本任务未对 `factorlab-demo-01`（马来西亚生产模拟机）执行任何写入、部署、重启或 VM 升配操作；亦未在 ARM64 主机配置任何生产账户凭证或启动第二写入者；未新增模拟盘审批门禁。
 
 ---
 
@@ -221,9 +213,9 @@
 
 - [x] 最小执行依赖与 `pyproject.toml` 分层（保留研究环境 `.[research]` 与 `requirements/py314-core.txt` 完全兼容）
 - [x] 跨架构（x86_64 / ARM64）安装与部署脚本适配及安装文档：[docs/execution-lightweight-install.md](../../execution-lightweight-install.md)
-- [x] ARM64 原生安装与功能运行证据（4 个分层 venv `pip check` 全绿，227 项离线集成测试全绿，[lock_arm64.json](evidence/lock_arm64.json) 跨进程文件锁验证全绿）
-- [x] 3/6/12/24 实例资源曲线与优化前后配对基准：[bench_arm64_baseline.json](evidence/bench_arm64_baseline.json)、[bench_arm64_optimized.json](evidence/bench_arm64_optimized.json)
-- [x] 四向（x64/ARM64 × 优化前后）金融结果一致性证据：[parity_x64_baseline.json](evidence/parity_x64_baseline.json)、[parity_x64_optimized.json](evidence/parity_x64_optimized.json)、[parity_arm64_baseline.json](evidence/parity_arm64_baseline.json)、[parity_arm64_optimized.json](evidence/parity_arm64_optimized.json)
-- [x] 183 秒同机双市场 + 12 策略持续观测证据：[soak_arm64.json](evidence/soak_arm64.json)
-- [x] 本地 wheel/sdist 打包构建与 `inspect_distributions.py`（504 模块全检）通过
-- [x] 回归单测：`tests/integrations/test_p10_02_lightweight_arm64.py`（16 项专属回归用例）
+- [x] PR #268 Codex Review P1 修复（恢复轻量化逐请求 one-shot 隔离 Worker，`test_s01_one_shot_worker_isolates_module_globals_and_blocks_escape` 原封不动通过）
+- [x] PR #268 Codex Review P2 修复（原子容量预留、进程退出确认后释放、单宿主 `POOL_MAX` 与跨进程 `VM_MAX` 双层上限）
+- [x] ARM64 原生安装与功能运行证据（4 个分层 venv `pip check` 全绿，[lock_arm64.json](evidence/lock_arm64.json) 跨进程文件锁验证全绿，ARM64 修复后执行回归 51 passed / 本地 x64 含 S01 原隔离测试 52 passed）
+- [x] 优化前基线、初版常驻池（已撤回对照）与最终修复版 3/6/12/24 实例及双市场轻/数值混合负载实测证据：[bench_arm64_baseline.json](evidence/bench_arm64_baseline.json)、[bench_arm64_optimized.json](evidence/bench_arm64_optimized.json)、[bench_arm64_post_review.json](evidence/bench_arm64_post_review.json)
+- [x] 四向（AMD x64 / ARM64 × 优化前基线 / 最终修复版）金融结果一致性证据：[parity_x64_baseline.json](evidence/parity_x64_baseline.json)、[parity_x64_optimized.json](evidence/parity_x64_optimized.json)、[parity_arm64_baseline.json](evidence/parity_arm64_baseline.json)、[parity_arm64_optimized.json](evidence/parity_arm64_optimized.json)
+- [x] 回归单测：[tests/integrations/test_p10_02_lightweight_arm64.py](../../../tests/integrations/test_p10_02_lightweight_arm64.py)（覆盖导入链、锁文件、P1 全维度状态隔离、P10-11 `lightweight` 兼容、P2 真实存活子进程观测、`POOL_MAX=1/2`、登记后执行前关闭竞争、超时/异常/退出清理、跨进程 `VM_MAX` 上限与缓存防篡改）

@@ -1,0 +1,383 @@
+{
+  "generated_at": "2026-11-27T02:36:10.916003+00:00",
+  "machine": "aarch64",
+  "python": "3.13.18",
+  "meminfo_start": {
+    "mem_total_mb": 944.15,
+    "mem_avail_mb": 646.61,
+    "swap_total_mb": 2048.0,
+    "swap_used_mb": 48.42
+  },
+  "cold_imports": [
+    {
+      "module": "factorlab.strategies.worker",
+      "wall_ms": 25.61,
+      "rss_mb": 19.5,
+      "pss_mb": 13.37,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.strategies.loader",
+      "wall_ms": 40.73,
+      "rss_mb": 22.98,
+      "pss_mb": 16.76,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.strategies.decision_runtime",
+      "wall_ms": 75.45,
+      "rss_mb": 26.12,
+      "pss_mb": 19.91,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.integrations.binance_futures_trading.demo_grid_supervisor",
+      "wall_ms": 111.34,
+      "rss_mb": 29.61,
+      "pss_mb": 23.33,
+      "heavy": []
+    },
+    {
+      "module": "factorlab.integrations.alpaca.cloud_runtime",
+      "wall_ms": 405.86,
+      "rss_mb": 115.52,
+      "pss_mb": 108.68,
+      "heavy": [
+        "numpy",
+        "pandas",
+        "pyarrow"
+      ]
+    }
+  ],
+  "scaling_ladder_pool_max_1": [
+    {
+      "n_instances": 3,
+      "pool_max": 1,
+      "n_ticks": 3,
+      "init_ms": 567.33,
+      "decision_latency": {
+        "count": 9,
+        "mean_ms": 182.87,
+        "p50_ms": 182.14,
+        "p95_ms": 187.85,
+        "p99_ms": 187.85,
+        "max_ms": 187.85
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 549.07,
+        "p50_ms": 547.55,
+        "p95_ms": 553.4,
+        "p99_ms": 553.4,
+        "max_ms": 553.4
+      },
+      "tick_self_cpu_ms": 336.39,
+      "tick_child_cpu_ms": 1227.37,
+      "cpu_per_tick_s": 0.521,
+      "b2pts_baseline_pct_at_1m": 2.17,
+      "max_procs": 2,
+      "max_live_workers": 1,
+      "peak_rss_mb": 59.53,
+      "peak_pss_mb": 41.59,
+      "max_swap_mb": 0.0,
+      "min_sys_avail_mb": 599.5,
+      "oom_kills": 0
+    },
+    {
+      "n_instances": 6,
+      "pool_max": 1,
+      "n_ticks": 3,
+      "init_ms": 1153.26,
+      "decision_latency": {
+        "count": 18,
+        "mean_ms": 182.37,
+        "p50_ms": 179.61,
+        "p95_ms": 194.5,
+        "p99_ms": 194.5,
+        "max_ms": 194.5
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 1095.23,
+        "p50_ms": 1080.52,
+        "p95_ms": 1125.18,
+        "p99_ms": 1125.18,
+        "max_ms": 1125.18
+      },
+      "tick_self_cpu_ms": 706.85,
+      "tick_child_cpu_ms": 2550.65,
+      "cpu_per_tick_s": 1.086,
+      "b2pts_baseline_pct_at_1m": 4.53,
+      "max_procs": 2,
+      "max_live_workers": 1,
+      "peak_rss_mb": 60.27,
+      "peak_pss_mb": 42.33,
+      "max_swap_mb": 0.0,
+      "min_sys_avail_mb": 608.64,
+      "oom_kills": 0
+    },
+    {
+      "n_instances": 12,
+      "pool_max": 1,
+      "n_ticks": 3,
+      "init_ms": 2254.7,
+      "decision_latency": {
+        "count": 36,
+        "mean_ms": 181.38,
+        "p50_ms": 179.47,
+        "p95_ms": 189.25,
+        "p99_ms": 190.63,
+        "max_ms": 190.63
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 2178.47,
+        "p50_ms": 2173.74,
+        "p95_ms": 2197.46,
+        "p99_ms": 2197.46,
+        "max_ms": 2197.46
+      },
+      "tick_self_cpu_ms": 1466.73,
+      "tick_child_cpu_ms": 4855.88,
+      "cpu_per_tick_s": 2.108,
+      "b2pts_baseline_pct_at_1m": 8.78,
+      "max_procs": 2,
+      "max_live_workers": 1,
+      "peak_rss_mb": 61.75,
+      "peak_pss_mb": 43.81,
+      "max_swap_mb": 0.0,
+      "min_sys_avail_mb": 605.28,
+      "oom_kills": 0
+    },
+    {
+      "n_instances": 24,
+      "pool_max": 1,
+      "n_ticks": 3,
+      "init_ms": 4469.8,
+      "decision_latency": {
+        "count": 72,
+        "mean_ms": 182.14,
+        "p50_ms": 180.59,
+        "p95_ms": 187.8,
+        "p99_ms": 204.81,
+        "max_ms": 204.81
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 4375.23,
+        "p50_ms": 4382.07,
+        "p95_ms": 4390.15,
+        "p99_ms": 4390.15,
+        "max_ms": 4390.15
+      },
+      "tick_self_cpu_ms": 3009.03,
+      "tick_child_cpu_ms": 9789.79,
+      "cpu_per_tick_s": 4.266,
+      "b2pts_baseline_pct_at_1m": 17.77,
+      "max_procs": 2,
+      "max_live_workers": 1,
+      "peak_rss_mb": 64.83,
+      "peak_pss_mb": 46.89,
+      "max_swap_mb": 0.0,
+      "min_sys_avail_mb": 605.43,
+      "oom_kills": 0
+    }
+  ],
+  "scaling_ladder_pool_max_2": [
+    {
+      "n_instances": 3,
+      "pool_max": 2,
+      "n_ticks": 3,
+      "init_ms": 573.87,
+      "decision_latency": {
+        "count": 9,
+        "mean_ms": 180.26,
+        "p50_ms": 179.7,
+        "p95_ms": 181.8,
+        "p99_ms": 181.8,
+        "max_ms": 181.8
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 541.28,
+        "p50_ms": 541.18,
+        "p95_ms": 544.0,
+        "p99_ms": 544.0,
+        "max_ms": 544.0
+      },
+      "tick_self_cpu_ms": 333.73,
+      "tick_child_cpu_ms": 1220.04,
+      "cpu_per_tick_s": 0.518,
+      "b2pts_baseline_pct_at_1m": 2.16,
+      "max_procs": 2,
+      "max_live_workers": 1,
+      "peak_rss_mb": 59.45,
+      "peak_pss_mb": 41.5,
+      "max_swap_mb": 0.0,
+      "min_sys_avail_mb": 617.02,
+      "oom_kills": 0
+    },
+    {
+      "n_instances": 6,
+      "pool_max": 2,
+      "n_ticks": 3,
+      "init_ms": 1150.01,
+      "decision_latency": {
+        "count": 18,
+        "mean_ms": 179.66,
+        "p50_ms": 179.46,
+        "p95_ms": 182.77,
+        "p99_ms": 182.77,
+        "max_ms": 182.77
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 1078.94,
+        "p50_ms": 1079.44,
+        "p95_ms": 1082.35,
+        "p99_ms": 1082.35,
+        "max_ms": 1082.35
+      },
+      "tick_self_cpu_ms": 670.82,
+      "tick_child_cpu_ms": 2418.71,
+      "cpu_per_tick_s": 1.03,
+      "b2pts_baseline_pct_at_1m": 4.29,
+      "max_procs": 2,
+      "max_live_workers": 1,
+      "peak_rss_mb": 60.23,
+      "peak_pss_mb": 42.29,
+      "max_swap_mb": 0.0,
+      "min_sys_avail_mb": 614.43,
+      "oom_kills": 0
+    },
+    {
+      "n_instances": 12,
+      "pool_max": 2,
+      "n_ticks": 3,
+      "init_ms": 2257.82,
+      "decision_latency": {
+        "count": 36,
+        "mean_ms": 180.95,
+        "p50_ms": 179.6,
+        "p95_ms": 189.18,
+        "p99_ms": 195.16,
+        "max_ms": 195.16
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 2173.25,
+        "p50_ms": 2176.02,
+        "p95_ms": 2176.6,
+        "p99_ms": 2176.6,
+        "max_ms": 2176.6
+      },
+      "tick_self_cpu_ms": 1404.42,
+      "tick_child_cpu_ms": 4992.18,
+      "cpu_per_tick_s": 2.132,
+      "b2pts_baseline_pct_at_1m": 8.88,
+      "max_procs": 2,
+      "max_live_workers": 1,
+      "peak_rss_mb": 61.74,
+      "peak_pss_mb": 43.81,
+      "max_swap_mb": 0.0,
+      "min_sys_avail_mb": 610.27,
+      "oom_kills": 0
+    },
+    {
+      "n_instances": 24,
+      "pool_max": 2,
+      "n_ticks": 3,
+      "init_ms": 4520.58,
+      "decision_latency": {
+        "count": 72,
+        "mean_ms": 182.71,
+        "p50_ms": 181.64,
+        "p95_ms": 190.36,
+        "p99_ms": 192.89,
+        "max_ms": 192.89
+      },
+      "tick_latency": {
+        "count": 3,
+        "mean_ms": 4389.05,
+        "p50_ms": 4393.15,
+        "p95_ms": 4406.12,
+        "p99_ms": 4406.12,
+        "max_ms": 4406.12
+      },
+      "tick_self_cpu_ms": 2811.16,
+      "tick_child_cpu_ms": 9760.6,
+      "cpu_per_tick_s": 4.191,
+      "b2pts_baseline_pct_at_1m": 17.46,
+      "max_procs": 2,
+      "max_live_workers": 1,
+      "peak_rss_mb": 64.85,
+      "peak_pss_mb": 46.93,
+      "max_swap_mb": 0.0,
+      "min_sys_avail_mb": 599.8,
+      "oom_kills": 0
+    }
+  ],
+  "colocated_dual_market_mixed": {
+    "config": {
+      "hosts": 3,
+      "binance_lightweight_strategies": 6,
+      "alpaca_lightweight_strategies": 4,
+      "alpaca_numeric_strategies": 2,
+      "total_strategies": 12,
+      "per_host_pool_max": 2,
+      "vm_wide_max": 2,
+      "cycles": 4
+    },
+    "wall_s": 6.84,
+    "max_total_os_procs": 5,
+    "max_simultaneous_live_workers_vm_wide": 2,
+    "steady_idle_pss_mb": 181.61,
+    "peak_rss_mb": 471.75,
+    "peak_pss_mb": 286.63,
+    "max_proc_swap_mb": 0.0,
+    "min_sys_avail_mb": 426.13,
+    "max_sys_swap_mb": 48.44,
+    "oom_kills": 0,
+    "lightweight_decision_latency": {
+      "count": 40,
+      "mean_ms": 436.77,
+      "p50_ms": 180.17,
+      "p95_ms": 1332.67,
+      "p99_ms": 2751.01,
+      "max_ms": 2751.01
+    },
+    "numeric_decision_latency": {
+      "count": 8,
+      "mean_ms": 772.33,
+      "p50_ms": 727.67,
+      "p95_ms": 1136.52,
+      "p99_ms": 1136.52,
+      "max_ms": 1136.52
+    },
+    "binance_cycle_latency": {
+      "count": 4,
+      "mean_ms": 1696.42,
+      "p50_ms": 1348.15,
+      "p95_ms": 2755.14,
+      "p99_ms": 2755.14,
+      "max_ms": 2755.14
+    },
+    "alpaca_cycle_latency": {
+      "count": 4,
+      "mean_ms": 1547.22,
+      "p50_ms": 1177.25,
+      "p95_ms": 2187.74,
+      "p99_ms": 2187.74,
+      "max_ms": 2187.74
+    },
+    "total_cpu_ms": 10519.4,
+    "cpu_per_cycle_s": 2.63,
+    "b2pts_baseline_pct_at_1m": 10.96
+  },
+  "meminfo_end": {
+    "mem_total_mb": 944.15,
+    "mem_avail_mb": 621.3,
+    "swap_total_mb": 2048.0,
+    "swap_used_mb": 48.44
+  }
+}

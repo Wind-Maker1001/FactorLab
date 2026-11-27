@@ -1,13 +1,16 @@
-"""Regression tests for P10-02 execution lightweighting & cross-architecture readiness."""
+"""Regression tests for P10-02 execution lightweighting, isolation, concurrency & ARM64 readiness."""
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
 from decimal import Decimal as D
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
+import threading
+import time
 
 import pytest
 
@@ -86,71 +89,557 @@ def test_deployers_do_not_hardcode_x86_64_interpreter():
         assert 'x86_64' not in text, f'{rel} should detect host architecture instead of hardcoding x86_64'
 
 
-def test_persistent_worker_reuses_process_enforces_sandbox_and_respects_pool_limit(tmp_path, monkeypatch):
+def _write_stateful_package(pkg_dir: Path, idx: int = 0) -> Path:
+    pkg_dir.mkdir(parents=True, exist_ok=True)
+    sub = pkg_dir / 'sub'
+    sub.mkdir(exist_ok=True)
+    (sub / '__init__.py').write_text('', encoding='utf-8')
+    (sub / 'helper.py').write_text(
+        'SUB_CALLS = 0\n'
+        'SUB_ITEMS = []\n'
+        'def bump(tag):\n'
+        '    global SUB_CALLS\n'
+        '    SUB_CALLS += 1\n'
+        '    SUB_ITEMS.append(tag)\n'
+        '    return SUB_CALLS, len(SUB_ITEMS)\n',
+        encoding='utf-8',
+    )
+    (pkg_dir / 'strategy.py').write_text(
+        'import decimal\n'
+        'import os\n'
+        'from decimal import Decimal as D\n'
+        'from factorlab.strategies.protocol import Decision, StrategySpec\n'
+        'from .sub import helper\n'
+        '\n'
+        'MODULE_COUNTER = 0\n'
+        'MODULE_BUCKET = []\n'
+        '\n'
+        'class LeakyStrategy:\n'
+        '    CLASS_COUNTER = 0\n'
+        '    CLASS_HISTORY = []\n'
+        '\n'
+        '    def __init__(self, idx=0):\n'
+        '        self.idx = idx\n'
+        '        self.inst_counter = 0\n'
+        '\n'
+        '    def describe(self):\n'
+        '        return StrategySpec(f"leaky_{self.idx}", "1", "target", ["NVDAUSDT"], [60], ["closed_bar"], 1)\n'
+        '\n'
+        '    def decide(self, event, state):\n'
+        '        global MODULE_COUNTER\n'
+        '        MODULE_COUNTER += 1\n'
+        '        MODULE_BUCKET.append(event["event_id"])\n'
+        '        type(self).CLASS_COUNTER += 1\n'
+        '        type(self).CLASS_HISTORY.append(event["event_id"])\n'
+        '        self.inst_counter += 1\n'
+        '        sub_calls, sub_len = helper.bump(event["event_id"])\n'
+        '        prec_before = decimal.getcontext().prec\n'
+        '        decimal.getcontext().prec = 6\n'
+        '        if event.get("raise_error"):\n'
+        '            raise RuntimeError("boom after mutating globals")\n'
+        '        weight = D(MODULE_COUNTER + type(self).CLASS_COUNTER + sub_calls) / D("30")\n'
+        '        return Decision(\n'
+        '            target_weight=weight,\n'
+        '            state={\n'
+        '                "pid": os.getpid(),\n'
+        '                "module_counter": MODULE_COUNTER,\n'
+        '                "module_len": len(MODULE_BUCKET),\n'
+        '                "class_counter": type(self).CLASS_COUNTER,\n'
+        '                "class_len": len(type(self).CLASS_HISTORY),\n'
+        '                "inst_counter": self.inst_counter,\n'
+        '                "sub_calls": sub_calls,\n'
+        '                "sub_len": sub_len,\n'
+        '                "prec_before": prec_before,\n'
+        '                "checkpoint_n": int(state.get("checkpoint_n", 0)) + 1,\n'
+        '            },\n'
+        '        )\n',
+        encoding='utf-8',
+    )
+    (pkg_dir / 'strategy.json').write_text(
+        json.dumps({
+            'file': 'strategy.py',
+            'class': 'LeakyStrategy',
+            'version': '1',
+            'parameters': {'idx': idx},
+            'package': True,
+        }),
+        encoding='utf-8',
+    )
+    return pkg_dir
+
+
+def test_p1_strict_per_request_isolation_globals_class_submodules_errors_and_restarts(tmp_path, monkeypatch):
+    """P1 regression: identical (event, state) must be immune to globals, class attrs, submodules,
+    interpreter context mutations, prior exceptions, pool contention, multiple instances, and reloads.
+    """
     from factorlab.strategies.loader import LoadedStrategy, StrategyWorkerError
 
     monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_POOL_MAX', '2')
-    code = '''import os
-from decimal import Decimal as D
-from factorlab.strategies.protocol import Decision, StrategySpec
+    now = datetime(2026, 6, 1, 0, 1, tzinfo=timezone.utc)
+    ev = {'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'e1', 'now': now}
+    ev_fail = {'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'e_err', 'now': now, 'raise_error': True}
 
-class EchoPidStrategy:
-    def __init__(self, idx=0, attempt_io=False):
-        self.idx = idx
-        self.attempt_io = attempt_io
-        self.calls = 0
+    pkg_a = _write_stateful_package(tmp_path / 'pkg_a', idx=0)
+    pkg_b = _write_stateful_package(tmp_path / 'pkg_b', idx=1)
 
-    def describe(self):
-        return StrategySpec(f"echo_{self.idx}", "1", "target", ["NVDAUSDT"], [60], ["closed_bar"], 1)
-
-    def decide(self, event, state):
-        self.calls += 1
-        if self.attempt_io:
-            open("/etc/passwd", "r")
-        return Decision(target_weight=D("0.1"), state={"pid": os.getpid(), "instance_calls": self.calls, "n": int(state.get("n", 0)) + 1})
-'''
-    strategies = []
+    strat_a = LoadedStrategy(pkg_a, trusted=True)
+    strat_b = LoadedStrategy(pkg_b, trusted=True)
     try:
-        for i in range(3):
-            sdir = tmp_path / f'strat_{i}'
-            sdir.mkdir()
-            (sdir / 's.py').write_text(code, encoding='utf-8')
-            (sdir / 'strategy.json').write_text(json.dumps({
-                'file': 's.py', 'class': 'EchoPidStrategy', 'version': '1', 'parameters': {'idx': i},
-            }), encoding='utf-8')
-            strategies.append(LoadedStrategy(sdir, trusted=True))
+        d1 = strat_a.decide(ev, {})
+        d2 = strat_a.decide(ev, {})
+        # Exact same inputs must produce identical target weight and isolated state counters == 1
+        assert d1.target_weight == d2.target_weight == D('0.1')
+        for d in (d1, d2):
+            assert d.state['module_counter'] == 1
+            assert d.state['module_len'] == 1
+            assert d.state['class_counter'] == 1
+            assert d.state['class_len'] == 1
+            assert d.state['inst_counter'] == 1
+            assert d.state['sub_calls'] == 1
+            assert d.state['sub_len'] == 1
+            assert d.state['prec_before'] == 28
+            assert d.state['checkpoint_n'] == 1
 
-        now = datetime(2026, 6, 1, 0, 1, tzinfo=timezone.utc)
-        ev = {'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'e1', 'now': now}
-        d1 = strategies[0].decide(ev, {})
-        d2 = strategies[0].decide(ev, d1.state)
-        # Same isolated worker reused across calls, yet fresh strategy object per call (no hidden instance leakage)
-        assert d1.state['pid'] == d2.state['pid']
-        assert d1.state['instance_calls'] == 1
-        assert d2.state['instance_calls'] == 1
-        assert d2.state['n'] == 2
+        # Exception after mutating globals/submodules/decimal context must not taint next call
+        with pytest.raises(StrategyWorkerError, match='RuntimeError: boom after mutating globals'):
+            strat_a.decide(ev_fail, {'checkpoint_n': 5})
+        d_after_err = strat_a.decide(ev, {'checkpoint_n': 5})
+        assert d_after_err.target_weight == d1.target_weight
+        assert d_after_err.state['module_counter'] == 1
+        assert d_after_err.state['class_counter'] == 1
+        assert d_after_err.state['sub_calls'] == 1
+        assert d_after_err.state['prec_before'] == 28
+        assert d_after_err.state['checkpoint_n'] == 6
 
-        # Triggering strategies 1 and 2 evicts LRU worker 0 under pool limit=2; subsequent call transparently restarts
-        strategies[1].decide(ev, {})
-        strategies[2].decide(ev, {})
-        d3 = strategies[0].decide(ev, d2.state)
-        assert d3.state['n'] == 3
-        assert d3.state['pid'] != d1.state['pid']
+        # Multiple instances and pool contention yield identical results
+        d_b1 = strat_b.decide(ev, {'checkpoint_n': 5})
+        d_b2 = strat_b.decide(ev, {'checkpoint_n': 5})
+        assert d_b1.target_weight == d_b2.target_weight == d_after_err.target_weight
+        assert d_b1.state['sub_calls'] == d_b2.state['sub_calls'] == 1
+    finally:
+        strat_a.close()
+        strat_b.close()
 
-        # Sandbox still blocks unauthorized filesystem access
-        bad_dir = tmp_path / 'bad'
-        bad_dir.mkdir()
-        (bad_dir / 's.py').write_text(code, encoding='utf-8')
-        (bad_dir / 'strategy.json').write_text(json.dumps({
-            'file': 's.py', 'class': 'EchoPidStrategy', 'version': '1', 'parameters': {'idx': 9, 'attempt_io': True},
-        }), encoding='utf-8')
-        bad = LoadedStrategy(bad_dir, trusted=True)
-        strategies.append(bad)
-        with pytest.raises(StrategyWorkerError, match='PermissionError'):
-            bad.decide(ev, {})
+    # Restart / reload recovery must produce bit-for-bit identical decision
+    reloaded = LoadedStrategy(pkg_a, trusted=True)
+    try:
+        d_reloaded = reloaded.decide(ev, {'checkpoint_n': 5})
+        assert d_reloaded.target_weight == d_after_err.target_weight
+        assert d_reloaded.state['module_counter'] == 1
+        assert d_reloaded.state['class_counter'] == 1
+        assert d_reloaded.state['sub_calls'] == 1
+        assert d_reloaded.state['checkpoint_n'] == 6
+    finally:
+        reloaded.close()
+
+
+def test_p1_lightweight_runtime_profile_and_calendar_timezone_compatibility(tmp_path):
+    """Verify P10-11 lightweight runtime_profile skips heavy preimports while warming calendar tz."""
+    from factorlab.strategies.loader import LoadedStrategy
+
+    pkg = tmp_path / 'lw_pkg'
+    pkg.mkdir()
+    (pkg / 'strategy.py').write_text(
+        'from decimal import Decimal as D\n'
+        'import sys\n'
+        'from zoneinfo import ZoneInfo\n'
+        'from datetime import datetime\n'
+        'from factorlab.strategies.protocol import Decision, StrategySpec\n'
+        'class LightweightCalStrategy:\n'
+        '    def describe(self):\n'
+        '        return StrategySpec("lw_cal", "1", "target", ["NVDAUSDT"], [60], ["closed_bar"], 1)\n'
+        '    def decide(self, event, state):\n'
+        '        ny = datetime(2026, 6, 1, 14, 0, tzinfo=ZoneInfo("America/New_York"))\n'
+        '        heavy = sorted(m for m in ("numpy", "pandas", "scipy", "pyarrow") if m in sys.modules)\n'
+        '        return Decision(target_weight=D("0.2"), state={"heavy": heavy, "tz": ny.tzname()})\n',
+        encoding='utf-8',
+    )
+    (pkg / 'strategy.json').write_text(
+        json.dumps({
+            'file': 'strategy.py',
+            'class': 'LightweightCalStrategy',
+            'version': '1',
+            'parameters': {},
+            'runtime_profile': 'lightweight',
+            'calendar_timezone': 'America/New_York',
+        }),
+        encoding='utf-8',
+    )
+    now = datetime(2026, 6, 1, 14, 0, tzinfo=timezone.utc)
+    ev = {'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'e1', 'now': now}
+    strat = LoadedStrategy(pkg, trusted=True)
+    try:
+        dec = strat.decide(ev, {})
+        assert dec.target_weight == D('0.2')
+        assert dec.state['heavy'] == []
+        assert dec.state['tz'] == 'EDT'
+    finally:
+        strat.close()
+
+
+def _write_timed_strategy(pkg_dir: Path, idx: int = 0) -> Path:
+    pkg_dir.mkdir(parents=True, exist_ok=True)
+    (pkg_dir / 's.py').write_text(
+        'import os\n'
+        'import time\n'
+        'from decimal import Decimal as D\n'
+        'from factorlab.strategies.protocol import Decision, StrategySpec\n'
+        'class TimedStrategy:\n'
+        '    def __init__(self, idx=0):\n'
+        '        self.idx = idx\n'
+        '    def describe(self):\n'
+        '        return StrategySpec(f"timed_{self.idx}", "1", "target", ["NVDAUSDT"], [60], ["closed_bar"], 1)\n'
+        '    def decide(self, event, state):\n'
+        '        t0 = time.time_ns()\n'
+        '        delay = float(event.get("sleep_sec", 0.0))\n'
+        '        if delay > 0:\n'
+        '            time.sleep(delay)\n'
+        '        if event.get("attempt_io"):\n'
+        '            open("/etc/passwd", "r")\n'
+        '        if event.get("raise_err"):\n'
+        '            raise ValueError("strategy error")\n'
+        '        t1 = time.time_ns()\n'
+        '        return Decision(target_weight=D("0.1"), state={"pid": os.getpid(), "start_ns": t0, "end_ns": t1, "idx": self.idx})\n',
+        encoding='utf-8',
+    )
+    (pkg_dir / 'strategy.json').write_text(
+        json.dumps({'file': 's.py', 'class': 'TimedStrategy', 'version': '1', 'parameters': {'idx': idx}}),
+        encoding='utf-8',
+    )
+    return pkg_dir
+
+
+@pytest.mark.parametrize('pool_max', [1, 2])
+def test_p2_real_live_subprocess_concurrency_strictly_bounded(tmp_path, monkeypatch, pool_max):
+    """P2 regression: directly observe real alive OS subprocesses (Popen.poll() is None)
+    under POOL_MAX=1 and POOL_MAX=2; verify old process exits before next starts.
+    """
+    import factorlab.strategies.loader as loader_mod
+    from factorlab.strategies.loader import LoadedStrategy, active_worker_count, live_worker_pids
+
+    monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_POOL_MAX', str(pool_max))
+    monkeypatch.delenv('FACTORLAB_STRATEGY_WORKER_VM_MAX', raising=False)
+    monkeypatch.delenv('FACTORLAB_STRATEGY_WORKER_LOCK_DIR', raising=False)
+
+    orig_popen = loader_mod.subprocess.Popen
+    tracker_lock = threading.Lock()
+    spawned: list[subprocess.Popen] = []
+    max_observed_alive = 0
+    max_observed_reserved = 0
+
+    def _spy_popen(*args, **kwargs):
+        nonlocal max_observed_alive, max_observed_reserved
+        proc = orig_popen(*args, **kwargs)
+        with tracker_lock:
+            spawned.append(proc)
+            alive = sum(1 for p in spawned if p.poll() is None)
+            if alive > max_observed_alive:
+                max_observed_alive = alive
+            reserved = active_worker_count()
+            if reserved > max_observed_reserved:
+                max_observed_reserved = reserved
+        return proc
+
+    monkeypatch.setattr(loader_mod.subprocess, 'Popen', _spy_popen)
+
+    strategies = [LoadedStrategy(_write_timed_strategy(tmp_path / f't_{i}', i), trusted=True) for i in range(4)]
+    now = datetime(2026, 6, 1, 0, 1, tzinfo=timezone.utc)
+    try:
+        # Reset counters after describe() calls
+        with tracker_lock:
+            spawned.clear()
+            max_observed_alive = 0
+            max_observed_reserved = 0
+
+        def _run_one(i: int):
+            ev = {'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': f'e_{i}', 'now': now, 'sleep_sec': 0.18}
+            return strategies[i % len(strategies)].decide(ev, {})
+
+        with ThreadPoolExecutor(max_workers=6) as ex:
+            results = list(ex.map(_run_one, range(6)))
+
+        assert len(results) == 6
+        assert max_observed_alive <= pool_max, f'live OS subprocesses {max_observed_alive} exceeded POOL_MAX={pool_max}'
+        assert max_observed_reserved <= pool_max
+        assert all(p.poll() is not None for p in spawned), 'all spawned OS subprocesses must be reaped'
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+
+        # Also verify via actual execution timestamps inside worker OS processes
+        intervals = [(r.state['start_ns'], r.state['end_ns']) for r in results]
+        events = []
+        for s, e in intervals:
+            events.append((s, 1))
+            events.append((e, -1))
+        events.sort(key=lambda item: (item[0], item[1]))
+        cur = 0
+        max_overlap = 0
+        for _, delta in events:
+            cur += delta
+            if cur > max_overlap:
+                max_overlap = cur
+        assert max_overlap <= pool_max, f'real worker execution overlap {max_overlap} exceeded POOL_MAX={pool_max}'
     finally:
         for s in strategies:
             s.close()
+
+
+def test_p2_close_race_before_spawn_and_during_execution_timeout_and_errors(tmp_path, monkeypatch):
+    """P2 regression: cover post-reservation/pre-spawn close race, mid-execution close,
+    timeout kill+reap, exception cleanup, and zero leaked capacity or live PIDs.
+    """
+    import factorlab.strategies.loader as loader_mod
+    from factorlab.strategies.loader import LoadedStrategy, StrategyWorkerError, active_worker_count, live_worker_pids
+
+    monkeypatch.setenv('FACTORLAB_STRATEGY_WORKER_POOL_MAX', '1')
+    monkeypatch.delenv('FACTORLAB_STRATEGY_WORKER_VM_MAX', raising=False)
+    monkeypatch.delenv('FACTORLAB_STRATEGY_WORKER_LOCK_DIR', raising=False)
+
+    now = datetime(2026, 6, 1, 0, 1, tzinfo=timezone.utc)
+    strat_a = LoadedStrategy(_write_timed_strategy(tmp_path / 'a', 0), trusted=True, timeout=10)
+    strat_b = LoadedStrategy(_write_timed_strategy(tmp_path / 'b', 1), trusted=True, timeout=10)
+    strat_fast = LoadedStrategy(_write_timed_strategy(tmp_path / 'c', 2), trusted=True, timeout=0.45)
+
+    spawn_count = 0
+    orig_popen = loader_mod.subprocess.Popen
+    orig_tempdir = loader_mod.tempfile.TemporaryDirectory
+
+    def _counting_popen(*args, **kwargs):
+        nonlocal spawn_count
+        spawn_count += 1
+        return orig_popen(*args, **kwargs)
+
+    monkeypatch.setattr(loader_mod.subprocess, 'Popen', _counting_popen)
+
+    try:
+        # 0. Exact post-reservation / pre-spawn race: slot is reserved, then close() fires before Popen
+        strat_race = LoadedStrategy(_write_timed_strategy(tmp_path / 'race', 9), trusted=True, timeout=10)
+        spawn_before_race = spawn_count
+        reserved_evt = threading.Event()
+        proceed_evt = threading.Event()
+
+        def _paused_tempdir(*args, **kwargs):
+            reserved_evt.set()
+            proceed_evt.wait(timeout=5.0)
+            return orig_tempdir(*args, **kwargs)
+
+        monkeypatch.setattr(loader_mod.tempfile, 'TemporaryDirectory', _paused_tempdir)
+        race_res: list = []
+
+        def _run_race():
+            try:
+                strat_race.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'r1', 'now': now}, {})
+                race_res.append('OK')
+            except Exception as exc:
+                race_res.append(exc)
+
+        t_race = threading.Thread(target=_run_race)
+        t_race.start()
+        assert reserved_evt.wait(timeout=5.0)
+        assert active_worker_count() == 1  # capacity is reserved, subprocess NOT spawned yet
+
+        t_close = threading.Thread(target=strat_race.close)
+        t_close.start()
+        time.sleep(0.05)  # close() marks _closed and slot.cancelled, waiting for slot release
+        proceed_evt.set()
+        t_race.join(timeout=5.0)
+        t_close.join(timeout=5.0)
+        monkeypatch.setattr(loader_mod.tempfile, 'TemporaryDirectory', orig_tempdir)
+
+        assert not t_race.is_alive() and not t_close.is_alive()
+        assert len(race_res) == 1 and isinstance(race_res[0], StrategyWorkerError)
+        assert spawn_count == spawn_before_race, 'closed strategy must NEVER spawn subprocess after reservation'
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+
+        # 1. Race: strat_a holds the single slot; strat_b queues waiting, then strat_b.close() is called
+        #    before strat_b gets a slot, AND we also verify closing strat_a kills its running subprocess.
+        a_result: list = []
+        b_result: list = []
+
+        def _run_a():
+            try:
+                strat_a.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'a1', 'now': now, 'sleep_sec': 5.0}, {})
+                a_result.append('OK')
+            except Exception as exc:
+                a_result.append(exc)
+
+        def _run_b():
+            try:
+                strat_b.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'b1', 'now': now, 'sleep_sec': 0.1}, {})
+                b_result.append('OK')
+            except Exception as exc:
+                b_result.append(exc)
+
+        t_a = threading.Thread(target=_run_a)
+        t_a.start()
+        deadline = time.monotonic() + 5.0
+        while not live_worker_pids() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert len(live_worker_pids()) == 1
+
+        t_b = threading.Thread(target=_run_b)
+        t_b.start()
+        time.sleep(0.05)  # t_b is now blocked waiting for pool capacity
+
+        # Close strat_b while waiting: must wake immediately and never spawn a process
+        spawns_before_b_close = spawn_count
+        strat_b.close()
+        t_b.join(timeout=3.0)
+        assert not t_b.is_alive()
+        assert len(b_result) == 1 and isinstance(b_result[0], StrategyWorkerError)
+        assert spawn_count == spawns_before_b_close
+
+        # Calling decide on already-closed strat_b must fail without spawning
+        with pytest.raises(StrategyWorkerError, match='closed'):
+            strat_b.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'b2', 'now': now}, {})
+        assert spawn_count == spawns_before_b_close
+
+        # Close strat_a while its OS subprocess is sleeping: must terminate+reap and free slot
+        strat_a.close()
+        t_a.join(timeout=5.0)
+        assert not t_a.is_alive()
+        assert len(a_result) == 1 and isinstance(a_result[0], StrategyWorkerError)
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+
+        # 2. Timeout must kill & reap child OS process and release capacity
+        with pytest.raises(StrategyWorkerError, match='timed out'):
+            strat_fast.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'to1', 'now': now, 'sleep_sec': 3.0}, {})
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+
+        # 3. Exception & sandbox violation must release capacity and leave next call healthy
+        with pytest.raises(StrategyWorkerError, match='ValueError: strategy error'):
+            strat_fast.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'er1', 'now': now, 'raise_err': True}, {})
+        with pytest.raises(StrategyWorkerError, match='PermissionError'):
+            strat_fast.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'io1', 'now': now, 'attempt_io': True}, {})
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+
+        # Next normal decision succeeds immediately
+        ok = strat_fast.decide({'kind': 'closed_bar', 'symbol': 'NVDAUSDT', 'event_id': 'ok1', 'now': now}, {})
+        assert ok.target_weight == D('0.1')
+        assert active_worker_count() == 0
+        assert live_worker_pids() == ()
+    finally:
+        strat_a.close()
+        strat_b.close()
+        strat_fast.close()
+
+
+def test_p2_atexit_shutdown_reaps_inflight_worker_process(tmp_path):
+    """Verify _WORKER_POOL.shutdown_all() kills and reaps an in-flight worker subprocess cleanly."""
+    pkg = _write_timed_strategy(tmp_path / 'exit_pkg', idx=0)
+    driver = (
+        'import json, os, sys, threading, time\n'
+        'from datetime import datetime, timezone\n'
+        f'sys.path.insert(0, {str(SRC_ROOT)!r})\n'
+        'from factorlab.strategies.loader import LoadedStrategy, _WORKER_POOL, live_worker_pids, active_worker_count\n'
+        f's = LoadedStrategy({str(pkg)!r}, trusted=True, timeout=15)\n'
+        'now = datetime(2026, 6, 1, 0, 1, tzinfo=timezone.utc)\n'
+        'ev = {"kind": "closed_bar", "symbol": "NVDAUSDT", "event_id": "hang", "now": now, "sleep_sec": 10.0}\n'
+        't = threading.Thread(target=lambda: _safe_call(s, ev))\n'
+        'def _safe_call(st, e):\n'
+        '    try:\n'
+        '        st.decide(e, {})\n'
+        '    except Exception:\n'
+        '        pass\n'
+        't.start()\n'
+        'deadline = time.monotonic() + 5.0\n'
+        'while not live_worker_pids() and time.monotonic() < deadline:\n'
+        '    time.sleep(0.02)\n'
+        'pids_before = live_worker_pids()\n'
+        '_WORKER_POOL.shutdown_all()\n'
+        't.join(timeout=5.0)\n'
+        'print(json.dumps({"pids_before": list(pids_before), "pids_after": list(live_worker_pids()), "active_after": active_worker_count()}))\n'
+    )
+    out = subprocess.check_output([sys.executable, '-I', '-c', driver], text=True, timeout=20)
+    data = json.loads(out)
+    assert len(data['pids_before']) == 1
+    assert data['pids_after'] == []
+    assert data['active_after'] == 0
+
+
+def test_p2_vm_wide_cross_process_cap_limits_colocated_binance_and_alpaca_hosts(tmp_path):
+    """P2 regression: two independent host OS processes (e.g. Binance + Alpaca) each with POOL_MAX=2
+    sharing FACTORLAB_STRATEGY_WORKER_LOCK_DIR and FACTORLAB_STRATEGY_WORKER_VM_MAX=1 must never
+    overlap live worker execution across the VM.
+    """
+    pkg = _write_timed_strategy(tmp_path / 'vm_pkg', idx=0)
+    lock_dir = tmp_path / 'vm-slots'
+    out_dir = tmp_path / 'out'
+    out_dir.mkdir()
+
+    host_script = (
+        'import json, os, sys, time\n'
+        'from concurrent.futures import ThreadPoolExecutor\n'
+        'from datetime import datetime, timezone\n'
+        'from pathlib import Path\n'
+        f'sys.path.insert(0, {str(SRC_ROOT)!r})\n'
+        'from factorlab.strategies.loader import LoadedStrategy\n'
+        'host_name = sys.argv[1]\n'
+        'ready_file = Path(sys.argv[2])\n'
+        'go_file = Path(sys.argv[3])\n'
+        'result_file = Path(sys.argv[4])\n'
+        f'strat = LoadedStrategy({str(pkg)!r}, trusted=True, timeout=20)\n'
+        'ready_file.write_text("ready", encoding="utf-8")\n'
+        'while not go_file.exists():\n'
+        '    time.sleep(0.01)\n'
+        'now = datetime(2026, 6, 1, 0, 1, tzinfo=timezone.utc)\n'
+        'def _call(i):\n'
+        '    ev = {"kind": "closed_bar", "symbol": "NVDAUSDT", "event_id": f"{host_name}_{i}", "now": now, "sleep_sec": 0.18}\n'
+        '    d = strat.decide(ev, {})\n'
+        '    return {"host": host_name, "pid": d.state["pid"], "start_ns": d.state["start_ns"], "end_ns": d.state["end_ns"]}\n'
+        'with ThreadPoolExecutor(max_workers=2) as ex:\n'
+        '    rows = list(ex.map(_call, range(2)))\n'
+        'strat.close()\n'
+        'result_file.write_text(json.dumps(rows), encoding="utf-8")\n'
+    )
+    script_path = tmp_path / 'host_driver.py'
+    script_path.write_text(host_script, encoding='utf-8')
+
+    env = dict(os.environ)
+    env['FACTORLAB_STRATEGY_WORKER_POOL_MAX'] = '2'
+    env['FACTORLAB_STRATEGY_WORKER_VM_MAX'] = '1'
+    env['FACTORLAB_STRATEGY_WORKER_LOCK_DIR'] = str(lock_dir)
+
+    go_file = tmp_path / 'go.flag'
+    ready_bin = tmp_path / 'ready_binance.flag'
+    ready_alp = tmp_path / 'ready_alpaca.flag'
+    res_bin = out_dir / 'binance.json'
+    res_alp = out_dir / 'alpaca.json'
+
+    p_bin = subprocess.Popen([sys.executable, str(script_path), 'binance', str(ready_bin), str(go_file), str(res_bin)], env=env)
+    p_alp = subprocess.Popen([sys.executable, str(script_path), 'alpaca', str(ready_alp), str(go_file), str(res_alp)], env=env)
+    try:
+        deadline = time.monotonic() + 20.0
+        while not (ready_bin.exists() and ready_alp.exists()) and time.monotonic() < deadline:
+            time.sleep(0.02)
+        assert ready_bin.exists() and ready_alp.exists()
+        go_file.write_text('go', encoding='utf-8')
+        assert p_bin.wait(timeout=30) == 0
+        assert p_alp.wait(timeout=30) == 0
+    finally:
+        for p in (p_bin, p_alp):
+            if p.poll() is None:
+                p.kill()
+                p.wait(timeout=5)
+
+    all_rows = json.loads(res_bin.read_text(encoding='utf-8')) + json.loads(res_alp.read_text(encoding='utf-8'))
+    assert len(all_rows) == 4
+    events = []
+    for row in all_rows:
+        events.append((row['start_ns'], 1))
+        events.append((row['end_ns'], -1))
+    events.sort(key=lambda item: (item[0], item[1]))
+    cur = 0
+    max_vm_overlap = 0
+    for _, delta in events:
+        cur += delta
+        if cur > max_vm_overlap:
+            max_vm_overlap = cur
+    assert max_vm_overlap == 1, f'cross-process VM worker overlap {max_vm_overlap} exceeded VM_MAX=1'
 
 
 def test_market_cache_lru_still_detects_tampering(tmp_path):

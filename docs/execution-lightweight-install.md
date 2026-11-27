@@ -62,8 +62,13 @@ file -L "/opt/factorlab/python/cpython-3.13-linux-${ARCH}-gnu/bin/python3"
   ```
   安装器仅安装 `requirements/execution-tradfi.txt`（`--only-binary=:all:`）+ `--no-deps` 源码并执行 `pip check`。
 
-## 4. 运行期资源调优参数
+## 4. 运行期并发与资源边界参数
 
-- **`FACTORLAB_STRATEGY_WORKER_POOL_MAX`**（默认 `12`）：限制单个运行期进程内同时常驻的 V2/V1 策略隔离子进程上限。超过上限时按 LRU 优雅回收最久未用的空闲隔离子进程并在下次决策时自动按需重建；设为 `0` 可退回每次决策一次性拉起子进程的兼容模式。
-  - 在 2 vCPU / 1 GiB RAM 同机双市场主机上，建议保持 `8`–`12`。
-- **策略包可选依赖**：纯标准库/Decimal 策略包保持 `dependencies: []`；确需数值库的策略包显式锁定 `numpy==...` / `pandas==...`，隔离 worker 仅在检测到数值依赖时按需在沙箱前预导入并预热 `America/New_York` / `UTC` 时区表，不向无数值需求的策略进程引入任何重型库。
+为严格保持逐请求 OS 进程隔离（防止模块全局变量、类级可变状态、包内子模块及解释器全局上下文跨请求泄漏），所有策略调用均使用**轻量化 one-shot 隔离子进程**，并通过宿主进程与整机双层有界并发控制限制峰值内存与 CPU：
+
+- **`FACTORLAB_STRATEGY_WORKER_POOL_MAX`**（默认 **`1`**，下限 `1`）：单个宿主进程（如 `factorlab-demo-execute` 或 `factorlab-alpaca-paper`）内同时存活的策略 Worker 子进程上限。
+  - 默认 `1` 时，同机运行的 Binance Execute 与 Alpaca Runtime 各自至多拉起 1 个子进程，整台 2 vCPU / 1 GiB VM 峰值合计天然不超过 **2 个并发策略子进程**，且无需放宽两个 systemd 服务账户（`factorlab-demo` / `factorlab-alpaca`）之间的 `ProtectSystem=strict` 与 `PrivateTmp=true` 隔离边界。
+  - 空载时策略 Worker 常驻内存为 **0 MiB**；容量仅在旧子进程确认退出（`proc.poll() is not None`）后释放。
+- **`FACTORLAB_STRATEGY_WORKER_VM_MAX`** 与 **`FACTORLAB_STRATEGY_WORKER_LOCK_DIR`**（可选整机跨进程上限）：
+  - 当需要在多宿主进程间动态共享槽位（例如允许单个市场在另一市场空闲时突发至 `POOL_MAX=2`，同时严格保证整台 VM 总并发 Worker 不超过 `VM_MAX=2`）时，可为同机服务配置共享的 `FACTORLAB_STRATEGY_WORKER_LOCK_DIR` 与 `FACTORLAB_STRATEGY_WORKER_VM_MAX=2`（基于内核 `fcntl.flock` / `msvcrt.locking` 槽位锁，进程异常崩溃由内核自动回收，无需独立常驻调度服务）。
+- **策略包可选依赖与 P10-11 兼容**：纯标准库/Decimal 策略包（及声明 `runtime_profile: "lightweight"` 或 `model` 工件的 P10-11 策略包）跳过重型库预导入，单次轻量决策仅 ~14 MiB 瞬时 PSS；确需数值库的策略包显式锁定 `numpy==...` / `pandas==...`，Worker 仅在检测到数值依赖时于沙箱前按需预导入并预热 `America/New_York` / `UTC` 时区表。
