@@ -1,6 +1,7 @@
 """Task-scoped Linux controller using only the official Colab CLI."""
 
 import argparse
+from contextlib import contextmanager
 import json
 import math
 import os
@@ -44,6 +45,27 @@ def budget_seconds(budget, balance, rate, elapsed, timeout):
     return remaining
 
 
+def research_code(arguments):
+    return ("import subprocess, sys\n"
+            f"subprocess.run([sys.executable, *{arguments!r}], check=True)\n")
+
+
+class AccountBusy(Exception):
+    pass
+
+
+@contextmanager
+def account_lock(root):
+    import fcntl
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    with (root / "account.lock").open("a") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise AccountBusy from exc
+        yield
+
+
 class Job:
     def __init__(self, root):
         self.root = Path(root).resolve()
@@ -81,8 +103,12 @@ class Job:
 
     def execute(self, code):
         path = self.root / "payload.py"
-        path.write_text(code, encoding="utf-8")
-        return self.cli("exec", "-s", self.data["session"], "--timeout", "0", "-f", path)
+        receipt = "FACTORLAB_EXEC_OK=" + uuid.uuid4().hex
+        path.write_text(code + f"\nprint({receipt!r}, flush=True)\n", encoding="utf-8")
+        output = self.cli("exec", "-s", self.data["session"], "--timeout", "0", "-f", path)
+        if receipt not in output.splitlines():
+            raise RuntimeError("Remote execution did not produce its success receipt")
+        return output
 
     def release(self):
         if self.data.get("released"):
@@ -158,8 +184,7 @@ class Job:
             arguments = ["/content/monte_carlo.py", "--paths", str(self.data["paths"]),
                          "--steps", str(self.data["steps"]), "--seed", str(self.data["seed"]),
                          "--commit", self.data["commit"]]
-            self.execute(f"import runpy, sys\nsys.argv = {arguments!r}\n"
-                         "runpy.run_path('/content/monte_carlo.py', run_name='__main__')\n")
+            self.execute(research_code(arguments))
             self.save(state="downloading")
             self.download()
             self.save(state="completed")
@@ -233,7 +258,8 @@ def main():
         cleanup = shlex.join([*base, "recover", "--job", str(root)])
         command = ["sudo", "-n", "systemd-run", f"--unit={session}", f"--uid={os.getuid()}",
                    "--collect", "--property=Type=exec", "--property=UMask=0077",
-                   "--property=MemoryMax=512M", "--property=CPUQuota=25%",
+                   "--property=MemoryMax=256M", "--property=MemorySwapMax=0",
+                   "--property=CPUQuota=25%", "--property=CPUWeight=10",
                    f"--property=RuntimeMaxSec={args.timeout}", "--property=TimeoutStopSec=150",
                    f"--property=ExecStopPost={cleanup}",
                    *base, "run", "--job", str(root)]
@@ -245,10 +271,28 @@ def main():
         print(json.dumps(job.data, indent=2))
     elif args.action == "logs":
         print((job.root / "controller.log").read_text(encoding="utf-8"))
-    elif args.action == "run":
+    else:
+        lock_root = Path.home() / ".local/state/factorlab-colab"
+        try:
+            with account_lock(lock_root):
+                operate(job, args.action)
+        except AccountBusy:
+            if args.action == "run":
+                job.save(state="BUSY")
+            print("BUSY: another local controller owns the Colab account", file=sys.stderr)
+            raise SystemExit(75)
+
+
+def operate(job, action):
+    if action == "run":
         signal.signal(signal.SIGTERM, interrupted)
-        job.run()
-    elif args.action == "download":
+        from colab_resources import Resources
+        resources = Resources(job.root)
+        try:
+            job.run()
+        finally:
+            resources.finish()
+    elif action == "download":
         job.download()
     else:
         job.release()

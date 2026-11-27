@@ -4,17 +4,32 @@ import argparse
 import json
 import platform
 import subprocess
+import sys
+from importlib.metadata import metadata, version
+
+from packaging.requirements import Requirement
+from packaging.specifiers import SpecifierSet
 from pathlib import Path
 from time import perf_counter
 
-import cupy as cp
-import numpy as np
-
-from factorlab.compute import ComputeConfig
-from factorlab.research.monte_carlo import MonteCarloConfig, MonteCarloInput, MonteCarloRunner
+def validate_dependencies(loaded):
+    package = metadata("factorlab")
+    if platform.python_version() not in SpecifierSet(package["Requires-Python"]):
+        raise RuntimeError("Research Python violates FactorLab Requires-Python")
+    for text in package.get_all("Requires-Dist", []):
+        requirement = Requirement(text)
+        if requirement.marker and not requirement.marker.evaluate({"extra": "monte-carlo-cuda"}):
+            continue
+        actual = loaded[requirement.name] if requirement.name in loaded else version(requirement.name)
+        if actual not in requirement.specifier:
+            raise RuntimeError(f"{requirement.name} {actual} violates {requirement.specifier}")
 
 
 def main():
+    import cupy as cp
+    import numpy as np
+    from factorlab.compute import ComputeConfig
+    from factorlab.research.monte_carlo import MonteCarloConfig, MonteCarloInput, MonteCarloRunner
     parser = argparse.ArgumentParser()
     parser.add_argument("--paths", type=int, default=1_000_000)
     parser.add_argument("--steps", type=int, default=252)
@@ -22,6 +37,7 @@ def main():
     parser.add_argument("--commit", required=True)
     parser.add_argument("--output", default="/content/factorlab-result")
     args = parser.parse_args()
+    validate_dependencies({"numpy": np.__version__, "cupy-cuda13x": cp.__version__})
     output = Path(args.output)
     output.mkdir()
     config = MonteCarloConfig(
@@ -39,9 +55,13 @@ def main():
     report = result.to_dict()
     report["execution"] = {
         "commit": args.commit, "elapsed_seconds": elapsed,
-        "python": platform.python_version(), "cupy": cp.__version__,
+        "python": platform.python_version(), "numpy": np.__version__, "cupy": cp.__version__,
+        "factorlab": version("factorlab"), "pid": __import__("os").getpid(),
+        "cuda_runtime": cp.cuda.runtime.runtimeGetVersion(),
+        "cuda_driver": cp.cuda.runtime.driverGetVersion(),
+        "dependency_constraints_validated": True,
         "dependencies": subprocess.check_output(
-            ["python", "-m", "pip", "freeze"], text=True),
+            [sys.executable, "-m", "pip", "freeze"], text=True),
         "gpu": subprocess.check_output(["nvidia-smi", "--query-gpu=name,memory.total,driver_version",
                                         "--format=csv,noheader"], text=True).strip(),
     }

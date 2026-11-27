@@ -93,7 +93,7 @@ def test_interrupted_allocation_preserves_orphan_evidence(job, monkeypatch):
     assert job.data["released"] is False
 
 
-@pytest.mark.parametrize("failure_at", ["exec", "download"])
+@pytest.mark.parametrize("failure_at", ["exec", "download", "receipt"])
 def test_failures_release_runtime(job, monkeypatch, failure_at):
     calls = []
     def cli(*args, **kwargs):
@@ -110,10 +110,15 @@ def test_failures_release_runtime(job, monkeypatch, failure_at):
         if args[0] == failure_at:
             raise subprocess.TimeoutExpired(args, 1)
         if args[0] == "exec":
-            return 'FACTORLAB_HARDWARE={"gpu":"NVIDIA L4"}\n'
+            if failure_at == "receipt":
+                return "CalledProcessError: research child failed\n"
+            import re
+            receipt = re.search(r"FACTORLAB_EXEC_OK=[a-f0-9]+", (job.root / "payload.py").read_text())[0]
+            return 'FACTORLAB_HARDWARE={"gpu":"NVIDIA L4"}\n' + receipt + '\n'
         return ""
     monkeypatch.setattr(job, "cli", cli)
-    with pytest.raises(subprocess.TimeoutExpired):
+    expected = RuntimeError if failure_at == "receipt" else subprocess.TimeoutExpired
+    with pytest.raises(expected):
         job.run()
     assert ("stop", "-s", "fl-test") in calls
     assert job.data["released"] is True
@@ -139,3 +144,116 @@ def test_cpu_or_missing_gpu_stops_before_install(job, monkeypatch):
         job.run()
     assert not any(c[0] == "upload" for c in calls)
     assert job.data["released"]
+
+
+def test_fresh_process_ignores_preloaded_numpy(tmp_path, monkeypatch):
+    import sys
+    import types
+    import numpy
+    loaded = numpy.__version__
+    monkeypatch.setitem(sys.modules, "numpy", types.SimpleNamespace(__version__="0.0.0-old-kernel"))
+    output = tmp_path / "loaded.txt"
+    script = tmp_path / "research.py"
+    script.write_text("import numpy; from pathlib import Path; Path(" + repr(str(output)) + ").write_text(numpy.__version__)")
+    exec(module.research_code([str(script)]), {})
+    assert output.read_text() == loaded
+
+
+def test_research_child_failure_propagates(tmp_path):
+    script = tmp_path / "failure.py"
+    script.write_text("raise RuntimeError('research failed')")
+    with pytest.raises(subprocess.CalledProcessError):
+        exec(module.research_code([str(script)]), {})
+
+
+def test_missing_success_receipt_is_failure(job, monkeypatch):
+    monkeypatch.setattr(job, "cli", lambda *a, **kw: "remote traceback but exit zero")
+    with pytest.raises(RuntimeError, match="success receipt"):
+        job.execute("raise RuntimeError()")
+
+
+@pytest.mark.skipif(__import__("sys").platform != "linux", reason="Linux flock")
+def test_account_lock_competition_and_crash_release(tmp_path):
+    import sys
+    with module.account_lock(tmp_path):
+        contender = subprocess.run([sys.executable, "-c",
+            "import fcntl,sys; f=open(sys.argv[1], 'a'); fcntl.flock(f, fcntl.LOCK_EX|fcntl.LOCK_NB)",
+            str(tmp_path / "account.lock")], capture_output=True, timeout=10)
+        assert contender.returncode != 0
+        assert b"BlockingIOError" in contender.stderr
+        with pytest.raises(module.AccountBusy):
+            with module.account_lock(tmp_path):
+                pytest.fail("parallel allocation admitted")
+    child = subprocess.Popen([sys.executable, "-c",
+        "import fcntl,sys,os; f=open(sys.argv[1], 'a'); fcntl.flock(f, fcntl.LOCK_EX); os._exit(9)",
+        str(tmp_path / "account.lock")])
+    assert child.wait(timeout=10) == 9
+    with module.account_lock(tmp_path):
+        pass
+
+
+@pytest.mark.parametrize("numpy_version,accepted", [("2.3.5", True), ("2.4.6", False)])
+def test_loaded_dependency_constraints(numpy_version, accepted, monkeypatch):
+    from email.message import Message
+    path = Path(__file__).parents[2] / "tools/research/colab_monte_carlo.py"
+    spec = importlib.util.spec_from_file_location("colab_mc", path)
+    research = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(research)
+    package = Message()
+    package["Requires-Python"] = ">=3.12,<3.15"
+    package["Requires-Dist"] = "numpy>=1.26.4,<2.4"
+    package["Requires-Dist"] = 'cupy-cuda13x>=14,<15; extra == "monte-carlo-cuda"'
+    monkeypatch.setattr(research, "metadata", lambda _: package)
+    versions = {"numpy": numpy_version, "cupy-cuda13x": "14.0.1"}
+    if accepted:
+        research.validate_dependencies(versions)
+    else:
+        with pytest.raises(RuntimeError, match="numpy 2.4.6 violates"):
+            research.validate_dependencies(versions)
+
+
+@pytest.mark.skipif(__import__("sys").platform != "linux", reason="Linux flock")
+def test_busy_run_never_operates_or_cleans_other_job(job, monkeypatch):
+    import sys
+    monkeypatch.setattr(module.Path, "home", lambda: job.root)
+    monkeypatch.setattr(sys, "argv", ["colab_job.py", "run", "--job", str(job.root)])
+    monkeypatch.setattr(module, "operate", lambda *a: pytest.fail("busy task operated"))
+    with module.account_lock(job.root / ".local/state/factorlab-colab"):
+        with pytest.raises(SystemExit) as exc:
+            module.main()
+        assert exc.value.code == 75
+    assert module.Job(job.root).data["state"] == "BUSY"
+    assert not job.data.get("allocation_attempted")
+
+
+def test_resources_summary(tmp_path, monkeypatch):
+    import threading
+    spec = importlib.util.spec_from_file_location(
+        "colab_resources", Path(__file__).parents[2] / "tools/research/colab_resources.py")
+    resources = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(resources)
+    cgroup = tmp_path / "cgroup"
+    cgroup.mkdir()
+    for name, text in {"memory.peak": "123456", "memory.events": "oom 0\noom_kill 0\n",
+                       "cpu.stat": "usage_usec 2000000\n", "memory.pressure": "some total=0",
+                       "cpu.pressure": "some total=1"}.items():
+        (cgroup / name).write_text(text)
+    measurement = resources.Resources.__new__(resources.Resources)
+    measurement.root = tmp_path
+    measurement.cgroup = cgroup
+    measurement.stop = threading.Event()
+    measurement.thread = threading.Thread(target=lambda: None)
+    measurement.thread.start()
+    measurement.error = None
+    measurement.before = {"time": 10, "available_kib": 500}
+    measurement.minimum = 300
+    measurement.samples = 2
+    monkeypatch.setattr(resources, "snapshot", lambda: {"time": 20, "available_kib": 400})
+    measurement.finish()
+    report = json.loads((tmp_path / "resources.json").read_text())
+    assert report["minimum_available_kib"] == 300
+    assert report["cpu_percent_one_core"] == 20
+    assert report["memory_peak_bytes"] == 123456
+    measurement.error = OSError("procfs read failed")
+    with pytest.raises(RuntimeError, match="Resource sampling failed"):
+        measurement.finish()

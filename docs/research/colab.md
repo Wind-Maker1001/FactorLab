@@ -15,7 +15,12 @@ control host. Keep its environment, task directories and Google credentials
 separate from trading service environments and state. No trading credential is
 needed. Use an account able to run `sudo -n systemd-run`; the submit command
 creates a transient per-job service under the submitting Linux UID, with a
-512 MiB memory limit and 25% CPU quota. No persistent scheduler is installed.
+256 MiB memory limit, no cgroup swap, 25% CPU quota and CPUWeight=10.
+No persistent scheduler is installed. Copy `colab_resources.py` alongside the
+controller; it records task-scoped procfs/cgroup evidence in `resources.json`
+and one-second system samples in `resources.jsonl`. These limits were measured
+on Standard B2ats v2; system-wide pressure still requires operational review,
+not merely checking the cgroup limit.
 
 Authorize once on that host:
 
@@ -66,6 +71,12 @@ the task's total wall-clock deadline.
 Only one Colab account assignment is allowed during a job, because `usage`
 reports account-wide consumption rather than a task-specific rate. Existing
 assignments cause submission execution to refuse before allocating a new VM.
+A nonblocking `flock` at `~/.local/state/factorlab-colab/account.lock` covers
+preflight through release, including recovery and manual downloads. A competing
+controller exits 75 (`BUSY`) without allocating or releasing anything; process
+exit releases the lock. All tasks sharing an account must use the same Linux
+control identity. Browser sessions and other hosts are outside this lock, so
+the server assignment checks remain necessary.
 Requested GPU and the actual `nvidia-smi` hardware are recorded separately.
 Allocation of a different GPU is accepted only against its actual account rate;
 missing GPU refuses before dependency installation. The native runner receives
@@ -77,7 +88,12 @@ is `results/report.json` plus `results/samples.npz` containing terminal values
 and maximum drawdowns for every path. Full path histories are not requested.
 Copy the entire `results` directory back with SCP. The report contains native
 compute evidence, source commit, parameters, dependency versions and actual
-GPU information; `job.json` adds lifecycle timing and CU snapshots. Keep the
+GPU information; `job.json` adds lifecycle timing and CU snapshots. Research
+starts in a fresh Python subprocess after pip installation, rather than reusing
+kernel imports. Loaded NumPy/CuPy and installed dependencies are checked against
+FactorLab metadata before simulation. A unique success receipt supplements the
+official CLI exit code, since CLI 0.8.0 can return zero after a remote exception.
+Keep the
 original wheel with the private run artifacts.
 
 ## Budgets and cleanup
