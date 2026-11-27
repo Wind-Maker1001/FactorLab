@@ -1,6 +1,6 @@
 # MC-GRID-GPU-02 evidence
 
-`scale-report.json` contains frozen configuration, synthetic market definition, per-scale timing/resource receipts, financial summaries and selected Paper audit results. Raw terminal arrays and selected audit archives remain local and are excluded from version control.
+`scale-report.json` contains frozen configuration, synthetic market definition, per-scale timing/resource receipts, financial summaries and selected Paper audit results. Selected audit archives remain local and are excluded from version control. Bulk terminal arrays were removed after aggregation and acceptance to release storage; frozen generation parameters and reproduction commands are retained.
 
 ## Economic verification
 
