@@ -34,10 +34,12 @@ if [ -L "$base/current" ]; then
     readlink "$base/current" > "$base/previous-release"
     was_active=false
     if systemctl is-active --quiet factorlab-alpaca-paper.service; then was_active=true; fi
+    state_root=$(systemctl show factorlab-alpaca-paper.service --property=Environment --value |
+        "$base/current/venv/bin/python" -I -c 'import shlex, sys; env = dict(item.split("=", 1) for item in shlex.split(sys.stdin.read())); print(env.get("FACTORLAB_ALPACA_STATE_ROOT", "/var/lib/factorlab-alpaca-paper"))')
     systemctl stop factorlab-alpaca-paper.service
     if ! runuser -u factorlab-alpaca -- "$release/venv/bin/python" -I \
         -m factorlab.strategies.runtime_migration --market alpaca \
-        --state-root /var/lib/factorlab-alpaca-paper \
+        --state-root "$state_root" \
         --previous-python "$base/current/venv/bin/python"; then
         if "$was_active"; then systemctl start factorlab-alpaca-paper.service; fi
         exit 1

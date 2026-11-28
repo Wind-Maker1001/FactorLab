@@ -16,7 +16,7 @@ from .strategy_data import StrategyData
 from .strategy_deployment import AlpacaDeployment
 from .strategy_execution import AlpacaDecisionExecution
 from .strategy_runtime import AlpacaInstance
-from .corporate_actions import CorporateReceiptJournal
+from .corporate_actions import CorporateReceiptJournal, read_announcements
 from .cloud_execution import PreparationIncomplete
 from .market_data.cache import MarketCache
 
@@ -187,11 +187,7 @@ class StrategyInstances:
         first = self.store.db.execute('SELECT MIN(session) FROM portfolio_plans WHERE account=?',
                                       (account_id,)).fetchone()[0]
         since = first or session
-        announcements = self.adapter.http.request('GET', '/v2/corporate_actions/announcements',
-            params={'ca_types': 'dividend,merger,spinoff,split', 'since': since,
-                    'until': session, 'date_type': 'ex_date'})
-        if len(announcements) >= 1000:
-            raise PreparationIncomplete('SATURATED_CORPORATE_ACTION_WINDOW')
+        announcements = read_announcements(self.adapter.http, since=since, until=session)
         receipts = self.adapter.read_corporate_activities(after=since + 'T00:00:00Z')
         return CorporateReceiptJournal(self.store, account_id).reconcile_account(
             self.runner.executor, announcements=announcements, receipts=receipts)

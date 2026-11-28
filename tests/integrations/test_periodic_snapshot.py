@@ -91,8 +91,76 @@ def test_sealed_source_cannot_become_a_periodic_snapshot(state, tmp_path):
             pytest.fail('sealed source was captured')
 
 
-@pytest.mark.skipif(sys.platform != 'linux', reason='systemd readiness transport uses inherited Unix FDs')
-def test_real_worker_resumes_writers_before_online_copy(state, tmp_path):
+def mock_readiness_transport(monkeypatch):
+    """Exercise coordinator ordering where inherited Unix FDs are unavailable."""
+    import socket
+    calls = []
+
+    class Channel:
+        def __init__(self, name, fd):
+            self.name, self.fd = name, fd
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            self.close()
+
+        def fileno(self):
+            return self.fd
+
+        def close(self):
+            calls.append(self.name + ':close')
+
+        def settimeout(self, timeout):
+            assert timeout == 20
+
+        def recv(self, size):
+            assert size == 1
+            calls.append('ready')
+            return b'R'
+
+        def sendall(self, value):
+            assert value == b'C'
+            calls.append('continue')
+
+    class Process:
+        returncode = 0
+
+        def __init__(self, cmd, **kwargs):
+            assert kwargs['pass_fds'] == (42,)
+            assert kwargs['env']['FACTORLAB_SNAPSHOT_READY_FD'] == '42'
+            assert kwargs['stdout'] is subprocess.PIPE
+            assert kwargs['stderr'] is subprocess.PIPE
+            calls.append('spawn')
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            calls.append('reaped')
+
+        def communicate(self, *, timeout=None):
+            calls.append('communicate')
+            return '{}', ''
+
+        def kill(self):
+            calls.append('kill')
+
+    monkeypatch.setattr(socket, 'socketpair', lambda: (Channel('parent', 41), Channel('child', 42)))
+    monkeypatch.setattr(subprocess, 'Popen', Process)
+    return calls
+
+
+def test_real_worker_resumes_writers_before_online_copy(state, tmp_path, monkeypatch):
+    if sys.platform != 'linux':
+        calls = mock_readiness_transport(monkeypatch)
+        result = SystemdRunner().run_python_module(dr.MODULE, ['snapshot'],
+            on_snapshot_ready=lambda: calls.append('resume'), timeout=20)
+        result.check_returncode()
+        assert calls == ['spawn', 'child:close', 'ready', 'resume', 'continue',
+                         'communicate', 'reaped', 'child:close', 'parent:close']
+        return
     destination = tmp_path / 'backup'
     resumed = []
 
@@ -111,8 +179,18 @@ def test_real_worker_resumes_writers_before_online_copy(state, tmp_path):
         assert db.execute('SELECT count(*) FROM events').fetchone() == (1,)
 
 
-@pytest.mark.skipif(sys.platform != 'linux', reason='systemd readiness transport uses inherited Unix FDs')
-def test_coordinator_failure_terminates_worker_and_releases_cut(state, tmp_path):
+def test_coordinator_failure_terminates_worker_and_releases_cut(state, tmp_path, monkeypatch):
+    if sys.platform != 'linux':
+        calls = mock_readiness_transport(monkeypatch)
+        def failed_resume():
+            calls.append('resume')
+            raise RuntimeError('restart failed')
+        with pytest.raises(RuntimeError, match='restart failed'):
+            SystemdRunner().run_python_module(dr.MODULE, ['snapshot'],
+                on_snapshot_ready=failed_resume, timeout=20)
+        assert calls == ['spawn', 'child:close', 'ready', 'resume', 'kill',
+                         'communicate', 'reaped', 'child:close', 'parent:close']
+        return
     def resume():
         raise RuntimeError('restart failed')
 

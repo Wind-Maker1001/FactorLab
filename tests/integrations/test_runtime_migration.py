@@ -133,12 +133,18 @@ def test_alpaca_installer_migration_failure_restores_original_active_state(tmp_p
         pytest.skip('POSIX installer requires sh')
     text = (SOURCE_ROOT.parent / 'tools/install_alpaca_paper_runtime.sh').read_text()
     fragment = text.split('    was_active=false', 1)[1].split('\nfi\nln -s', 1)[0]
-    script = ('set -eu\nsystemctl() { printf "%s\\n" "$*"; '
+    import shlex
+    import sys
+    fragment = fragment.replace('"$base/current/venv/bin/python"', shlex.quote(sys.executable))
+    script = ('set -eu\nsystemctl() { '
+        'if [ "$1" = show ]; then printf "%s\\n" "FACTORLAB_ALPACA_STATE_ROOT=/state/r01-return"; return; fi; '
+        'printf "%s\\n" "$*"; '
         'if [ "$1" = is-active ]; then return ' + ('0' if active else '3') + '; fi; }\n'
-        'runuser() { return 1; }\nrelease=/new\nbase=/old\nwas_active=false' + fragment)
+        'runuser() { printf "%s\\n" "$*"; return 1; }\nrelease=/new\nbase=/old\nwas_active=false' + fragment)
     result = subprocess.run([shell, '-c', script], text=True, capture_output=True)
     assert result.returncode == 1
     assert ('start factorlab-alpaca-paper.service' in result.stdout) is active
+    assert '--state-root /state/r01-return' in result.stdout
 
 
 def test_compute_closure_can_be_proved_for_installed_framework():
@@ -218,7 +224,8 @@ def paired_release_interpreters(tmp_path_factory):
     workspace = tmp_path_factory.mktemp('runtime-pair')
     baselines = []
     for revision in ('47e58d9044e27dc47fc140f87b48b73531db6d3f',
-                     '80d22fa23b2bedd557684dd4db9559e6180ffb9e'):
+                     '80d22fa23b2bedd557684dd4db9559e6180ffb9e',
+                     '2e02729157b1e6a9c277506533d1af1fc1a6a1a0'):
         baseline = workspace / revision
         baseline.mkdir()
         archive = subprocess.check_output(['git', '-C', str(root), 'archive', revision, 'src'])
@@ -254,7 +261,7 @@ def paired_release_interpreters(tmp_path_factory):
                 shutil.copyfile(source, target)
     interpreters = []
     for label, sources in (('previous', baselines[0]), ('production', baselines[1]),
-                           ('replacement', SOURCE_ROOT)):
+                           ('announcements', baselines[2]), ('replacement', SOURCE_ROOT)):
         env = workspace / label
         venv.EnvBuilder(with_pip=False).create(env)
         python = env / ('Scripts/python.exe' if sys.platform == 'win32' else 'bin/python')
@@ -265,7 +272,7 @@ def paired_release_interpreters(tmp_path_factory):
     return workspace, interpreters
 
 
-@pytest.mark.parametrize('variant', ['external', 'binance-frozen', 'v179', 'v182'])
+@pytest.mark.parametrize('variant', ['external', 'binance-frozen', 'v69', 'v179', 'v182'])
 def test_actual_baseline_candidate_probe_preserves_package_and_admits_host_upgrade(
         tmp_path, paired_release_interpreters, variant):
     import json
@@ -281,6 +288,23 @@ def test_actual_baseline_candidate_probe_preserves_package_and_admits_host_upgra
         from examples.external_strategy.run import example_manifest
         manifest = build_package(root / 'examples',
             example_manifest('c', commit='a' * 40, account_id='demo'), archive)
+    elif variant == 'v69':
+        from factorlab.integrations.alpaca.native_v69 import NATIVE_V69_WRAPPER
+        from factorlab.strategies.v69_runtime import V69AlpacaStrategy
+        source = tmp_path / 'native'
+        source.mkdir()
+        (source / 'strategy.py').write_bytes(NATIVE_V69_WRAPPER)
+        spec = V69AlpacaStrategy(account_id='paper').describe()
+        fields = asdict(spec)
+        requirements = {key: fields[key] for key in ('data', 'schedule', 'state', 'capital', 'execution')}
+        requirements['capital']['requested'] = '0'
+        manifest = build_package(source, dict(schema_version=2, interface='FACTORLAB_DECISION_V2',
+            strategy_id=spec.strategy_id, strategy_version=spec.version, market=spec.market,
+            account_id='paper', symbols=spec.symbols, execution_mode='quantity_deltas',
+            requirements=requirements, code_commit='a' * 40, entrypoint='strategy:Strategy',
+            files={'strategy.py': ''}, configuration={'account_id': 'paper'}, dependencies=[],
+            evidence={'native_strategy': 'V69_CAUSAL', 'journal': 'portfolio.sqlite3'},
+            migration='wait_flat'), archive)
     elif variant == 'external':
         from examples.alpaca_balanced.strategy import BalancedPortfolio
         configuration = dict(account_id='paper', symbols=['SPY', 'IWM'], capital='100')
@@ -300,11 +324,46 @@ def test_actual_baseline_candidate_probe_preserves_package_and_admits_host_upgra
         manifest = build_blend_strategy_package(variant=variant, account_id='paper', capital='100',
             model_artifact=artifact, code_commit='a' * 40, destination=archive, evidence={'offline': True})
     release, _ = install_package(archive, tmp_path / 'releases')
-    previous, production, replacement = [probe(python, release) for python in interpreters]
+    previous, production, announcements, replacement = [probe(python, release) for python in interpreters]
     for baseline in (previous, production):
         assert baseline['binding']['runtime_sha256'] != replacement['binding']['runtime_sha256']
-        require_compatible(baseline, replacement, manifest)
-        require_compatible(replacement, baseline, manifest)
+        with pytest.raises(ValueError, match='sources'):
+            require_compatible(baseline, replacement, manifest)
+    require_compatible(announcements, replacement, manifest)
+    require_compatible(replacement, announcements, manifest)
+    if variant == 'v69':
+        _assert_admitted_runtime_chain(tmp_path, manifest, production['binding'],
+            announcements['binding'], replacement['binding'])
+
+
+def _assert_admitted_runtime_chain(tmp_path, manifest, original, admitted, replacement):
+    from contextlib import closing
+    from factorlab.strategies.deployment import DeploymentStore
+    package = manifest['package_id']
+    binding = dict(market=manifest['market'], account_id='paper', strategy_id='V69_CAUSAL',
+        instance_id='V69_CAUSAL', allocation_id='v69-original')
+    with closing(DeploymentStore(tmp_path / 'deployments.sqlite3')) as registry:
+        registry.register_instance(binding)
+        with closing(registry.for_instance('V69_CAUSAL')) as view:
+            view.adopt_existing(manifest, {'weekly': 'unchanged'}, 'saved-event',
+                {'journal_id': 'portfolio.sqlite3', 'source_code_sha256': original['code_sha256']},
+                verify=lambda *args: None)
+            view.bind_runtime(package, original)
+            # This records the already-authorized production admission, rather
+            # than claiming its economic changes qualify for today's proof.
+            assert view.admit_runtime_upgrade(package, original, admitted)
+            saved = view._runtime_binding(package)['binding']
+            before = view.snapshot()
+            assert view.admit_runtime_upgrade(package, admitted, replacement)
+            assert not view.admit_runtime_upgrade(package, admitted, replacement)
+            view.bind_runtime(package, replacement)
+            view.bind_runtime(package, admitted)
+            view.bind_runtime(package, original)
+            assert view._runtime_binding(package)['binding'] == saved
+            assert view.snapshot() == before
+            chain = view._rows('runtime_admissions', 'package_id=? AND runtime_sha256=?',
+                (package, replacement['runtime_sha256'])).fetchone()
+            assert chain['previous_runtime_sha256'] == admitted['runtime_sha256']
 
 
 def test_probe_rejects_dynamic_code_loading_before_admission():

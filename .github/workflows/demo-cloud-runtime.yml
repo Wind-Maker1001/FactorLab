@@ -8,8 +8,11 @@ on:
       - 'src/factorlab/integrations/alpaca/**'
       - 'src/factorlab/integrations/disaster_recovery.py'
       - 'tests/integrations/test_periodic_snapshot.py'
+      - 'tests/integrations/test_alpaca_backup_evidence.py'
+      - 'tools/evidence/alpaca_backup.py'
       - 'tests/integrations/test_runtime_migration.py'
       - 'tests/integrations/test_p10_13_capacity.py'
+      - 'tests/test_runtime_capacity.py'
       - 'requirements/execution-dual-linux-py313.lock.txt'
       - 'tests/integrations/test_demo_cloud*'
       - 'tools/evidence/backup_runtime.py'
@@ -61,8 +64,10 @@ jobs:
           tests/integrations/test_demo_cloud_backup_systemd.py
           tests/integrations/test_demo_cloud_storage.py
           tests/integrations/test_periodic_snapshot.py
+          tests/integrations/test_alpaca_backup_evidence.py
           tests/integrations/test_runtime_migration.py
           tests/integrations/test_p10_13_capacity.py
+          tests/test_runtime_capacity.py
           tests/integrations/test_demo_cloud_credentials.py
           tests/integrations/test_demo_execute_systemd.py
           tests/integrations/test_binance_demo_runtime.py
@@ -192,7 +197,9 @@ jobs:
         run: >-
           python -m pytest -q
           tests/integrations/test_periodic_snapshot.py
+          tests/integrations/test_alpaca_backup_evidence.py
           tests/integrations/test_p10_13_capacity.py
+          tests/test_runtime_capacity.py
           tests/integrations/test_runtime_migration.py
           tests/integrations/test_disaster_recovery.py
           --junitxml=runtime-reliability.xml

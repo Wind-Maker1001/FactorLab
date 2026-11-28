@@ -32,8 +32,13 @@ def test_linux_snapshot_units_and_counters(tmp_path):
     (tmp_path / 'meminfo').write_text('MemAvailable: 1024 kB\nSwapTotal: 512 kB\nSwapFree: 128 kB\n')
     (tmp_path / 'vmstat').write_text('pswpin 3\npswpout 7\noom_kill 2\n')
     (tmp_path / 'stat').write_text('cpu  1 2 3 4 5 6 7 8 0 0\n')
+    boot = tmp_path / 'sys/kernel/random'
+    boot.mkdir(parents=True)
+    (boot / 'boot_id').write_text('test-boot')
     process = tmp_path / '123'
-    process.mkdir()
+    task = process / 'task/123'
+    task.mkdir(parents=True)
+    (task / 'children').write_text('')
     (process / 'status').write_text('VmRSS: 80 kB\nVmHWM: 90 kB\n')
     (process / 'smaps_rollup').write_text('Pss: 60 kB\n')
     result = snapshot(tmp_path, pids=[123])
@@ -42,5 +47,5 @@ def test_linux_snapshot_units_and_counters(tmp_path):
     assert result['swap_in_pages'] == 3
     assert result['swap_out_pages'] == 7
     assert result['oom_kill'] == 2
-    assert result['processes'] == [dict(pid=123, rss_kib=80, peak_rss_kib=90, pss_kib=60)]
+    assert result['processes'] == [dict(pid=123, role='parent', rss_kib=80, peak_rss_kib=90, pss_kib=60)]
     assert result['azure_cpu_credits']['status'] == 'UNKNOWN'

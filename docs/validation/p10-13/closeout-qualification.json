@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-28",
+  "production_baseline": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+  "combined_candidate_committed": false,
+  "migration": {
+    "python_3_12": {"passed": 23, "seconds": 485.80},
+    "python_3_13": {"passed": 23, "seconds": 217.43},
+    "python_3_14": {"passed": 23, "seconds": 218.53},
+    "production_forward_reverse": "PASS",
+    "v69_original_binding_checkpoint_and_admission_chain": "PASS",
+    "economically_different_80d22fa_and_47e58d9_direct_admission": "REJECTED"
+  },
+  "backup_observation_and_capacity_python_3_13": {"passed": 9, "seconds": 3.66},
+  "closeout_regressions_python_3_14": {"passed": 17, "seconds": 4.17},
+  "periodic_snapshot_windows_platform_coverage": {"passed": 9, "skipped": 0, "seconds": 8.15},
+  "installer_shell_syntax": "PASS",
+  "prior_head_ci": {
+    "head": "4266e77c004bf02d03332359412b79d2657d62fd",
+    "offline_windows_linux_3_13_3_14": "PASS",
+    "minimal_dual_runtime_x64_arm64": "PASS",
+    "trusted_targeted": {"status": "FAIL", "passed": 32, "skipped": 2, "failures": 0, "reason": "Windows selection includes Linux-only inherited-FD tests; trusted gate rejects skips", "job": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/46138491675/job/140959830027"},
+    "ci_control_review": {"status": "AWAITING_HUMAN", "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/46138491675"}
+  },
+  "production_deployment": "NOT_STARTED",
+  "production_backup_measurement": "NOT_STARTED",
+  "azure_cpu_credits": "UNKNOWN"
+}
