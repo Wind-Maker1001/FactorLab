@@ -1,0 +1,16 @@
+{
+  "architecture": "aarch64",
+  "measured_at": "2026-11-28T10:37:23.357195+00:00",
+  "peak_process_rss_bytes": 124338176,
+  "pinned_cut_seconds": 0.015229334007017314,
+  "pinned_total_seconds": 34.50566565498593,
+  "platform": "Linux-7.0.0-1020-azure-aarch64-with-glibc2.39",
+  "post_cut_wal_bytes": 2154856,
+  "python": "3.13.18",
+  "restored_economic_cut_equal": true,
+  "services_restarted": false,
+  "source_market_bytes": 850657280,
+  "sqlite": "3.54.1",
+  "stopped_snapshot_seconds": 42.848311262001516,
+  "synthetic": true
+}

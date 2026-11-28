@@ -1,6 +1,6 @@
 """Private offline maintenance of the Demo journals (never credential storage)."""
 
-from contextlib import ExitStack, closing, contextmanager
+from contextlib import ExitStack, closing, contextmanager, nullcontext
 import ctypes
 from datetime import datetime, timezone
 import errno
@@ -233,7 +233,7 @@ def _destination(source, destination):
     return destination
 
 
-def _copy_databases(root, staging, databases, *, task_mailbox=None):
+def _copy_databases(root, staging, databases, *, task_mailbox=None, readers=None):
     for source in databases:
         relative = _TASK_MAILBOX if source == task_mailbox else source.relative_to(root)
         target = staging / relative
@@ -242,7 +242,8 @@ def _copy_databases(root, staging, databases, *, task_mailbox=None):
         os.close(descriptor)
         # The writer-freezing connection must not be the backup source: SQLite's
         # backup API waits for a source write transaction to finish.
-        with closing(_connect(source)) as reader, closing(sqlite3.connect(target)) as writer:
+        source_context = closing(_connect(source)) if readers is None else nullcontext(readers[source])
+        with source_context as reader, closing(sqlite3.connect(target)) as writer:
             reader.backup(writer)
             # Keep the snapshot self-contained so read-only integrity checks do
             # not create WAL or SHM files in the published inventory.
@@ -331,24 +332,97 @@ def _snapshot(root, destination, databases, *, quarantine, task_mailbox=None, me
             marker = json.loads(source_marker.read_bytes()) if source_marker.exists() else {}
             restore_id = marker.get('restore_id') if marker.get('reason') == reason else uuid4().hex
             atomic_json(staging / _QUARANTINE, {'version': 1, 'reason': reason, 'restore_id': restore_id})
-        atomic_json(staging / _BACKUP_MANIFEST, dict(version=1,
-            databases=sorted((_TASK_MAILBOX if path == task_mailbox else path.relative_to(root)).as_posix()
-                             for path in databases), binding=binding.exists()))
-        if metadata is not None and not quarantine:
-            _, files = _inventory(staging)
-            atomic_json(staging / _RECOVERY_MANIFEST, dict(metadata, version=1,
-                files={path.relative_to(staging).as_posix(): file_sha256(path) for path in files}))
-        for directory, _, _ in os.walk(staging, topdown=False, onerror=_walk_error):
-            _sync_directory(Path(directory))
-        _publish(staging, destination)
+        names = sorted((_TASK_MAILBOX if path == task_mailbox else path.relative_to(root)).as_posix()
+                       for path in databases)
+        _finish_snapshot(staging, destination, names, binding.exists(),
+                         metadata if not quarantine else None)
     finally:
         if staging.exists():
             shutil.rmtree(staging)
     return destination
 
 
+def _finish_snapshot(staging, destination, names, binding, metadata):
+    atomic_json(staging / _BACKUP_MANIFEST, dict(version=1, databases=names, binding=binding))
+    if metadata is not None:
+        _, files = _inventory(staging)
+        atomic_json(staging / _RECOVERY_MANIFEST, dict(metadata, version=1,
+            files={path.relative_to(staging).as_posix(): file_sha256(path) for path in files}))
+    for directory, _, _ in os.walk(staging, topdown=False, onerror=_walk_error):
+        _sync_directory(Path(directory))
+    _publish(staging, destination)
+
+
 @contextmanager
-def _freeze_databases(root, destination, *, task_mailbox=None):
+def periodic_recovery_snapshot(root, destination, market, revision, *, task_mailbox=None):
+    """Pin a coherent periodic cut while stopped; complete it after restarting writers.
+
+    The yielded callable copies pinned WAL transactions and open immutable package
+    files. Rollback-journal databases are copied before yielding, since their read
+    locks would otherwise block restarted writers. This never seals a DR source.
+    """
+    root = _root(root)
+    destination = _destination(root, destination)
+    if task_mailbox is not None:
+        task_mailbox = Path(os.path.abspath(task_mailbox))
+    if market == 'alpaca' and task_mailbox is not None:
+        raise SafetyBlocked('the external TaskMailbox belongs to Binance')
+    staging = destination.with_name('.' + destination.name + '.partial')
+    staging.mkdir(mode=0o700)
+    try:
+        with ExitStack() as pinned:
+            readers, files = {}, {}
+            with recovery_lock(root, market), _freeze_databases(
+                    root, destination, task_mailbox=task_mailbox, validate=False) as databases:
+                if not databases:
+                    raise SafetyBlocked('the source contains no account databases')
+                if (root / _QUARANTINE).exists():
+                    raise SafetyBlocked('a periodic snapshot requires an unsealed source')
+                metadata = recovery_metadata(market, revision)
+                offline = []
+                for path in databases:
+                    reader = pinned.enter_context(closing(_connect(path)))
+                    if reader.execute('PRAGMA journal_mode').fetchone()[0] == 'wal':
+                        reader.execute('BEGIN')
+                        reader.execute('SELECT count(*) FROM sqlite_schema').fetchone()
+                        readers[path] = reader
+                    else:
+                        reader.close()
+                        offline.append(path)
+                _copy_databases(root, staging, offline, task_mailbox=task_mailbox)
+                for path in _strategy_files(root):
+                    files[path.relative_to(root)] = pinned.enter_context(path.open('rb'))
+                binding = root / 'binding.json'
+                has_binding = binding.exists()
+                if has_binding:
+                    atomic_json(staging / 'binding.json', _binding(binding))
+                names = sorted((_TASK_MAILBOX if path == task_mailbox else path.relative_to(root)).as_posix()
+                               for path in databases)
+
+            def complete():
+                _copy_databases(root, staging, readers, task_mailbox=task_mailbox, readers=readers)
+                # Release WAL end marks as soon as the SQLite bytes are complete.
+                for reader in readers.values():
+                    reader.close()
+                for relative, source in files.items():
+                    target = staging / relative
+                    _root(target.parent, create=True)
+                    with target.open('xb') as writer:
+                        os.chmod(target, 0o600)
+                        shutil.copyfileobj(source, writer)
+                        writer.flush()
+                        os.fsync(writer.fileno())
+                _finish_snapshot(staging, destination, names, has_binding, metadata)
+                return destination
+
+            yield complete
+    finally:
+        if staging.exists():
+            shutil.rmtree(staging)
+
+
+@contextmanager
+def _freeze_databases(root, destination, *, task_mailbox=None, validate=True):
     # The caller owns session.lock. SQLite reservations also exclude concurrent STOP.
     with ExitStack() as stack:
         databases, _ = _inventory(root)
@@ -367,8 +441,9 @@ def _freeze_databases(root, destination, *, task_mailbox=None):
         for path in databases:
             connection = stack.enter_context(closing(_connect(path, writable=True)))
             connection.execute('BEGIN IMMEDIATE')
-        for path in databases:
-            _integrity(path)
+        if validate:
+            for path in databases:
+                _integrity(path)
         yield databases
 
 

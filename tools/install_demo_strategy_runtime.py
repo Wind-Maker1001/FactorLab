@@ -70,6 +70,16 @@ def main():
                 'from factorlab.integrations.binance_futures_trading.demo_strategy_release import ReleaseConsumer')
         new_config = ('[Service]\nExecStart=\nExecStart=' + python +
             ' -m factorlab.integrations.binance_futures_trading.demo_grid_supervisor start --execute\n')
+        was_active = command('systemctl', 'show', UNIT, '-p', 'ActiveState', '--value') == 'active'
+        command('systemctl', 'stop', UNIT)
+        try:
+            command('runuser', '-u', 'factorlab-demo', '--', python, '-I', '-m',
+                'factorlab.strategies.runtime_migration', '--market', 'binance',
+                '--state-root', str(STATE), '--previous-python', str(old_venv / 'bin/python'))
+        except Exception:
+            if was_active:
+                command('systemctl', 'start', UNIT)
+            raise
         temporary = DROPIN.with_suffix('.tmp')
         temporary.write_text(new_config)
         os.replace(temporary, DROPIN)

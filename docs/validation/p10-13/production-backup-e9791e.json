@@ -1,0 +1,494 @@
+{
+  "measured_at": "2026-11-28T12:02:01.876939+00:00",
+  "synthetic": false,
+  "revision": "e9791e129fb9e0de8a489d17691e959023849e21",
+  "events": {
+    "stop_requested": {
+      "at": "2026-11-28T11:59:19.976450+00:00",
+      "monotonic": 505301.711564974
+    },
+    "writers_stopped": {
+      "at": "2026-11-28T11:59:54.629084+00:00",
+      "monotonic": 505336.364206598
+    },
+    "precut_ledger_recorded": {
+      "at": "2026-11-28T11:59:54.924150+00:00",
+      "monotonic": 505336.659275318
+    },
+    "snapshot_started": {
+      "at": "2026-11-28T11:59:54.924192+00:00",
+      "monotonic": 505336.659302779
+    },
+    "consistent_cut_ready": {
+      "at": "2026-11-28T11:59:55.617003+00:00",
+      "monotonic": 505337.352133975
+    },
+    "resume_requested": {
+      "at": "2026-11-28T11:59:55.617191+00:00",
+      "monotonic": 505337.352305075
+    },
+    "service_start_returned": {
+      "at": "2026-11-28T11:59:55.634663+00:00",
+      "monotonic": 505337.369779271
+    },
+    "snapshot_worker_completed": {
+      "at": "2026-11-28T12:01:08.384013+00:00",
+      "monotonic": 505410.120147784
+    },
+    "snapshot_verified": {
+      "at": "2026-11-28T12:02:00.646646+00:00",
+      "monotonic": 505462.381766613
+    }
+  },
+  "first_healthy": {
+    "heartbeat": "2026-11-28T12:01:15.595097+00:00",
+    "revision": "e9791e129fb9e0de8a489d17691e959023849e21",
+    "pid": 1468040,
+    "observed_monotonic": 505417.339313559,
+    "observed_at": "2026-11-28T12:01:15.604207+00:00"
+  },
+  "stop_request_to_start_return_seconds": 35.65821429702919,
+  "stopped_writers_to_start_return_seconds": 1.0055726729915477,
+  "stop_request_to_observed_healthy_seconds": 115.62774858501507,
+  "stop_request_to_first_healthy_heartbeat_seconds": 115.618647,
+  "measurement_ledger_scan_seconds": 0.2950687199481763,
+  "backup": {
+    "backup_bytes": 844563352,
+    "command_elapsed_seconds": 70.94691058399621,
+    "cpu_seconds": 8.928977098999999,
+    "path": "/var/backups/factorlab-alpaca-paper/backup-20261128T115919Z",
+    "verified": true,
+    "maintenance_downtime_seconds": 35.65902472299058
+  },
+  "cut_ledger_equal": true,
+  "cut_ledger": {
+    "account.sqlite3": {
+      "alpaca_activities": {
+        "rows": 18,
+        "sha256": "3872f749552ffcd7cc04de556faa4542f6ad3db399ee8b486d151ab684a95043"
+      },
+      "alpaca_meta": {
+        "rows": 8,
+        "sha256": "c3606cdb025849b50bd0ac9c2af0489c57e24077b593aa4843f56df037d98368"
+      },
+      "alpaca_orders": {
+        "rows": 19,
+        "sha256": "5723d0695432016ee31f4b89f6a701ee0a077cc0d69419ecb43c733117429748"
+      }
+    },
+    "deployments.sqlite3": {
+      "activation_callbacks": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "deployment": {
+        "rows": 1,
+        "sha256": "10f61869ff10e075aa40b66250e800f5ca42514966176ec81211017ecca1f9b7"
+      },
+      "deployment_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_adoptions": {
+        "rows": 1,
+        "sha256": "3c557af82b066458a3eea624c0fb56042c9f7dd8ef74f621c5ef56a5a8855631"
+      },
+      "instance_checkpoints": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_deployment": {
+        "rows": 1,
+        "sha256": "0c1037afa613919a76520ccf4e5e10e4a210f94563892759ddb8f8322de8e344"
+      },
+      "instance_deployment_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_dispatches": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_migrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_runtime_admissions": {
+        "rows": 3,
+        "sha256": "6761dbd0445dc23a0d46a34a03cb5b676217d438c040c5f316789e276c0fa465"
+      },
+      "instance_runtime_bindings": {
+        "rows": 1,
+        "sha256": "82052923adfaec30157b7c2034fe594188d289545ad3ecc0c0b2cc6e7b3ecd8e"
+      },
+      "instance_strategy_orders": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_switch_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_switches": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "packages": {
+        "rows": 1,
+        "sha256": "0411a0c343944083cc93fb944c6163fe5eb6d825342d048337b893ebe453faa4"
+      },
+      "strategy_management_schema": {
+        "rows": 2,
+        "sha256": "9b609c0694e7886f52aa560c01524e5a7e1e40eea87b3b2645d198b439df6057"
+      },
+      "strategy_orders": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "strategy_registry": {
+        "rows": 2,
+        "sha256": "9c4001e927abc6f0b9e1cbd9794896010f858c8812d1846b84c436ad3fb50cbf"
+      },
+      "switch_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "switches": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "handover/observer-account.sqlite3": {
+      "alpaca_activities": {
+        "rows": 12,
+        "sha256": "3988069c36e37d48ddbbfe49810c4a745be818cff48c3018e801a1f151893ea8"
+      },
+      "alpaca_meta": {
+        "rows": 1,
+        "sha256": "9c4d8b5620c7ce1e300dc8b237368cc438178e02ab1749de24256bd45f6a8b84"
+      },
+      "alpaca_orders": {
+        "rows": 13,
+        "sha256": "2bf2ee97bc11d09053aef33e8003074f21b6ed26ab6cd6919575d85446e8fd23"
+      }
+    },
+    "portfolio.sqlite3": {
+      "capital_accounts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_balances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_commands": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_instances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_limits": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_migrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_origins": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_symbol_limits": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_symbols": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "events": {
+        "rows": 20,
+        "sha256": "f95a7fe1ff6d0a796e67bacf46efdfeb349cb67a612f52e830932113f711b64e"
+      },
+      "portfolio_allocations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_claim_history": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_claims": {
+        "rows": 2,
+        "sha256": "b8c05834249c23e1b89cb4743cc21d0839063e2c4548db1bb29f894708d69ef2"
+      },
+      "portfolio_confirmations": {
+        "rows": 13,
+        "sha256": "15774edff4f5779395917a704864adc8324b3148aaaf32b2a02c5f06c32c9d49"
+      },
+      "portfolio_corporate_actions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_orders": {
+        "rows": 12,
+        "sha256": "3d9017c78b89c671cf2209c762087a398b312b246bb8247200fb4feb4c11a3c7"
+      },
+      "portfolio_plans": {
+        "rows": 6,
+        "sha256": "02d0856ebbecaa0a810ab12742f0609c371ff186c27160abeca847ed94883779"
+      },
+      "portfolio_risk_config": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_risk_hour": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_risk_multipliers": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_risk_nav": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "snapshot": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "live_after": {
+    "account.sqlite3": {
+      "alpaca_activities": {
+        "rows": 18,
+        "sha256": "3872f749552ffcd7cc04de556faa4542f6ad3db399ee8b486d151ab684a95043"
+      },
+      "alpaca_meta": {
+        "rows": 8,
+        "sha256": "c3606cdb025849b50bd0ac9c2af0489c57e24077b593aa4843f56df037d98368"
+      },
+      "alpaca_orders": {
+        "rows": 19,
+        "sha256": "5723d0695432016ee31f4b89f6a701ee0a077cc0d69419ecb43c733117429748"
+      }
+    },
+    "deployments.sqlite3": {
+      "activation_callbacks": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "deployment": {
+        "rows": 1,
+        "sha256": "10f61869ff10e075aa40b66250e800f5ca42514966176ec81211017ecca1f9b7"
+      },
+      "deployment_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_adoptions": {
+        "rows": 1,
+        "sha256": "3c557af82b066458a3eea624c0fb56042c9f7dd8ef74f621c5ef56a5a8855631"
+      },
+      "instance_checkpoints": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_deployment": {
+        "rows": 1,
+        "sha256": "0c1037afa613919a76520ccf4e5e10e4a210f94563892759ddb8f8322de8e344"
+      },
+      "instance_deployment_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_dispatches": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_migrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_runtime_admissions": {
+        "rows": 3,
+        "sha256": "6761dbd0445dc23a0d46a34a03cb5b676217d438c040c5f316789e276c0fa465"
+      },
+      "instance_runtime_bindings": {
+        "rows": 1,
+        "sha256": "82052923adfaec30157b7c2034fe594188d289545ad3ecc0c0b2cc6e7b3ecd8e"
+      },
+      "instance_strategy_orders": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_switch_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "instance_switches": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "packages": {
+        "rows": 1,
+        "sha256": "0411a0c343944083cc93fb944c6163fe5eb6d825342d048337b893ebe453faa4"
+      },
+      "strategy_management_schema": {
+        "rows": 2,
+        "sha256": "9b609c0694e7886f52aa560c01524e5a7e1e40eea87b3b2645d198b439df6057"
+      },
+      "strategy_orders": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "strategy_registry": {
+        "rows": 2,
+        "sha256": "9c4001e927abc6f0b9e1cbd9794896010f858c8812d1846b84c436ad3fb50cbf"
+      },
+      "switch_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "switches": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "handover/observer-account.sqlite3": {
+      "alpaca_activities": {
+        "rows": 12,
+        "sha256": "3988069c36e37d48ddbbfe49810c4a745be818cff48c3018e801a1f151893ea8"
+      },
+      "alpaca_meta": {
+        "rows": 1,
+        "sha256": "9c4d8b5620c7ce1e300dc8b237368cc438178e02ab1749de24256bd45f6a8b84"
+      },
+      "alpaca_orders": {
+        "rows": 13,
+        "sha256": "2bf2ee97bc11d09053aef33e8003074f21b6ed26ab6cd6919575d85446e8fd23"
+      }
+    },
+    "portfolio.sqlite3": {
+      "capital_accounts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_balances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_commands": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_instances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_limits": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_migrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_origins": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_symbol_limits": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "capital_symbols": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "events": {
+        "rows": 20,
+        "sha256": "f95a7fe1ff6d0a796e67bacf46efdfeb349cb67a612f52e830932113f711b64e"
+      },
+      "portfolio_allocations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_claim_history": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_claims": {
+        "rows": 2,
+        "sha256": "b8c05834249c23e1b89cb4743cc21d0839063e2c4548db1bb29f894708d69ef2"
+      },
+      "portfolio_confirmations": {
+        "rows": 13,
+        "sha256": "15774edff4f5779395917a704864adc8324b3148aaaf32b2a02c5f06c32c9d49"
+      },
+      "portfolio_corporate_actions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_orders": {
+        "rows": 12,
+        "sha256": "3d9017c78b89c671cf2209c762087a398b312b246bb8247200fb4feb4c11a3c7"
+      },
+      "portfolio_plans": {
+        "rows": 6,
+        "sha256": "02d0856ebbecaa0a810ab12742f0609c371ff186c27160abeca847ed94883779"
+      },
+      "portfolio_risk_config": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_risk_hour": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_risk_multipliers": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_risk_nav": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "snapshot": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "live_changed_tables": {}
+}
+

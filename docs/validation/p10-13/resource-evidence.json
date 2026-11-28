@@ -1,0 +1,28 @@
+{
+  "kind": "historical_evidence_and_segmented_current_observation",
+  "historical_source": "docs/validation/p10-02/evidence/bench_arm64_post_review.json",
+  "historical_generated_at": "2026-11-27T02:36:10.916003+00:00",
+  "historical_machine": "aarch64",
+  "historical_mem_available_mb": 646.61,
+  "historical_swap_used_mb": 48.42,
+  "historical_worker_cold_import": {
+    "wall_ms": 25.61,
+    "rss_mb": 19.5,
+    "pss_mb": 13.37
+  },
+  "current_vm_observation": "production-capacity-baseline.json: read-only 2026-11-28T08:22:13Z on production 80d22fa; not a before/after P10-13 deployment comparison",
+  "azure_cpu_credits": {
+    "status": "UNKNOWN",
+    "reason": "Azure Monitor permission not provided"
+  },
+  "current_vm_required": [
+    "Two timestamped snapshots: MemAvailable, per-process PSS/RSS/VmHWM, swap in/out page deltas, OOM kill delta, CPU tick deltas, DB/WAL sizes",
+    "Capture active one-shot worker PIDs during a bounded representative workload; parent VmHWM is not a worker peak",
+    "Existing cloud health API error/request counter deltas and restart counters",
+    "Existing backup maintenance metadata downtime and reconcile verification",
+    "Two cache inventories over a representative update period before choosing generation retention"
+  ],
+  "snapshot_command": "PYTHONPATH=src python -m tools.evidence.runtime_capacity snapshot --output /tmp/capacity-before.json --pid PID --database DB_PATH --cache-root CACHE_ROOT --health HEALTH_JSON --backup-root BACKUP_ROOT",
+  "local_retention_command": "PYTHONPATH=src python -m tools.evidence.runtime_capacity retention --output docs/validation/p10-13/retention-local.json",
+  "cache_generation_retention": "Not introduced: current VM generation growth has not been measured"
+}

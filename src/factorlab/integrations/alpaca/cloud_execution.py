@@ -13,15 +13,24 @@ from factorlab.trading.contracts import TERMINAL
 from factorlab.trading.storage import decode, dumps
 from factorlab.trading.portfolio_execution import InstrumentRules, PortfolioStore
 from .adapter import OrderNotFound
-from .corporate_actions import CorporateReceiptJournal
+from .corporate_actions import CorporateReceiptJournal, PreparationIncomplete, read_announcements
 from .http import AlpacaError
 from .market_data.cache import MarketCache
 from .market_data.inputs import Instrument
 from .portfolio import AlpacaPortfolioRunner, portfolio_quote
 
 
-class PreparationIncomplete(RuntimeError):
-    """The market supplied no complete execution-basis preparation yet."""
+def affected_assets(announcements, session):
+    affected = set()
+    for row in announcements:
+        symbols = {row['initiating_symbol'], row['target_symbol']} & set(ASSETS)
+        if not symbols:
+            continue
+        if not row.get('ex_date'):
+            raise PreparationIncomplete('CORPORATE_ACTION_EX_DATE_REQUIRED:' + row['id'])
+        if row['ex_date'] == session:
+            affected.update(symbols)
+    return affected
 
 
 def execution_factors(prepared, announcements, session, *, execution_bars=None):
@@ -31,9 +40,7 @@ def execution_factors(prepared, announcements, session, *, execution_bars=None):
     A same-session adjusted/raw pair supplies the composed factor, including
     multiple actions, without applying their ratios twice to vendor adjustments.
     """
-    affected = set().union(*(
-        {row['initiating_symbol'], row['target_symbol']} & set(ASSETS)
-        for row in announcements if row['ex_date'] == session))
+    affected = affected_assets(announcements, session)
     factors = {}
     for symbol in ASSETS:
         if symbol in affected:
@@ -88,11 +95,7 @@ class WeeklyExecution:
             'SELECT MIN(session) FROM portfolio_plans WHERE account=? AND strategy=?',
             (account, 'V69_CAUSAL')).fetchone()[0]
         since = min(first, cutoff) if first else cutoff
-        announcements = self.adapter.http.request('GET', '/v2/corporate_actions/announcements',
-            params={'ca_types': 'dividend,merger,spinoff,split', 'since': since,
-                    'until': session, 'date_type': 'ex_date'})
-        if len(announcements) >= 1000:
-            raise PreparationIncomplete('SATURATED_CORPORATE_ACTION_WINDOW')
+        announcements = read_announcements(self.adapter.http, since=since, until=session)
         after = since + 'T00:00:00Z'
         receipts = self.adapter.read_corporate_activities(after=after)
         journal = CorporateReceiptJournal(self.store, account)
@@ -147,9 +150,7 @@ class WeeklyExecution:
             raise PreparationIncomplete('INCOMPLETE_PRIOR_SESSION_MATRICES')
         announcements, receipts, receipts_after = (corporate_evidence if corporate_evidence is not None
             else self.reconcile_corporate_actions(facts.account_id, cutoff, session))
-        affected = set().union(*(
-            {row['initiating_symbol'], row['target_symbol']} & set(ASSETS)
-            for row in announcements if row['ex_date'] == session))
+        affected = affected_assets(announcements, session)
         execution_frames = []
         for instrument in instruments:
             if instrument.symbol not in affected:
