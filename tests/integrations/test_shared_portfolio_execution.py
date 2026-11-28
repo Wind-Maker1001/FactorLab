@@ -158,7 +158,8 @@ def test_http_partial_sell_reservations_cancel_pause_and_restart_leave_b_unchang
         assert advance(runner, second).phase == 'COMPLETE'
         assert advance(runner, second).phase == 'COMPLETE'
         assert official.post_ids.count('second-exit') == 1
-        runner.executor.transfer_flat_ownership(account_id=ACCOUNT, from_strategy='A', to_strategy='B', symbols=['AAPL'])
+        runner.executor.transfer_flat_ownership(account_id=ACCOUNT, from_strategy='A', to_strategy='B',
+                                                symbols=['AAPL'], request_id='handover')
         assert store.holdings(ACCOUNT, 'B') == other_inventory
         assert store.cash(ACCOUNT, 'B') == other_cash
         assert not store.capital_policy.snapshot(ACCOUNT, 'B').paused

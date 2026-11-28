@@ -224,12 +224,15 @@ class CapitalManagement:
 
     def snapshot(self, account_id):
         """Refresh original confirmations and read official facts under the order lock."""
+        if self.event_writer is not None:
+            self.executor.reconcile(account_id, event_writer=self.event_writer)
         with self.store.transaction():
             return self._snapshot(account_id)
 
     def _snapshot(self, account_id):
         executor, store = self.executor, self.store
-        executor._recover_account(account_id)
+        if self.event_writer is None:
+            executor._recover_account(account_id)
         account = executor.adapter.read_account()
         if account.account_id != account_id:
             raise ValueError('capital observation belongs to a different account')
@@ -328,6 +331,8 @@ class CapitalManagement:
         """Link current marked equity to the valuations recorded at capital postings."""
         from .capital_performance import build_capital_performance
 
+        if self.event_writer is not None:
+            self.executor.reconcile(account_id, event_writer=self.event_writer)
         with self.store.transaction():
             snapshot = self._snapshot(account_id)
             owner = next((s for s in snapshot.strategies if s.strategy_id == strategy_id), None)
@@ -403,6 +408,8 @@ class CapitalManagement:
                 return CapitalChange(**previous['result'])
             if not account_id or not event_id:
                 raise ValueError('account and capital event identity are required')
+        self.executor.reconcile(account_id, event_writer=self.event_writer)
+        with self.store.transaction():
             result, event = self._prepare_change(account_id, event_id, request_id, operation)
         self.event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
         return result

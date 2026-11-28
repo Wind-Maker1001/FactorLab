@@ -80,7 +80,8 @@ class WeeklyExecution:
             (account, 'ALP-E03 TEST')))
         if symbols:
             self.runner.executor.transfer_flat_ownership(account_id=account,
-                from_strategy='ALP-E03 TEST', to_strategy='V69_CAUSAL', symbols=symbols)
+                from_strategy='ALP-E03 TEST', to_strategy='V69_CAUSAL', symbols=symbols,
+                request_id='alp-e03-test-to-v69-causal')
 
     def reconcile_corporate_actions(self, account, cutoff, session):
         first = self.store.db.execute(

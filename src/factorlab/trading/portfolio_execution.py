@@ -865,17 +865,26 @@ class PortfolioExecutor:
         return identity
 
     def transfer_flat_ownership(self, *, account_id, from_strategy, to_strategy, symbols,
-                                event_writer=None):
-        """Transfer explicitly selected flat sleeves after predecessor tasks settle."""
+                                request_id, event_writer=None):
+        """Transfer flat sleeves; retries must retain the original request_id."""
+        if not request_id:
+            raise ValueError('ownership transfer request identity is required')
         symbols = tuple(symbols)
-        identity = 'flat-ownership:' + sha256(dumps(
-            [account_id, from_strategy, to_strategy, sorted(symbols)]).encode()).hexdigest()
+        metadata = dumps(dict(symbols=sorted(symbols), previous=from_strategy, owner=to_strategy))
+        identity = 'flat-ownership:' + sha256(dumps([account_id, request_id]).encode()).hexdigest()
         if event_writer is not None:
             event_writer.resume()
         with self.store.transaction():
-            if self.store.event_payload(identity) is not None:
+            previous = self.store.event_payload(identity)
+            if previous is not None:
+                if previous != metadata:
+                    raise ValueError('ownership transfer identity conflicts with original request')
                 return
-            self._recover_account(account_id)
+        if event_writer is not None:
+            self.reconcile(account_id, event_writer=event_writer)
+        with self.store.transaction():
+            if event_writer is None:
+                self._recover_account(account_id)
             account = self.adapter.read_account()
             shared = self._shared_policy(account_id)
             if (account.account_id != account_id or not account.reconciled
@@ -936,7 +945,6 @@ class PortfolioExecutor:
                 if original is None:
                     original = predecessor if from_strategy == to_strategy else ('0', '0')
                 claims.append(dict(symbol=symbol, predecessor=list(predecessor), original=list(original)))
-            metadata = dumps(dict(symbols=sorted(symbols), previous=from_strategy, owner=to_strategy))
             if len(metadata.encode('utf-8')) > 8192:
                 raise ValueError('event metadata too large')
             if self.store.max_events is not None and self.store.db.execute(

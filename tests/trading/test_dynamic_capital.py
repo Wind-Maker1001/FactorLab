@@ -288,7 +288,8 @@ def test_policy_changes_wait_for_offsite_ack_and_replay_without_source(tmp_path)
         admission.send = acknowledge
         executor.allocate(**allocation, event_writer=writer)
         assert receiver.cursor().sequence == 6
-        transfer = dict(account_id='paper', from_strategy='A', to_strategy='B', symbols=['AAPL'])
+        transfer = dict(account_id='paper', from_strategy='A', to_strategy='B', symbols=['AAPL'],
+                        request_id='A-to-B')
         with pytest.raises(PermissionError, match='account event writer'):
             executor.transfer_flat_ownership(**transfer)
         admission.send = lose_ack
