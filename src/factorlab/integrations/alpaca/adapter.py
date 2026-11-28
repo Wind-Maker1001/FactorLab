@@ -315,12 +315,42 @@ class AlpacaAdapter:
         if sum(exposures.values(), Z) + amount > min(self.limits.account_budget, facts.equity):
             self._reject("ACCOUNT_BUDGET_LIMIT")
 
+    def prepare_order_admission(self, intent, *, reservation_price=None, risk_admission=None):
+        """Prepare original adapter identity/rate reservation without POST or local admission.
+
+        Caller retains account ownership through the enclosing account event.
+        Official GET refresh remains separate from the prepared economic effect.
+        """
+        from factorlab.trading.storage import dumps
+        if self.store.order(intent.client_order_id) is not None:
+            raise ValueError('original adapter identity already admitted; GET recovery required')
+        order_parameters(intent, self.read_asset(intent.instrument_id))
+        price = intent.limit_price if intent.limit_price is not None else reservation_price
+        if price is None or not isinstance(price, D) or not price.is_finite() or price <= 0:
+            raise ValueError('market orders require an explicit positive reservation_price')
+        account, facts = self.recover(with_details=True)
+        if self.store.order(intent.client_order_id) is not None:
+            raise ValueError('original adapter identity discovered during recovery; GET recovery required')
+        if risk_admission is not None:
+            risk_admission(account)
+        with self.store.transaction():
+            self._admission(intent, price, account, facts, enforce_sellable=risk_admission is not None)
+            at = datetime.now(timezone.utc).timestamp()
+            recent = [t for t in self.store.get('submissions') or [] if at - t < 60]
+            if len(recent) >= self.limits.orders_per_minute:
+                self._reject('ORDER_RATE_LIMIT')
+            return dict(domain='alpaca', client_order_id=intent.client_order_id,
+                        intent=dumps(intent), reservation=str(price), submissions=[*recent, at])
+
     def submit_order(self, intent, *, reservation_price=None, risk_admission=None):
         old = self.store.order(intent.client_order_id)
         if old:
             if old[0] != intent:
                 raise ValueError("client_order_id reused with different intent")
             return self.query_order(intent.client_order_id)
+        if self.store.db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dr_replay_identity'").fetchone():
+            raise PermissionError('replicated Alpaca execution remains disabled')
         params = order_parameters(intent, self.read_asset(intent.instrument_id))
         price = intent.limit_price if intent.limit_price is not None else reservation_price
         if price is None or not isinstance(price, D) or not price.is_finite() or price <= 0:

@@ -229,8 +229,10 @@ def test_shared_policy_sells_and_flat_switch_do_not_change_other_instance(tmp_pa
     run(executor, flat)
     run(executor, flat)
     executor.capital_policy.pause('paper', 'one')
-    executor.transfer_flat_ownership(account_id='paper', from_strategy='one', to_strategy='two', symbols=['AAPL'])
-    executor.transfer_flat_ownership(account_id='paper', from_strategy='one', to_strategy='two', symbols=['AAPL'])
+    executor.transfer_flat_ownership(account_id='paper', from_strategy='one', to_strategy='two',
+                                     symbols=['AAPL'], request_id='handover')
+    executor.transfer_flat_ownership(account_id='paper', from_strategy='one', to_strategy='two',
+                                     symbols=['AAPL'], request_id='handover')
     assert store.holdings('paper', 'two') == {'AAPL': D(2)}
     assert store.orders(second) == other_orders
     assert store.cash('paper', 'two') == other_cash

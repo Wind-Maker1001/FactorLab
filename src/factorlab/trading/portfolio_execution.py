@@ -8,6 +8,7 @@ from decimal import Decimal as D, ROUND_CEILING, ROUND_FLOOR
 from hashlib import sha256
 import json
 from typing import Mapping, Protocol
+from uuid import uuid4
 
 from .contracts import (AccountSnapshot, Market, OrderEvent, OrderIntent, OrderSnapshot,
                         OrderStatus, OrderType, Side, TERMINAL, decimal_value, utc)
@@ -347,20 +348,26 @@ class PortfolioExecutor:
         store.portfolio_risk.pending_commitments = lambda account_id: (
             {} if self.capital.pending_commitments is None else self.capital.pending_commitments(account_id))
 
-    def configure_portfolio_risk(self, account_id, limits, *, economic_multipliers=None):
-        """Opt in on a single existing capital account."""
-        self.store.portfolio_risk.configure(account_id, limits, economic_multipliers)
+    def configure_portfolio_risk(self, account_id, limits, *, economic_multipliers=None,
+                                 event_writer=None, event_id=None):
+        """Opt in on a single existing capital account under account ownership."""
+        self.store.portfolio_risk.configure(account_id, limits, economic_multipliers,
+                                            event_writer=event_writer, event_id=event_id)
 
-    def portfolio_risk_snapshot(self, account_id, *, official_equity=None):
-        """Report confirmed exposures and outstanding reservations from one observation."""
+    def portfolio_risk_snapshot(self, account_id, *, official_equity=None,
+                                event_writer=None, event_id=None):
+        """Report one observation; writer-backed calls retain account ownership."""
         risk = self.store.portfolio_risk
-        with self.store.transaction():
+        if event_writer is not None:
+            event_writer.resume()
+        context = self.store.transaction() if event_writer is None else nullcontext()
+        with context:
             account = self.adapter.read_account()
             if account.account_id != account_id:
                 raise ValueError('matching official account required')
             config = risk.config(account_id) or (PortfolioRiskLimits(), {})
             snapshot, _ = risk.observe(account, self.quote_currency, self.clock(), config,
-                                       equity=official_equity)
+                                       equity=official_equity, event_writer=event_writer, event_id=event_id)
             margin = None
             if account.market is Market.BINANCE_USDM:
                 cached = getattr(self.adapter, 'observed_margin_facts', None)
@@ -389,12 +396,16 @@ class PortfolioExecutor:
             return replace(snapshot, capital=capital, funding=funding, realized_pnl=realized,
                            unrealized_pnl=unrealized, missing=tuple(sorted(missing)))
 
-    def enforce_portfolio_risk(self, account_id, *, official_equity=None, account=None):
-        """Observe risk on the existing owner turn and cancel only owned openings."""
+    def enforce_portfolio_risk(self, account_id, *, official_equity=None, account=None,
+                               event_writer=None, event_id=None):
+        """Observe under account ownership; admit history before owned cancellation."""
         risk = self.store.portfolio_risk
+        if event_writer is not None:
+            event_writer.resume()
         if risk.config(account_id) is None:
             return None
-        with self.store.transaction():
+        context = self.store.transaction() if event_writer is None else nullcontext()
+        with context:
             config = risk.config(account_id)
             account = self.adapter.read_account() if account is None else account
             if account.account_id != account_id:
@@ -408,7 +419,8 @@ class PortfolioExecutor:
                           if item[1]['attempted'] or item[1]['uncertain'])
             snapshot, opening = risk.observe(account, self.quote_currency, self.clock(), config,
                                               orders=orders, equity=official_equity,
-                                              include_pending=not limits.cancel_open_on_breach)
+                                              include_pending=not limits.cancel_open_on_breach,
+                                              event_writer=event_writer, event_id=event_id)
             targets = []
             if not limits.cancel_open_on_breach:
                 return snapshot
@@ -519,7 +531,7 @@ class PortfolioExecutor:
                               sleeves=sleeves, official_equity=official_equity)
 
     def allocate(self, *, account_id, strategy_id, allocation_id, capital, initial_cash,
-                 official_equity):
+                 official_equity, event_writer=None):
         """Bind existing owned inventory and an explicit cash sleeve without minting capital.
 
         Allocation is immutable. Replaying the same registration is idempotent;
@@ -530,6 +542,8 @@ class PortfolioExecutor:
         decimal_value(official_equity, 'official equity', positive=True)
         if not all((account_id, strategy_id, allocation_id)) or initial_cash > capital:
             raise ValueError('identified cash-funded allocation required')
+        if event_writer is not None:
+            event_writer.resume()
         value = dict(allocation_id=allocation_id, capital=capital, initial_cash=initial_cash)
         with self.store.transaction():
             previous = self.store.allocation_basis(account_id, strategy_id)
@@ -537,6 +551,10 @@ class PortfolioExecutor:
                 if previous != value:
                     raise ValueError('allocation identity or initial funding changed')
                 return
+            if self.store.db.execute(
+                    'SELECT 1 FROM portfolio_allocations WHERE account=? AND allocation=?',
+                    (account_id, allocation_id)).fetchone():
+                raise ValueError('allocation identity already belongs to another strategy')
             unallocated = self.store.db.execute(
                 'SELECT DISTINCT strategy FROM portfolio_claims WHERE account=? AND strategy!=? '
                 'AND strategy NOT IN (SELECT strategy FROM portfolio_allocations WHERE account=?)',
@@ -570,10 +588,17 @@ class PortfolioExecutor:
                 raise ValueError('allocations exceed static account capital budget')
             if committed + capital > official_equity:
                 raise ValueError('allocations exceed official account equity')
-            self.store.db.execute('INSERT INTO portfolio_allocations VALUES (?,?,?,?,?)',
-                (account_id, strategy_id, allocation_id, str(capital), str(initial_cash)))
-            self.store.db.execute('INSERT INTO capital_origins VALUES (?,?,?)',
-                (account_id, strategy_id, account.observed_at.isoformat()))
+            event = dict(event_id=dumps(['capital-allocation', account_id, allocation_id]),
+                         targets=['portfolio'], kind='CAPITAL_ALLOCATION_REGISTERED',
+                         account_id=account_id, strategy_id=strategy_id, allocation_id=allocation_id,
+                         capital=str(capital), initial_cash=str(initial_cash),
+                         observed_at=account.observed_at.isoformat())
+            if event_writer is None:
+                self.capital_policy._require_unreplicated_policy_write()
+                from .capital_management import reduce_capital_event
+                reduce_capital_event(self.store.db, event)
+                return
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     def projection(self, account, strategy_id):
         """Return a sleeve snapshot; only the aggregate snapshot authorizes execution."""
@@ -586,11 +611,49 @@ class PortfolioExecutor:
                        for a in account.assets)
         return replace(account, positions=positions, assets=assets, open_orders=())
 
-    def create(self, *, account_id, strategy_id, strategy_version, trading_session,
+    def create(self, *, event_writer=None, **request):
+        """Create an outbox; optional admission confirms one atomic economic event.
+
+        The account owner holds its lock throughout. Preparation uses a rolled-back
+        write transaction so existing projected-risk checks see the full outbox;
+        no prepared rows survive or remain locked during network confirmation.
+        """
+        if event_writer is None:
+            return self._create(**request)
+        event_writer.resume()
+        self.reconcile(request['account_id'], event_writer=event_writer)
+        events = []
+        self.store.db.execute('BEGIN IMMEDIATE')
+        try:
+            confirmation_cut = self.store.db.execute(
+                'SELECT coalesce(max(rowid),0) FROM portfolio_confirmations').fetchone()[0]
+            identity = self._create(**request, _prepared_events=events)
+            plan = self.store.plan(identity)
+            event = dict(event_id='portfolio-plan:' + identity, targets=['portfolio'],
+                         kind='PORTFOLIO_PLAN_ADMITTED', plan=dumps(plan),
+                         account_id=plan['request']['account'],
+                         strategy_id=plan['request']['strategy'],
+                         claims=[list(row) for row in self.store.db.execute(
+                             'SELECT * FROM portfolio_claims WHERE account=? AND strategy=?',
+                             (request['account_id'], request['strategy_id']))
+                             if row[1] in plan['request']['owned']],
+                         orders=[dumps(order) for order in self.store.orders(identity)],
+                         confirmations=[list(row) for row in self.store.db.execute(
+                             'SELECT account,event,payload FROM portfolio_confirmations WHERE rowid>?',
+                             (confirmation_cut,))],
+                         effects=events)
+        finally:
+            self.store.db.execute('ROLLBACK')
+        if self.store.plan(identity) is None:
+            event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
+        return identity
+
+    def _create(self, *, account_id, strategy_id, strategy_version, trading_session,
                weights, owned_symbols, now, initial_inventory=None,
                economic_multipliers=None, rebalance_id=None, initial_capital=None,
                quantity_deltas=None, signal_inputs=None, direct_orders=None,
-               concurrent_direct_orders=False, record_risk_rejection=False, emergency_only=False):
+               concurrent_direct_orders=False, record_risk_rejection=False, emergency_only=False,
+               _prepared_events=None):
         """Persist a complete target vector before any external order side effect.
 
         initial_inventory maps explicitly adopted symbols to (quantity, basis).
@@ -603,6 +666,8 @@ class PortfolioExecutor:
         in immutable identity validation. Strategy preparation must retain its
         original holdings snapshot when replaying the same decision.
         """
+        if _prepared_events is None:
+            self._require_unreplicated_order_execution()
         utc(now)
         if type(concurrent_direct_orders) is not bool or concurrent_direct_orders and direct_orders is None:
             raise ValueError('concurrent execution requires explicit direct orders')
@@ -669,7 +734,8 @@ class PortfolioExecutor:
                     raise ValueError('rebalance identity already has different targets or ownership')
                 return identity
             self._capital_admission(account_id, strategy_id)
-            self._recover_account(account_id)
+            if _prepared_events is None:
+                self._recover_account(account_id)
             configured = self.capital_policy.is_configured(account_id)
             exclusive = configured and not self._shared_policy(account_id)
             active = self.store.db.execute(
@@ -682,7 +748,15 @@ class PortfolioExecutor:
                 raise ValueError('previous rebalance must complete before new targets')
             for symbol in sorted(owned_symbols):
                 if configured:
-                    self.capital_policy.claim(account_id, strategy_id, symbol)
+                    if _prepared_events is None:
+                        self.capital_policy.claim(account_id, strategy_id, symbol)
+                    else:
+                        from .capital_management import reduce_capital_event
+                        effect = dict(kind='CAPITAL_SYMBOL_CLAIMED', account_id=account_id,
+                                      strategy_id=strategy_id,
+                                      **self.capital_policy._prepare_claim(account_id, strategy_id, symbol))
+                        _prepared_events.append(effect)
+                        reduce_capital_event(self.store.db, effect)
                 claims = self.store.db.execute(
                     'SELECT strategy FROM portfolio_claims WHERE account=? AND symbol=?',
                     (account_id, symbol)).fetchall()
@@ -711,7 +785,8 @@ class PortfolioExecutor:
             self.store.db.execute('INSERT INTO portfolio_plans VALUES (?,?,?,?,?)',
                 (identity, account_id, strategy_id, trading_session, dumps(plan)))
             if multipliers:
-                self.store.portfolio_risk.record_multipliers(account_id, strategy_id, multipliers)
+                self.store.portfolio_risk.record_multipliers(
+                    account_id, strategy_id, multipliers, _prepared_events=_prepared_events)
             if direct_orders is not None:
                 sells = {}
                 for intent, _ in direct_orders:
@@ -777,7 +852,7 @@ class PortfolioExecutor:
                 try:
                     self.capital_policy.validate_orders(
                         account, strategy_id, risk_now=self.clock() if config and risk_ids else None,
-                        risk_ids=risk_ids)
+                        risk_ids=risk_ids, _prepared_events=_prepared_events)
                 except PortfolioRiskRejected as error:
                     if not record_risk_rejection:
                         raise
@@ -789,11 +864,27 @@ class PortfolioExecutor:
                     self.store.save_plan(plan)
         return identity
 
-    def transfer_flat_ownership(self, *, account_id, from_strategy, to_strategy, symbols):
-        """Transfer explicitly selected flat sleeves after predecessor tasks settle."""
+    def transfer_flat_ownership(self, *, account_id, from_strategy, to_strategy, symbols,
+                                request_id, event_writer=None):
+        """Transfer flat sleeves; retries must retain the original request_id."""
+        if not request_id:
+            raise ValueError('ownership transfer request identity is required')
         symbols = tuple(symbols)
+        metadata = dumps(dict(symbols=sorted(symbols), previous=from_strategy, owner=to_strategy))
+        identity = 'flat-ownership:' + sha256(dumps([account_id, request_id]).encode()).hexdigest()
+        if event_writer is not None:
+            event_writer.resume()
         with self.store.transaction():
-            self._recover_account(account_id)
+            previous = self.store.event_payload(identity)
+            if previous is not None:
+                if previous != metadata:
+                    raise ValueError('ownership transfer identity conflicts with original request')
+                return
+        if event_writer is not None:
+            self.reconcile(account_id, event_writer=event_writer)
+        with self.store.transaction():
+            if event_writer is None:
+                self._recover_account(account_id)
             account = self.adapter.read_account()
             shared = self._shared_policy(account_id)
             if (account.account_id != account_id or not account.reconciled
@@ -836,8 +927,10 @@ class PortfolioExecutor:
                        and (order['uncertain'] or order['record'].snapshot.status not in TERMINAL)
                        for owner, order in registered.values()):
                     raise ValueError('ownership transfer requires settled predecessor orders')
-            if self.capital_policy.is_configured(account_id):
-                self.capital_policy.transfer_flat_ownership(account_id, from_strategy, to_strategy, symbols)
+            ceilings = (self.capital_policy._prepare_flat_ownership(
+                account_id, from_strategy, to_strategy, symbols)
+                if self.capital_policy.is_configured(account_id) else None)
+            claims = []
             for symbol in symbols:
                 predecessor = self.store.db.execute(
                     'SELECT initial_quantity,entry_price FROM portfolio_claims '
@@ -845,26 +938,27 @@ class PortfolioExecutor:
                     (account_id, symbol, from_strategy)).fetchone()
                 if predecessor is None:
                     continue
-                self.store.db.execute(
-                    'INSERT OR IGNORE INTO portfolio_claim_history VALUES (?,?,?,?,?)',
-                    (account_id, symbol, from_strategy, *predecessor))
-                self.store.db.execute(
-                    'DELETE FROM portfolio_claims WHERE account=? AND symbol=? AND strategy=?',
-                    (account_id, symbol, from_strategy))
                 original = self.store.db.execute(
                     'SELECT initial_quantity,entry_price FROM portfolio_claim_history '
                     'WHERE account=? AND symbol=? AND strategy=?',
                     (account_id, symbol, to_strategy)).fetchone()
-                initial_quantity, entry_price = original if original is not None else ('0', '0')
-                self.store.db.execute('INSERT OR IGNORE INTO portfolio_claims VALUES (?,?,?,?,?,?)',
-                    (account_id, symbol, to_strategy, '0', initial_quantity, entry_price))
-                self.store.db.execute(
-                    'DELETE FROM portfolio_claim_history WHERE account=? AND symbol=? AND strategy=?',
-                    (account_id, symbol, to_strategy))
-            identity = 'flat-ownership:' + sha256(dumps(
-                [account_id, from_strategy, to_strategy, sorted(symbols)]).encode()).hexdigest()
-            self.store.record_metadata(identity, dict(symbols=sorted(symbols),
-                previous=from_strategy, owner=to_strategy))
+                if original is None:
+                    original = predecessor if from_strategy == to_strategy else ('0', '0')
+                claims.append(dict(symbol=symbol, predecessor=list(predecessor), original=list(original)))
+            if len(metadata.encode('utf-8')) > 8192:
+                raise ValueError('event metadata too large')
+            if self.store.max_events is not None and self.store.db.execute(
+                    'SELECT count(*) FROM events').fetchone()[0] >= self.store.max_events:
+                raise ValueError('paper event storage budget exhausted')
+            event = dict(event_id=identity, targets=['portfolio'], kind='CAPITAL_FLAT_OWNERSHIP_TRANSFERRED',
+                         account_id=account_id, from_strategy=from_strategy, to_strategy=to_strategy,
+                         ceilings=ceilings, claims=claims, metadata=metadata)
+            if event_writer is None:
+                self.capital_policy._require_unreplicated_policy_write()
+                from .capital_management import reduce_capital_event
+                reduce_capital_event(self.store.db, event)
+                return
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     def record_corporate_action(self, *, account_id, strategy_id, event_id, symbol,
                                 quantity_ratio, basis_ratio, cash_flow, evidence, effective_at=None):
@@ -1051,7 +1145,108 @@ class PortfolioExecutor:
                     self.store.save_plan(plan)
 
     def _accept(self, plan, order, event):
+        from .portfolio_order_events import reduce_order_observation
+        prepared = self._prepare_order_observation(plan, order, event)
+        if prepared is not None:
+            reduce_order_observation(self.store.db, prepared)
+
+    def confirm_order(self, identity, client_order_id, event, *, event_writer):
+        """Admit an original venue observation while retaining account ownership."""
+        event_writer.resume()
+        with self.store.transaction():
+            plan = self.store.plan(identity)
+            order = next(order for order in self.store.orders(identity)
+                         if order['record'].snapshot.intent.client_order_id == client_order_id)
+            prepared = self._prepare_order_observation(plan, order, event)
+        if prepared is not None:
+            event_writer.submit(prepared, committed_at=datetime.now(timezone.utc).isoformat())
+
+    def admit_order_attempt(self, identity, client_order_id, *, event_writer, prepare_dispatch=None):
+        """Persist the original submission boundary before any POST.
+
+        Account ownership must span this call and submission. False requires
+        original-ID reconciliation, never another POST based on this marker.
+        This marker alone does not authorize execution or consume POST budgets.
+        """
+        event_writer.resume()
+        with self.store.transaction():
+            plan = self.store.plan(identity)
+            order = next(order for order in self.store.orders(identity)
+                         if order['record'].snapshot.intent.client_order_id == client_order_id)
+            if (order['attempted'] or order['uncertain']
+                    or order['record'].snapshot.status != OrderStatus.NEW):
+                return False
+            order['attempted'] = True
+            event = dict(event_id=str(uuid4()), targets=['portfolio'],
+                         kind='PORTFOLIO_ORDER_ATTEMPT_RECORDED',
+                         account_id=plan['request']['account'],
+                         strategy_id=plan['request']['strategy'],
+                         order=dumps(order), claim=None,
+                         confirmation=None, confirmation_id=None)
+        if prepare_dispatch is not None:
+            dispatch = prepare_dispatch(order['record'].snapshot.intent)
+            if dispatch['domain'] == 'demo_runtime':
+                original_id = dispatch['row'][2]
+            elif dispatch['domain'] == 'alpaca':
+                original_id = dispatch['client_order_id']
+            else:
+                raise ValueError('unsupported original dispatch domain')
+            if original_id != client_order_id:
+                raise ValueError('dispatch belongs to another original order')
+            event['dispatch'] = dispatch
+            event['targets'].append(dispatch['domain'])
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
+        return True
+
+    def reconcile_order(self, identity, client_order_id, *, event_writer, query_order=None):
+        """Admit original-ID GET outcomes without releasing uncertain reservations.
+
+        The caller retains account ownership across lookup, admission and replay.
+        """
+        event_writer.resume()
+        plan = self.store.plan(identity)
+        order = next(order for order in self.store.orders(identity)
+                     if order['record'].snapshot.intent.client_order_id == client_order_id)
+        if order['record'].snapshot.status in {OrderStatus.FILLED, OrderStatus.REJECTED} and not order['uncertain']:
+            return
+        original = dumps([plan, order])
+        query_order = self.adapter.query_order if query_order is None else query_order
+        try:
+            observation = query_order(client_order_id)
+        except SubmissionNotAttempted:
+            order['attempted'], order['uncertain'] = False, False
+        except OrderAbsent:
+            order['uncertain'] = bool(order['attempted'])
+            if order['attempted']:
+                plan['reasons'][order['record'].snapshot.intent.instrument_id] = 'ORDER_ABSENCE_AFTER_SUBMIT'
+        except (TimeoutError, ConnectionError):
+            order['uncertain'] = True
+        else:
+            return self.confirm_order(identity, client_order_id, observation, event_writer=event_writer)
+        materialized = dumps([plan, order])
+        if materialized == original:
+            return
+        event = dict(event_id=str(uuid4()),
+                     targets=['portfolio'], kind='PORTFOLIO_ORDER_LOOKUP_RECORDED',
+                     account_id=plan['request']['account'], strategy_id=plan['request']['strategy'],
+                     plan_id=identity, plan=dumps(plan), order=dumps(order), claim=None,
+                     confirmation=None, confirmation_id=None)
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
+
+    def _prepare_order_observation(self, plan, order, event):
+        if event.client_order_id != order['record'].snapshot.intent.client_order_id:
+            raise ValueError('confirmation belongs to another original order')
         account = plan['request']['account']
+        claim = None
+        confirmation = dumps(event)
+
+        def prepared():
+            return dict(event_id=str(uuid4()),
+                        targets=['portfolio'], kind='PORTFOLIO_ORDER_OBSERVED',
+                        account_id=account, strategy_id=plan['request']['strategy'],
+                        order=dumps(order), claim=claim, confirmation=confirmation,
+                        confirmation_id=event.event_id)
+
         payload = dumps(event)
         seen = self.store.db.execute(
             'SELECT payload FROM portfolio_confirmations WHERE account=? AND event=?',
@@ -1062,9 +1257,12 @@ class PortfolioExecutor:
             snapshot = order['record'].snapshot
             if (event.cumulative_filled_quantity == snapshot.cumulative_filled_quantity
                     and event.status == snapshot.status):
+                if not order['uncertain'] and order['attempted']:
+                    return None
                 order['uncertain'], order['attempted'] = False, True
-                self.store.save_order(order)
-            return
+                confirmation = None
+                return prepared()
+            return None
         record = order['record']
         # Adapters may return an immediate fill on the first POST/query.
         if record.confirmed_status == OrderStatus.NEW and event.status not in (
@@ -1072,8 +1270,8 @@ class PortfolioExecutor:
             record = replace(record, confirmed_status=OrderStatus.SUBMITTED)
         if event.status == OrderStatus.UNKNOWN:
             order['uncertain'] = True
-            self.store.save_order(order)
-            return
+            confirmation = None
+            return prepared()
         updated = advance(record, event)
         if event.status in TERMINAL:
             order.pop('cancel_pending', None)
@@ -1086,16 +1284,12 @@ class PortfolioExecutor:
             quantity = D(row[0]) + (delta if intent.side == Side.BUY else -delta)
             if quantity < 0:
                 raise ValueError('broker fill exceeds strategy-owned inventory')
-            self.store.db.execute(
-                'UPDATE portfolio_claims SET quantity=? WHERE account=? AND symbol=? AND strategy=?',
-                (str(quantity), account, intent.instrument_id, plan['request']['strategy']))
+            claim = dict(quantity=str(quantity), symbol=intent.instrument_id)
         order['filled_notional'] = (event.cumulative_filled_notional
             if event.cumulative_filled_notional is not None else
             order.get('filled_notional', ZERO) + delta * (event.fill_price or ZERO))
         order['record'], order['uncertain'], order['attempted'] = updated, False, True
-        self.store.save_order(order)
-        self.store.db.execute('INSERT INTO portfolio_confirmations VALUES (?,?,?)',
-                              (account, event.event_id, payload))
+        return prepared()
 
     def _recover(self, plan, query_order=None):
         if query_order is None:
@@ -1133,8 +1327,25 @@ class PortfolioExecutor:
             self._recover(plan, query_order)
             self.store.save_plan(plan)
 
-    def reconcile(self, account_id, *, observe=None):
-        """Recover the journal, optionally from one account and original-order observation."""
+    def reconcile(self, account_id, *, observe=None, event_writer=None):
+        """Recover original orders; writer-backed calls retain account ownership."""
+        if event_writer is not None:
+            event_writer.resume()
+            account = None
+            query_order = self.adapter.query_order
+            if observe is not None:
+                account, query_order = observe()
+                if account.account_id != account_id:
+                    raise ValueError('matching official account required')
+            identities = self.store.db.execute(
+                'SELECT id FROM portfolio_plans WHERE account=? ORDER BY rowid', (account_id,)).fetchall()
+            for identity, in identities:
+                client_ids = [order['record'].snapshot.intent.client_order_id
+                              for order in self.store.orders(identity)]
+                for client_id in client_ids:
+                    self.reconcile_order(identity, client_id, event_writer=event_writer,
+                                         query_order=query_order)
+            return account
         with self.store.transaction():
             if observe is None:
                 self._recover_account(account_id)
@@ -1412,6 +1623,13 @@ class PortfolioExecutor:
             plan['phase'] = 'COMPLETE' if resolved else 'BLOCKED'
         return prepared
 
+    def _require_unreplicated_order_execution(self):
+        # TODO: Replace quarantine with complete order/ownership/reservation and
+        # pre-POST budget admission before enabling replicated execution.
+        if self.store.db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dr_replay_identity'").fetchone():
+            raise PermissionError('replicated order execution requires complete account admission')
+
     def run_once(self, identity, *, equity, quotes, rules, now, not_before=None,
                  refresh_quotes=None, emergency=False):
         """Reconcile original identities, prepare one phase, then submit its outbox.
@@ -1420,6 +1638,7 @@ class PortfolioExecutor:
         Missing quotes block only dependent symbols. There is no cancellation of
         foreign orders or automatic replacement of partially filled terminal orders.
         """
+        self._require_unreplicated_order_execution()
         utc(now)
         if not_before is not None:
             utc(not_before)

@@ -1,6 +1,6 @@
 """Capital postings and management over the portfolio execution database."""
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal as D
 import json
 
@@ -88,22 +88,151 @@ class AccountCapital:
     strategies: tuple[StrategyCapital, ...]
 
 
+def reduce_capital_change(db, event):
+    """Apply original capital results without consulting current venue balances."""
+    if event['kind'] != 'CAPITAL_CHANGE':
+        raise ValueError('unsupported capital event')
+    account = event['account_id']
+    release = event['release']
+    if release is not None:
+        db.execute('UPDATE capital_instances SET paused=1 WHERE account=? AND strategy=?',
+                   (account, release['strategy']))
+        for symbol in release['symbols']:
+            db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
+                       (account, symbol, release['strategy']))
+    for posting in event['balances']:
+        db.execute(
+            'INSERT INTO capital_balances VALUES (?,?,?,?,?,?) ON CONFLICT(account,strategy) DO UPDATE SET '
+            'budget_delta=excluded.budget_delta,cash_in=excluded.cash_in,cash_out=excluded.cash_out,retired=excluded.retired',
+            (account, posting['strategy'], posting['budget_delta'], posting['cash_in'],
+             posting['cash_out'], posting['retired']))
+    db.execute('INSERT INTO capital_events VALUES (?,?,?,?)',
+               (account, event['capital_event_id'], event['request_id'], dumps(decode(event['entry']))))
+
+
+def reduce_capital_event(db, event):
+    """Reduce portfolio capital postings and their original command lifecycle."""
+    kind = event['kind']
+    if kind == 'CAPITAL_CHANGE':
+        return reduce_capital_change(db, event)
+    account = event['account_id']
+    if kind == 'CAPITAL_FLAT_OWNERSHIP_TRANSFERRED':
+        previous, owner = event['from_strategy'], event['to_strategy']
+        for ceiling in event['ceilings'] or []:
+            symbol = ceiling['symbol']
+            db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
+                       (account, symbol, previous))
+            db.execute('INSERT INTO capital_symbol_limits VALUES (?,?,?) '
+                       'ON CONFLICT(account,symbol) DO UPDATE SET max_exposure=excluded.max_exposure',
+                       (account, symbol, ceiling['limit']))
+            db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)', (account, symbol, owner))
+        for claim in event['claims']:
+            symbol = claim['symbol']
+            db.execute('INSERT OR IGNORE INTO portfolio_claim_history VALUES (?,?,?,?,?)',
+                       (account, symbol, previous, *claim['predecessor']))
+            db.execute('DELETE FROM portfolio_claims WHERE account=? AND symbol=? AND strategy=?',
+                       (account, symbol, previous))
+            db.execute('INSERT OR IGNORE INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                       (account, symbol, owner, '0', *claim['original']))
+            db.execute('DELETE FROM portfolio_claim_history WHERE account=? AND symbol=? AND strategy=?',
+                       (account, symbol, owner))
+        db.execute('INSERT INTO events VALUES (?,?)', (event['event_id'], event['metadata']))
+        return
+    if kind == 'CAPITAL_ALLOCATION_REGISTERED':
+        db.execute('INSERT INTO portfolio_allocations VALUES (?,?,?,?,?)',
+                   (account, event['strategy_id'], event['allocation_id'],
+                    event['capital'], event['initial_cash']))
+        db.execute('INSERT INTO capital_origins VALUES (?,?,?)',
+                   (account, event['strategy_id'], event['observed_at']))
+        return
+    if kind == 'CAPITAL_ACCOUNT_CONFIGURED':
+        db.execute('INSERT INTO capital_accounts (account,currency,budget,fee_rate,mode) '
+                   'VALUES (?,?,?,?,?) ON CONFLICT(account) DO UPDATE SET mode=excluded.mode',
+                   (account, event['currency'], event['budget'], event['fee_rate'], event['mode']))
+        for ceiling in event['ceilings']:
+            db.execute('INSERT INTO capital_symbol_limits VALUES (?,?,?) '
+                       'ON CONFLICT(account,symbol) DO UPDATE SET max_exposure=excluded.max_exposure',
+                       (account, ceiling['symbol'], ceiling['limit']))
+        return
+    if kind == 'CAPITAL_SYMBOL_CLAIMED':
+        db.execute('INSERT INTO capital_symbol_limits VALUES (?,?,?) '
+                   'ON CONFLICT(account,symbol) DO UPDATE SET max_exposure=excluded.max_exposure',
+                   (account, event['symbol'], event['limit']))
+        db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
+                   (account, event['symbol'], event['strategy_id']))
+        return
+    if kind == 'CAPITAL_SYMBOL_RELEASED':
+        db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
+                   (account, event['symbol'], event['strategy_id']))
+        return
+    if kind == 'CAPITAL_INSTANCE_BOUND':
+        db.execute('INSERT INTO capital_instances VALUES (?,?,?,?,?,0)',
+                   (account, event['strategy_id'], event['instance_id'], event['allocation_id'],
+                    event['logical_strategy']))
+        return
+    if kind == 'CAPITAL_INSTANCE_LIMITS_INITIALIZED':
+        db.execute('INSERT INTO capital_limits VALUES (?,?,?,?,?)',
+                   (account, event['strategy_id'], *event['limits']))
+        for ceiling in event['ceilings']:
+            db.execute('INSERT INTO capital_symbol_limits VALUES (?,?,?) '
+                       'ON CONFLICT(account,symbol) DO UPDATE SET max_exposure=excluded.max_exposure',
+                       (account, ceiling['symbol'], ceiling['limit']))
+        return
+    if kind == 'CAPITAL_INSTANCE_PAUSED':
+        cursor = db.execute('UPDATE capital_instances SET paused=? WHERE account=? AND strategy=?',
+                            (int(event['paused']), account, event['strategy_id']))
+        if cursor.rowcount != 1:
+            raise KeyError((account, event['strategy_id']))
+        return
+    if kind == 'CAPITAL_SYMBOL_LIMIT_TIGHTENED':
+        row = db.execute('SELECT max_exposure FROM capital_symbol_limits WHERE account=? AND symbol=?',
+                         (account, event['symbol'])).fetchone()
+        if row is None or D(row[0]) < D(event['limit']):
+            raise ValueError('original symbol limit exceeds the recorded risk boundary')
+        db.execute('UPDATE capital_symbol_limits SET max_exposure=? WHERE account=? AND symbol=?',
+                   (event['limit'], account, event['symbol']))
+        return
+    command = event['command_id']
+    if kind == 'CAPITAL_COMMAND_ENQUEUED':
+        request = dumps(decode(event['request']))
+        saved = db.execute('SELECT request FROM capital_commands WHERE account=? AND command=?',
+                           (account, command)).fetchone()
+        if saved is not None and saved[0] != request:
+            raise ValueError('capital command identity conflicts with original request')
+        db.execute('INSERT OR IGNORE INTO capital_commands VALUES(?,?,?,NULL)', (account, command, request))
+    elif kind == 'CAPITAL_COMMAND_COMPLETED':
+        saved = db.execute('SELECT request,result FROM capital_commands WHERE account=? AND command=?',
+                           (account, command)).fetchone()
+        result = dumps(decode(event['result']))
+        if (saved is None or saved[0] != event['original_request']
+                or saved[1] is not None and saved[1] != result):
+            raise ValueError('capital command result conflicts with original command')
+        db.execute('UPDATE capital_commands SET result=? WHERE account=? AND command=?',
+                   (result, account, command))
+    else:
+        raise ValueError('unsupported capital event')
+
+
 class CapitalManagement:
-    def __init__(self, executor):
+    def __init__(self, executor, *, event_writer=None):
         self.executor = executor
         self.store = executor.store
+        self.event_writer = event_writer
         # Strategy IDs map to unprepared buy notional, or None until the
         # venue's decision can be priced and recorded in the portfolio outbox.
         self.pending_commitments = None
 
     def snapshot(self, account_id):
         """Refresh original confirmations and read official facts under the order lock."""
+        if self.event_writer is not None:
+            self.executor.reconcile(account_id, event_writer=self.event_writer)
         with self.store.transaction():
             return self._snapshot(account_id)
 
     def _snapshot(self, account_id):
         executor, store = self.executor, self.store
-        executor._recover_account(account_id)
+        if self.event_writer is None:
+            executor._recover_account(account_id)
         account = executor.adapter.read_account()
         if account.account_id != account_id:
             raise ValueError('capital observation belongs to a different account')
@@ -202,6 +331,8 @@ class CapitalManagement:
         """Link current marked equity to the valuations recorded at capital postings."""
         from .capital_performance import build_capital_performance
 
+        if self.event_writer is not None:
+            self.executor.reconcile(account_id, event_writer=self.event_writer)
         with self.store.transaction():
             snapshot = self._snapshot(account_id)
             owner = next((s for s in snapshot.strategies if s.strategy_id == strategy_id), None)
@@ -261,21 +392,43 @@ class CapitalManagement:
         return self._request(account_id, event_id,
                              dict(kind='RELEASE', source=strategy_id, destination=None, amount=None))
 
-    def _request(self, account_id, event_id, operation):
+    def _request(self, account_id, event_id, operation, *, request_id=None):
+        request_id = event_id if request_id is None else request_id
+        if self.event_writer is None:
+            with self.store.transaction():
+                return self._apply(account_id, event_id, request_id, operation)
+        # The caller's account ownership lock also excludes orders and capital
+        # configuration changes while an offsite-confirmed result is pending.
+        self.event_writer.resume()
         with self.store.transaction():
-            return self._apply(account_id, event_id, event_id, operation)
+            previous = self._read(account_id, event_id)
+            if previous is not None:
+                if previous['operation'] != operation:
+                    raise ValueError('capital event identity conflicts with original request')
+                return CapitalChange(**previous['result'])
+            if not account_id or not event_id:
+                raise ValueError('account and capital event identity are required')
+        self.executor.reconcile(account_id, event_writer=self.event_writer)
+        with self.store.transaction():
+            result, event = self._prepare_change(account_id, event_id, request_id, operation)
+        self.event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
+        return result
 
     def advance(self, *, account_id, event_id, step_id, reduction_plan=None):
         """Resume a staged request after existing execution confirms sales or cancellations."""
         if step_id == event_id:
             raise ValueError('a staged advance needs its own event identity')
+        if self.event_writer is not None:
+            self.event_writer.resume()
         with self.store.transaction():
             initial = self._read(account_id, event_id)
             if initial is None or initial['operation']['kind'] != 'STAGED':
                 raise ValueError('original staged capital request required')
             operation = dict(initial['operation'], kind='ADVANCE', request_id=event_id,
                              reduction_plan=reduction_plan)
-            return self._apply(account_id, step_id, event_id, operation)
+            if self.event_writer is None:
+                return self._apply(account_id, step_id, event_id, operation)
+        return self._request(account_id, step_id, operation, request_id=event_id)
 
     def _apply(self, account_id, event_id, request_id, operation):
         if not account_id or not event_id:
@@ -285,6 +438,14 @@ class CapitalManagement:
             if previous['operation'] != operation:
                 raise ValueError('capital event identity conflicts with original request')
             return CapitalChange(**previous['result'])
+        if self.store.db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dr_replay_identity'").fetchone():
+            raise PermissionError('replicated capital changes require their account event writer')
+        result, event = self._prepare_change(account_id, event_id, request_id, operation)
+        reduce_capital_change(self.store.db, event)
+        return result
+
+    def _prepare_change(self, account_id, event_id, request_id, operation):
         source, destination, amount, kind = (operation[key] for key in
                                             ('source', 'destination', 'amount', 'kind'))
         remaining = amount
@@ -306,6 +467,7 @@ class CapitalManagement:
         if (recipient is not None and recipient.retired) or (donor is not None and donor.retired and kind != 'RELEASE'):
             raise ValueError('retired capital allocation')
         capacity = snapshot.allocatable if donor is None else donor.withdrawable
+        release = None
         if kind == 'RELEASE':
             if donor.pending_decisions:
                 raise ValueError('capital release requires prepared or rejected strategy decisions')
@@ -317,11 +479,13 @@ class CapitalManagement:
             if applied > snapshot.wallet_room:
                 raise ValueError('official available cash cannot settle the release')
             left, status = ZERO, 'COMPLETE'
-            self.store.db.execute('UPDATE capital_instances SET paused=1 WHERE account=? AND strategy=?',
-                                  (account_id, source))
+            symbols = []
             for ownership in self.executor.capital_policy.ownership(account_id):
                 if ownership.strategy_id == source:
-                    self.executor.capital_policy.release(account_id, source, ownership.symbol)
+                    self.executor.capital_policy._binding(account_id, source)
+                    self.executor.capital_policy._validate_release(account_id, source, ownership.symbol)
+                    symbols.append(ownership.symbol)
+            release = dict(strategy=source, symbols=symbols)
         else:
             applied = min(remaining, capacity)
             if kind == 'EXACT' and applied != remaining:
@@ -329,17 +493,19 @@ class CapitalManagement:
             released_budget = applied
             left = remaining - applied
             status = 'COMPLETE' if not left else ('INSUFFICIENT_CAPITAL' if kind == 'EXACT' else 'WAITING')
+        balances = []
         if donor is not None and (applied or kind == 'RELEASE'):
-            self._post(account_id, donor, -released_budget, ZERO, applied, kind == 'RELEASE')
+            balances.append(self._posting(account_id, donor, -released_budget, ZERO, applied, kind == 'RELEASE'))
         if recipient is not None and applied:
-            self._post(account_id, recipient, released_budget, applied, ZERO, False)
+            balances.append(self._posting(account_id, recipient, released_budget, applied, ZERO, False))
         result = CapitalChange(event_id, request_id, source, destination, snapshot.observed_at,
             amount, applied, released_budget, left, applied if kind == 'RELEASE' else min(remaining, capacity), status,
             donor.equity if donor else None, recipient.equity if recipient else None)
         entry = dict(operation=operation, result=asdict(result))
-        self.store.db.execute('INSERT INTO capital_events VALUES (?,?,?,?)',
-                              (account_id, event_id, request_id, dumps(entry)))
-        return result
+        event = dict(event_id=dumps(['capital', account_id, event_id]), targets=['portfolio'],
+                     kind='CAPITAL_CHANGE', account_id=account_id, capital_event_id=event_id,
+                     request_id=request_id, entry=json.loads(dumps(entry)), balances=balances, release=release)
+        return result, event
 
     def _require_reduction(self, account_id, source, identity):
         plan = self.store.plan(identity)
@@ -357,11 +523,8 @@ class CapitalManagement:
             if owner == source and (order['uncertain'] or order['record'].snapshot.status not in TERMINAL):
                 raise ValueError('capital release requires confirmed terminal orders')
 
-    def _post(self, account_id, owner, budget_delta, cash_in, cash_out, retired):
-        strategy = owner.strategy_id
-        previous, incoming, outgoing, _ = self.store.capital_balance(account_id, strategy)
-        self.store.db.execute(
-            'INSERT INTO capital_balances VALUES (?,?,?,?,?,?) ON CONFLICT(account,strategy) DO UPDATE SET '
-            'budget_delta=excluded.budget_delta,cash_in=excluded.cash_in,cash_out=excluded.cash_out,retired=excluded.retired',
-            (account_id, strategy, str(exact_sum((previous, budget_delta))),
-             str(exact_sum((incoming, cash_in))), str(exact_sum((outgoing, cash_out))), int(retired)))
+    def _posting(self, account_id, owner, budget_delta, cash_in, cash_out, retired):
+        previous, incoming, outgoing, _ = self.store.capital_balance(account_id, owner.strategy_id)
+        return dict(strategy=owner.strategy_id, budget_delta=str(exact_sum((previous, budget_delta))),
+                    cash_in=str(exact_sum((incoming, cash_in))), cash_out=str(exact_sum((outgoing, cash_out))),
+                    retired=int(retired))

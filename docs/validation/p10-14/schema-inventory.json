@@ -1,0 +1,719 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-28T08:07:45.869740+00:00",
+  "method": "SQLite mode=ro, query_only; schema-only inspection of running simulated execution roots",
+  "deployed_revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+  "repository_baseline": "47e58d9044e27dc47fc140f87b48b73531db6d3f",
+  "markets": [
+    {
+      "market": "binance",
+      "databases": [
+        {
+          "path": "grid-supervisor.sqlite3",
+          "bytes": 196608,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "table",
+              "name": "cursor",
+              "sql": "CREATE TABLE cursor (id TEXT PRIMARY KEY, bar INTEGER, quote INTEGER, initial_start INTEGER)"
+            },
+            {
+              "type": "table",
+              "name": "strategy_control",
+              "sql": "CREATE TABLE strategy_control (id INTEGER PRIMARY KEY, configuration TEXT, desired TEXT, report TEXT)"
+            }
+          ]
+        },
+        {
+          "path": "runtime.sqlite3",
+          "bytes": 409600,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "table",
+              "name": "campaigns",
+              "sql": "CREATE TABLE campaigns (id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "dispatch_retry_history",
+              "sql": "CREATE TABLE dispatch_retry_history (\n                campaign TEXT NOT NULL, method TEXT NOT NULL, client_id TEXT NOT NULL,\n                parameters TEXT NOT NULL, receipt TEXT\n            )"
+            },
+            {
+              "type": "table",
+              "name": "dispatches",
+              "sql": "CREATE TABLE dispatches (\n                campaign TEXT NOT NULL, method TEXT NOT NULL, client_id TEXT NOT NULL,\n                parameters TEXT NOT NULL, receipt TEXT,\n                PRIMARY KEY (campaign, method, client_id)\n            )"
+            },
+            {
+              "type": "table",
+              "name": "exit_budget_reservations",
+              "sql": "CREATE TABLE exit_budget_reservations (\n                authorization TEXT NOT NULL, entry_id TEXT PRIMARY KEY,\n                exit_id TEXT UNIQUE NOT NULL, notional TEXT NOT NULL\n            )"
+            },
+            {
+              "type": "table",
+              "name": "runtime",
+              "sql": "CREATE TABLE runtime (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
+            }
+          ]
+        },
+        {
+          "path": "strategy-deployment.sqlite3",
+          "bytes": 311296,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "index",
+              "name": "instance_decision_sequence",
+              "sql": "CREATE INDEX instance_decision_sequence ON instance_decisions(instance_id)"
+            },
+            {
+              "type": "index",
+              "name": "instance_pending_switch",
+              "sql": "CREATE UNIQUE INDEX instance_pending_switch ON instance_switches(instance_id)\n            WHERE phase NOT IN ('SUCCEEDED','ROLLED_BACK','FAILED')"
+            },
+            {
+              "type": "index",
+              "name": "one_pending_switch",
+              "sql": "CREATE UNIQUE INDEX one_pending_switch ON switches((1))\n            WHERE phase NOT IN ('SUCCEEDED','ROLLED_BACK','FAILED')"
+            },
+            {
+              "type": "table",
+              "name": "activation_callbacks",
+              "sql": "CREATE TABLE activation_callbacks(instance_id TEXT PRIMARY KEY,\n            switch_id INTEGER NOT NULL, package_id TEXT NOT NULL, reason TEXT)"
+            },
+            {
+              "type": "table",
+              "name": "decisions",
+              "sql": "CREATE TABLE decisions(version TEXT, watermark TEXT, result TEXT,\n            PRIMARY KEY(version,watermark))"
+            },
+            {
+              "type": "table",
+              "name": "deployment",
+              "sql": "CREATE TABLE deployment(id INTEGER PRIMARY KEY CHECK(id=1), active TEXT,\n            stable TEXT, previous TEXT, checkpoint TEXT NOT NULL DEFAULT '{}', watermark TEXT)"
+            },
+            {
+              "type": "table",
+              "name": "deployment_bindings",
+              "sql": "CREATE TABLE deployment_bindings(package_id TEXT PRIMARY KEY,\n            deployment_id TEXT UNIQUE NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "instance_adoptions",
+              "sql": "CREATE TABLE instance_adoptions(instance_id TEXT PRIMARY KEY,\n            identity TEXT NOT NULL, evidence TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "instance_checkpoints",
+              "sql": "CREATE TABLE instance_checkpoints(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,\n            checkpoint TEXT NOT NULL, PRIMARY KEY(instance_id,package_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_decisions",
+              "sql": "CREATE TABLE instance_decisions(instance_id TEXT NOT NULL, version TEXT NOT NULL,\n            watermark TEXT NOT NULL, input_identity TEXT NOT NULL, result TEXT NOT NULL,\n            PRIMARY KEY(instance_id,version,watermark))"
+            },
+            {
+              "type": "table",
+              "name": "instance_deployment",
+              "sql": "CREATE TABLE instance_deployment(instance_id TEXT PRIMARY KEY, id INTEGER DEFAULT 1,\n            active TEXT, stable TEXT, previous TEXT, checkpoint TEXT NOT NULL DEFAULT '{}', watermark TEXT)"
+            },
+            {
+              "type": "table",
+              "name": "instance_deployment_bindings",
+              "sql": "CREATE TABLE instance_deployment_bindings(instance_id TEXT NOT NULL,\n            package_id TEXT NOT NULL, deployment_id TEXT UNIQUE NOT NULL, PRIMARY KEY(instance_id,package_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_dispatches",
+              "sql": "CREATE TABLE instance_dispatches(instance_id TEXT NOT NULL, version TEXT NOT NULL,\n            watermark TEXT NOT NULL, PRIMARY KEY(instance_id,version,watermark))"
+            },
+            {
+              "type": "table",
+              "name": "instance_migrations",
+              "sql": "CREATE TABLE instance_migrations(instance_id TEXT NOT NULL, switch_id INTEGER NOT NULL,\n            identity TEXT NOT NULL, checkpoint TEXT NOT NULL, PRIMARY KEY(instance_id,switch_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_runtime_admissions",
+              "sql": "CREATE TABLE instance_runtime_admissions(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,\n            runtime_sha256 TEXT NOT NULL, previous_runtime_sha256 TEXT NOT NULL, admitted_at REAL NOT NULL,\n            PRIMARY KEY(instance_id,package_id,runtime_sha256))"
+            },
+            {
+              "type": "table",
+              "name": "instance_runtime_bindings",
+              "sql": "CREATE TABLE instance_runtime_bindings(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,\n            binding TEXT NOT NULL, PRIMARY KEY(instance_id,package_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_strategy_orders",
+              "sql": "CREATE TABLE instance_strategy_orders(instance_id TEXT NOT NULL,\n            client_id TEXT NOT NULL, version TEXT, watermark TEXT, reduce_only INTEGER NOT NULL,\n            PRIMARY KEY(instance_id,client_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_switch_events",
+              "sql": "CREATE TABLE instance_switch_events(seq INTEGER PRIMARY KEY, instance_id TEXT NOT NULL,\n            switch_id INTEGER, at REAL NOT NULL, event TEXT NOT NULL, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "instance_switches",
+              "sql": "CREATE TABLE instance_switches(id INTEGER PRIMARY KEY, instance_id TEXT NOT NULL,\n            selection TEXT, old TEXT, new TEXT, phase TEXT, mode TEXT, policy TEXT, watermark TEXT,\n            boot TEXT, reason TEXT, created REAL, updated REAL, UNIQUE(instance_id,selection))"
+            },
+            {
+              "type": "table",
+              "name": "packages",
+              "sql": "CREATE TABLE packages(id TEXT PRIMARY KEY, manifest TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "strategy_management_schema",
+              "sql": "CREATE TABLE strategy_management_schema(version INTEGER PRIMARY KEY)"
+            },
+            {
+              "type": "table",
+              "name": "strategy_orders",
+              "sql": "CREATE TABLE strategy_orders(client_id TEXT PRIMARY KEY, version TEXT,\n            watermark TEXT, reduce_only INTEGER NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "strategy_registry",
+              "sql": "CREATE TABLE strategy_registry(instance_id TEXT PRIMARY KEY,\n            binding TEXT, fallback TEXT)"
+            },
+            {
+              "type": "table",
+              "name": "switch_events",
+              "sql": "CREATE TABLE switch_events(seq INTEGER PRIMARY KEY, switch_id INTEGER,\n            at REAL NOT NULL, event TEXT NOT NULL, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "switches",
+              "sql": "CREATE TABLE switches(id INTEGER PRIMARY KEY, selection TEXT UNIQUE,\n            old TEXT, new TEXT, phase TEXT, mode TEXT, policy TEXT, watermark TEXT,\n            boot TEXT, reason TEXT, created REAL, updated REAL)"
+            }
+          ]
+        },
+        {
+          "path": "strategy-execute.sqlite3",
+          "bytes": 24576,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "table",
+              "name": "cursor",
+              "sql": "CREATE TABLE cursor (id TEXT PRIMARY KEY, bar INTEGER, quote INTEGER, initial_start INTEGER)"
+            },
+            {
+              "type": "table",
+              "name": "strategy_control",
+              "sql": "CREATE TABLE strategy_control (id INTEGER PRIMARY KEY, configuration TEXT, desired TEXT, report TEXT)"
+            }
+          ]
+        },
+        {
+          "path": "external/task-mailbox/tasks.sqlite3",
+          "bytes": 24576,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "table",
+              "name": "portfolio_receipts",
+              "sql": "CREATE TABLE portfolio_receipts (\n            sequence INTEGER PRIMARY KEY, task_id TEXT NOT NULL,\n            recorded_at TEXT NOT NULL, status TEXT NOT NULL, detail TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_tasks",
+              "sql": "CREATE TABLE portfolio_tasks (\n            task_id TEXT PRIMARY KEY, payload TEXT NOT NULL, status TEXT NOT NULL)"
+            }
+          ]
+        },
+        {
+          "path": "account-journal/controller.sqlite3",
+          "bytes": 29614080,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "table",
+              "name": "demo_order_owners",
+              "sql": "CREATE TABLE demo_order_owners (\n            client_id TEXT PRIMARY KEY, instance_id TEXT NOT NULL,\n            allocation_id TEXT NOT NULL, symbol TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "events",
+              "sql": "CREATE TABLE events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "snapshot",
+              "sql": "CREATE TABLE snapshot (id INTEGER PRIMARY KEY CHECK(id=1), version INTEGER NOT NULL, payload TEXT NOT NULL)"
+            }
+          ]
+        },
+        {
+          "path": "account-journal/protocol.sqlite3",
+          "bytes": 831488,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "index",
+              "name": "idx_futures_order_recovery_exchange_id",
+              "sql": "CREATE INDEX idx_futures_order_recovery_exchange_id\n        ON futures_order_recovery (symbol, exchange_order_id)"
+            },
+            {
+              "type": "index",
+              "name": "idx_futures_order_recovery_state",
+              "sql": "CREATE INDEX idx_futures_order_recovery_state\n        ON futures_order_recovery (archived, reconcile_required, confirmed_status)"
+            },
+            {
+              "type": "table",
+              "name": "demo_cancel_attempts",
+              "sql": "CREATE TABLE demo_cancel_attempts (id TEXT PRIMARY KEY)"
+            },
+            {
+              "type": "table",
+              "name": "demo_quote_receipts",
+              "sql": "CREATE TABLE demo_quote_receipts (id TEXT PRIMARY KEY, policy TEXT NOT NULL, receipt TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "demo_quote_rejections",
+              "sql": "CREATE TABLE demo_quote_rejections (id TEXT PRIMARY KEY, receipt TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "events",
+              "sql": "CREATE TABLE events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "futures_events",
+              "sql": "CREATE TABLE futures_events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "futures_funding",
+              "sql": "CREATE TABLE futures_funding (\n            id TEXT PRIMARY KEY, tran_id TEXT NOT NULL, event_time_ms INTEGER NOT NULL,\n            payload TEXT NOT NULL, raw_payload TEXT NOT NULL, observed_at TEXT NOT NULL\n        )"
+            },
+            {
+              "type": "table",
+              "name": "futures_income_coverage",
+              "sql": "CREATE TABLE futures_income_coverage (\n            scope TEXT PRIMARY KEY, covered_from_ms INTEGER NOT NULL, covered_through_ms INTEGER NOT NULL,\n            complete INTEGER NOT NULL, updated_at TEXT NOT NULL, detail TEXT NOT NULL\n        )"
+            },
+            {
+              "type": "table",
+              "name": "futures_meta",
+              "sql": "CREATE TABLE futures_meta (id INTEGER PRIMARY KEY CHECK(id=1), account TEXT NOT NULL, reconciled INTEGER NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "futures_order_recovery",
+              "sql": "CREATE TABLE futures_order_recovery (\n        client_order_id TEXT PRIMARY KEY,\n        symbol TEXT NOT NULL,\n        exchange_order_id TEXT,\n        raw_status TEXT,\n        confirmed_status TEXT NOT NULL,\n        confirmed_filled_qty TEXT NOT NULL,\n        confirmed_quote TEXT NOT NULL,\n        confirmed_fee TEXT NOT NULL,\n        trade_count INTEGER NOT NULL DEFAULT 0,\n        last_trade_id INTEGER,\n        trades_digest TEXT,\n        trades_reconciled INTEGER NOT NULL DEFAULT 0,\n        last_get_at TEXT,\n        last_get_source TEXT,\n        exchange_updated_at TEXT,\n        terminal_first_get_at TEXT,\n        terminal_confirmations INTEGER NOT NULL DEFAULT 0,\n        reconcile_required INTEGER NOT NULL DEFAULT 1,\n        archive_eligible INTEGER NOT NULL DEFAULT 0,\n        archived INTEGER NOT NULL DEFAULT 0,\n        archived_at TEXT,\n        last_audit_at TEXT,\n        audit_reason TEXT\n    )"
+            },
+            {
+              "type": "table",
+              "name": "futures_orders",
+              "sql": "CREATE TABLE futures_orders (id TEXT PRIMARY KEY, payload TEXT NOT NULL, quote TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "futures_receipts",
+              "sql": "CREATE TABLE futures_receipts (\n            id TEXT PRIMARY KEY, client_id TEXT NOT NULL, observed_at TEXT NOT NULL, payload TEXT NOT NULL\n        )"
+            },
+            {
+              "type": "table",
+              "name": "futures_recovery_state",
+              "sql": "CREATE TABLE futures_recovery_state (\n        scope TEXT PRIMARY KEY,\n        payload TEXT NOT NULL,\n        updated_at TEXT NOT NULL\n    )"
+            },
+            {
+              "type": "table",
+              "name": "futures_rejections",
+              "sql": "CREATE TABLE futures_rejections (id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "snapshot",
+              "sql": "CREATE TABLE snapshot (id INTEGER PRIMARY KEY CHECK(id=1), version INTEGER NOT NULL, payload TEXT NOT NULL)"
+            }
+          ]
+        }
+      ],
+      "excluded_copies": [
+        {
+          "path": "strategy-dry-run.sqlite3",
+          "classification": "non-executing investigation or preview copy"
+        },
+        {
+          "path": "grid-preview/grid-supervisor.sqlite3",
+          "classification": "non-executing investigation or preview copy"
+        },
+        {
+          "path": "grid-preview/runtime.sqlite3",
+          "classification": "non-executing investigation or preview copy"
+        },
+        {
+          "path": "grid-preview/account-journal/controller.sqlite3",
+          "classification": "non-executing investigation or preview copy"
+        },
+        {
+          "path": "grid-preview/account-journal/protocol.sqlite3",
+          "classification": "non-executing investigation or preview copy"
+        },
+        {
+          "path": "strategy-preview/account-journal/controller.sqlite3",
+          "classification": "non-executing investigation or preview copy"
+        },
+        {
+          "path": "strategy-preview/account-journal/protocol.sqlite3",
+          "classification": "non-executing investigation or preview copy"
+        }
+      ]
+    },
+    {
+      "market": "alpaca",
+      "databases": [
+        {
+          "path": "account.sqlite3",
+          "bytes": 77824,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "table",
+              "name": "alpaca_activities",
+              "sql": "CREATE TABLE alpaca_activities (id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "alpaca_meta",
+              "sql": "CREATE TABLE alpaca_meta (key TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "alpaca_orders",
+              "sql": "CREATE TABLE alpaca_orders (\n                client_id TEXT PRIMARY KEY, intent TEXT NOT NULL, payload TEXT,\n                uncertain INTEGER NOT NULL, reservation TEXT NOT NULL)"
+            }
+          ]
+        },
+        {
+          "path": "deployments.sqlite3",
+          "bytes": 196608,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "index",
+              "name": "instance_decision_sequence",
+              "sql": "CREATE INDEX instance_decision_sequence ON instance_decisions(instance_id)"
+            },
+            {
+              "type": "index",
+              "name": "instance_pending_switch",
+              "sql": "CREATE UNIQUE INDEX instance_pending_switch ON instance_switches(instance_id)\n            WHERE phase NOT IN ('SUCCEEDED','ROLLED_BACK','FAILED')"
+            },
+            {
+              "type": "index",
+              "name": "one_pending_switch",
+              "sql": "CREATE UNIQUE INDEX one_pending_switch ON switches((1))\n            WHERE phase NOT IN ('SUCCEEDED','ROLLED_BACK','FAILED')"
+            },
+            {
+              "type": "table",
+              "name": "activation_callbacks",
+              "sql": "CREATE TABLE activation_callbacks(instance_id TEXT PRIMARY KEY,\n            switch_id INTEGER NOT NULL, package_id TEXT NOT NULL, reason TEXT)"
+            },
+            {
+              "type": "table",
+              "name": "decisions",
+              "sql": "CREATE TABLE decisions(version TEXT, watermark TEXT, result TEXT,\n            PRIMARY KEY(version,watermark))"
+            },
+            {
+              "type": "table",
+              "name": "deployment",
+              "sql": "CREATE TABLE deployment(id INTEGER PRIMARY KEY CHECK(id=1), active TEXT,\n            stable TEXT, previous TEXT, checkpoint TEXT NOT NULL DEFAULT '{}', watermark TEXT)"
+            },
+            {
+              "type": "table",
+              "name": "deployment_bindings",
+              "sql": "CREATE TABLE deployment_bindings(package_id TEXT PRIMARY KEY,\n            deployment_id TEXT UNIQUE NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "instance_adoptions",
+              "sql": "CREATE TABLE instance_adoptions(instance_id TEXT PRIMARY KEY,\n            identity TEXT NOT NULL, evidence TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "instance_checkpoints",
+              "sql": "CREATE TABLE instance_checkpoints(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,\n            checkpoint TEXT NOT NULL, PRIMARY KEY(instance_id,package_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_decisions",
+              "sql": "CREATE TABLE instance_decisions(instance_id TEXT NOT NULL, version TEXT NOT NULL,\n            watermark TEXT NOT NULL, input_identity TEXT NOT NULL, result TEXT NOT NULL,\n            PRIMARY KEY(instance_id,version,watermark))"
+            },
+            {
+              "type": "table",
+              "name": "instance_deployment",
+              "sql": "CREATE TABLE instance_deployment(instance_id TEXT PRIMARY KEY, id INTEGER DEFAULT 1,\n            active TEXT, stable TEXT, previous TEXT, checkpoint TEXT NOT NULL DEFAULT '{}', watermark TEXT)"
+            },
+            {
+              "type": "table",
+              "name": "instance_deployment_bindings",
+              "sql": "CREATE TABLE instance_deployment_bindings(instance_id TEXT NOT NULL,\n            package_id TEXT NOT NULL, deployment_id TEXT UNIQUE NOT NULL, PRIMARY KEY(instance_id,package_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_dispatches",
+              "sql": "CREATE TABLE instance_dispatches(instance_id TEXT NOT NULL, version TEXT NOT NULL,\n            watermark TEXT NOT NULL, PRIMARY KEY(instance_id,version,watermark))"
+            },
+            {
+              "type": "table",
+              "name": "instance_migrations",
+              "sql": "CREATE TABLE instance_migrations(instance_id TEXT NOT NULL, switch_id INTEGER NOT NULL,\n            identity TEXT NOT NULL, checkpoint TEXT NOT NULL, PRIMARY KEY(instance_id,switch_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_runtime_admissions",
+              "sql": "CREATE TABLE instance_runtime_admissions(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,\n            runtime_sha256 TEXT NOT NULL, previous_runtime_sha256 TEXT NOT NULL, admitted_at REAL NOT NULL,\n            PRIMARY KEY(instance_id,package_id,runtime_sha256))"
+            },
+            {
+              "type": "table",
+              "name": "instance_runtime_bindings",
+              "sql": "CREATE TABLE instance_runtime_bindings(instance_id TEXT NOT NULL, package_id TEXT NOT NULL,\n            binding TEXT NOT NULL, PRIMARY KEY(instance_id,package_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_strategy_orders",
+              "sql": "CREATE TABLE instance_strategy_orders(instance_id TEXT NOT NULL,\n            client_id TEXT NOT NULL, version TEXT, watermark TEXT, reduce_only INTEGER NOT NULL,\n            PRIMARY KEY(instance_id,client_id))"
+            },
+            {
+              "type": "table",
+              "name": "instance_switch_events",
+              "sql": "CREATE TABLE instance_switch_events(seq INTEGER PRIMARY KEY, instance_id TEXT NOT NULL,\n            switch_id INTEGER, at REAL NOT NULL, event TEXT NOT NULL, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "instance_switches",
+              "sql": "CREATE TABLE instance_switches(id INTEGER PRIMARY KEY, instance_id TEXT NOT NULL,\n            selection TEXT, old TEXT, new TEXT, phase TEXT, mode TEXT, policy TEXT, watermark TEXT,\n            boot TEXT, reason TEXT, created REAL, updated REAL, UNIQUE(instance_id,selection))"
+            },
+            {
+              "type": "table",
+              "name": "packages",
+              "sql": "CREATE TABLE packages(id TEXT PRIMARY KEY, manifest TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "strategy_management_schema",
+              "sql": "CREATE TABLE strategy_management_schema(version INTEGER PRIMARY KEY)"
+            },
+            {
+              "type": "table",
+              "name": "strategy_orders",
+              "sql": "CREATE TABLE strategy_orders(client_id TEXT PRIMARY KEY, version TEXT,\n            watermark TEXT, reduce_only INTEGER NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "strategy_registry",
+              "sql": "CREATE TABLE strategy_registry(instance_id TEXT PRIMARY KEY,\n            binding TEXT, fallback TEXT)"
+            },
+            {
+              "type": "table",
+              "name": "switch_events",
+              "sql": "CREATE TABLE switch_events(seq INTEGER PRIMARY KEY, switch_id INTEGER,\n            at REAL NOT NULL, event TEXT NOT NULL, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "switches",
+              "sql": "CREATE TABLE switches(id INTEGER PRIMARY KEY, selection TEXT UNIQUE,\n            old TEXT, new TEXT, phase TEXT, mode TEXT, policy TEXT, watermark TEXT,\n            boot TEXT, reason TEXT, created REAL, updated REAL)"
+            }
+          ]
+        },
+        {
+          "path": "market-stream.sqlite3",
+          "bytes": 843018240,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "index",
+              "name": "events_received_at",
+              "sql": "CREATE INDEX events_received_at ON events(received_at)"
+            },
+            {
+              "type": "table",
+              "name": "events",
+              "sql": "CREATE TABLE events (\n                id INTEGER PRIMARY KEY, received_at TEXT NOT NULL, channel TEXT NOT NULL,\n                symbol TEXT NOT NULL, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "gaps",
+              "sql": "CREATE TABLE gaps (\n                start TEXT NOT NULL, end TEXT NOT NULL, rows INTEGER NOT NULL)"
+            }
+          ]
+        },
+        {
+          "path": "portfolio.sqlite3",
+          "bytes": 294912,
+          "user_version": 0,
+          "schema": [
+            {
+              "type": "index",
+              "name": "capital_event_requests",
+              "sql": "CREATE INDEX capital_event_requests ON capital_events(account, request)"
+            },
+            {
+              "type": "index",
+              "name": "capital_pending_commands",
+              "sql": "CREATE INDEX capital_pending_commands\n        ON capital_commands(account) WHERE result IS NULL"
+            },
+            {
+              "type": "index",
+              "name": "portfolio_account_plans",
+              "sql": "CREATE INDEX portfolio_account_plans ON portfolio_plans(account)"
+            },
+            {
+              "type": "index",
+              "name": "portfolio_active_orders",
+              "sql": "CREATE INDEX portfolio_active_orders ON portfolio_orders(plan) WHERE active=1"
+            },
+            {
+              "type": "table",
+              "name": "capital_accounts",
+              "sql": "CREATE TABLE capital_accounts (\n                account TEXT PRIMARY KEY, currency TEXT NOT NULL,\n                budget TEXT NOT NULL, fee_rate TEXT NOT NULL,\n                mode TEXT NOT NULL DEFAULT 'EXCLUSIVE')"
+            },
+            {
+              "type": "table",
+              "name": "capital_balances",
+              "sql": "CREATE TABLE capital_balances (\n        account TEXT NOT NULL, strategy TEXT NOT NULL, budget_delta TEXT NOT NULL,\n        cash_in TEXT NOT NULL, cash_out TEXT NOT NULL, retired INTEGER NOT NULL,\n        PRIMARY KEY(account, strategy))"
+            },
+            {
+              "type": "table",
+              "name": "capital_commands",
+              "sql": "CREATE TABLE capital_commands (\n        account TEXT NOT NULL, command TEXT NOT NULL, request TEXT NOT NULL,\n        result TEXT, PRIMARY KEY(account, command))"
+            },
+            {
+              "type": "table",
+              "name": "capital_events",
+              "sql": "CREATE TABLE capital_events (\n        account TEXT NOT NULL, event TEXT NOT NULL, request TEXT NOT NULL,\n        payload TEXT NOT NULL, PRIMARY KEY(account, event))"
+            },
+            {
+              "type": "table",
+              "name": "capital_instances",
+              "sql": "CREATE TABLE capital_instances (\n                account TEXT NOT NULL, strategy TEXT NOT NULL, instance TEXT NOT NULL,\n                allocation TEXT NOT NULL, logical_strategy TEXT NOT NULL,\n                paused INTEGER NOT NULL DEFAULT 0,\n                PRIMARY KEY(account,strategy), UNIQUE(account,instance),\n                UNIQUE(account,allocation))"
+            },
+            {
+              "type": "table",
+              "name": "capital_limits",
+              "sql": "CREATE TABLE capital_limits (\n                account TEXT NOT NULL, strategy TEXT NOT NULL,\n                max_order TEXT NOT NULL, max_symbol TEXT NOT NULL, budget TEXT NOT NULL,\n                PRIMARY KEY(account,strategy))"
+            },
+            {
+              "type": "table",
+              "name": "capital_migrations",
+              "sql": "CREATE TABLE capital_migrations (\n                id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "capital_origins",
+              "sql": "CREATE TABLE capital_origins (\n        account TEXT NOT NULL, strategy TEXT NOT NULL, started_at TEXT NOT NULL,\n        PRIMARY KEY(account, strategy))"
+            },
+            {
+              "type": "table",
+              "name": "capital_symbol_limits",
+              "sql": "CREATE TABLE capital_symbol_limits (\n                account TEXT NOT NULL, symbol TEXT NOT NULL, max_exposure TEXT NOT NULL,\n                PRIMARY KEY(account,symbol))"
+            },
+            {
+              "type": "table",
+              "name": "capital_symbols",
+              "sql": "CREATE TABLE capital_symbols (\n                account TEXT NOT NULL, symbol TEXT NOT NULL, strategy TEXT NOT NULL,\n                PRIMARY KEY(account,symbol,strategy))"
+            },
+            {
+              "type": "table",
+              "name": "events",
+              "sql": "CREATE TABLE events (id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_allocations",
+              "sql": "CREATE TABLE portfolio_allocations (\n                account TEXT NOT NULL, strategy TEXT NOT NULL, allocation TEXT NOT NULL,\n                capital TEXT NOT NULL, initial_cash TEXT NOT NULL,\n                PRIMARY KEY(account, strategy), UNIQUE(account, allocation))"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_claim_history",
+              "sql": "CREATE TABLE portfolio_claim_history (\n                account TEXT NOT NULL, symbol TEXT NOT NULL, strategy TEXT NOT NULL,\n                initial_quantity TEXT NOT NULL, entry_price TEXT NOT NULL,\n                PRIMARY KEY(account,symbol,strategy))"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_claims",
+              "sql": "CREATE TABLE portfolio_claims (account TEXT NOT NULL,symbol TEXT NOT NULL,strategy TEXT NOT NULL,quantity TEXT NOT NULL,initial_quantity TEXT NOT NULL,entry_price TEXT NOT NULL, PRIMARY KEY(account,symbol,strategy))"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_confirmations",
+              "sql": "CREATE TABLE portfolio_confirmations (\n                account TEXT NOT NULL, event TEXT NOT NULL, payload TEXT NOT NULL,\n                PRIMARY KEY(account, event))"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_corporate_actions",
+              "sql": "CREATE TABLE portfolio_corporate_actions (account TEXT NOT NULL,strategy TEXT NOT NULL,event TEXT NOT NULL,payload TEXT NOT NULL, PRIMARY KEY(account,strategy,event))"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_orders",
+              "sql": "CREATE TABLE portfolio_orders (\n                id TEXT PRIMARY KEY, plan TEXT NOT NULL, payload TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1)"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_plans",
+              "sql": "CREATE TABLE portfolio_plans (\n                id TEXT PRIMARY KEY, account TEXT NOT NULL, strategy TEXT NOT NULL,\n                session TEXT NOT NULL, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_risk_config",
+              "sql": "CREATE TABLE portfolio_risk_config (\n                account TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_risk_hour",
+              "sql": "CREATE TABLE portfolio_risk_hour (\n                account TEXT NOT NULL, hour INTEGER NOT NULL, observed TEXT NOT NULL,\n                nav TEXT NOT NULL, PRIMARY KEY(account, hour))"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_risk_multipliers",
+              "sql": "CREATE TABLE portfolio_risk_multipliers (\n                account TEXT NOT NULL, strategy TEXT NOT NULL, payload TEXT NOT NULL,\n                PRIMARY KEY(account, strategy))"
+            },
+            {
+              "type": "table",
+              "name": "portfolio_risk_nav",
+              "sql": "CREATE TABLE portfolio_risk_nav (\n                account TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "snapshot",
+              "sql": "CREATE TABLE snapshot (id INTEGER PRIMARY KEY CHECK(id=1), version INTEGER NOT NULL, payload TEXT NOT NULL)"
+            }
+          ]
+        },
+        {
+          "path": "runtime.sqlite3",
+          "bytes": 815104,
+          "user_version": 1,
+          "schema": [
+            {
+              "type": "table",
+              "name": "daily_reports",
+              "sql": "CREATE TABLE daily_reports (\n                day TEXT PRIMARY KEY, observed_at TEXT NOT NULL, payload TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "metadata",
+              "sql": "CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
+            },
+            {
+              "type": "table",
+              "name": "recovery",
+              "sql": "CREATE TABLE recovery (\n                id INTEGER PRIMARY KEY, observed_at TEXT NOT NULL, kind TEXT NOT NULL,\n                payload TEXT NOT NULL)"
+            }
+          ]
+        }
+      ],
+      "excluded_copies": [
+        {
+          "path": "handover/observer-account.sqlite3",
+          "classification": "non-executing investigation or preview copy"
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,19 @@ import sqlite3
 from factorlab.trading.storage import dumps, decode
 
 
+def reduce_alpaca_event(db, event):
+    """Apply original adapter admission and its original submission window."""
+    if event['kind'] != 'PORTFOLIO_ORDER_ATTEMPT_RECORDED':
+        raise ValueError('unsupported Alpaca ledger event')
+    dispatch = event['dispatch']
+    if dispatch['domain'] != 'alpaca':
+        raise ValueError('unsupported dispatch domain')
+    db.execute('INSERT INTO alpaca_orders VALUES (?,?,NULL,1,?)',
+               (dispatch['client_order_id'], dispatch['intent'], dispatch['reservation']))
+    db.execute('INSERT OR REPLACE INTO alpaca_meta VALUES (?,?)',
+               ('submissions', json.dumps(dispatch['submissions'])))
+
+
 class AlpacaStore:
     def __init__(self, path):
         self.db = sqlite3.connect(path, isolation_level=None)

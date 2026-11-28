@@ -22,6 +22,20 @@ SMOKE_CAMPAIGN = 'smoke-v1'
 LIMIT_POLICY = 'nvda-long-inside-limit-v1'
 
 
+def reduce_demo_dispatch_event(db, event):
+    """Replay the original cumulative-budget dispatch, without authorizing IO."""
+    if event['kind'] != 'PORTFOLIO_ORDER_ATTEMPT_RECORDED':
+        raise ValueError('unsupported Demo dispatch event')
+    dispatch = event['dispatch']
+    if dispatch['domain'] != 'demo_runtime':
+        raise ValueError('unsupported dispatch domain')
+    for entry_id, row in dispatch['reservations']:
+        db.execute('DELETE FROM exit_budget_reservations WHERE entry_id=?', (entry_id,))
+        if row is not None:
+            db.execute('INSERT INTO exit_budget_reservations VALUES (?,?,?,?)', row)
+    db.execute('INSERT INTO dispatches VALUES (?,?,?,?,NULL)', dispatch['row'])
+
+
 def now():
     return datetime.now(timezone.utc)
 
@@ -209,8 +223,12 @@ class DemoRuntime:
             raise SafetyBlocked('global Demo trading budget exhausted or reserved for exit')
 
     def reserve_instance(self, binding, method, params, plan, *, intent, facts,
-                         exit_reservation=None, exit_consumption=(), cancel_recovered_at=None):
-        """The existing Execute owner consumes every instance's dispatch before IO."""
+                         exit_reservation=None, exit_consumption=(), cancel_recovered_at=None,
+                         _prepare_only=False):
+        """Consume dispatch before IO, or roll back preparation for atomic admission."""
+        if not _prepare_only and self.db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dr_replay_identity'").fetchone():
+            raise SafetyBlocked('replicated dispatch requires atomic account admission')
         client_id = params['newClientOrderId' if method == 'POST' else 'origClientOrderId']
         if (binding['account_id'] != plan.account_id or params['symbol'] != intent.instrument_id
                 or client_id != intent.client_order_id or intent.instrument_id != plan.symbol):
@@ -297,6 +315,28 @@ class DemoRuntime:
                 (campaign, method, client_id, json.dumps(params))).rowcount
             if not inserted:
                 raise SafetyBlocked('instance dispatch already attempted; GET recovery required')
+            if _prepare_only:
+                affected = {entry_id for entry_id, _ in exit_consumption}
+                if exit_reservation is not None:
+                    affected.add(client_id)
+                if method == 'POST' and reserved is not None:
+                    affected.add(reserved[0])
+                reservations = []
+                for entry_id in sorted(affected):
+                    row = self.db.execute('SELECT * FROM exit_budget_reservations WHERE entry_id=?',
+                                          (entry_id,)).fetchone()
+                    reservations.append([entry_id, None if row is None else list(row)])
+                prepared = dict(domain='demo_runtime',
+                                row=[campaign, method, client_id, json.dumps(params)],
+                                reservations=reservations)
+                self.db.rollback()
+                return prepared
+
+    def prepare_instance_dispatch(self, binding, method, params, plan, **kwargs):
+        """Prepare a POST budget under the account lock; no local effect or IO."""
+        if method != 'POST':
+            raise ValueError('atomic order admission requires a POST dispatch')
+        return self.reserve_instance(binding, method, params, plan, **kwargs, _prepare_only=True)
 
     def _prepare_cancel_retry(self, client_id, plan, facts, cancel_recovered_at):
         previous = self.db.execute(

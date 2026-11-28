@@ -1,6 +1,10 @@
 from contextlib import closing
 import os
 import sqlite3
+import shutil
+
+from factorlab.integrations.ledger_replication import BatchReceiver, EventAdmission, ReplicationCursor
+from factorlab.integrations.ledger_replay import AccountEventWriter, AccountReplay, DomainReplay, SnapshotPosition
 import sys
 
 import pytest
@@ -34,6 +38,74 @@ def source(tmp_path, monkeypatch):
         db.execute('CREATE TABLE decisions(sequence, intent, state)')
         db.execute("INSERT INTO decisions VALUES (89, 'next-client-order-id', 'PREPARED')")
     return state
+
+
+def test_replication_connection_is_captured_inside_the_database_freeze(source, tmp_path):
+    captured = dict(stream='account', generation='g1', sequence=0, digest=None,
+                    domains={'runtime': 'runtime.sqlite3'})
+
+    def capture(databases):
+        assert source / 'runtime.sqlite3' in databases
+        with closing(sqlite3.connect(source / 'runtime.sqlite3', timeout=0)) as writer:
+            with pytest.raises(sqlite3.OperationalError, match='locked'):
+                writer.execute('BEGIN IMMEDIATE')
+        return captured
+
+    snapshot = storage.recovery_snapshot(source, tmp_path / 'backup', 'binance', REVISION,
+                                         replication_capture=capture)
+    assert storage.verify_snapshot(snapshot)['replication'] == captured
+
+
+def test_failed_replication_capture_does_not_seal_or_publish_source(source, tmp_path):
+    def capture(_databases):
+        raise SafetyBlocked('pending account admission')
+
+    with pytest.raises(SafetyBlocked, match='pending account admission'):
+        storage.recovery_snapshot(source, tmp_path / 'backup', 'binance', REVISION,
+                                  replication_capture=capture,
+                                  final_target=dr._target(TARGET, tmp_path / 'target'))
+    assert not (tmp_path / 'backup').exists()
+    with operator_lock(source):
+        pass
+
+
+def test_recover_replays_offsite_originals_before_official_get_without_source(source, tmp_path, monkeypatch):
+    baseline = SnapshotPosition('account', 'g1', 0, None)
+    receiver = BatchReceiver(tmp_path / 'offsite', stream='account', generation='g1')
+
+    def reduce_control(db, event):
+        db.execute('UPDATE durable SET control=?', (event['desired'],))
+
+    def send(payload):
+        receiver.accept(payload)
+        return ReplicationCursor('account', 'g1', payload['sequence'], payload['digest'])
+
+    with closing(sqlite3.connect(source / 'runtime.sqlite3', isolation_level=None)) as db, closing(
+            sqlite3.connect(source / 'admission.sqlite3', isolation_level=None)) as journal:
+        os.chmod(source / 'admission.sqlite3', 0o600)
+        replay = AccountReplay({'runtime': DomainReplay(db, reduce_control, baseline=baseline)}, baseline=baseline)
+        writer = AccountEventWriter(EventAdmission(journal, stream='account', generation='g1', send=send), replay)
+        snapshot = storage.recovery_snapshot(source, tmp_path / 'backup', 'binance', REVISION,
+                                             replication_capture=writer.snapshot_capture(source))
+        writer.submit(dict(event_id='pause-original', targets=['runtime'], desired='PAUSED'),
+                      committed_at='2026-11-28T00:00:00+00:00')
+    shutil.rmtree(source)
+
+    def official_get(_market, root, _since):
+        with closing(sqlite3.connect(root / 'runtime.sqlite3')) as db:
+            assert db.execute('SELECT control,spent FROM durable').fetchone() == ('PAUSED', 19)
+        return dict(reconciled=True, budget={'verified': True})
+
+    monkeypatch.setattr(dr, '_catch_up', official_get)
+    destination = tmp_path / 'investigation'
+    result = dr.recover(snapshot, destination, receiver=receiver, reducers={'runtime': reduce_control})
+    assert result['incremental_replay']['position']['sequence'] == 1
+    assert result['incremental_replay']['all_declared_domains_applied']
+    assert not result['published_for_execution']
+    assert result['missing_internal_coverage']
+    with pytest.raises(SafetyBlocked, match='GET-only'), operator_lock(destination):
+        pytest.fail('incremental investigation acquired execution authority')
+    receiver.close()
 
 
 def test_corrupt_copy_cannot_leave_quarantine_boundary(source, tmp_path):

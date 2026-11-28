@@ -329,7 +329,7 @@ def test_flat_ownership_handover_preserves_historical_tasks(setup):
     identity = create(executor, {'AAPL': D(0)}, symbols=('AAPL',))
     assert run(executor, identity).phase == 'COMPLETE'
     executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
-                                    to_strategy='V69_CAUSAL', symbols=('AAPL',))
+                                    to_strategy='V69_CAUSAL', symbols=('AAPL',), request_id='handover')
     assert store.plan(identity)['phase'] == 'COMPLETE'
     assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'V69_CAUSAL'
     assert broker.posts == []
@@ -342,7 +342,7 @@ def test_flat_handover_rejects_unfinished_predecessor(setup):
     create(executor, {'AAPL': D(0)}, symbols=('AAPL',))
     with pytest.raises(ValueError, match='completed predecessor'):
         executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
-                                        to_strategy='V69_CAUSAL', symbols=('AAPL',))
+                                        to_strategy='V69_CAUSAL', symbols=('AAPL',), request_id='handover')
     assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'test'
 
 
@@ -353,7 +353,7 @@ def test_flat_handover_rejects_unclaimed_official_inventory(setup):
     broker.positions['AAPL'] = D(1)
     with pytest.raises(ValueError, match='flat official inventory'):
         executor.transfer_flat_ownership(account_id='paper', from_strategy='test',
-                                        to_strategy='V69_CAUSAL', symbols=('AAPL',))
+                                        to_strategy='V69_CAUSAL', symbols=('AAPL',), request_id='handover')
     assert store.db.execute('SELECT strategy FROM portfolio_claims').fetchone()[0] == 'test'
 
 
