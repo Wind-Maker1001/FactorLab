@@ -269,6 +269,41 @@ def test_audited_host_changes_admit_only_outside_strategy_import_closure(tmp_pat
         digest(after.replace('run(self): return 2', 'run(self): return 3'))
 
 
+@pytest.mark.parametrize('name', [
+    'factorlab.integrations.binance_futures_trading.demo_cloud_storage',
+    'factorlab.integrations.disaster_recovery'])
+def test_incremental_recovery_admission_preserves_imported_compute_closure(name):
+    import ast
+    import json
+    import subprocess
+    from factorlab.strategies.loader import SOURCE_ROOT
+    from factorlab.strategies.runtime_migration import _AUDITED
+    path = SOURCE_ROOT / (name.replace('.', '/') + '.py')
+    old = subprocess.check_output(['git', 'show',
+        '44cb49bf499298a27075cebe17b1e667d8aaaba9:src/' + name.replace('.', '/') + '.py'])
+    segment = 'audited = ' + _PROBE.split('audited = ', 1)[1].split('# Freeze interpreter,', 1)[0]
+
+    def sources(imported):
+        namespace = dict(ast=ast, json=json, ast_identity=ast_identity, modules={name: path},
+            sys=SimpleNamespace(argv=['probe', 'package', json.dumps({name: _AUDITED[name]})]),
+            visited={name} if imported else set(),
+            sources={name: ast_identity(ast.parse(path.read_bytes()))} if imported else {})
+        exec(compile(segment, '<recovery host proof>', 'exec'), namespace)
+        return namespace['sources']
+
+    current = sources(False)
+    old_digest = ast_identity(ast.parse(old))
+    assert old_digest in _AUDITED[name]
+    assert sources(True)[name] != old_digest
+    before = evidence()
+    after = deepcopy(before)
+    before['sources'] = {name: old_digest}
+    after['sources'] = sources(True)
+    with pytest.raises(ValueError, match='sources'):
+        require_compatible(before, after, before['manifest'])
+    assert current[name].startswith('audited:')
+
+
 @pytest.fixture(scope='module')
 def paired_release_interpreters(tmp_path_factory):
     import io
@@ -337,7 +372,7 @@ def paired_release_interpreters(tmp_path_factory):
 
 
 @pytest.mark.parametrize('variant', ['external', 'binance-frozen', 'v69', 'v179', 'v182'])
-def test_actual_baseline_candidate_probe_preserves_package_and_admits_host_upgrade(
+def test_actual_baseline_candidate_probe_preserves_package_and_rejects_economic_upgrade(
         tmp_path, paired_release_interpreters, variant):
     import json
     from dataclasses import asdict
@@ -389,15 +424,47 @@ def test_actual_baseline_candidate_probe_preserves_package_and_admits_host_upgra
             model_artifact=artifact, code_commit='a' * 40, destination=archive, evidence={'offline': True})
     release, _ = install_package(archive, tmp_path / 'releases')
     previous, production, announcements, replacement = [probe(python, release) for python in interpreters]
-    for baseline in (previous, production):
+    for baseline in (previous, production, announcements):
         assert baseline['binding']['runtime_sha256'] != replacement['binding']['runtime_sha256']
         with pytest.raises(ValueError, match='sources'):
             require_compatible(baseline, replacement, manifest)
-    require_compatible(announcements, replacement, manifest)
-    require_compatible(replacement, announcements, manifest)
+    # Economic changes use a new qualified package, never a same-package receipt.
+    import subprocess
+    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+    upgraded_manifest = build_package(release, dict(manifest, code_commit=revision),
+                                     tmp_path / 'upgraded.zip')
+    upgraded_release, _ = install_package(tmp_path / 'upgraded.zip', tmp_path / 'releases')
+    upgraded = probe(interpreters[-1], upgraded_release)
+    assert upgraded['manifest'] == upgraded_manifest
+    assert upgraded['binding']['package_id'] != announcements['binding']['package_id']
+    with pytest.raises(ValueError, match='installed package|identity'):
+        require_compatible(announcements, upgraded, manifest)
+    if variant != 'binance-frozen':
+        _assert_new_package_binding(tmp_path, manifest, upgraded_manifest,
+                                   announcements['binding'], replacement['binding'], upgraded['binding'])
     if variant == 'v69':
-        _assert_admitted_runtime_chain(tmp_path, manifest, production['binding'],
-            announcements['binding'], replacement['binding'])
+        _assert_admitted_runtime_chain(tmp_path, manifest, previous['binding'],
+            production['binding'], announcements['binding'])
+
+
+def _assert_new_package_binding(tmp_path, original_manifest, upgraded_manifest,
+                                original, rejected, upgraded):
+    from contextlib import closing
+    from factorlab.strategies.deployment import DeploymentStore
+    owner = dict(market=original_manifest['market'], account_id=original_manifest['account_id'],
+                 strategy_id=original_manifest['strategy_id'], instance_id='migration',
+                 allocation_id='original-allocation')
+    with closing(DeploymentStore(tmp_path / 'package-bindings.db')) as registry:
+        registry.register_instance(owner)
+        with closing(registry.for_instance('migration')) as view:
+            view.register_package(original_manifest)
+            view.bind_runtime(original_manifest['package_id'], original)
+            with pytest.raises(ValueError, match='runtime identity changed'):
+                view.bind_runtime(original_manifest['package_id'], rejected)
+            view.register_package(upgraded_manifest)
+            view.bind_runtime(upgraded_manifest['package_id'], upgraded)
+            view.bind_runtime(original_manifest['package_id'], original)
+            assert view.db.execute('SELECT count(*) FROM instance_runtime_admissions').fetchone()[0] == 0
 
 
 def _assert_admitted_runtime_chain(tmp_path, manifest, original, admitted, replacement):

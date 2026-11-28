@@ -10,6 +10,19 @@ Original POST markers can include prepared adapter dispatch consumption in the s
 
 Targeted independent review identified two defects, both fixed and independently rechecked: an original Alpaca identity discovered during GET recovery must be rejected before proposing a new admission; original recorded-risk rejection confirmations must be included in the atomic plan event. The final affected capital/NAV/dispatch run passed 38 tests with one new fixture failure (missing the required multiplier argument); after correcting that fixture, both accepted/rejected atomic-plan tests passed in 3.00 seconds. An earlier invocation named a nonexistent risk test file and collected no tests; the corrected run used the NAV test file. The original capability audit below records uncovered interfaces as well as implemented primitives; it does not authorize execution.
 
+## Runtime migration qualification
+
+The additional lifecycle admission evidence is relative to main `44cb49bf499298a27075cebe17b1e667d8aaaba9`:
+
+| Module | Exact canonical AST | Qualification |
+| --- | --- | --- |
+| `binance_futures_trading.demo_cloud_storage` | `27cbeecfd27a1c447c9c0cca4810fc53ef32312820328db346a6c33421703595` | Optional replication metadata capture executes inside the existing snapshot freeze; with no callback, the existing snapshot/seal path is unchanged. It neither calculates capital nor dispatches orders. |
+| `disaster_recovery` | `6d4276304969c4b16d889c9479620f5b6f0a0bc95c228d9e101b0dc1dbf1dba4` | Explicit receiver/reducer arguments add quarantined replay before recovery preparation. Default recovery retains the prior path; the extension does not authorize execution or takeover. |
+
+These identities qualify only the host-lifecycle exception. A strategy importing either module retains its exact transitive compute identity. No economic module or newly introduced ledger reducer receives an exception. Account admission, original order/rate/dispatch reservations, capital and ownership preparation, risk history, deployment receipts and task consumption remain frozen even where replication defaults to off: optional activation alone is not proof of economic equivalence.
+
+Consequently the five package probes must reject same-package upgrades from the previous economic releases, including the announcement release `2e02729157b1e6a9c277506533d1af1fc1a6a1a0`. Economic upgrades require a newly qualified package through the existing deployment switch (`wait_flat`, or explicitly authorized bounded reduction), not another runtime-admission receipt. Existing historical runtime admissions remain replayable and do not authorize this upgrade.
+
 ## Recovery-state audit
 
 The running simulated execution roots were inspected through SQLite `mode=ro` connections and `sqlite_schema`; no trading operations or service changes were requested. `schema-inventory.json` records the observed schemas, file sizes, deployed revision and repository baseline. File sizes describe database files at observation, not WAL size, replication traffic, memory use or recoverable data loss. Schema inspection is not a cross-database data snapshot.
