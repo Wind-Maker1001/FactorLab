@@ -281,7 +281,18 @@ def test_alpaca_partial_fill_retains_uncertain_remainder_through_restart(tmp_pat
         assert http.post_ids == ['partial-open', 'allowed-after-cancel']
 
 
-def test_alpaca_owner_tick_reconciles_partial_fill_before_risk_cancellation(tmp_path):
+def test_alpaca_owner_tick_reconciles_partial_fill_before_risk_cancellation(tmp_path, monkeypatch):
+    from factorlab.integrations.alpaca import models
+
+    class TestClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return datetime(2026, 11, 27, 15, tzinfo=timezone.utc).astimezone(tz)
+
+    monkeypatch.setitem(globals(), 'SESSION', '2026-11-27')
+    monkeypatch.setitem(globals(), 'wall_clock', lambda: TestClock.now(timezone.utc))
+    monkeypatch.setattr(models, 'datetime', TestClock)
+
     class RecordingHTTP(AlpacaRiskHTTP):
         def __init__(self):
             super().__init__()
