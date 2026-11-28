@@ -3,11 +3,12 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import json
 import logging
 from time import perf_counter_ns, thread_time_ns
+from uuid import uuid4
 
 from factorlab._process_memory import peak_memory_bytes
 
@@ -140,6 +141,38 @@ class PortfolioRiskRejected(ValueError):
     pass
 
 
+def reduce_portfolio_risk_event(db, event):
+    """Apply original account controls without observing prices or inferring risk."""
+    if event['kind'] == 'PORTFOLIO_RISK_NAV_RECORDED':
+        account = event['account_id']
+        if event['reset_hours']:
+            db.execute('DELETE FROM portfolio_risk_hour WHERE account=?', (account,))
+        db.execute('INSERT INTO portfolio_risk_nav VALUES (?,?) '
+                   'ON CONFLICT(account) DO UPDATE SET payload=excluded.payload',
+                   (account, event['point']))
+        if event['hour'] is not None:
+            db.execute('INSERT INTO portfolio_risk_hour VALUES (?,?,?,?)',
+                       (account, event['hour'], event['observed_at'], event['nav']))
+            db.execute('DELETE FROM portfolio_risk_hour WHERE account=? AND hour<?',
+                       (account, event['hour'] - 745))
+        return
+    if event['kind'] == 'PORTFOLIO_RISK_MULTIPLIERS_RECORDED':
+        db.execute('INSERT INTO portfolio_risk_multipliers VALUES (?,?,?) '
+                   'ON CONFLICT(account,strategy) DO UPDATE SET payload=excluded.payload',
+                   (event['account_id'], event['owner'], event['payload']))
+        return
+    if event['kind'] != 'PORTFOLIO_RISK_CONFIGURED':
+        raise ValueError('unsupported portfolio risk event')
+    account = event['account_id']
+    db.execute('INSERT INTO portfolio_risk_config VALUES (?,?) '
+               'ON CONFLICT(account) DO UPDATE SET payload=excluded.payload',
+               (account, event['configuration']))
+    for owner, payload in event['owner_multipliers'].items():
+        db.execute('INSERT INTO portfolio_risk_multipliers VALUES (?,?,?) '
+                   'ON CONFLICT(account,strategy) DO UPDATE SET payload=excluded.payload',
+                   (account, owner, payload))
+
+
 class PortfolioRisk:
     """Persist controls and bounded NAV observations alongside shared reservations."""
 
@@ -151,7 +184,10 @@ class PortfolioRisk:
         self.pending_commitments = None
         self.account_observation = None
 
-    def configure(self, account_id, limits, multipliers):
+    def configure(self, account_id, limits, multipliers, *, event_writer=None, event_id=None):
+        """Admit controls under the account lock, outside any caller write transaction."""
+        if event_writer is not None:
+            event_writer.resume()
         with self.store.transaction():
             self.store.capital_policy.mode(account_id)
             current = self.config(account_id)
@@ -159,29 +195,60 @@ class PortfolioRisk:
                 multipliers = current[1] if current is not None else {}
             for multiplier in multipliers.values():
                 decimal_value(multiplier, 'economic multiplier', positive=True)
+            owner_values = {}
             if current is None:
                 for owner, payload in self.db.execute(
                         'SELECT strategy,payload FROM portfolio_plans WHERE account=? ORDER BY rowid',
                         (account_id,)):
-                    multipliers_from_plan = decode(json.loads(payload))['request']['multipliers']
-                    if multipliers_from_plan:
-                        self.record_multipliers(account_id, owner, multipliers_from_plan)
-            self.db.execute(
-                'INSERT INTO portfolio_risk_config VALUES (?,?) '
-                'ON CONFLICT(account) DO UPDATE SET payload=excluded.payload',
-                (account_id, dumps(dict(limits=asdict(limits), multipliers=multipliers))))
+                    values = decode(json.loads(payload))['request']['multipliers']
+                    if values:
+                        if owner not in owner_values:
+                            saved = self.db.execute(
+                                'SELECT payload FROM portfolio_risk_multipliers WHERE account=? AND strategy=?',
+                                (account_id, owner)).fetchone()
+                            owner_values[owner] = {} if saved is None else decode(json.loads(saved[0]))
+                        owner_values[owner].update(values)
+            configuration = dumps(dict(limits=asdict(limits), multipliers=multipliers))
+            if current is not None and configuration == dumps(dict(limits=asdict(current[0]), multipliers=current[1])):
+                return
+            event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                         kind='PORTFOLIO_RISK_CONFIGURED', account_id=account_id,
+                         configuration=configuration,
+                         owner_multipliers={owner: dumps(values) for owner, values in owner_values.items()})
+            if event_writer is None:
+                self.store.capital_policy._require_unreplicated_policy_write()
+                reduce_portfolio_risk_event(self.db, event)
+                return
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     def config(self, account_id):
         row = self.db.execute('SELECT payload FROM portfolio_risk_config WHERE account=?',
                               (account_id,)).fetchone()
         if row is not None:
             config = decode(json.loads(row[0]))
-            return PortfolioRiskLimits(**config['limits']), config['multipliers']
+            limits = config['limits']
+            for name in ('paused_strategies', 'paused_symbols', 'emergency_reduction_reasons'):
+                limits[name] = tuple(limits[name])
+            return PortfolioRiskLimits(**limits), config['multipliers']
         return None
 
-    def _nav_history(self, account, equity, observed_at, limits, healthy):
+    def _nav_history(self, account, equity, observed_at, limits, healthy, *,
+                     event_writer=None, event_id=None):
+        if event_writer is not None:
+            event_writer.resume()
+        result, event = self._prepare_nav_history(account, equity, observed_at, limits, healthy,
+                                                  event_id=event_id)
+        if event is not None:
+            if event_writer is None:
+                self.store.capital_policy._require_unreplicated_policy_write()
+                reduce_portfolio_risk_event(self.db, event)
+            else:
+                event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
+        return result
+
+    def _prepare_nav_history(self, account, equity, observed_at, limits, healthy, *, event_id=None):
         if equity is None or not healthy:
-            return None, None, None
+            return (None, None, None), None
         flow = account.cumulative_external_cash_flow
         account_id = account.account_id
         hour = int(observed_at.timestamp()) // 3600
@@ -190,13 +257,13 @@ class PortfolioRisk:
             'SELECT payload FROM portfolio_risk_nav WHERE account=?', (account_id,)).fetchone()
         previous = decode(json.loads(saved[0])) if saved else None
         if previous and observed_at < previous['at']:
-            return None, None, None
+            return (None, None, None), None
         if flow is None:
-            return None, None, None
-        if previous and flow is not None and previous.get('initial_flow') is None:
+            return (None, None, None), None
+        reset_hours = bool(previous and previous.get('initial_flow') is None)
+        if reset_hours:
             # Raw and legacy adjusted observations lack the starting external
             # flow. Start a new series with the first observed reference.
-            self.db.execute('DELETE FROM portfolio_risk_hour WHERE account=?', (account_id,))
             previous = None
         initial_flow = flow if previous is None else previous.get('initial_flow')
         # Keep the first observed equity as the reference and remove
@@ -206,15 +273,13 @@ class PortfolioRisk:
         start = nav if previous is None or day != previous['day'] else previous['start']
         point = dict(at=observed_at, peak=peak, start=start, day=day,
                      flow_adjusted=initial_flow is not None, initial_flow=initial_flow)
+        event = None
         if point != previous:
-            self.db.execute('INSERT INTO portfolio_risk_nav VALUES (?,?) '
-                            'ON CONFLICT(account) DO UPDATE SET payload=excluded.payload',
-                            (account_id, dumps(point)))
-        if previous is None or hour != int(previous['at'].timestamp()) // 3600:
-            self.db.execute('INSERT INTO portfolio_risk_hour VALUES (?,?,?,?)',
-                            (account_id, hour, observed_at.isoformat(), str(nav)))
-            self.db.execute('DELETE FROM portfolio_risk_hour WHERE account=? AND hour<?',
-                            (account_id, hour - 745))
+            event = dict(event_id=event_id or str(uuid4()),
+                         targets=['portfolio'], kind='PORTFOLIO_RISK_NAV_RECORDED',
+                         account_id=account_id, point=dumps(point), reset_hours=reset_hours,
+                         hour=hour if previous is None or hour != int(previous['at'].timestamp()) // 3600 else None,
+                         observed_at=observed_at.isoformat(), nav=str(nav))
         cutoff = observed_at - timedelta(hours=limits.rolling_loss_hours)
         baseline = self.db.execute(
             'SELECT nav FROM portfolio_risk_hour WHERE account=? AND hour BETWEEN ? AND ? '
@@ -222,18 +287,34 @@ class PortfolioRisk:
             (account_id, int(cutoff.timestamp()) // 3600 - 1, int(cutoff.timestamp()) // 3600,
              (cutoff - timedelta(hours=1)).isoformat(), cutoff.isoformat())).fetchone()
         drawdown = (peak - nav) / peak if peak > ZERO else None
-        rolling = max(ZERO, Decimal(baseline[0]) - nav) if baseline else None
-        return drawdown, max(ZERO, start - nav), rolling
+        rolling = max(ZERO, Decimal(baseline[0]) - nav) if baseline and not reset_hours else None
+        return (drawdown, max(ZERO, start - nav), rolling), event
 
-    def record_multipliers(self, account_id, owner, values):
+    def record_multipliers(self, account_id, owner, values, *, event_writer=None, event_id=None,
+                           _prepared_events=None):
+        """Preserve original merged exposure metadata under account ownership."""
+        for multiplier in values.values():
+            decimal_value(multiplier, 'economic multiplier', positive=True)
+        if event_writer is not None:
+            event_writer.resume()
         saved = self.db.execute(
             'SELECT payload FROM portfolio_risk_multipliers WHERE account=? AND strategy=?',
             (account_id, owner)).fetchone()
         previous = {} if saved is None else decode(json.loads(saved[0]))
-        self.db.execute(
-            'INSERT INTO portfolio_risk_multipliers VALUES (?,?,?) '
-            'ON CONFLICT(account,strategy) DO UPDATE SET payload=excluded.payload',
-            (account_id, owner, dumps(previous | values)))
+        payload = dumps(previous | values)
+        if saved is not None and payload == saved[0]:
+            return
+        event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                     kind='PORTFOLIO_RISK_MULTIPLIERS_RECORDED', account_id=account_id,
+                     owner=owner, payload=payload)
+        if event_writer is None:
+            if _prepared_events is None:
+                self.store.capital_policy._require_unreplicated_policy_write()
+            else:
+                _prepared_events.append(event)
+            reduce_portfolio_risk_event(self.db, event)
+            return
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     @staticmethod
     def emergency_active(limits, snapshot):
@@ -259,12 +340,36 @@ class PortfolioRisk:
         multipliers = {symbol: max(amounts) for symbol, amounts in values.items()}
         return multipliers | configured, ambiguous
 
-    def observe(self, account, currency, now, config, *, orders=None, equity=None, include_pending=True):
+    def observe(self, account, currency, now, config, *, orders=None, equity=None, include_pending=True,
+                event_writer=None, event_id=None, _prepared_events=None):
+        """Return risk only after original history admission under account ownership.
+
+        Writer-backed observation must run outside a caller SQLite transaction.
+        """
+        if event_writer is not None:
+            event_writer.resume()
         if self.account_observation is not None:
             account = self.account_observation(account)
         started, cpu = perf_counter_ns(), thread_time_ns()
+        pending = []
+
+        def prepare_history(*args):
+            result, event = self._prepare_nav_history(*args, event_id=event_id)
+            if event is not None:
+                pending.append(event)
+            return result
+
         try:
-            return self._observe(account, currency, now, config, orders, equity, include_pending)
+            result = self._observe(account, currency, now, config, orders, equity, include_pending,
+                                   prepare_history if event_writer is not None or _prepared_events is not None
+                                   else self._nav_history)
+            for event in pending:
+                if _prepared_events is not None:
+                    _prepared_events.append(event)
+                    reduce_portfolio_risk_event(self.db, event)
+                else:
+                    event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
+            return result
         finally:
             cpu_ns, decision_ns = thread_time_ns() - cpu, perf_counter_ns() - started
             rss = peak_memory_bytes()
@@ -272,7 +377,7 @@ class PortfolioRisk:
             log.info('portfolio_risk_calculation account=%s cpu_ns=%d decision_ns=%d process_peak_rss_bytes=%s',
                      account.account_id, cpu_ns, decision_ns, rss)
 
-    def _observe(self, account, currency, now, config, orders, equity, include_pending):
+    def _observe(self, account, currency, now, config, orders, equity, include_pending, record_history):
         limits, configured = config
         account_id = account.account_id
         multipliers, ambiguous = self._multipliers(account_id, configured)
@@ -428,7 +533,7 @@ class PortfolioRisk:
             if value is None:
                 missing.add(name)
         healthy = not missing.intersection({'reconciliation', 'account_age', 'positions'})
-        drawdown, daily, rolling = self._nav_history(account, equity, observed_at, limits, healthy)
+        drawdown, daily, rolling = record_history(account, equity, observed_at, limits, healthy)
         if drawdown is None:
             missing.add('drawdown')
         if daily is None:

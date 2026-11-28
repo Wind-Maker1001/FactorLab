@@ -1,6 +1,7 @@
 """Restore the simulated execution ledgers and publish a fenced handoff."""
 
 import argparse
+from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 import json
 import os
@@ -97,8 +98,16 @@ def _prepare(root, manifest, *, source_digest, timer, proof=None):
     return result
 
 
-def recover(backup, destination, *, legacy_since=None):
-    """Publish a recovered investigation directory that remains quarantined."""
+def recover(backup, destination, *, legacy_since=None, receiver=None, reducers=None):
+    """Publish a recovered investigation directory that remains quarantined.
+
+    Optional incremental replay uses an existing durable receiver and the
+    runtime's fixed domain reducers before official GET reconciliation.
+    """
+    if (receiver is None) != (reducers is None):
+        raise ValueError('incremental recovery requires both receiver and fixed reducers')
+    if receiver is not None and legacy_since is not None:
+        raise ValueError('incremental recovery requires a verified recovery manifest')
     timer = monotonic()
     backup = storage._root(backup)
     if legacy_since is None:
@@ -112,7 +121,16 @@ def recover(backup, destination, *, legacy_since=None):
                         final_target=None)
         digest = None
         root = storage.restore_state(backup, destination)
-    return _prepare(root, manifest, source_digest=digest, timer=timer)
+    position = None
+    if receiver is not None:
+        from .ledger_replay import restored_account
+        with restored_account(root, manifest, reducers) as replay:
+            position = replay.catch_up(receiver)
+    result = _prepare(root, manifest, source_digest=digest, timer=timer)
+    if position is not None:
+        result['incremental_replay'] = dict(position=asdict(position), all_declared_domains_applied=True)
+        storage.atomic_json(root / RESULT, result)
+    return result
 
 
 def take_over(backup, destination, *, fence_file, revision, configuration):

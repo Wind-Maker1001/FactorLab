@@ -4,6 +4,8 @@ from contextlib import closing
 import json
 import signal
 import sqlite3
+from datetime import datetime, timezone
+from uuid import uuid4
 
 from factorlab.trading.realtime import PersistenceConflict
 from factorlab.strategies.loader import LoadedStrategy
@@ -32,18 +34,51 @@ class MarketClient(ObservedClient):
         return super().request(method, path, params, signed=signed)
 
 
+def reduce_strategy_control(db, event):
+    """Apply original control admission on either the source or a restored store."""
+    if event['kind'] == 'STRATEGY_CONTROL_INITIALIZE':
+        encoded = json.dumps(event['configuration'], sort_keys=True)
+        saved = db.execute('SELECT configuration FROM strategy_control WHERE id=1').fetchone()
+        if saved is not None and saved[0] != encoded:
+            raise PersistenceConflict('strategy worker configuration changed')
+        db.execute("INSERT OR IGNORE INTO strategy_control VALUES (1, ?, 'RUNNING', '{}')", (encoded,))
+    elif event['kind'] == 'STRATEGY_CONTROL_REQUEST':
+        if event['desired'] not in {'RUNNING', 'PAUSED', 'STOPPED'}:
+            raise ValueError('invalid strategy control state')
+        if db.execute('SELECT 1 FROM strategy_control WHERE id=1').fetchone() is None:
+            raise SafetyBlocked('strategy has not been started')
+        db.execute('UPDATE strategy_control SET desired=? WHERE id=1', (event['desired'],))
+    else:
+        raise ValueError('unsupported strategy control event')
+
+
 class StrategyControl:
     """Small control record alongside feed cursors, not a trading journal."""
-    def __init__(self, path, configuration=None):
+    def __init__(self, path, configuration=None, *, event_writer_factory=None):
         self.db = sqlite3.connect(path)
         self.db.execute('PRAGMA synchronous=FULL')
         self.db.execute('CREATE TABLE IF NOT EXISTS strategy_control (id INTEGER PRIMARY KEY, configuration TEXT, desired TEXT, report TEXT)')
+        self.event_writer = None if event_writer_factory is None else event_writer_factory(self.db)
+        if self.event_writer is not None:
+            self.event_writer.resume()
         if configuration is not None:
             encoded = json.dumps(configuration, sort_keys=True)
-            with self.db:
-                self.db.execute("INSERT OR IGNORE INTO strategy_control VALUES (1, ?, 'RUNNING', '{}')", (encoded,))
-            if self.db.execute('SELECT configuration FROM strategy_control WHERE id=1').fetchone()[0] != encoded:
+            saved = self.db.execute('SELECT configuration FROM strategy_control WHERE id=1').fetchone()
+            if saved is not None and saved[0] != encoded:
                 raise PersistenceConflict('strategy worker configuration changed')
+            if saved is None:
+                event = dict(event_id='strategy-control:initialize',
+                             targets=['strategy-control'], kind='STRATEGY_CONTROL_INITIALIZE',
+                             configuration=configuration)
+                self._apply_control(event)
+
+    def _apply_control(self, event):
+        if self.event_writer is not None:
+            return self.event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
+        if self.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='dr_replay_identity'").fetchone():
+            raise SafetyBlocked('replicated strategy control requires its account event writer')
+        with self.db:
+            reduce_strategy_control(self.db, event)
 
     def desired(self):
         row = self.db.execute('SELECT desired FROM strategy_control WHERE id=1').fetchone()
@@ -51,12 +86,13 @@ class StrategyControl:
             raise SafetyBlocked('strategy has not been started')
         return row[0]
 
-    def request(self, state):
+    def request(self, state, *, event_id=None):
         if state not in {'RUNNING', 'PAUSED', 'STOPPED'}:
             raise ValueError('invalid strategy control state')
         self.desired()
-        with self.db:
-            self.db.execute('UPDATE strategy_control SET desired=? WHERE id=1', (state,))
+        return self._apply_control(dict(event_id=event_id or str(uuid4()),
+                                        targets=['strategy-control'],
+                                        kind='STRATEGY_CONTROL_REQUEST', desired=state))
 
     def report(self, payload):
         with self.db:

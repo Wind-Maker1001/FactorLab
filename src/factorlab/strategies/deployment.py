@@ -1,5 +1,6 @@
 """Instance-scoped extension of the restartable deployment switch saga."""
 from contextlib import contextmanager
+from datetime import datetime, timezone
 import json
 import sqlite3
 from time import time
@@ -33,9 +34,39 @@ TERMINAL = {'FILLED', 'CANCELED', 'REJECTED', 'EXPIRED'}
 PENDING = "phase NOT IN ('SUCCEEDED','ROLLED_BACK','FAILED')"
 
 
+def reduce_deployment_decision(db, event):
+    """Restore original decisions/checkpoints without invoking strategy inference."""
+    receipt = decode(event['receipt'])
+    instance = receipt['binding']['instance_id']
+    package, watermark = receipt['package_id'], receipt['event_id']
+    binding = db.execute('SELECT binding FROM strategy_registry WHERE instance_id=?', (instance,)).fetchone()
+    if binding is None or json.loads(binding[0]) != receipt['binding']:
+        raise ValueError('receipt binding mismatch')
+    if event['kind'] == 'STRATEGY_DECISION_COMMITTED':
+        state = db.execute('SELECT active,checkpoint,watermark FROM instance_deployment WHERE instance_id=?',
+                           (instance,)).fetchone()
+        if (state is None or state[0] != package
+                or content_identity(json.loads(state[1])) != event['previous_checkpoint']
+                or state[2] != event['previous_watermark']):
+            raise ValueError('original decision predecessor does not match deployment state')
+        db.execute('INSERT INTO instance_decisions VALUES(?,?,?,?,?)',
+                   (instance, package, watermark, receipt['input_identity'], dumps(receipt)))
+        db.execute('UPDATE instance_deployment SET checkpoint=?,watermark=? WHERE instance_id=?',
+                   (encoded(receipt['decision']['state']).decode(), watermark, instance))
+    elif event['kind'] == 'STRATEGY_DECISION_ACKNOWLEDGED':
+        saved = db.execute('SELECT result FROM instance_decisions WHERE instance_id=? AND version=? AND watermark=?',
+                           (instance, package, watermark)).fetchone()
+        if saved is None or decode(json.loads(saved[0])) != receipt:
+            raise ValueError('dispatch acknowledgement lacks its original decision')
+        db.execute('INSERT OR IGNORE INTO instance_dispatches VALUES(?,?,?)', (instance, package, watermark))
+    else:
+        raise ValueError('unsupported deployment decision event')
+
+
 class DeploymentStore:
-    def __init__(self, path, *, instance_id=LEGACY, qualify=None):
+    def __init__(self, path, *, instance_id=LEGACY, qualify=None, event_writer_factory=None):
         self.path, self.instance_id, self.qualify = path, instance_id, qualify
+        self.event_writer_factory = event_writer_factory
         self._controller_lock = Lock()
         self.db = sqlite3.connect(path, timeout=10)
         self.db.row_factory = sqlite3.Row
@@ -111,6 +142,13 @@ class DeploymentStore:
         if not self.db.execute('SELECT 1 FROM strategy_registry WHERE instance_id=?', (instance_id,)).fetchone():
             self.db.close()
             raise ValueError('strategy instance is not registered')
+        self.event_writer = None if event_writer_factory is None else event_writer_factory(self.db)
+        if self.event_writer is not None:
+            self.event_writer.resume()
+
+    def _require_unreplicated_decision_write(self):
+        if self.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='dr_replay_identity'").fetchone():
+            raise PermissionError('replicated decisions require their account event writer')
 
     @property
     def legacy(self):
@@ -220,7 +258,8 @@ class DeploymentStore:
     def for_instance(self, instance_id):
         if self.path == ':memory:':
             raise ValueError('instance views require a persistent database')
-        return type(self)(self.path, instance_id=instance_id, qualify=self.qualify)
+        return type(self)(self.path, instance_id=instance_id, qualify=self.qualify,
+                          event_writer_factory=self.event_writer_factory)
 
     def instances(self):
         return [dict(instance_id=r['instance_id'], binding=json.loads(r['binding']) if r['binding'] else None,
@@ -469,6 +508,16 @@ class DeploymentStore:
     def acknowledge(self, receipt):
         if receipt['binding'] != self.binding():
             raise ValueError('receipt binding mismatch')
+        if self.event_writer is not None:
+            self.event_writer.resume()
+            if self.decision(receipt['package_id'], receipt['event_id'], receipt['input_identity']) != receipt:
+                raise ValueError('dispatch acknowledgement lacks its original decision')
+            self.event_writer.submit(dict(
+                event_id=dumps(['deployment-ack', self.instance_id, receipt['package_id'], receipt['event_id']]),
+                targets=['deployment'], kind='STRATEGY_DECISION_ACKNOWLEDGED',
+                receipt=json.loads(dumps(receipt))), committed_at=datetime.now(timezone.utc).isoformat())
+            return
+        self._require_unreplicated_decision_write()
         with self.atomic():
             self.db.execute('INSERT OR IGNORE INTO instance_dispatches VALUES(?,?,?)',
                             (self.instance_id, receipt['package_id'], receipt['event_id']))
@@ -485,6 +534,8 @@ class DeploymentStore:
                         expected_watermark=_UNSET, model=None):
         if self.legacy:
             raise ValueError('V2 decision journal requires a registered instance')
+        if self.event_writer is not None:
+            self.event_writer.resume()
         with self.atomic():
             saved = self.decision(package_id, event_id, input_identity)
             if saved is not None:
@@ -504,9 +555,18 @@ class DeploymentStore:
             if model is not None:
                 self.require_new_model_event(event)
                 receipt['model'] = model
-            self._insert('decisions', dict(version=package_id, watermark=event_id, input_identity=input_identity, result=dumps(receipt)))
-            self._update('deployment', dict(checkpoint=encoded(decision['state']).decode(), watermark=event_id))
-            return receipt
+            if self.event_writer is None:
+                self._require_unreplicated_decision_write()
+                self._insert('decisions', dict(version=package_id, watermark=event_id, input_identity=input_identity, result=dumps(receipt)))
+                self._update('deployment', dict(checkpoint=encoded(decision['state']).decode(), watermark=event_id))
+                return receipt
+            original = dict(
+                event_id=dumps(['deployment-decision', self.instance_id, package_id, event_id]),
+                targets=['deployment'], kind='STRATEGY_DECISION_COMMITTED',
+                receipt=json.loads(dumps(receipt)), previous_checkpoint=content_identity(state['checkpoint']),
+                previous_watermark=state['watermark'])
+        self.event_writer.submit(original, committed_at=datetime.now(timezone.utc).isoformat())
+        return receipt
 
     def migrated_checkpoint(self, switch, strategy):
         if self.legacy:

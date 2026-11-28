@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from contextlib import closing
 from dataclasses import asdict, is_dataclass
 from decimal import Decimal
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 
@@ -12,18 +13,28 @@ from .portfolio_execution import PortfolioStore
 from .storage import decode, dumps
 
 
-def enqueue(store, account_id, command_id, request):
+def enqueue(store, account_id, command_id, request, *, event_writer=None):
+    if event_writer is not None:
+        event_writer.resume()
     with store.transaction():
         if not store.capital_policy.is_configured(account_id):
             raise ValueError('configured account required in this portfolio database')
         row = store.db.execute(
             'SELECT request FROM capital_commands WHERE account=? AND command=?',
             (account_id, command_id)).fetchone()
-        if row is None:
+        if row is not None:
+            if decode(json.loads(row[0])) != request:
+                raise ValueError('capital command identity conflicts with original request')
+            return
+        if event_writer is None:
+            _require_unreplicated_commands(store.db)
             store.db.execute('INSERT INTO capital_commands VALUES (?,?,?,NULL)',
                              (account_id, command_id, dumps(request)))
-        elif decode(json.loads(row[0])) != request:
-            raise ValueError('capital command identity conflicts with original request')
+            return
+        original = dict(event_id=dumps(['capital-command', account_id, command_id]), targets=['portfolio'],
+                        kind='CAPITAL_COMMAND_ENQUEUED', account_id=account_id, command_id=command_id,
+                        request=json.loads(dumps(request)))
+    event_writer.submit(original, committed_at=datetime.now(timezone.utc).isoformat())
 
 
 def command_result(store, account_id, command_id):
@@ -34,6 +45,11 @@ def command_result(store, account_id, command_id):
     return dict(status='PENDING') if row[0] is None else decode(json.loads(row[0]))
 
 
+def _require_unreplicated_commands(db):
+    if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='dr_replay_identity'").fetchone():
+        raise PermissionError('replicated capital commands require their account event writer')
+
+
 def process_command(manager, account_id, *, operating_errors=()):
     """Process one queued operation on the existing account owner's turn."""
     db = manager.store.db
@@ -41,10 +57,16 @@ def process_command(manager, account_id, *, operating_errors=()):
                      'ORDER BY rowid LIMIT 1', (account_id,)).fetchone()
     if row is None:
         return
+    if manager.event_writer is None:
+        _require_unreplicated_commands(db)
     command, payload = row
     request = decode(json.loads(payload))
     action = request.pop('action')
     try:
+        if manager.event_writer is not None:
+            manager.event_writer.resume()
+            if command_result(manager.store, account_id, command)['status'] != 'PENDING':
+                return
         if action not in {'snapshot', 'history', 'change', 'advance', 'release', 'performance'}:
             raise ValueError('unsupported capital command')
         if action in {'snapshot', 'history'}:
@@ -53,6 +75,10 @@ def process_command(manager, account_id, *, operating_errors=()):
             data = getattr(manager, action)(account_id=account_id, **request)
     except (ValueError, KeyError, DataQualityError, PermissionError, TimeoutError, ConnectionError,
             *operating_errors) as error:
+        if manager.event_writer is not None and manager.event_writer.admission.pending() is not None:
+            # An offsite-admitted result may still take effect after a lost ACK.
+            # Keep the original command queued for the owner's next turn.
+            return
         result = dict(status='REJECTED', reason=str(error))
     else:
         if action == 'history':
@@ -60,9 +86,16 @@ def process_command(manager, account_id, *, operating_errors=()):
         if action == 'performance':
             data['returns'] = asdict(data['returns'])
         result = dict(status='COMPLETE', data=asdict(data) if is_dataclass(data) else data)
-    with manager.store.transaction():
-        db.execute('UPDATE capital_commands SET result=? WHERE account=? AND command=?',
-                   (dumps(result), account_id, command))
+    if manager.event_writer is not None:
+        manager.event_writer.submit(dict(
+            event_id=dumps(['capital-command-result', account_id, command]), targets=['portfolio'],
+            kind='CAPITAL_COMMAND_COMPLETED', account_id=account_id, command_id=command,
+            original_request=payload, result=json.loads(dumps(result))),
+            committed_at=datetime.now(timezone.utc).isoformat())
+    else:
+        with manager.store.transaction():
+            db.execute('UPDATE capital_commands SET result=? WHERE account=? AND command=?',
+                       (dumps(result), account_id, command))
 
 
 def main(argv=None):

@@ -73,7 +73,7 @@ def test_allocation_identity_cannot_fund_two_instances(tmp_path):
     executor.allocate(account_id='paper', strategy_id='one', allocation_id='stable-allocation',
         capital=D(40), initial_cash=D(40), official_equity=D(100))
     policy.bind(account_id='paper', strategy_id='one', instance_id='one', allocation_id='stable-allocation')
-    with pytest.raises(sqlite3.IntegrityError, match='UNIQUE'):
+    with pytest.raises(ValueError, match='allocation identity already belongs'):
         executor.allocate(account_id='paper', strategy_id='two', allocation_id='stable-allocation',
             capital=D(40), initial_cash=D(40), official_equity=D(100))
     assert store.allocation('paper', 'two') is None

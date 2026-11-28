@@ -435,8 +435,12 @@ def recovery_lock(root, market):
 
 
 def recovery_snapshot(root, destination, market, revision, *, task_mailbox=None,
-                      final_target=None, configuration_sha256=None):
-    """Capture the frozen internal ledger. A final snapshot durably seals its source."""
+                      final_target=None, configuration_sha256=None, replication_capture=None):
+    """Capture the frozen internal ledger. A final snapshot durably seals its source.
+
+    replication_capture(databases) runs under the same writer freeze as SQLite
+    backup and returns immutable replication metadata for the recovery manifest.
+    """
     root = _root(root)
     destination = _destination(root, destination)
     if task_mailbox is not None:
@@ -457,6 +461,11 @@ def recovery_snapshot(root, destination, market, revision, *, task_mailbox=None,
         with _freeze_databases(root, destination, task_mailbox=task_mailbox) as databases:
             if not databases:
                 raise SafetyBlocked('the source contains no account databases')
+            if replication_capture is not None:
+                replication = replication_capture(databases)
+                if 'replication' in metadata and metadata['replication'] != replication:
+                    raise SafetyBlocked('sealed source replication connection point changed')
+                metadata = dict(metadata, replication=replication)
             if final_target and not marker.exists():
                 atomic_json(marker, dict(version=1, reason=_DR_SOURCE,
                                          destination=str(destination), metadata=metadata))

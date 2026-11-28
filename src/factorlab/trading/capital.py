@@ -1,10 +1,11 @@
 """Static capital policy over the shared portfolio execution journal."""
 from contextlib import nullcontext
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import StrEnum
 import json
+from uuid import uuid4
 
 from .storage import decode
 
@@ -71,7 +72,12 @@ class AccountRiskSnapshot:
 
 
 class CapitalPolicy:
-    """Policy metadata shares the execution transaction, never a second cash ledger."""
+    """Policy metadata shares the execution transaction, never a second cash ledger.
+
+    Writer-backed calls require the account ownership lock and no surrounding
+    SQLite write transaction across offsite confirmation. Supply a stable event_id
+    when retrying a control request whose application may already have completed.
+    """
 
     def __init__(self, store):
         from .capital_management import SCHEMA
@@ -136,11 +142,14 @@ class CapitalPolicy:
             raise KeyError(account_id)
         return CapitalPolicyMode(row[0])
 
-    def configure(self, *, account_id, currency, budget, fee_rate, mode=None):
+    def configure(self, *, account_id, currency, budget, fee_rate, mode=None,
+                  event_writer=None, event_id=None):
         decimal_value(budget, 'account capital budget', positive=True)
         decimal_value(fee_rate, 'fee reservation rate')
         if not account_id or not currency:
             raise ValueError('account and currency required')
+        if event_writer is not None:
+            event_writer.resume()
         with self.store.transaction():
             previous = self.store.db.execute(
                 'SELECT currency,budget,fee_rate FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
@@ -154,17 +163,41 @@ class CapitalPolicy:
                 raise ValueError('existing allocations exceed account capital budget')
             if previous is None or selected != self.mode(account_id):
                 self._validate_mode(account_id, selected, changing=previous is not None)
-            if previous is None:
-                self.store.db.execute('INSERT INTO capital_accounts (account,currency,budget,fee_rate,mode) '
-                                      'VALUES (?,?,?,?,?)',
-                                      (account_id, currency, str(budget), str(fee_rate), selected.value))
-            elif selected != self.mode(account_id):
-                self.store.db.execute('UPDATE capital_accounts SET mode=? WHERE account=?',
-                                      (selected.value, account_id))
             existing = set(self.store.db.execute('SELECT symbol,strategy FROM portfolio_claims WHERE account=?', (account_id,)))
             existing.update((order['record'].snapshot.intent.instrument_id, owner) for owner, order in self._orders(account_id))
-            for symbol, owner in existing:
-                self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, owner, original=True).max_instrument_exposure)
+            ceilings = {}
+            for symbol, owner in sorted(existing):
+                limit = self.limits(account_id, owner, original=True).max_instrument_exposure
+                row = self.store.db.execute(
+                    'SELECT max_exposure FROM capital_symbol_limits WHERE account=? AND symbol=?',
+                    (account_id, symbol)).fetchone()
+                if row is not None:
+                    limit = min(limit, Decimal(row[0]))
+                ceilings[symbol] = min(ceilings.get(symbol, limit), limit)
+            changed = previous is None or selected != self.mode(account_id)
+            changed |= any((row := self.store.db.execute(
+                'SELECT max_exposure FROM capital_symbol_limits WHERE account=? AND symbol=?',
+                (account_id, symbol)).fetchone()) is None or Decimal(row[0]) != limit
+                for symbol, limit in ceilings.items())
+            if not changed:
+                return
+            if event_writer is None:
+                self._require_unreplicated_policy_write()
+                if previous is None:
+                    self.store.db.execute('INSERT INTO capital_accounts (account,currency,budget,fee_rate,mode) '
+                                          'VALUES (?,?,?,?,?)',
+                                          (account_id, currency, str(budget), str(fee_rate), selected.value))
+                else:
+                    self.store.db.execute('UPDATE capital_accounts SET mode=? WHERE account=?',
+                                          (selected.value, account_id))
+                for symbol, limit in ceilings.items():
+                    self._tighten_symbol_limit(account_id, symbol, limit)
+                return
+            event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                         kind='CAPITAL_ACCOUNT_CONFIGURED', account_id=account_id,
+                         currency=currency, budget=str(budget), fee_rate=str(fee_rate), mode=selected.value,
+                         ceilings=[dict(symbol=symbol, limit=str(limit)) for symbol, limit in ceilings.items()])
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     def _orders(self, account_id):
         for owner, payload in self.store.db.execute(
@@ -231,7 +264,10 @@ class CapitalPolicy:
         if len(signs) > 1:
             raise ValueError(f'shared symbol direction conflict: {symbol}')
 
-    def bind(self, *, account_id, strategy_id, instance_id, allocation_id, logical_strategy=None):
+    def bind(self, *, account_id, strategy_id, instance_id, allocation_id, logical_strategy=None,
+             event_writer=None, event_id=None):
+        if event_writer is not None:
+            event_writer.resume()
         context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
         with context:
             allocation = self.store.allocation(account_id, strategy_id)
@@ -255,8 +291,16 @@ class CapitalPolicy:
             if self.store.db.execute('SELECT 1 FROM capital_instances WHERE account=? '
                     'AND (instance=? OR allocation=?)', (account_id, instance_id, allocation_id)).fetchone():
                 raise ValueError('instance or allocation identity already bound')
-            self.store.db.execute('INSERT INTO capital_instances VALUES (?,?,?,?,?,0)',
-                                  (account_id, strategy_id, instance_id, allocation_id, logical_strategy))
+            if event_writer is None:
+                self._require_unreplicated_policy_write()
+                self.store.db.execute('INSERT INTO capital_instances VALUES (?,?,?,?,?,0)',
+                                      (account_id, strategy_id, instance_id, allocation_id, logical_strategy))
+                return
+            event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                         kind='CAPITAL_INSTANCE_BOUND', account_id=account_id,
+                         strategy_id=strategy_id, instance_id=instance_id,
+                         allocation_id=allocation_id, logical_strategy=logical_strategy)
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     def limits(self, account_id, strategy_id, *, original=False):
         from .control import RiskLimits
@@ -268,8 +312,10 @@ class CapitalPolicy:
         order, symbol, budget = (cap, cap, cap) if row is None else (min(cap, Decimal(value)) for value in row)
         return RiskLimits(max_order_notional=order, max_instrument_exposure=symbol, account_budget=budget)
 
-    def set_limits(self, account_id, strategy_id, limits):
+    def set_limits(self, account_id, strategy_id, limits, *, event_writer=None, event_id=None):
         """Persist an immutable tighter instance projection of existing RiskLimits."""
+        if event_writer is not None:
+            event_writer.resume()
         with self.store.transaction():
             capital = self.store.allocation_basis(account_id, strategy_id)['capital']
             value = (limits.max_order_notional, limits.max_instrument_exposure, limits.account_budget)
@@ -282,14 +328,32 @@ class CapitalPolicy:
                 if tuple(map(Decimal, previous)) != value:
                     raise ValueError('static instance risk limits changed')
                 return
-            self.store.db.execute('INSERT INTO capital_limits VALUES (?,?,?,?,?)',
-                                  (account_id, strategy_id, *map(str, value)))
-            for symbol, in self.store.db.execute('SELECT symbol FROM capital_symbols WHERE account=? AND strategy=?',
-                                                 (account_id, strategy_id)).fetchall():
-                self._tighten_symbol_limit(account_id, symbol, limits.max_instrument_exposure)
+            symbols = [symbol for symbol, in self.store.db.execute(
+                'SELECT symbol FROM capital_symbols WHERE account=? AND strategy=? ORDER BY symbol',
+                (account_id, strategy_id))]
+            if event_writer is None:
+                self._require_unreplicated_policy_write()
+                self.store.db.execute('INSERT INTO capital_limits VALUES (?,?,?,?,?)',
+                                      (account_id, strategy_id, *map(str, value)))
+                for symbol in symbols:
+                    self._tighten_symbol_limit(account_id, symbol, limits.max_instrument_exposure)
+                return
+            ceilings = []
+            for symbol in symbols:
+                row = self.store.db.execute(
+                    'SELECT max_exposure FROM capital_symbol_limits WHERE account=? AND symbol=?',
+                    (account_id, symbol)).fetchone()
+                ceiling = (limits.max_instrument_exposure if row is None
+                           else min(Decimal(row[0]), limits.max_instrument_exposure))
+                ceilings.append(dict(symbol=symbol, limit=str(ceiling)))
+            event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                         kind='CAPITAL_INSTANCE_LIMITS_INITIALIZED', account_id=account_id,
+                         strategy_id=strategy_id, limits=list(map(str, value)), ceilings=ceilings)
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     def validate_orders(self, account, strategy_id, *, include_id=None, risk_now=None,
-                        risk_ids=None, official_equity=None, apply_portfolio=True):
+                        risk_ids=None, official_equity=None, apply_portfolio=True,
+                        _prepared_events=None):
         """Check instance, gross symbol and account projections in the outbox transaction."""
         from .control import RiskRejected, exposure_limit_reason, inventory_effect
         from .contracts import RiskDecision, TERMINAL
@@ -384,7 +448,8 @@ class CapitalPolicy:
             currency = self.store.db.execute('SELECT currency FROM capital_accounts WHERE account=?',
                                              (account_id,)).fetchone()[0]
             snapshot, openings = self.store.portfolio_risk.observe(
-                account, currency, risk_now, config, orders=orders, equity=official_equity)
+                account, currency, risk_now, config, orders=orders, equity=official_equity,
+                _prepared_events=_prepared_events)
             selected = {include_id} if include_id is not None else risk_ids
             for client_id in sorted(selected):
                 opening = openings.get(client_id)
@@ -459,22 +524,64 @@ class CapitalPolicy:
             self.store.db.execute('UPDATE capital_symbol_limits SET max_exposure=? WHERE account=? AND symbol=?',
                                   (str(limit), account_id, symbol))
 
-    def set_symbol_limit(self, account_id, symbol, limit):
+    def set_symbol_limit(self, account_id, symbol, limit, *, event_writer=None, event_id=None):
         """Explicitly tighten the persistent aggregate ceiling; never enlarge it."""
         decimal_value(limit, 'symbol exposure limit')
+        if event_writer is not None:
+            event_writer.resume()
         with self.store.transaction():
             if limit > self.symbol_limit(account_id, symbol):
                 raise ValueError('symbol limit cannot increase the existing risk boundary')
-            self._tighten_symbol_limit(account_id, symbol, limit)
+            if event_writer is None:
+                self._require_unreplicated_policy_write()
+                self._tighten_symbol_limit(account_id, symbol, limit)
+                return
+            event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                         kind='CAPITAL_SYMBOL_LIMIT_TIGHTENED', account_id=account_id,
+                         symbol=symbol, limit=str(limit))
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
-    def claim(self, account_id, strategy_id, symbol):
-        """Register only this funded instance; caller holds the portfolio write transaction."""
+    def _require_unreplicated_policy_write(self):
+        if self.store.db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dr_replay_identity'").fetchone():
+            raise PermissionError('replicated capital policy requires its account event writer')
+
+    def _prepare_claim(self, account_id, strategy_id, symbol):
+        """Materialize policy ownership and its resulting aggregate ceiling."""
         if not symbol:
             raise ValueError('symbol required')
         self.validate_shared_symbol(account_id, strategy_id, symbol)
-        self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, strategy_id, original=True).max_instrument_exposure)
-        self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
-                              (account_id, symbol, strategy_id))
+        limit = self.limits(account_id, strategy_id, original=True).max_instrument_exposure
+        row = self.store.db.execute(
+            'SELECT max_exposure FROM capital_symbol_limits WHERE account=? AND symbol=?',
+            (account_id, symbol)).fetchone()
+        return dict(symbol=symbol, limit=str(limit if row is None else min(limit, Decimal(row[0]))))
+
+    def claim(self, account_id, strategy_id, symbol, *, event_writer=None, event_id=None):
+        """Register a funded instance; writer-backed calls retain account ownership."""
+        if event_writer is not None:
+            event_writer.resume()
+        context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
+        with context:
+            ceiling = self._prepare_claim(account_id, strategy_id, symbol)
+            existing = self.store.db.execute(
+                'SELECT 1 FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
+                (account_id, symbol, strategy_id)).fetchone()
+            previous = self.store.db.execute(
+                'SELECT max_exposure FROM capital_symbol_limits WHERE account=? AND symbol=?',
+                (account_id, symbol)).fetchone()
+            if existing and previous is not None and Decimal(previous[0]) == Decimal(ceiling['limit']):
+                return
+            if event_writer is None:
+                self._require_unreplicated_policy_write()
+                self._tighten_symbol_limit(account_id, symbol, Decimal(ceiling['limit']))
+                self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
+                                      (account_id, symbol, strategy_id))
+                return
+            event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                         kind='CAPITAL_SYMBOL_CLAIMED', account_id=account_id,
+                         strategy_id=strategy_id, **ceiling)
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     def _validate_release(self, account_id, strategy_id, symbol):
         from .contracts import TERMINAL
@@ -486,17 +593,32 @@ class CapitalPolicy:
                     snapshot.status not in TERMINAL or order['uncertain']):
                 raise ValueError('unfinished orders prevent ownership release')
 
-    def release(self, account_id, strategy_id, symbol):
-        """Remove admission only; caller preserves inventory and historical attribution."""
-        self._binding(account_id, strategy_id)
-        self._validate_release(account_id, strategy_id, symbol)
-        self.store.db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
-                              (account_id, symbol, strategy_id))
+    def release(self, account_id, strategy_id, symbol, *, event_writer=None, event_id=None):
+        """Remove policy admission, preserving inventory and historical attribution."""
+        if event_writer is not None:
+            event_writer.resume()
+        context = nullcontext() if self.store.db.in_transaction else self.store.transaction()
+        with context:
+            self._binding(account_id, strategy_id)
+            self._validate_release(account_id, strategy_id, symbol)
+            if self.store.db.execute(
+                    'SELECT 1 FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
+                    (account_id, symbol, strategy_id)).fetchone() is None:
+                return
+            if event_writer is None:
+                self._require_unreplicated_policy_write()
+                self.store.db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
+                                      (account_id, symbol, strategy_id))
+                return
+            event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                         kind='CAPITAL_SYMBOL_RELEASED', account_id=account_id,
+                         strategy_id=strategy_id, symbol=symbol)
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
-    def transfer_flat_ownership(self, account_id, from_strategy, to_strategy, symbols):
-        """Transfer policy claims in the caller's inventory/history transaction."""
+    def _prepare_flat_ownership(self, account_id, from_strategy, to_strategy, symbols):
         self._binding(account_id, from_strategy)
         self._binding(account_id, to_strategy)
+        ceilings = []
         for symbol in symbols:
             self._validate_release(account_id, from_strategy, symbol)
             others = {owner for owner, quantity in self.store.db.execute(
@@ -508,24 +630,47 @@ class CapitalPolicy:
                 raise ValueError(f'position ownership conflict: {symbol}')
             if self.mode(account_id) == CapitalPolicyMode.SHARED_SAME_DIRECTION:
                 self._same_direction(account_id, symbol)
+            limit = self.limits(account_id, to_strategy, original=True).max_instrument_exposure
+            row = self.store.db.execute(
+                'SELECT max_exposure FROM capital_symbol_limits WHERE account=? AND symbol=?',
+                (account_id, symbol)).fetchone()
+            ceilings.append(dict(symbol=symbol, limit=str(limit if row is None else min(limit, Decimal(row[0])))))
+        return ceilings
+
+    def transfer_flat_ownership(self, account_id, from_strategy, to_strategy, symbols):
+        """Transfer policy claims in the caller's inventory/history transaction."""
+        ceilings = self._prepare_flat_ownership(account_id, from_strategy, to_strategy, symbols)
+        self._require_unreplicated_policy_write()
+        for ceiling in ceilings:
+            symbol = ceiling['symbol']
             self.store.db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
                                   (account_id, symbol, from_strategy))
-            self._tighten_symbol_limit(account_id, symbol,
-                                       self.limits(account_id, to_strategy, original=True).max_instrument_exposure)
+            self._tighten_symbol_limit(account_id, symbol, Decimal(ceiling['limit']))
             self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
                                   (account_id, symbol, to_strategy))
 
-    def pause(self, account_id, strategy_id, paused=True):
+    def pause(self, account_id, strategy_id, paused=True, *, event_writer=None, event_id=None):
         if type(paused) is not bool:
             raise ValueError('boolean pause state required')
+        if event_writer is not None:
+            event_writer.resume()
         with self.store.transaction():
             if not paused and self.store.capital_balance(account_id, strategy_id)[3]:
                 raise ValueError('retired capital allocation')
-            cursor = self.store.db.execute(
-                'UPDATE capital_instances SET paused=? WHERE account=? AND strategy=?',
-                (int(paused), account_id, strategy_id))
-            if cursor.rowcount != 1:
+            if self.store.db.execute(
+                    'SELECT 1 FROM capital_instances WHERE account=? AND strategy=?',
+                    (account_id, strategy_id)).fetchone() is None:
                 raise KeyError((account_id, strategy_id))
+            if event_writer is None:
+                self._require_unreplicated_policy_write()
+                self.store.db.execute(
+                    'UPDATE capital_instances SET paused=? WHERE account=? AND strategy=?',
+                    (int(paused), account_id, strategy_id))
+                return
+            event = dict(event_id=event_id or str(uuid4()), targets=['portfolio'],
+                         kind='CAPITAL_INSTANCE_PAUSED', account_id=account_id,
+                         strategy_id=strategy_id, paused=paused)
+        event_writer.submit(event, committed_at=datetime.now(timezone.utc).isoformat())
 
     def propose(self, account_id, optimizer, data):
         """Return an optimizer recommendation; static allocations are never applied."""
