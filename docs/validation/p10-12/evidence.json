@@ -33,6 +33,38 @@
   },
   "acceptance_results": [
     {
+      "id": "explicit-aggregate-retained-journal-preflight",
+      "status": "OFFLINE_ACCEPTED",
+      "evidence_kind": "ISOLATED_EXPLICIT_AGGREGATE_HOST_PREFLIGHT",
+      "observed_at_utc": "2026-11-28T11:44:16.788716Z",
+      "successful_host_constructions": 2,
+      "native_instances": ["V69_CAUSAL"],
+      "generic_instances": ["P10-12-V179", "P10-12-V182"],
+      "allocation_count_before_and_after_restart": [3, 3],
+      "qqq_aggregate_symbol_limit_usd_before_and_after_restart": ["99900", "99900"],
+      "v179_instance_symbol_limit_usd": "50",
+      "v182_instance_symbol_limit_usd": "50",
+      "official_account_writes": 0,
+      "production_journal_writes": 0,
+      "production_configuration_applied": false
+    },
+    {
+      "id": "explicit-aggregate-symbol-policy-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 32,
+      "elapsed_seconds": 28.01,
+      "coverage": ["legacy_defaults", "explicit_ceiling_restart", "no_ceiling_increase", "instance_limit", "aggregate_limit", "pending_and_uncertain_reservations", "legitimate_reduction"],
+      "independent_review": "NO_CONCRETE_CORRECTNESS_FINDINGS",
+      "production_configuration_applied": false
+    },
+    {
+      "id": "explicit-preparation-native-capital-compatibility",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 15,
+      "elapsed_seconds": 50.60,
+      "official_trades": false
+    },
+    {
       "id": "effective-capital-ownership-regression",
       "status": "OFFLINE_ACCEPTED",
       "tests_passed": 45,

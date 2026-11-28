@@ -97,6 +97,9 @@ class CapitalPolicy:
             CREATE TABLE IF NOT EXISTS capital_symbol_limits (
                 account TEXT NOT NULL, symbol TEXT NOT NULL, max_exposure TEXT NOT NULL,
                 PRIMARY KEY(account,symbol));
+            CREATE TABLE IF NOT EXISTS capital_explicit_symbol_limits (
+                account TEXT NOT NULL, symbol TEXT NOT NULL,
+                PRIMARY KEY(account,symbol));
             CREATE TABLE IF NOT EXISTS capital_instances (
                 account TEXT NOT NULL, strategy TEXT NOT NULL, instance TEXT NOT NULL,
                 allocation TEXT NOT NULL, logical_strategy TEXT NOT NULL,
@@ -122,7 +125,7 @@ class CapitalPolicy:
                                  'FROM capital_symbols_exclusive')
                 store.db.execute('DROP TABLE capital_symbols_exclusive')
             for account, symbol, owner in store.db.execute('SELECT account,symbol,strategy FROM capital_symbols').fetchall():
-                self._tighten_symbol_limit(account, symbol, self.limits(account, owner, original=True).max_instrument_exposure)
+                self._apply_owner_symbol_limit(account, owner, symbol)
 
     def is_configured(self, account_id):
         return self.store.db.execute('SELECT 1 FROM capital_accounts WHERE account=?',
@@ -136,7 +139,13 @@ class CapitalPolicy:
             raise KeyError(account_id)
         return CapitalPolicyMode(row[0])
 
-    def configure(self, *, account_id, currency, budget, fee_rate, mode=None):
+    def configure(self, *, account_id, currency, budget, fee_rate, mode=None, symbol_limits=None):
+        """Configure immutable account funding and optional explicit aggregate symbol ceilings.
+
+        Explicit symbols retain independent instance limits without deriving the
+        aggregate ceiling from owners. Existing aggregate ceilings may only tighten;
+        omitted symbols preserve their persisted explicit or owner-derived policy.
+        """
         decimal_value(budget, 'account capital budget', positive=True)
         decimal_value(fee_rate, 'fee reservation rate')
         if not account_id or not currency:
@@ -161,8 +170,19 @@ class CapitalPolicy:
             elif selected != self.mode(account_id):
                 self.store.db.execute('UPDATE capital_accounts SET mode=? WHERE account=?',
                                       (selected.value, account_id))
+            for symbol, limit in ({} if symbol_limits is None else symbol_limits).items():
+                decimal_value(limit, 'aggregate symbol exposure limit')
+                if not symbol or limit > budget:
+                    raise ValueError('aggregate symbol limit requires a symbol and cannot exceed account budget')
+                existing = self.store.db.execute('SELECT max_exposure FROM capital_symbol_limits '
+                    'WHERE account=? AND symbol=?', (account_id, symbol)).fetchone()
+                if existing is not None and limit > Decimal(existing[0]):
+                    raise ValueError('symbol limit cannot increase the existing risk boundary')
+                self._tighten_symbol_limit(account_id, symbol, limit)
+                self.store.db.execute('INSERT OR IGNORE INTO capital_explicit_symbol_limits VALUES (?,?)',
+                                      (account_id, symbol))
             for symbol, owner in self._ownership(account_id, self._orders(account_id)):
-                self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, owner, original=True).max_instrument_exposure)
+                self._apply_owner_symbol_limit(account_id, owner, symbol)
 
     def _orders(self, account_id):
         for owner, payload in self.store.db.execute(
@@ -289,7 +309,7 @@ class CapitalPolicy:
                                   (account_id, strategy_id, *map(str, value)))
             for symbol, in self.store.db.execute('SELECT symbol FROM capital_symbols WHERE account=? AND strategy=?',
                                                  (account_id, strategy_id)).fetchall():
-                self._tighten_symbol_limit(account_id, symbol, limits.max_instrument_exposure)
+                self._apply_owner_symbol_limit(account_id, strategy_id, symbol)
 
     def validate_orders(self, account, strategy_id, *, include_id=None, risk_now=None,
                         risk_ids=None, official_equity=None, apply_portfolio=True):
@@ -452,6 +472,13 @@ class CapitalPolicy:
             raise KeyError((account_id, symbol))
         return Decimal(row[0])
 
+    def _apply_owner_symbol_limit(self, account_id, strategy_id, symbol):
+        explicit = self.store.db.execute('SELECT 1 FROM capital_explicit_symbol_limits '
+            'WHERE account=? AND symbol=?', (account_id, symbol)).fetchone()
+        if explicit is None:
+            self._tighten_symbol_limit(account_id, symbol,
+                self.limits(account_id, strategy_id, original=True).max_instrument_exposure)
+
     def _tighten_symbol_limit(self, account_id, symbol, limit):
         row = self.store.db.execute('SELECT max_exposure FROM capital_symbol_limits '
                                     'WHERE account=? AND symbol=?', (account_id, symbol)).fetchone()
@@ -475,7 +502,7 @@ class CapitalPolicy:
         if not symbol:
             raise ValueError('symbol required')
         self.validate_shared_symbol(account_id, strategy_id, symbol)
-        self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, strategy_id, original=True).max_instrument_exposure)
+        self._apply_owner_symbol_limit(account_id, strategy_id, symbol)
         self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
                               (account_id, symbol, strategy_id))
 
@@ -513,8 +540,7 @@ class CapitalPolicy:
                 self._same_direction(account_id, symbol)
             self.store.db.execute('DELETE FROM capital_symbols WHERE account=? AND symbol=? AND strategy=?',
                                   (account_id, symbol, from_strategy))
-            self._tighten_symbol_limit(account_id, symbol,
-                                       self.limits(account_id, to_strategy, original=True).max_instrument_exposure)
+            self._apply_owner_symbol_limit(account_id, to_strategy, symbol)
             self.store.db.execute('INSERT OR IGNORE INTO capital_symbols VALUES (?,?,?)',
                                   (account_id, symbol, to_strategy))
 

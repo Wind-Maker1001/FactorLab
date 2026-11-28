@@ -62,7 +62,8 @@ class StrategyInstances:
         if policy is not None:
             self.store.capital_policy.configure(account_id=facts.account_id,
                 currency=policy['currency'], budget=D(policy['budget']), fee_rate=D(policy['fee_rate']),
-                mode=policy.get('mode'))
+                mode=policy.get('mode'),
+                symbol_limits={symbol: D(limit) for symbol, limit in policy.get('symbol_limits', {}).items()})
         for registration in configuration['instances']:
             binding = registration['binding']
             if binding['account_id'] != facts.account_id:
