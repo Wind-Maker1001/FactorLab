@@ -33,6 +33,24 @@
   },
   "acceptance_results": [
     {
+      "id": "binance-original-capital-source-investigation",
+      "status": "FAILED",
+      "evidence_file": "binance-capital-source-index.json",
+      "bounded_receipt_filename_search": {"maximum_depth": 3, "matches": []},
+      "missing_evidence": ["original_allocation_cash_basis", "inter_allocation_cash_settlement", "current_budget_ownership"],
+      "account_writes": 0,
+      "journal_writes": 0
+    },
+    {
+      "id": "company-action-date-fixture-integration",
+      "status": "OFFLINE_ACCEPTED",
+      "source_commit": "b8ea9e686005e4440c89491043dda386e28eff33",
+      "integrated_commit": "24816e9",
+      "tests_passed": 31,
+      "elapsed_seconds": 72.90,
+      "test_files": ["tests/integrations/test_portfolio_account_risk_http.py", "tests/integrations/test_alpaca_corporate_activities.py"]
+    },
+    {
       "id": "alpaca-capital-budget-and-cash-boundaries",
       "status": "ONLINE_ACCEPTED",
       "scope": "CAPITAL_REQUEST_REJECTION_NOT_ORDER_RISK",

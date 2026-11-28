@@ -10,7 +10,7 @@ Binance 当前是 legacy-grid，不是多实例验收结果。08:06:30 UTC 健�
 
 ## 当前验收状态
 
-本次已完成公告输入修复的在线验证及隔离资本构造预检，尚未产生官方订单、成交或生产资本变更。逐项结果和原始回执关联见 [evidence.json](evidence.json)。健康快照中的历史成交不标为本次多策略生命周期证据。
+本次已完成公告输入修复、Alpaca 三实例部署及闲置资本操作的在线验证；尚未产生本次验收的新官方订单或成交。逐项结果和原始回执关联见 [evidence.json](evidence.json)。健康快照中的历史成交不标为本次多策略生命周期证据。
 
 现有多实例、动态资本、资本命令恢复和 V179/V182 定向回归为 60 项通过（275.13 秒），证据等级为 `OFFLINE_ACCEPTED`，不代表本次官方成交。新增只读采集入口为 `tools/p10_12_online_acceptance.py`，实际主机快照见 [runtime-baseline.json](runtime-baseline.json)。采集包含活跃 WAL 的账本计数与进程 PSS/RSS/Swap，不输出账户标识或凭据。
 
@@ -34,6 +34,8 @@ Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQ
 
 两项资本边界验证于 12:35:09/12:35:55 UTC 完成：公共池无剩余预算时申请追加 1 USD、从权益 50 USD 的 V179 申请精确撤回 51 USD，均返回 INSUFFICIENT_CAPITAL、applied=0、released_budget=0；前者 executable=0，后者 executable=50，没有部分执行精确请求。12:36:09 心跳仍健康。失败请求保留审计事件，不是经济划拨；见 [alpaca-capital-boundary-state.json](alpaca-capital-boundary-state.json)。
 
+#278 的公司行为日期测试兼容修复已原样整合（来源 b8ea9e6，本分支 24816e9），未修改生产日期校验或公告路径。受影响的 `test_portfolio_account_risk_http.py` 与 `test_alpaca_corporate_activities.py` 合计 31 项通过（72.90 秒）。
+
 ## 验收矩阵
 
 | 范围 | 状态 | 证据与下一触发条件 |
@@ -48,6 +50,8 @@ Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQ
 | 资本追加、撤回、转移、分阶段回收及 TWR/XIRR | IMPLEMENTED | 既有资本路径有离线回归；本次未形成在线资本事件证据 |
 | 风险增险拒绝、合法减仓及重启恢复 | IMPLEMENTED | 既有风控路径有离线回归；本次未形成在线闭环证据 |
 | 2 vCPU / 1 GiB 多实例实际负载 | IMPLEMENTED | 已采集三实例共享 owner 休市运行及资本处理负载；Alpaca PSS 90382 KiB、RSS 100408 KiB、cgroup MemoryPeak 186417152 字节；尚无开市 Worker 峰值采样 |
+
+原 controller 账本的补充只读核实见 [binance-capital-source-index.json](binance-capital-source-index.json)：仅有 snapshot/events/demo_order_owners 三张表；事件身份中 capital/allocation/transfer/settle 均为零，唯一共享资金记录仍是 static-shared-account 预算元数据，33 条 fund 记录均为 funding fee。全部非 funding 事件 payload 未找到 initial_cash/cash_in/cash_out/budget_delta/settlement/contribution/capital_transfer/retired 字段。原状态根三层以内按 capital/migration/settle/receipt 文件名补充查找，匹配为空。此结果不能把缺失历史解释为零现金或默认结算；当前可核实来源不足以填写前后 owner 的原始现金和交接过账，迁移保持 FAILED，未导入或下新单。
 
 Binance 两段历史的表示已进一步核实：现有 capital_balances/capital_events 可保留原始资金基线并用已证明的历史预算释放、现金结算和退休过账表达顺序承接，无需新增共享预算系统。TODO：先取得原 owner 的历史现金来源、交接结算与现存预算归属证据，再扩展原 adoption receipt 原子导入生命周期；不得仅因两段都已清仓就构造前段 -20 USDT 退休或现金转移。静态目标预算不是现金贡献证据，不能改成允许零初始资本或给两个 owner 各20来绕过。
 
