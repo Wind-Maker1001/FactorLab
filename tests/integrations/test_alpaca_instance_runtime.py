@@ -38,7 +38,7 @@ class Account(Adapter):
                     status='active', tradable=True, fractionable=True)
 
 
-@pytest.mark.parametrize('managed', [False, True])
+@pytest.mark.parametrize('managed', [False, True, 'explicit'])
 @pytest.mark.parametrize('interval_seconds', [None, 60, 3600])
 def test_real_package_two_asset_execution_and_restart_do_not_repeat_decision_or_post(tmp_path, interval_seconds, monkeypatch, managed):
     now = NOW + timedelta(hours=1)
@@ -114,8 +114,13 @@ def test_real_package_two_asset_execution_and_restart_do_not_repeat_decision_or_
             funding={'capital': '100', 'initial_cash': '100'})])
     if managed:
         configuration['capital_policy'] = dict(currency='USD', budget='100', fee_rate='0')
+    if managed == 'explicit':
+        configuration['capital_policy']['symbol_limits'] = {'IWM': '95', 'SPY': '95'}
     host = StrategyInstances(tmp_path, account, configuration, clock=lambda: now)
-    assert bool(host.store.db.execute('SELECT 1 FROM capital_accounts').fetchone()) == managed
+    assert bool(host.store.db.execute('SELECT 1 FROM capital_accounts').fetchone()) == bool(managed)
+    if managed == 'explicit':
+        assert host.store.capital_policy.symbol_limit('paper', 'IWM') == D(95)
+        assert host.store.capital_policy.symbol_limit('paper', 'SPY') == D(95)
     if managed:
         assert host.store.db.execute('SELECT symbol FROM capital_symbols ORDER BY symbol').fetchall() == [('IWM',), ('SPY',)]
     host.tick(service, {}, now, account.read_account_details())

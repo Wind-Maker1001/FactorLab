@@ -1,0 +1,32 @@
+{
+  "evidence_kind": "READ_ONLY_V69_COMPATIBILITY_PROBE",
+  "candidate_revision": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+  "deployed_revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+  "comparison": {
+    "manifest": true,
+    "numerical_and_calendar_sources": true,
+    "dependencies": true,
+    "python": true,
+    "binding_without_runtime": true
+  },
+  "previous_runtime_sha256": "16f97f24013fb6664cbccf8fd022808ada81f1a219364cf48b99b6c83885e83b",
+  "candidate_runtime_sha256": "48b8ce8d36665c9dca39f3336ff26a9b09c7aef307faba1658afad9bb60a441e",
+  "paired_execution_basis": {
+    "evidence_kind": "OFFLINE_PAIRED_EXECUTION_BASIS_PROBE",
+    "cases": 6,
+    "equal": true,
+    "coverage": ["no_action", "strategy_asset_split", "unrelated_asset_action", "available_execution_basis", "missing_execution_basis"]
+  },
+  "installed_candidate_probe": {
+    "evidence_kind": "INSTALLED_CANDIDATE_V69_PROBE",
+    "manifest_equal": true,
+    "numerical_and_calendar_sources_equal": true,
+    "dependencies_equal": true,
+    "python_equal": true,
+    "binding_without_runtime_equal": true,
+    "active_release_switched": false
+  },
+  "admission_created": false,
+  "account_writes": 0,
+  "services_changed": false
+}

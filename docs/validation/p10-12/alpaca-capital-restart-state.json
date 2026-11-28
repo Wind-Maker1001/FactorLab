@@ -1,0 +1,358 @@
+{
+  "evidence_kind": "SHARED_OWNER_INSTANCE_STATE",
+  "observed_at_utc": "2026-11-28T12:32:36.111195+00:00",
+  "health": {
+    "revision": "e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14",
+    "healthy": true,
+    "heartbeat": "2026-11-28T12:32:23.905586+00:00",
+    "pid": 1477314,
+    "account_recovered": true,
+    "error": null,
+    "trade_stream": "CONNECTED",
+    "market_available": true,
+    "strategy": {
+      "instances": {
+        "P10-12-V179": {
+          "instance_id": "P10-12-V179",
+          "state": "WAITING_SESSION"
+        },
+        "P10-12-V182": {
+          "instance_id": "P10-12-V182",
+          "state": "WAITING_SESSION"
+        },
+        "V69_CAUSAL": {
+          "frequency": "natural-week",
+          "name": "v69-original",
+          "reason": null,
+          "state": "WAITING_NEXT_WEEK"
+        }
+      },
+      "state": "RUNNING"
+    },
+    "execution": {
+      "blocked_instances": [],
+      "enabled": true,
+      "state": "RUNNING"
+    }
+  },
+  "allocations": [
+    {
+      "strategy": "P10-12-V179",
+      "allocation": "p10-12-v179",
+      "capital": "50",
+      "initial_cash": "50"
+    },
+    {
+      "strategy": "P10-12-V182",
+      "allocation": "p10-12-v182",
+      "capital": "50",
+      "initial_cash": "50"
+    },
+    {
+      "strategy": "V69_CAUSAL",
+      "allocation": "v69-original",
+      "capital": "99900",
+      "initial_cash": "99900"
+    }
+  ],
+  "instances": [
+    {
+      "strategy": "P10-12-V179",
+      "instance": "P10-12-V179",
+      "allocation": "p10-12-v179",
+      "logical_strategy": "V179_TREND_BLEND",
+      "paused": 0
+    },
+    {
+      "strategy": "P10-12-V182",
+      "instance": "P10-12-V182",
+      "allocation": "p10-12-v182",
+      "logical_strategy": "V182_RECOVERY_BLEND",
+      "paused": 0
+    },
+    {
+      "strategy": "V69_CAUSAL",
+      "instance": "V69_CAUSAL",
+      "allocation": "v69-original",
+      "logical_strategy": "V69_CAUSAL",
+      "paused": 0
+    }
+  ],
+  "aggregate_symbol_limits": [
+    {
+      "symbol": "AAPL",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "BA",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "C",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "GE",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "JPM",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "QQQ",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "SNDK",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "TQQQ",
+      "max_exposure": "99900"
+    }
+  ],
+  "capital_events": [
+    {
+      "event": "p10-12-online-flat-withdraw",
+      "request": "p10-12-online-flat-withdraw",
+      "payload": {
+        "operation": {
+          "kind": "EXACT",
+          "source": "P10-12-V179",
+          "destination": null,
+          "amount": "1"
+        },
+        "result": {
+          "event_id": "p10-12-online-flat-withdraw",
+          "request_id": "p10-12-online-flat-withdraw",
+          "source": "P10-12-V179",
+          "destination": null,
+          "observed_at": "2026-11-28 12:29:30.745535+00:00",
+          "requested": "1",
+          "applied": "1",
+          "released_budget": "1",
+          "remaining": "0",
+          "executable": "1",
+          "status": "COMPLETE",
+          "source_equity": "50",
+          "destination_equity": null
+        }
+      }
+    },
+    {
+      "event": "p10-12-online-flat-add-back",
+      "request": "p10-12-online-flat-add-back",
+      "payload": {
+        "operation": {
+          "kind": "EXACT",
+          "source": null,
+          "destination": "P10-12-V179",
+          "amount": "1"
+        },
+        "result": {
+          "event_id": "p10-12-online-flat-add-back",
+          "request_id": "p10-12-online-flat-add-back",
+          "source": null,
+          "destination": "P10-12-V179",
+          "observed_at": "2026-11-28 12:30:57.425546+00:00",
+          "requested": "1",
+          "applied": "1",
+          "released_budget": "1",
+          "remaining": "0",
+          "executable": "1",
+          "status": "COMPLETE",
+          "source_equity": null,
+          "destination_equity": "49"
+        }
+      }
+    },
+    {
+      "event": "p10-12-online-flat-transfer",
+      "request": "p10-12-online-flat-transfer",
+      "payload": {
+        "operation": {
+          "kind": "EXACT",
+          "source": "P10-12-V179",
+          "destination": "P10-12-V182",
+          "amount": "1"
+        },
+        "result": {
+          "event_id": "p10-12-online-flat-transfer",
+          "request_id": "p10-12-online-flat-transfer",
+          "source": "P10-12-V179",
+          "destination": "P10-12-V182",
+          "observed_at": "2026-11-28 12:31:39.351879+00:00",
+          "requested": "1",
+          "applied": "1",
+          "released_budget": "1",
+          "remaining": "0",
+          "executable": "1",
+          "status": "COMPLETE",
+          "source_equity": "50",
+          "destination_equity": "50"
+        }
+      }
+    },
+    {
+      "event": "p10-12-online-flat-transfer-back",
+      "request": "p10-12-online-flat-transfer-back",
+      "payload": {
+        "operation": {
+          "kind": "EXACT",
+          "source": "P10-12-V182",
+          "destination": "P10-12-V179",
+          "amount": "1"
+        },
+        "result": {
+          "event_id": "p10-12-online-flat-transfer-back",
+          "request_id": "p10-12-online-flat-transfer-back",
+          "source": "P10-12-V182",
+          "destination": "P10-12-V179",
+          "observed_at": "2026-11-28 12:32:10.010426+00:00",
+          "requested": "1",
+          "applied": "1",
+          "released_budget": "1",
+          "remaining": "0",
+          "executable": "1",
+          "status": "COMPLETE",
+          "source_equity": "51",
+          "destination_equity": "49"
+        }
+      }
+    }
+  ],
+  "capital_commands": [
+    {
+      "command": "p10-12-online-flat-withdraw",
+      "request": {
+        "action": "change",
+        "source": "P10-12-V179",
+        "destination": null,
+        "amount": "1",
+        "mode": "EXACT",
+        "event_id": "p10-12-online-flat-withdraw"
+      },
+      "result": {
+        "status": "COMPLETE",
+        "data": {
+          "event_id": "p10-12-online-flat-withdraw",
+          "request_id": "p10-12-online-flat-withdraw",
+          "source": "P10-12-V179",
+          "destination": null,
+          "observed_at": "2026-11-28 12:29:30.745535+00:00",
+          "requested": "1",
+          "applied": "1",
+          "released_budget": "1",
+          "remaining": "0",
+          "executable": "1",
+          "status": "COMPLETE",
+          "source_equity": "50",
+          "destination_equity": null
+        }
+      }
+    },
+    {
+      "command": "p10-12-online-flat-add-back",
+      "request": {
+        "action": "change",
+        "source": null,
+        "destination": "P10-12-V179",
+        "amount": "1",
+        "mode": "EXACT",
+        "event_id": "p10-12-online-flat-add-back"
+      },
+      "result": {
+        "status": "COMPLETE",
+        "data": {
+          "event_id": "p10-12-online-flat-add-back",
+          "request_id": "p10-12-online-flat-add-back",
+          "source": null,
+          "destination": "P10-12-V179",
+          "observed_at": "2026-11-28 12:30:57.425546+00:00",
+          "requested": "1",
+          "applied": "1",
+          "released_budget": "1",
+          "remaining": "0",
+          "executable": "1",
+          "status": "COMPLETE",
+          "source_equity": null,
+          "destination_equity": "49"
+        }
+      }
+    },
+    {
+      "command": "p10-12-online-flat-transfer",
+      "request": {
+        "action": "change",
+        "source": "P10-12-V179",
+        "destination": "P10-12-V182",
+        "amount": "1",
+        "mode": "EXACT",
+        "event_id": "p10-12-online-flat-transfer"
+      },
+      "result": {
+        "status": "COMPLETE",
+        "data": {
+          "event_id": "p10-12-online-flat-transfer",
+          "request_id": "p10-12-online-flat-transfer",
+          "source": "P10-12-V179",
+          "destination": "P10-12-V182",
+          "observed_at": "2026-11-28 12:31:39.351879+00:00",
+          "requested": "1",
+          "applied": "1",
+          "released_budget": "1",
+          "remaining": "0",
+          "executable": "1",
+          "status": "COMPLETE",
+          "source_equity": "50",
+          "destination_equity": "50"
+        }
+      }
+    },
+    {
+      "command": "p10-12-online-flat-transfer-back",
+      "request": {
+        "action": "change",
+        "source": "P10-12-V182",
+        "destination": "P10-12-V179",
+        "amount": "1",
+        "mode": "EXACT",
+        "event_id": "p10-12-online-flat-transfer-back"
+      },
+      "result": {
+        "status": "COMPLETE",
+        "data": {
+          "event_id": "p10-12-online-flat-transfer-back",
+          "request_id": "p10-12-online-flat-transfer-back",
+          "source": "P10-12-V182",
+          "destination": "P10-12-V179",
+          "observed_at": "2026-11-28 12:32:10.010426+00:00",
+          "requested": "1",
+          "applied": "1",
+          "released_budget": "1",
+          "remaining": "0",
+          "executable": "1",
+          "status": "COMPLETE",
+          "source_equity": "51",
+          "destination_equity": "49"
+        }
+      }
+    },
+    {
+      "command": "p10-12-online-flat-performance-v179",
+      "request": {
+        "action": "performance",
+        "strategy_id": "P10-12-V179"
+      },
+      "result": null
+    },
+    {
+      "command": "p10-12-online-flat-snapshot",
+      "request": {
+        "action": "snapshot"
+      },
+      "result": null
+    }
+  ]
+}

@@ -531,7 +531,7 @@ class PortfolioExecutor:
         if not all((account_id, strategy_id, allocation_id)) or initial_cash > capital:
             raise ValueError('identified cash-funded allocation required')
         value = dict(allocation_id=allocation_id, capital=capital, initial_cash=initial_cash)
-        with self.store.transaction():
+        with (nullcontext() if self.store.db.in_transaction else self.store.transaction()):
             previous = self.store.allocation_basis(account_id, strategy_id)
             if previous is not None:
                 if previous != value:

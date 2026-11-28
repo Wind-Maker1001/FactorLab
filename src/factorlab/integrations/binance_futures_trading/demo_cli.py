@@ -175,6 +175,24 @@ def run_command(args, root, store, runtime, requests, smoke_id):
         runtime.save_tradfi(account_id, receipt)
         status = 'DEMO_TRADFI_SIGNED' if receipt['success'] else 'DEMO_TRADFI_NOT_CONFIRMED'
         return dict(status=status, agreement=receipt)
+    if command == 'capital-fresh-initialize':
+        from pathlib import Path
+        from factorlab.trading.storage import decode
+        from factorlab.trading.portfolio_execution import PortfolioExecutor, PortfolioStore
+        from .demo_fresh_capital import initialize
+        from .demo_portfolio_adapter import DemoPortfolioAdapter
+        configuration = decode(json.loads(Path(args.source).read_text(encoding='utf-8')))
+        with open_session(root, store, runtime, requests) as (session, _):
+            recover(session)
+            directory = root
+            def no_writes(*_):
+                raise SafetyBlocked('capital initialization permits official reads only')
+            with closing(PortfolioStore(directory / 'portfolio.sqlite3')) as capital:
+                executor = PortfolioExecutor(DemoPortfolioAdapter(session, capability=no_writes), capital,
+                    quote_currency='USDT', clock=session._now)
+                receipt = initialize(session, executor, **configuration)
+            return dict(status='DEMO_FRESH_CAPITAL_INITIALIZED', capital='20',
+                total_allocation_ceiling='47', observed_at=receipt['observed_at'].isoformat())
     if command == 'capital-history-import':
         from pathlib import Path
         from factorlab.trading.storage import decode
@@ -315,6 +333,8 @@ def parse_args(argv):
     commands = parser.add_subparsers(dest='command', required=True)
     for name in ('setup', 'credentials-update', 'credentials-delete', 'status', 'recover'):
         commands.add_parser(name)
+    fresh = commands.add_parser('capital-fresh-initialize', help='initialize independently authorized NEW20 without legacy adoption')
+    fresh.add_argument('--source', required=True, help='storage-encoded independent allocation configuration')
     migration = commands.add_parser('capital-history-import', help='adopt complete original 7/20 history with official reads only')
     migration.add_argument('--source', required=True, help='local storage-encoded complete original migration manifest')
     smoke = commands.add_parser('smoke-test')

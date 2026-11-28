@@ -1,3 +1,4 @@
+from contextlib import closing
 from decimal import Decimal as D
 import sqlite3
 
@@ -22,6 +23,111 @@ def share(policy):
 def claim(store, owner, symbol='AAPL'):
     with store.transaction():
         store.capital_policy.claim('paper', owner, symbol)
+
+
+def test_initial_policy_preserves_flat_unallocated_history(tmp_path):
+    store = PortfolioStore(tmp_path / 'legacy.sqlite3')
+    executor = PortfolioExecutor(Broker(), store, clock=lambda: NOW)
+    opened = plan(executor, 'historical', initial_capital=D(100))
+    run(executor, opened)
+    run(executor, opened)
+    closed = executor.create(account_id='paper', strategy_id='historical', strategy_version='1',
+        trading_session='2026-11-24', rebalance_id='close', weights={'AAPL': D(0)},
+        owned_symbols=['AAPL'], now=NOW, quantity_deltas={'AAPL': D(-10)})
+    run(executor, closed)
+    run(executor, closed)
+    assert store.holdings('paper', 'historical') == {'AAPL': D(0)}
+    assert store.allocation('paper', 'historical') is None
+    store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                     ('paper', 'QQQ', 'native', '0E-9', '0', '0'))
+    orders = store.db.execute('SELECT * FROM portfolio_orders').fetchall()
+    share(store.capital_policy)
+    assert store.db.execute('SELECT * FROM portfolio_orders').fetchall() == orders
+    assert store.capital_policy.ownership('paper') == ()
+    assert store.db.execute('SELECT COUNT(*) FROM capital_symbol_limits').fetchone()[0] == 0
+    store.close()
+    with closing(PortfolioStore(tmp_path / 'legacy.sqlite3')) as reopened:
+        share(reopened.capital_policy)
+        assert reopened.db.execute('SELECT * FROM portfolio_orders').fetchall() == orders
+
+
+def explicit(policy, limit):
+    policy.configure(account_id='paper', currency='USD', budget=D(100), fee_rate=D(0),
+                     mode=SHARED, symbol_limits={'AAPL': D(limit)})
+
+
+def test_explicit_aggregate_survives_small_owner_limits_transfer_and_restart(tmp_path):
+    from factorlab.trading.control import RiskLimits
+    _, store, executor = setup(tmp_path)
+    policy = executor.capital_policy
+    explicit(policy, '80')
+    claim(store, 'two')
+    claim(store, 'one')
+    policy.set_limits('paper', 'one', RiskLimits(max_order_notional=D(10),
+        max_instrument_exposure=D(10), account_budget=D(40)))
+    assert policy.limits('paper', 'one').max_instrument_exposure == D(10)
+    assert policy.symbol_limit('paper', 'AAPL') == D(80)
+    with store.transaction():
+        policy.transfer_flat_ownership('paper', 'one', 'two', ['AAPL'])
+    store.close()
+    with closing(PortfolioStore(tmp_path / 'capital.sqlite3')) as reopened:
+        share(reopened.capital_policy)
+        claim(reopened, 'one')
+        assert reopened.capital_policy.symbol_limit('paper', 'AAPL') == D(80)
+        reopened.capital_policy.set_symbol_limit('paper', 'AAPL', D(70))
+        with pytest.raises(ValueError, match='cannot increase'):
+            explicit(reopened.capital_policy, '80')
+        assert reopened.capital_policy.symbol_limit('paper', 'AAPL') == D(70)
+
+
+def test_explicit_aggregate_cannot_raise_legacy_ceiling(tmp_path):
+    _, store, executor = setup(tmp_path)
+    share(executor.capital_policy)
+    claim(store, 'one')
+    with pytest.raises(ValueError, match='cannot increase'):
+        explicit(executor.capital_policy, '80')
+    assert store.db.execute('SELECT * FROM capital_explicit_symbol_limits').fetchall() == []
+    explicit(executor.capital_policy, '30')
+    claim(store, 'two')
+    assert executor.capital_policy.symbol_limit('paper', 'AAPL') == D(30)
+    store.close()
+
+
+@pytest.mark.parametrize('limit', ['-1', 'NaN', 'Infinity', '101'])
+def test_explicit_aggregate_rejects_invalid_budget_boundary(tmp_path, limit):
+    _, store, executor = setup(tmp_path)
+    with pytest.raises(ValueError):
+        explicit(executor.capital_policy, limit)
+    assert store.db.execute('SELECT * FROM capital_explicit_symbol_limits').fetchall() == []
+    store.close()
+
+
+def test_explicit_aggregate_and_instance_limits_both_reject_excess(tmp_path):
+    _, store, executor = setup(tmp_path)
+    explicit(executor.capital_policy, '80')
+    first = reserve(executor, 'two', 'AAPL', '6', 'large-owner')
+    run(executor, first)
+    run(executor, first)
+    second = reserve(executor, 'one', 'AAPL', '2', 'small-owner')
+    run(executor, second)
+    run(executor, second)
+    intent = OrderIntent(Market.BINANCE_EQUITY, 'AAPL', Side.BUY, OrderType.LIMIT,
+                         D(1), D(10), 'aggregate-excess', time_in_force='GTC')
+    with pytest.raises(ValueError, match='SYMBOL_EXPOSURE_LIMIT'):
+        executor.create(account_id='paper', strategy_id='one', strategy_version='1',
+            trading_session='2026-11-24', rebalance_id='aggregate-excess', weights={},
+            owned_symbols=['AAPL'], now=NOW, direct_orders=[(intent, D(10))])
+    assert store.capital_policy.symbol_limit('paper', 'AAPL') == D(80)
+    store.close()
+
+
+def test_explicit_aggregate_does_not_expand_instance_capital(tmp_path):
+    _, store, executor = setup(tmp_path)
+    explicit(executor.capital_policy, '100')
+    with pytest.raises(ValueError):
+        reserve(executor, 'one', 'AAPL', '5', 'instance-excess')
+    assert store.db.execute('SELECT count(*) FROM portfolio_orders').fetchone()[0] == 0
+    store.close()
 
 
 def test_shared_claims_preserve_identity_and_monotonic_symbol_limit(tmp_path):
@@ -176,10 +282,14 @@ def reserve(executor, owner, symbol, quantity, client_id):
         direct_orders=[(intent, D(10))])
 
 
+@pytest.mark.parametrize('configured_explicit', [False, True])
 @pytest.mark.parametrize('uncertain_canceled', [False, True])
-def test_aggregate_symbol_limit_is_not_multiplied_by_instance_count(tmp_path, uncertain_canceled):
+def test_aggregate_symbol_limit_is_not_multiplied_by_instance_count(tmp_path, uncertain_canceled, configured_explicit):
     broker, store, executor = setup(tmp_path)
-    share(executor.capital_policy)
+    if configured_explicit:
+        explicit(executor.capital_policy, '40')
+    else:
+        share(executor.capital_policy)
     claim(store, 'one')
     claim(store, 'two')
     first = reserve(executor, 'one', 'AAPL', '3', 'first')
@@ -254,10 +364,14 @@ def test_partial_fill_and_broker_duplicate_count_remaining_only_once(tmp_path):
     store.close()
 
 
+@pytest.mark.parametrize('configured_explicit', [False, True])
 @pytest.mark.parametrize('quantity', ['1', '4'])
-def test_appreciated_inventory_can_be_reduced_above_entry_risk_limits(tmp_path, quantity):
+def test_appreciated_inventory_can_be_reduced_above_entry_risk_limits(tmp_path, quantity, configured_explicit):
     broker, store, executor = setup(tmp_path)
-    share(executor.capital_policy)
+    if configured_explicit:
+        explicit(executor.capital_policy, '40')
+    else:
+        share(executor.capital_policy)
     identity = reserve(executor, 'one', 'AAPL', '4', 'entry')
     run(executor, identity)
     run(executor, identity)

@@ -1,0 +1,38 @@
+{
+  "observed_at_utc": "2026-11-28T13:21:30.583190Z",
+  "evidence_level": "OFFICIAL_READ_ONLY",
+  "account": {
+    "reconciled": true,
+    "wallet_usdt": "4999.40753423",
+    "available_usdt": "4999.40753423",
+    "positions": [],
+    "open_orders": [],
+    "unknown_orders": [],
+    "requests": {"GET": 18, "POST": 0, "DELETE": 0}
+  },
+  "risk_limits": {
+    "max_order_notional_usdt": "7",
+    "max_instrument_exposure_usdt": "7",
+    "account_exposure_usdt": "27",
+    "orders_per_minute": 20,
+    "max_quote_age_seconds": 5
+  },
+  "symbol_rules": {
+    "DOGEUSDT": {"min_notional_usdt": "5", "quantity_step": "1", "price_tick": "0.000010"},
+    "XRPUSDT": {"min_notional_usdt": "5", "quantity_step": "0.1", "price_tick": "0.0001"}
+  },
+  "exchange_info": {
+    "trading_usdt_symbols": 562,
+    "minimum_notional_counts_usdt": {"5": 560, "20": 1, "50": 1},
+    "symbols_at_or_below_3_5_usdt": []
+  },
+  "capital_authorization": {
+    "new_usdt": "20",
+    "retained_grid_usdt": "7",
+    "retained_legacy_portfolio_usdt": "20",
+    "total_allocation_ceiling_usdt": "47",
+    "cash_baseline_initialized": false
+  },
+  "historical_capital_migration": "INCOMPLETE",
+  "official_new_acceptance_orders": 0
+}

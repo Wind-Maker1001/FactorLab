@@ -36,7 +36,15 @@ class DemoInstanceHost:
         capital = stack.enter_context(closing(PortfolioStore(path)))
         self.owner = DemoInstanceOwner.open(session, capital,
             capability=DemoInstanceCapability(session, runtime, dispatch_gate=self.dispatch_gate))
-        start_account_history(session, self.owner.execution.executor)
+        from .demo_fresh_capital import source
+        self.fresh_capital = source(session, capital)
+        if self.fresh_capital is None:
+            start_account_history(session, self.owner.execution.executor)
+        else:
+            from .demo_fresh_capital import SOURCE_KEY
+            from factorlab.trading.control import RiskLimits
+            session.controller.store.record_metadata(SOURCE_KEY, self.fresh_capital)
+            session.controller.limits = RiskLimits(**self.fresh_capital['declaration']['risk_limits'])
         from .demo_strategy_context import DemoStrategyContext
         self.context = DemoStrategyContext(self.owner.execution.store)
         self.owner.execution.store.db.execute('CREATE TABLE IF NOT EXISTS demo_instance_inputs ('
@@ -249,12 +257,17 @@ class DemoInstanceHost:
         amounts = [store.allocation(account, owner)['capital'] for owner, in store.db.execute(
             'SELECT strategy FROM portfolio_allocations WHERE account=?', (account,))]
         total = sum(amounts, Decimal(0))
-        if total > Decimal(27):
-            raise SafetyBlocked('funded instances exceed original 7/20 USDT account capital')
+        if self.fresh_capital is not None:
+            if total > self.fresh_capital['declaration']['capital']:
+                raise SafetyBlocked('funded instances exceed independent fresh capital')
+        else:
+            if total > Decimal(27):
+                raise SafetyBlocked('funded instances exceed original 7/20 USDT account capital')
+            if amounts:
+                limits = self.session.controller.limits
+                self.session.controller.limits = replace(limits, max_order_notional=max(amounts),
+                    max_instrument_exposure=total, account_budget=total)
         if amounts:
-            limits = self.session.controller.limits
-            self.session.controller.limits = replace(limits, max_order_notional=max(amounts),
-                max_instrument_exposure=total, account_budget=total)
             self.session.shared_account = True
         for row in self.registered(self.registry, self.session.adapter.account_id):
             instance_id = row['instance_id']

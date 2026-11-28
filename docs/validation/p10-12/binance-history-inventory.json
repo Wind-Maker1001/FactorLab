@@ -1,0 +1,24 @@
+{
+  "evidence_kind": "READ_ONLY_LEGACY_HISTORY_INVENTORY",
+  "grid_deployment_count": 80,
+  "grid_symbols": [
+    "NVDAUSDT"
+  ],
+  "portfolio_task_count": 7,
+  "portfolio_allocation_ids": [
+    "tradfi-demo-acceptance",
+    "tradfi-qqq-spy-test"
+  ],
+  "static_shared_budget_usdt": {"grid": "7", "portfolio": "20"},
+  "portfolio_tasks_by_allocation": {"tradfi-demo-acceptance": 3, "tradfi-qqq-spy-test": 4},
+  "portfolio_batch_orders_by_allocation": {"tradfi-demo-acceptance": 6, "tradfi-qqq-spy-test": 8},
+  "first_allocation_order_status_counts": {"FILLED": 4, "CANCELED": 2},
+  "second_allocation_order_status_counts": {"FILLED": 8},
+  "first_allocation_missing_owner_projection_count": 6,
+  "all_four_allocation_symbol_net_quantities_zero": true,
+  "source": "READ_ONLY_PERSISTED_TASK_BATCHES_AND_ACCOUNT_SNAPSHOT",
+  "funding_continuity_proven": false,
+  "portfolio_db_exists": false,
+  "history_import_executed": false,
+  "official_account_writes": 0
+}

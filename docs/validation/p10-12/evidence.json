@@ -1,0 +1,384 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "observed_at_utc": "2026-11-28T08:06:38Z",
+    "repository_revision": "47e58d9044e27dc47fc140f87b48b73531db6d3f",
+    "merged_prs": [261, 262, 263, 264, 266, 268, 277],
+    "runtime_revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+    "primary": {
+      "hostname": "factorlab-demo-01",
+      "architecture": "x86_64",
+      "services": {
+        "factorlab-demo-execute.service": {"active_state": "active", "sub_state": "running", "pid": 1335821, "n_restarts": 0},
+        "factorlab-alpaca-paper.service": {"active_state": "active", "sub_state": "running", "pid": 1339923, "n_restarts": 0},
+        "factorlab-demo-tradfi-observer.service": {"active_state": "active", "sub_state": "running", "pid": 1335871, "n_restarts": 0}
+      },
+      "binance_state_root": "/var/lib/factorlab-demo/execute-state-r01-return",
+      "alpaca_state_root": "/var/lib/factorlab-alpaca-paper/r01-return"
+    },
+    "disaster_recovery": {"hostname": "factorlab-arm-01", "architecture": "aarch64", "all_three_services_masked": true, "all_three_pids_zero": true},
+    "binance_health_projection": {
+      "observed_at_utc": "2026-11-28T08:06:30.733723Z",
+      "active_protocol": "legacy-grid",
+      "wallet_usdt": "4999.40753423",
+      "available_usdt": "4999.40753423",
+      "positions": [],
+      "open_orders": [],
+      "unknown_orders": 0,
+      "global_posts_consumed": 149,
+      "global_notional_consumed_usdt": "929.3581000",
+      "global_max_loss_usdt": "250",
+      "campaign": {"symbol": "NVDAUSDT", "max_notional_usdt": "7", "max_quantity": "0.04", "max_open_orders": 1, "remaining_posts": 4, "expires_at_utc": "2026-11-28T10:57:20.654593Z"}
+    }
+  },
+  "acceptance_results": [
+    {
+      "id": "binance-independent-new20-authorization",
+      "status": "BLOCKED_PACKAGE_ADMISSION",
+      "admission_blocker": "MODEL_REFRESH requires a genuine frozen model artifact; bounded decision-only packages have none and do not have qualified Champion promotion evidence",
+      "bounded_packages": {"symbols": ["DOGEUSDT", "XRPUSDT"], "interval_seconds": 60, "capital_each_usdt": "10", "entry_target_weight": "0.6", "first_zero_decision": [4, 6], "activation_requests": 0},
+      "shared_inventory_online": "BLOCKED_RISK_CONSTRAINT",
+      "preserved_risk_limits_usdt": {"max_order_notional": "7", "max_instrument_exposure": "7", "account_budget": "27"},
+      "official_minimum_notional_usdt": {"5": 560, "20": 1, "50": 1},
+      "new_capital_usdt": "20",
+      "retained_grid_capital_usdt": "7",
+      "retained_legacy_portfolio_capital_usdt": "20",
+      "total_strategy_allocation_ceiling_usdt": "47",
+      "increase_account_risk_limits": false,
+      "initial_cash_baseline": "PENDING_INITIALIZATION",
+      "preflight_evidence_file": "binance-new20-preflight.json",
+      "targeted_regression": {"passed": 27, "seconds": 25.75, "public_registration_atomic_rollback": true, "controller_mirror_recovery": true},
+      "public_capital_compatibility_regression": {"passed": 55, "seconds": 60.05},
+      "historical_capital_migration": "INCOMPLETE",
+      "official_new_orders": 0
+    },
+    {
+      "id": "binance-new-instance-current-capital-baseline",
+      "status": "UNPROVEN_AVAILABLE_BUDGET",
+      "evidence_file": "binance-current-budget-state.json",
+      "authorized_account_budget_usdt": "27",
+      "protected_grid_budget_usdt": "7",
+      "legacy_portfolio_budget_usdt": "20",
+      "outstanding_mailbox_tasks": 0,
+      "legacy_consumer_budget_commitment_released": false,
+      "new_initial_cash_baseline": "UNKNOWN",
+      "missing_current_facts": ["positive_unused_authorized_budget_after_legacy_consumer_commitment", "known_cash_baseline_for_new_allocation"],
+      "historical_migration_is_global_gate": false,
+      "runtime_changes": false,
+      "account_writes": 0,
+      "journal_writes": 0
+    },
+    {
+      "id": "binance-original-capital-source-investigation",
+      "status": "HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE",
+      "blocks_all_new_strategy_acceptance": false,
+      "historical_allocations": [
+        {"allocation_id": "tradfi-demo-acceptance", "initial_cash": "UNKNOWN", "settlement": "UNKNOWN"},
+        {"allocation_id": "tradfi-qqq-spy-test", "initial_cash": "UNKNOWN", "settlement": "UNKNOWN"}
+      ],
+      "further_historical_capital_search": "STOPPED",
+      "evidence_file": "binance-capital-source-index.json",
+      "bounded_receipt_filename_search": {"maximum_depth": 3, "matches": []},
+      "missing_evidence": ["original_allocation_cash_basis", "inter_allocation_cash_settlement", "current_budget_ownership"],
+      "account_writes": 0,
+      "journal_writes": 0
+    },
+    {
+      "id": "company-action-date-fixture-integration",
+      "status": "OFFLINE_ACCEPTED",
+      "source_commit": "b8ea9e686005e4440c89491043dda386e28eff33",
+      "integrated_commit": "24816e9",
+      "tests_passed": 31,
+      "elapsed_seconds": 72.90,
+      "test_files": ["tests/integrations/test_portfolio_account_risk_http.py", "tests/integrations/test_alpaca_corporate_activities.py"]
+    },
+    {
+      "id": "alpaca-capital-budget-and-cash-boundaries",
+      "status": "ONLINE_ACCEPTED",
+      "scope": "CAPITAL_REQUEST_REJECTION_NOT_ORDER_RISK",
+      "outcome": "INSUFFICIENT_CAPITAL",
+      "requests": ["p10-12-reject-unfunded-add", "p10-12-reject-excess-withdraw"],
+      "applied_usd_each": "0",
+      "released_budget_usd_each": "0",
+      "post_request_healthy": true,
+      "evidence_file": "alpaca-capital-boundary-state.json"
+    },
+    {
+      "id": "alpaca-flat-capital-operations-restart",
+      "status": "ONLINE_ACCEPTED",
+      "scope": "IDLE_WITHDRAW_ADD_BACK_AND_TWO_WAY_TRANSFER",
+      "amount_usd_each": "1",
+      "completed_events": 4,
+      "remaining_usd_each": "0",
+      "restart_pid": 1477314,
+      "post_restart_healthy": true,
+      "post_restart_heartbeat_utc": "2026-11-28T12:32:23.905586Z",
+      "performance_and_final_snapshot_pending": false,
+      "v179_final_equity_usd": "50",
+      "v179_capital_in_usd": "2",
+      "v179_capital_out_usd": "2",
+      "v179_absolute_pnl_usd": "0",
+      "v179_twr": "0",
+      "v179_xirr": 0.0,
+      "official_wallet_equity_available_usd": "100000.05",
+      "account_budget_and_allocation_usd": "100000",
+      "replayed_command_count": 6,
+      "capital_event_count_after_replay": 4,
+      "evidence_file": "alpaca-capital-replay-state.json"
+    },
+    {
+      "id": "actual-release-policy-transition-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 5,
+      "elapsed_seconds": 651.99,
+      "original_combined_run": {"passed": 80, "failed": 5, "elapsed_seconds": 674.69},
+      "coverage": ["announcement_to_reliability_generic_compatibility", "economic_policy_generic_rejection", "native_exact_policy_admission"]
+    },
+    {
+      "id": "shared-owner-three-instance-registration",
+      "status": "ONLINE_ACCEPTED",
+      "scope": "REGISTRATION_AND_INITIAL_FUNDING_ONLY",
+      "started_at_utc": "2026-11-28T12:26:01Z",
+      "instance_capital_usd": {"V69_CAUSAL": "99900", "P10-12-V179": "50", "P10-12-V182": "50"},
+      "aggregate_symbol_limit_usd": "99900",
+      "account_budget_usd": "100000",
+      "champion_promoted": false,
+      "official_trade_lifecycle_accepted": false,
+      "health_predicate_read": {"healthy": true, "error": null, "account_recovered": true, "trade_stream": "CONNECTED", "market_available": true},
+      "evidence_file": "alpaca-three-instance-state.json"
+    },
+    {
+      "id": "exact-host-policy-admission-boundaries",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 15,
+      "elapsed_seconds": 1.87,
+      "qualification_kind": "HOST_POLICY_CHANGE",
+      "generic_compatibility_unchanged": true,
+      "independent_review": "NO_CONCRETE_CORRECTNESS_FINDINGS",
+      "production_admission_created": false,
+      "test_native_store_copy_tests_passed": 2,
+      "test_native_store_copy_elapsed_seconds": 5.76,
+      "test_native_store_probe_inputs": "FIXED_TEST_RECEIPTS",
+      "production_store_copy_validation_complete": true,
+      "production_store_copy_evidence_file": "host-policy-preflight.json"
+    },
+    {
+      "id": "binance-original-portfolio-official-history",
+      "status": "IMPLEMENTED",
+      "evidence_kind": "OFFICIAL_DEMO_READ_ONLY_ORIGINAL_PORTFOLIO_TRADES",
+      "evidence_file": "binance-official-portfolio-history.json",
+      "filled_orders_reconciled": 12,
+      "first_allocation_missing_owner_projection_count": 6,
+      "new_acceptance_trades": false,
+      "capital_transition_proven": false,
+      "account_writes": 0
+    },
+    {
+      "id": "explicit-aggregate-retained-journal-preflight",
+      "status": "OFFLINE_ACCEPTED",
+      "evidence_kind": "ISOLATED_EXPLICIT_AGGREGATE_HOST_PREFLIGHT",
+      "observed_at_utc": "2026-11-28T11:44:16.788716Z",
+      "successful_host_constructions": 2,
+      "native_instances": ["V69_CAUSAL"],
+      "generic_instances": ["P10-12-V179", "P10-12-V182"],
+      "allocation_count_before_and_after_restart": [3, 3],
+      "qqq_aggregate_symbol_limit_usd_before_and_after_restart": ["99900", "99900"],
+      "v179_instance_symbol_limit_usd": "50",
+      "v182_instance_symbol_limit_usd": "50",
+      "official_account_writes": 0,
+      "production_journal_writes": 0,
+      "production_configuration_applied": false
+    },
+    {
+      "id": "explicit-aggregate-symbol-policy-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 32,
+      "elapsed_seconds": 28.01,
+      "coverage": ["legacy_defaults", "explicit_ceiling_restart", "no_ceiling_increase", "instance_limit", "aggregate_limit", "pending_and_uncertain_reservations", "legitimate_reduction"],
+      "independent_review": "NO_CONCRETE_CORRECTNESS_FINDINGS",
+      "production_configuration_applied": false
+    },
+    {
+      "id": "explicit-preparation-native-capital-compatibility",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 15,
+      "elapsed_seconds": 50.60,
+      "official_trades": false
+    },
+    {
+      "id": "effective-capital-ownership-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 45,
+      "elapsed_seconds": 53.44,
+      "official_trades": false
+    },
+    {
+      "id": "proposed-only-frozen-package-preparation",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 1,
+      "elapsed_seconds": 6.06,
+      "deployable_configuration_generated": false,
+      "official_trades": false
+    },
+    {
+      "id": "existing-multi-instance-capital-native-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 60,
+      "elapsed_seconds": 275.13,
+      "official_trades": false
+    },
+    {
+      "id": "announcement-completeness-affected-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 36,
+      "elapsed_seconds": 36.08,
+      "official_trades": false
+    },
+    {
+      "id": "announcement-fix-deployed-runtime",
+      "status": "ONLINE_ACCEPTED",
+      "scope": "V69_INPUT_BLOCKER_REMOVAL_ONLY",
+      "heartbeat_utc": "2026-11-28T11:04:43.191969Z",
+      "revision": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+      "healthy": true,
+      "strategy_state": "WAITING_NEXT_WEEK",
+      "execution_state": "IDLE",
+      "official_trades": false
+    },
+    {
+      "id": "announcement-partition-official-read",
+      "status": "IMPLEMENTED",
+      "evidence_kind": "OFFICIAL_READ_ONLY",
+      "window": ["2026-11-20", "2026-11-30"],
+      "distinct_official_announcements": 1451,
+      "announcements_without_ex_date": 24,
+      "account_writes": 0,
+      "deployment_changed": false
+    },
+    {
+      "id": "alpaca-three-instance-risk-compatibility",
+      "status": "FAILED",
+      "evidence_kind": "ISOLATED_PATCHED_CAPITAL_HOST_PREFLIGHT",
+      "reason": "SMALL_SLEEVE_PERSISTENTLY_TIGHTENS_ACCOUNT_SYMBOL_LIMIT_TO_50_USD",
+      "native_instances": ["V69_CAUSAL"],
+      "generic_instances": ["P10-12-V179", "P10-12-V182"],
+      "isolated_allocation_count": 3,
+      "qqq_aggregate_symbol_limit_usd": "50",
+      "official_account_writes": 0,
+      "production_journal_writes": 0,
+      "production_configuration_applied": false,
+      "activation_entry_point_withdrawn": true,
+      "policy_or_budget_weakened": false
+    },
+    {
+      "id": "alpaca-natural-market-execution",
+      "status": "PENDING_NATURAL_EVENT",
+      "evidence_kind": "OFFICIAL_CLOCK_READ",
+      "market_open": false,
+      "next_open_utc": "2026-11-30T14:30:00Z",
+      "preparation_complete": false
+    }
+  ],
+  "alpaca_preparation": {
+    "account_budget_usd": "100000",
+    "v69_capital_usd": "99900",
+    "v179_acceptance_capital_usd": "50",
+    "v182_acceptance_capital_usd": "50",
+    "funding_applied": true,
+    "v69_registration_prerequisites": {
+      "observed_at_utc": "2026-11-28T10:49:36.081462Z",
+      "evidence_kind": "READ_ONLY_EXISTING_JOURNAL",
+      "v69_execution_plans": 0,
+      "v69_corporate_postings": 0,
+      "existing_allocations": 0,
+      "owned_quantities_zero": true,
+      "economic_cash_flow_usd": "0"
+    },
+    "v179_package_id": "a61f6938cdb1225302e072424e23ce271b0d54aa7ba70a32442f4d046da86a6d",
+    "v182_package_id": "125dcb6414ad6b2e5e9d3e6eb0dfb3af17b3e1655b01b6ba0a9f464e6371d2c1",
+    "previous_local_preparation_package_ids": {
+      "v179": "1bbe021c83ae116d930e70dd973ceb7a54444c52a3c89062e451b2a558122c14",
+      "v182": "8f232dd2bbed9579d34313d7d8d7e6ae6b1e96da9bfbd2b8faba7fc5866169c0"
+    },
+    "champion_promoted": false,
+    "official_paper_account_read": {"cash": "100000.05", "equity": "100000.05", "status": "ACTIVE", "trading_blocked": false},
+    "benchmark_read": {
+      "series": "^SP500TR",
+      "source": "YAHOO:^SP500TR",
+      "records": 252,
+      "first_session": "2025-11-26",
+      "last_session": "2026-11-27",
+      "signal_cutoff_utc": "2026-11-27T18:00:00Z",
+      "acquired_at_utc": "2026-11-28T10:43:27.890677Z",
+      "evidence_kind": "READ_ONLY_BENCHMARK"
+    }
+  },
+  "official_orders_created_by_this_acceptance": [],
+  "capital_events_created_by_this_acceptance": [
+    "p10-12-online-flat-withdraw",
+    "p10-12-online-flat-add-back",
+    "p10-12-online-flat-transfer",
+    "p10-12-online-flat-transfer-back",
+    "p10-12-reject-unfunded-add",
+    "p10-12-reject-excess-withdraw"
+  ],
+  "deployment_changes": [
+    {
+      "completed_at_utc": "2026-11-28T12:19:48Z",
+      "component": "ALPACA_PAPER",
+      "previous_revision": "e9791e129fb9e0de8a489d17691e959023849e21",
+      "revision": "e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14",
+      "qualification_kind": "HOST_POLICY_CHANGE",
+      "original_package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+      "previous_runtime_sha256": "6ef90c4a5bdce7d846a9c65b49540cfd408506a69737e26e791055c882866cc1",
+      "runtime_sha256": "2f6bbe99e06ef297ecc1fcc134d8e11a4df25f31ee29fc9e9afba903c907f335",
+      "runtime_admission_created": true,
+      "active_state": "active",
+      "sub_state": "running",
+      "pid": 1473622,
+      "n_restarts": 0,
+      "rollback_record": "/root/p10-12-e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14",
+      "capital_changed": false,
+      "three_instance_configuration_applied": false
+    },
+    {
+      "completed_at_utc": "2026-11-28T11:00:15Z",
+      "component": "ALPACA_PAPER",
+      "previous_revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+      "revision": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+      "original_package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+      "runtime_admission_created": true,
+      "active_state": "active",
+      "sub_state": "running",
+      "pid": 1450535,
+      "n_restarts": 0,
+      "rollback_record": "/root/p10-12-2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+      "capital_changed": false,
+      "official_orders_created": false
+    }
+  ],
+  "resource_measurements": [
+    {
+      "evidence_file": "runtime-three-instance-resources.json",
+      "load": "THREE_ALPACA_INSTANCES_MARKET_CLOSED_WITH_CAPITAL_COMMANDS",
+      "multi_instance_worker_acceptance": false,
+      "all_three_services_active": true,
+      "all_three_automatic_restart_counts_zero": true,
+      "alpaca_pss_kib": 90382,
+      "alpaca_rss_kib": 100408,
+      "alpaca_swap_kib": 23888,
+      "alpaca_cgroup_memory_peak_bytes": 186417152
+    },
+    {
+      "evidence_file": "runtime-post-deployment.json",
+      "load": "ORIGINAL_STRATEGIES_AFTER_ALPACA_DEPLOYMENT",
+      "multi_instance_worker_acceptance": false,
+      "all_three_services_active": true,
+      "all_three_automatic_restart_counts_zero": true,
+      "alpaca_pss_kib": 101939,
+      "alpaca_rss_kib": 111192,
+      "alpaca_swap_kib": 19388,
+      "alpaca_cgroup_memory_peak_bytes": 174071808
+    }
+  ]
+}

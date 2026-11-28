@@ -1,0 +1,25 @@
+{
+  "evidence_kind": "PRODUCTION_DEPLOYMENT_COPY_POLICY_PREFLIGHT",
+  "previous_revision": "e9791e129fb9e0de8a489d17691e959023849e21",
+  "candidate_revision": "e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14",
+  "package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+  "previous_runtime_sha256": "6ef90c4a5bdce7d846a9c65b49540cfd408506a69737e26e791055c882866cc1",
+  "runtime_sha256": "2f6bbe99e06ef297ecc1fcc134d8e11a4df25f31ee29fc9e9afba903c907f335",
+  "qualification_kind": "HOST_POLICY_CHANGE",
+  "source_pairs": {
+    "factorlab.integrations.alpaca.strategy_instances": {
+      "previous": "67a4053e847a583c37f97ed1917ee1cf3b8e3bbef10cda6c6b6cbbab3c6ab3e7",
+      "replacement": "38a46a599e2de6de768a1adfe7c434bd5097a6c5a61449aecfb7ef7a98abd367"
+    },
+    "factorlab.trading.capital": {
+      "previous": "4fdda3534fad2339c02208011ecba937cb4576b7078c22aed25ff90b85803c1d",
+      "replacement": "abe021468f812a5b9a4e6d643ce7a3c207c46f5bd89de7d0e19cbf7e39247fa7"
+    }
+  },
+  "compute_closure_excludes_policy_modules": true,
+  "remaining_sources_dependencies_interpreter_and_package_binding_match": true,
+  "first_admission_created": true,
+  "replay_admission_created": false,
+  "production_journal_writes": 0,
+  "official_account_writes": 0
+}

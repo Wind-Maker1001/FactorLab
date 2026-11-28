@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-11-28T11:04:56.172466+00:00",
+  "evidence_kind": "RUNTIME_SNAPSHOT",
+  "binance": {
+    "health": {
+      "mode": "EXECUTE",
+      "status": "RUNNING",
+      "account_recovered": true,
+      "last_reconciled_at": "2026-11-28T11:04:55.042443+00:00",
+      "unknown_count": 0,
+      "requests": {
+        "DELETE": 1,
+        "GET": 103994,
+        "POST": 1
+      },
+      "global_budget": {
+        "consumed": {
+          "posts": 150,
+          "submitted_notional": "935.2145000"
+        },
+        "max_loss": "250",
+        "opening_equity": "5000.00000000",
+        "remaining_notional": "499064.7855000",
+        "remaining_posts": 99850,
+        "state": "RUNNING",
+        "total_notional": "500000",
+        "total_orders": 100000
+      },
+      "campaign": {
+        "enabled": true,
+        "expires_at": "2026-11-28T13:57:23.328526+00:00",
+        "limits": {
+          "max_loss_usdt": "250",
+          "max_notional_usdt": "7",
+          "max_open_orders": 1,
+          "max_quantity": "0.04",
+          "symbol": "NVDAUSDT"
+        },
+        "post_budget": 4,
+        "posts_consumed": 0,
+        "remaining_posts": 4
+      }
+    },
+    "journal_counts": {
+      "strategy-deployment.sqlite3": {
+        "instance_deployment": 0,
+        "instance_decisions": 0,
+        "instance_runtime_admissions": 0
+      }
+    },
+    "sqlite_file_bytes": {
+      "grid-supervisor.sqlite3": 196608,
+      "strategy-deployment.sqlite3-shm": 32768,
+      "strategy-dry-run.sqlite3": 24576,
+      "runtime.sqlite3": 413696,
+      "strategy-deployment.sqlite3": 311296,
+      "strategy-execute.sqlite3": 24576,
+      "strategy-deployment.sqlite3-wal": 0,
+      "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 29880320,
+      "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 839680,
+      "grid-preview/grid-supervisor.sqlite3": 16384,
+      "grid-preview/runtime.sqlite3": 28672,
+      "external/task-mailbox/tasks.sqlite3-wal": 0,
+      "external/task-mailbox/tasks.sqlite3": 24576,
+      "external/task-mailbox/tasks.sqlite3-shm": 32768,
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 24576,
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 69632,
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 53248,
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 69632
+    }
+  },
+  "alpaca": {
+    "health": {
+      "revision": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+      "mode": "EXECUTE",
+      "healthy": true,
+      "account_recovered": true,
+      "heartbeat": "2026-11-28T11:04:43.191969+00:00",
+      "schedule": {
+        "due": false,
+        "execution_session": "2026-11-23",
+        "market_open": false,
+        "next_open": "2026-11-30T14:30:00+00:00",
+        "signal_cutoff": "2026-11-20",
+        "week": "2026-11-23"
+      },
+      "strategy": {
+        "frequency": "natural-week",
+        "name": "v69-original",
+        "reason": null,
+        "state": "WAITING_NEXT_WEEK"
+      },
+      "execution": {
+        "enabled": true,
+        "state": "IDLE",
+        "task": null
+      }
+    },
+    "journal_counts": {
+      "portfolio.sqlite3": {
+        "portfolio_allocations": 0,
+        "capital_accounts": 0,
+        "capital_instances": 0,
+        "capital_events": 0,
+        "capital_commands": 0,
+        "portfolio_risk_config": 0,
+        "portfolio_risk_nav": 0,
+        "portfolio_orders": 12,
+        "portfolio_confirmations": 13
+      },
+      "deployments.sqlite3": {
+        "instance_deployment": 1,
+        "instance_decisions": 0,
+        "instance_runtime_admissions": 2
+      }
+    },
+    "sqlite_file_bytes": {
+      "deployments.sqlite3-shm": 32768,
+      "market-stream.sqlite3-wal": 37112,
+      "deployments.sqlite3-wal": 0,
+      "account.sqlite3": 77824,
+      "runtime.sqlite3": 843776,
+      "deployments.sqlite3": 196608,
+      "market-stream.sqlite3": 843059200,
+      "market-stream.sqlite3-shm": 32768,
+      "portfolio.sqlite3": 294912,
+      "handover/observer-account.sqlite3": 65536
+    }
+  },
+  "services": {
+    "factorlab-demo-execute.service": {
+      "MainPID": "1335821",
+      "NRestarts": "0",
+      "MemoryCurrent": "44851200",
+      "MemoryPeak": "97980416",
+      "MemorySwapCurrent": "41930752",
+      "CPUUsageNSec": "1088610326000",
+      "ActiveState": "active",
+      "SubState": "running",
+      "process_memory": {
+        "Rss": "44368 kB",
+        "Pss": "35580 kB",
+        "Swap": "26024 kB",
+        "SwapPss": "26024 kB"
+      }
+    },
+    "factorlab-alpaca-paper.service": {
+      "MainPID": "1450535",
+      "NRestarts": "0",
+      "MemoryCurrent": "54767616",
+      "MemoryPeak": "174071808",
+      "MemorySwapCurrent": "19898368",
+      "CPUUsageNSec": "2651645000",
+      "ActiveState": "active",
+      "SubState": "running",
+      "process_memory": {
+        "Rss": "111192 kB",
+        "Pss": "101939 kB",
+        "Swap": "19388 kB",
+        "SwapPss": "19388 kB"
+      }
+    },
+    "factorlab-demo-tradfi-observer.service": {
+      "MainPID": "1335871",
+      "NRestarts": "0",
+      "MemoryCurrent": "18284544",
+      "MemoryPeak": "80588800",
+      "MemorySwapCurrent": "43216896",
+      "CPUUsageNSec": "17270844000",
+      "ActiveState": "active",
+      "SubState": "running",
+      "process_memory": {
+        "Rss": "28184 kB",
+        "Pss": "19398 kB",
+        "Swap": "39140 kB",
+        "SwapPss": "39140 kB"
+      }
+    }
+  }
+}

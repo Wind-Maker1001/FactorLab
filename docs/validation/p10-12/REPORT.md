@@ -1,0 +1,81 @@
+# P10-12 双市场多策略在线验收
+
+## 基线
+
+2026-11-28 08:06 UTC 的现场只读核实：马来西亚 `factorlab-demo-01` 为 x86_64，Binance Execute、Alpaca Paper 和 TradFi Observer 均为 active/running，systemd `NRestarts=0`。三个组件实际运行版本为 `80d22fa23b2bedd557684dd4db9559e6180ffb9e`，不是当前仓库基线 `47e58d9044e27dc47fc140f87b48b73531db6d3f`。#261、#262、#263、#264、#266、#268、#277 均已合并。
+
+Binance 有效状态根为 `/var/lib/factorlab-demo/execute-state-r01-return`，Alpaca 为 `/var/lib/factorlab-alpaca-paper/r01-return`。Observer 使用 Binance 当前根内的 TaskMailbox。日本 `factorlab-arm-01` 为 aarch64；三个执行/观察单元均 masked/inactive、PID=0，Alpaca 与 Observer 发布链接指向同一 `80d22fa…` 版本。
+
+Binance 当前是 legacy-grid，不是多实例验收结果。08:06:30 UTC 健康快照记录零持仓、零挂单、UNKNOWN=0；官方账户投影钱包和可用余额均为 4999.40753423 USDT。全局累计提交 149 次、名义额 929.3581000 USDT，原最大损失预算为 250 USDT。当前 NVDAUSDT Campaign 名义额上限为 7 USDT，数量上限 0.04，最多一个挂单，余下 4 次 POST，2026-11-28 10:57:20 UTC 到期。这些事实不构成 P10-12 官方成交验收。
+
+## 当前验收状态
+
+新增独立 Binance Demo 多策略验收资本授权为20 USDT，原grid7及legacy portfolio20保持不变，总策略分配额度47 USDT。此为资本分配授权，不放宽原账户最大损失、订单或敞口风险限制。新增现金基线及唯一owner接线已实现，最新host/legacy消费、新基线及有界包定向回归27项通过（25.75秒）。独立审查指出的public receipt/controller mirror中断恢复及部分授资提交问题均已修复：configure/allocate复用已有bind的外层事务组合方式，政策、全部分配/绑定和public receipt原子提交，controller mirror由host恢复；回归注入首笔allocate后中断，确认公共政策及资本全部回滚，重放后恰为20 USDT。受影响公共资本政策、共享政策、资金注册及Binance动态资本兼容回归另55项通过（60.05秒）。NEW20使用更紧的全账户20 USDT增险界限，legacy挂单仍阻塞增险，本次在现役legacy无仓位/挂单窗口验收，不声明支持legacy与fresh并行交易。官方exchangeInfo回读562个TRADING USDT标的，最低名义额分布为560个5、1个20、1个50 USDT，无≤3.5标的；现役单笔/单标的上限7 USDT、账户敞口27 USDT。两实例同标的同时开仓至少10 USDT，在线共享库存项因此BLOCKED_RISK_CONSTRAINT；保持风险限制，继续双实例双标的官方成交退出。双实例DOGEUSDT/XRPUSDT有界包已构建，60秒周期、各10 USDT分配、目标权重0.6，分别在第4/6次决策后保持零目标。注册预检被既有准入合同拒绝：MODEL_REFRESH要求真实冻结模型工件，普通决策包不能使用；另一入口要求合格且严格优于现役的Champion晋升证据，工程验收不具备该证据。未添加假工件、伪造晋升或修改准入协议，在线双标的项为BLOCKED_PACKAGE_ADMISSION，准备工具不提供激活入口。尚未部署、授资或下新增验收单；下述12:56的无剩余授权结论保留为新增授权前证据。历史迁移继续HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE，原始现金/结算UNKNOWN，不再追查。
+
+本次已完成公告输入修复、Alpaca 三实例部署及闲置资本操作的在线验证；尚未产生本次验收的新官方订单或成交。逐项结果和原始回执关联见 [evidence.json](evidence.json)。健康快照中的历史成交不标为本次多策略生命周期证据。
+
+现有多实例、动态资本、资本命令恢复和 V179/V182 定向回归为 60 项通过（275.13 秒），证据等级为 `OFFLINE_ACCEPTED`，不代表本次官方成交。新增只读采集入口为 `tools/p10_12_online_acceptance.py`，实际主机快照见 [runtime-baseline.json](runtime-baseline.json)。采集包含活跃 WAL 的账本计数与进程 PSS/RSS/Swap，不输出账户标识或凭据。
+
+Alpaca 官方时钟确认休市，下次开市为 2026-11-30 14:30 UTC。现有 V69 健康心跳为 true，但执行状态为 `BLOCKED_INPUTS`，原因为 `SATURATED_CORPORATE_ACTION_WINDOW`，不能视为策略就绪。官方公告接口对 2026-11-20 至 2026-11-30 实际返回 1451 个不同 ID；两个子窗口分别返回 834 和 618 条，跨窗身份需要去重。部分非验收资产公告没有 ex_date。当前已实现共享日期分窗读取，仍保留无法拆分的饱和单日阻塞；36 项受影响模块与包准备回归通过（36.08 秒）。新函数在主节点通过只读官方接口取得 1451 个不同公告 ID，没有账户写入。该阻塞随后于 11:00 UTC 的部署解除，11:04:43 候选心跳确认原 V69 已进入 WAITING_NEXT_WEEK，详见部署记录。
+
+Alpaca 已从原账户预算内划出 100 USD，V179/V182 各 50 USD，V69 保留 99900 USD，测试结束回收。原 V69 包、历史状态和 Champion 身份保持不变；三条初始分配由原共享 owner 建立。
+
+Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQQUSDT/SPYUSDT portfolio task，后者分属 `tradfi-demo-acceptance` 与 `tradfi-qqq-spy-test` 两个历史 allocation ID；账户 journal 目录内尚无 portfolio.sqlite3。现有导入入口是 `demo_cli capital-history-import --source ...`，要求独立完整经济来源，不能把两个历史 ID 未经核实地合并成一个 20 USDT 来源，也不能重复给两者各分配 20 USDT。两段原始现金及承接结算标为 UNKNOWN，历史迁移为 HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE；不再搜索，也不以此作为新增 V2 实例的全局门禁。清点见 [binance-history-inventory.json](binance-history-inventory.json)，未执行导入或账户写入。进一步只读追踪原批次和账户快照确认：前一个 allocation 有 6 笔订单（4 笔 FILLED、2 笔零成交 CANCELED），后一个有 8 笔且全部 FILLED；两个 allocation 的 QQQUSDT/SPYUSDT 净归属均为零。前段 6 笔订单全部保存在原账户快照，但不在 demo_order_owners 投影中，因此仅扫描已有 owner 表会漏掉真实历史。原订单回执显示前段最后退出成交为 2026-11-24 15:51:00.143 UTC，后段首次买入成交为 15:53:13.279 UTC。原 static-shared-account 预算事件为 grid=7、portfolio=20 USDT；没有据此认定资金承接已经证明，亦未补写历史 owner。2026-11-28 12:01:47 UTC 以只读 Demo userTrades 按原订单回读，12 笔实际成交数量全部与原快照相符；前段手续费 0.00539527、已实现损益 -0.07130000 USDT，后段手续费 0.02173584、已实现损益 -0.01340001 USDT。净交易过账分别为 -0.07669527 与 -0.03513585 USDT，未混入资金费或资本划拨；原始 trade ID 摘要见 [binance-official-portfolio-history.json](binance-official-portfolio-history.json)。这些是历史成交核实，不是本次新成交验收。
+
+## 共享风险修复
+
+显式账户总标的限额已实现：`CapitalPolicy.configure(symbol_limits=...)` 持久化显式来源，实例仍受自己的资本和风险限额约束；没有显式配置的标的保留原最小 owner 上限规则。新增、重配与重启均不得提高已持久化的账户标的上限。Alpaca 配置接入该映射，准备入口要求提供独立核实的完整资产限额，不从账户现金推导。32 项共享资本回归通过（28.01 秒），覆盖实例/聚合超额拒绝、在途及不确定订单预留、合法减仓、重启和已持久化上限不可提高；15 项包准备、原生 V69 和 Alpaca 资本兼容回归通过（50.60 秒）。配置集成的受影响联合运行另有 67 项通过，新测试最初因前次调仓未完成被正确拒绝，修正为真实买入完成流程后已在上述 32 项中通过；各运行有重叠，不累加。独立审查未发现具体正确性问题。2026-11-28 11:44:16 UTC 的复制账本预检连续两次构造三个实例成功：QQQ 账户聚合限额在重启前后均为 99900 USD，V179/V182 实例限额各为 50 USD，分配记录保持 3 条；官方账户和生产账本写入均为零。该结果为 OFFLINE_ACCEPTED；修复源码随后于 12:19:48 UTC 部署，三实例配置尚未应用。此前 50 USD 聚合限额失败记录保留为修复前证据。
+
+一次性 host-policy 准入已在既有 V69 迁移工具实现，通用运行时兼容规则不变。它将资本及实例配置模块的固定前后语义指纹作为明确政策变更处理；任何计算闭包导入、非指定源码变化、依赖、解释器或包绑定变化均拒绝。15 项定向测试通过（1.87 秒），涵盖准确版本对、错误旧/新版本、两侧计算闭包及其余运行身份变化。以真实 NativeWeeklyExecution 初始化账本后，SQLite backup 副本上的两项迁移测试通过（5.76 秒）：实际 DeploymentStore 准入可重复且保留原绑定、未提交冻结事件拒绝准入；探针输入使用固定测试回执，尚非生产解释器探针。独立审查未发现具体正确性问题。实际生产部署账本只读 backup 与现役/候选解释器预检也已通过：原包身份不变，runtime 为 `6ef90c4a…` → `2f6bbe99…`，首次副本准入新增记录、重复执行无新增，全部非指定源码/依赖/解释器和计算闭包约束通过。见 [host-policy-preflight.json](host-policy-preflight.json)。2026-11-28 12:19:48 UTC 已完成原 owner 下的生产备份、准入及切换；12:20:40 候选心跳 healthy=true、account_recovered=true，V69 为 WAITING_NEXT_WEEK、执行 IDLE，PID=1473622、NRestarts=0。三组件均 active/running。资本账户/分配记录仍为零，三实例资金配置尚未应用。回滚目录为 `/root/p10-12-e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14`；实际快照见 [runtime-policy-deployment.json](runtime-policy-deployment.json)。
+
+整合 P10-13 后的联合回归为 80 项通过、5 项失败（674.69 秒）。五项均为实际发布解释器测试仍将新增资本政策误归类为通用源码兼容升级，遭 `unproved runtime compatibility: sources` 拒绝；不能将此运行记录为全通过。测试已拆分公告版→P10-13 版的通用兼容、P10-13 版→政策候选的通用拒绝，以及 V69 精确政策准入；五项实际发布回归重跑全部通过（651.99 秒）。
+
+三实例注册入口已恢复为 `tools/activate_p10_12_alpaca.py`：复用原 owner lock 和 model_refresh_candidate，确定性 selection ID 支持重放，只登记包切换请求、不直接分配资金或访问账户。两项真实冻结包注册/重放测试通过（5.18 秒），独立审查未发现具体正确性问题。2026-11-28 12:26:01 UTC 已登记 V179/V182 的两个 MODEL_REFRESH 请求并启动原共享 owner，PID=1475764、NRestarts=0；12:26:54 账本回读确认三条分配已建立（99900/50/50 USD）及全部资产聚合上限 99900 USD，资本事件/命令均为零；首次健康文件仍为重启前时间且 healthy=false；随后新心跳确认三个实例均运行，V179/V182 为 WAITING_SESSION、V69 为 WAITING_NEXT_WEEK、blocked_instances=[]。健康条件定向回读确认 healthy=true、error=null、account_recovered=true，交易流/行情均 CONNECTED，全部资产无缺失。私有配置已显式指定全部策略资产的 99900 USD 聚合上限，账户总预算仍为 100000 USD。原准备配置引用的基准目标文件尚未安装，第一次暂存因此失败、未应用配置；随后将已获取的只读基准复制到服务私有目录，完成合格暂存后才启动。
+
+资本验收已通过 `capital_cli.enqueue` 向原 owner 提交确定性身份的 1 USD 撤回、补回、双向转移和绩效/快照命令，随后执行一次受控重启；服务恢复为 PID=1477314、active/running、NRestarts=0。首个撤回事件已完成（applied=1、remaining=0、released_budget=1），重启时其余命令仍在持久队列。12:32:23 新 owner 心跳 healthy=true；后续回执确认四笔撤回/补回/双向转移全部 COMPLETE、applied=1、remaining=0，绩效及最终快照随后均 COMPLETE：V179 最终权益/分配恢复为 50 USD，累计 capital_in=2、capital_out=2，absolute_pnl=0、TWR=0、XIRR=0，说明内部资本流未被计为交易利润；V182 为 50 USD，V69 为 99900 USD，官方权益/钱包/可用均为 100000.05 USD，账户预算/总分配均为 100000 USD。重复提交相同六个 command ID 后仍只有四笔资本事件，没有重复划拨。完整回执见 [alpaca-capital-replay-state.json](alpaca-capital-replay-state.json)。类型化回执导出复用 `trading.storage.decode` 后脱敏，避免把内部编码误作业务 JSON，入口为 `tools/p10_12_capital_evidence.py`。
+
+两项资本边界验证于 12:35:09/12:35:55 UTC 完成：公共池无剩余预算时申请追加 1 USD、从权益 50 USD 的 V179 申请精确撤回 51 USD，均返回 INSUFFICIENT_CAPITAL、applied=0、released_budget=0；前者 executable=0，后者 executable=50，没有部分执行精确请求。12:36:09 心跳仍健康。失败请求保留审计事件，不是经济划拨；见 [alpaca-capital-boundary-state.json](alpaca-capital-boundary-state.json)。
+
+#278 的公司行为日期测试兼容修复已原样整合（来源 b8ea9e6，本分支 24816e9），未修改生产日期校验或公告路径。受影响的 `test_portfolio_account_risk_http.py` 与 `test_alpaca_corporate_activities.py` 合计 31 项通过（72.90 秒）。
+
+## 验收矩阵
+
+| 范围 | 状态 | 证据与下一触发条件 |
+| --- | --- | --- |
+| Alpaca 公告完整读取及原 V69 输入恢复 | ONLINE_ACCEPTED | 官方只读取回 1451 个 ID；已部署候选心跳为 WAITING_NEXT_WEEK，无输入错误 |
+| 冻结 V179/V182 包构建、安装与装载 | OFFLINE_ACCEPTED | proposed-only 准备测试通过；未晋升 Champion |
+| 历史零归属资本初始化修复 | OFFLINE_ACCEPTED | 45 项资本回归及复制账本三实例构造通过；修复源码已部署，实际三实例初始化尚未执行 |
+| Alpaca 三实例注册、初始分配及共享限额 | ONLINE_ACCEPTED | 原 owner 已启动三实例，实际分配 99900/50/50 USD，聚合上限 99900 USD，健康回读 true；不代表成交生命周期 |
+| Alpaca 自然开市调仓 | PENDING_NATURAL_EVENT | 三实例已接入；V179/V182 等待 session，原 V69 等待自然周，下一开市 2026-11-30 14:30 UTC |
+| Binance 原历史迁移接入 | HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE | 两个原 allocation 身份及交易经济记录保留，原始现金/结算 UNKNOWN；停止搜索，不作为新增实例的全局门禁 |
+| Binance 新实例独立资本基线 | PENDING_INITIALIZATION | 新增独立20 USDT授权，保留原7/20；接线已实现，尚未部署或初始化 |
+| Binance 双实例双标的官方成交退出 | BLOCKED_PACKAGE_ADMISSION | 普通有界决策包不能使用要求真实冻结模型工件的MODEL_REFRESH，亦无Champion晋升证据 |
+| Binance 同标的共享库存在线验收 | BLOCKED_RISK_CONSTRAINT | 官方最低订单5 USDT，两实例同时开仓至少10，超过保留的单标的7 USDT上限 |
+| 双市场实例成交、退出与库存隔离 | IMPLEMENTED | 现有运行时具备相关路径；本次尚无官方生命周期证据 |
+| 资本追加、撤回、转移、分阶段回收及 TWR/XIRR | IMPLEMENTED | 既有资本路径有离线回归；本次未形成在线资本事件证据 |
+| 风险增险拒绝、合法减仓及重启恢复 | IMPLEMENTED | 既有风控路径有离线回归；本次未形成在线闭环证据 |
+| 2 vCPU / 1 GiB 多实例实际负载 | IMPLEMENTED | 已采集三实例共享 owner 休市运行及资本处理负载；Alpaca PSS 90382 KiB、RSS 100408 KiB、cgroup MemoryPeak 186417152 字节；尚无开市 Worker 峰值采样 |
+
+原 controller 账本的补充只读核实见 [binance-capital-source-index.json](binance-capital-source-index.json)：仅有 snapshot/events/demo_order_owners 三张表；事件身份中 capital/allocation/transfer/settle 均为零，唯一共享资金记录仍是 static-shared-account 预算元数据，33 条 fund 记录均为 funding fee。全部非 funding 事件 payload 未找到 initial_cash/cash_in/cash_out/budget_delta/settlement/contribution/capital_transfer/retired 字段。原状态根三层以内按 capital/migration/settle/receipt 文件名补充查找，匹配为空。此结果不能把缺失历史解释为零现金或默认结算；前后 owner 的原始现金和交接结算保持 UNKNOWN，迁移标为 HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE；停止进一步历史资本搜索，不再作为新增实例验收的全局门禁，未导入或下新单。
+
+当前资金核实与历史迁移分别判定。2026-11-28 12:56:17 UTC 的只读回执见 [binance-current-budget-state.json](binance-current-budget-state.json)：原 owner 在 12:56:14 已对账、account_recovered=true、UNKNOWN=0，邮箱四项任务均 COMPLETED、无 outstanding task；没有公共资本账户/分配账本。原静态授权为 grid=7、portfolio=20 USDT。剩余累计提交名义额和 250 USDT 损失上限不是可分配资本。
+
+现行 legacy consumer 仍可接收任务并使用 portfolio 20 USDT，因此这20不能因当前无排队任务就再次分给新实例；网格7完整保留。未证明存在正的未占用授权额度，也未取得公共政策下从旧消费者承诺释放额度并建立新初始现金基线的当前记录。该缺口是当前预算承诺/现金基线，不是要求补齐历史结算；不继续搜索历史、不修改现役服务或账户、不建立复杂迁移系统。历史原始现金和结算 UNKNOWN 不自动阻止未来由独立当前事实支持的新增分配。
+
+新增授权前的12:56判定：host 构造器存在 portfolio.sqlite3/完整历史来源的启动耦合；仅移除条件会允许空账本忽略 legacy 消费者及网格资本承诺。当时没有已证明可用额度，未修改运行代码；该预算结论及源码依据经独立审查未发现具体不准确之处，两个证据 JSON 解析通过。此后新增独立20 USDT授权的实现见当前验收状态，仍复用唯一owner、公共账本、全账户对账、现有预留及风险约束，没有把历史UNKNOWN转为可用现金。
+
+Binance 迁移入口的静态约束已核实：`register_account_history_source` 固定要求 7/20 USDT 两袖套且 manifest allocation 集合与袖套完全相同；`export_portfolio_sleeve` 只按单一原 allocation ID 导出任务。因此资金承接证明本身还不足以直接把两个 ID 填入当前入口；须在保留全部订单身份的前提下处理历史来源表示，不能静默遗漏其中一段。
+
+## 可重复入口与准备结果
+
+`tools/prepare_p10_12_alpaca.py` 复用原生包构建器和现有冻结 Ridge 工件，生成 V179/V182 包及共享 owner 配置，不访问账户、不训练、不注册 Champion。参数要求显式提供原账户预算、费用预留、远端 release、^SP500TR 快照路径及由原账户风险政策独立核实的完整 `--aggregate-symbol-limits` JSON 映射。正式配置含账户标识，保存在仓库外，不纳入公开证据。已有包身份见 evidence.json；包安装和实际装载已通过本地测试。配置生成不会自动激活或分配资金。因共享总标的限额冲突，生成器只输出 `proposed-instances.json`，不再输出可直接传给运行时的 `instances.json`；未部署的激活入口已撤回，不生成激活请求。既有仓库外准备目录中的旧 instances/requests 文件不得应用到生产。生成配置仅适用于本次已核实的零分配、零 V69 经济现金过账状态，不是通用历史资本迁移入口。2026-11-28 10:49:36 UTC 再次只读确认：V69 plans=0、corporate postings=0、全部 allocations=0，AAPL/QQQ 归属数量及初始数量均为零；现有 cash_flow 的两个来源均为空，因此无需对不存在的 V69 经济过账执行 adoption。已有分配或非零历史过账的账户须保留原注册并使用现有资本迁移路径。随后用生产 portfolio/deployments 的只读备份、独立 account DB 和禁止写账户的 ObservationHTTP 预检三实例构造，发现 `CapitalPolicy.configure` 对零 claims/已终结历史订单读取缺失 allocation 导致 TypeError；生产资本未变。当前修复将 configure 与既有模式校验统一到有效归属集合，保留非零持仓、未终结或不确定订单和 capital_symbols 的约束；新增真实买入/清仓历史及重启回归与受影响资本模块合计 45 项通过（53.44 秒）。激活工具曾通过包准备/排队/重放定向测试，但因上述风险配置冲突撤回，不能作为可部署入口。修复后在生产账本的独立 SQLite 备份中再次构造成功：原生 V69 与 V179/V182 均装载、分配记录共 3 条，官方账户和生产账本写入均为零；同时实测 QQQ 共享总标的上限为 50 USD，确认风险兼容阻塞。仅输出 proposed 配置的包准备回归另通过 1 项（6.06 秒）。P10-13 已申请后续部署/备份测量，当前 Alpaca 生产写窗口已让出，三实例生产接入暂停至其完成。另发现必须在接入前解决的风险语义冲突：既有 SHARED_SAME_DIRECTION 将共享标的总额度单调收紧到各 owner 原始单标的上限的最小值；50 USD 验收袖套可能把 V69 同标的总敞口上限压至 50 USD。该配置不能在保留 V69 正常预算要求下直接上线（TODO：验证兼容的账户总限额与实例限额路径，不提高正式预算来制造通过）。分窗读取现保留父记录作为一致性锚点，子响应遗漏或改变已见公告时明确阻塞；36 项受影响回归通过（36.08 秒）。
+
+官方 Paper 回读现金/权益均为 100000.05 USD，账户 ACTIVE、trading_blocked=false。只读 ^SP500TR Provider 已取到 252 个完整交易日，2025-11-26 至 2026-11-27。信号截止使用官方交易日历的提前收市时间 2026-11-27 18:00 UTC，而不是人为设定的当日末尾。该结果证明基准数据接入，不是自然调仓证据。
+
+08:10 UTC 的资源快照中，Binance、Alpaca、Observer 的 PSS 分别为 41564、35929、20643 KiB，RSS 分别为 50312、45024、29568 KiB，进程 Swap 分别为 16472、50200、38216 KiB。这是原运行负载基线，尚非新增多实例 Worker 峰值验收。
+
+## 部署与回滚
+
+P10-13 后续部署已将 Alpaca 更新到 `e9791e129fb9e0de8a489d17691e959023849e21`，启动于 2026-11-28 11:58:23 UTC，12:01:15 心跳健康，PID=1468040、NRestarts=0。原 V69 包保持 `d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5`；runtime additive admission 为 `48b8ce8d…` → `6ef90c4a5bdce7d846a9c65b49540cfd408506a69737e26e791055c882866cc1`，原绑定保留。生产独占写窗口已交还；下一候选已整合该版本，不能回退其可靠性修复。其停机到启动实测 35.658 秒、到健康 115.619 秒，不符合 ≤5 秒目标；未观察到 Worker 的资源采样不用于多实例容量结论。以下保留 11:00 公告修复的历史部署记录。
+
+Alpaca 独占维护窗口已与并行任务协调，部署命令已启动：停止 Alpaca、只读备份 deployments.sqlite3、沿现有迁移工具为原 V69 包准入候选 runtime，再切换 current 并启动。首次迁移以 root 调用，被 `state root must belong to the service identity` 检查拒绝；脚本已重新启动旧服务，未切换 current。第二次以 `factorlab-alpaca` 调用，在打开迁移脚本时因候选源码继承隔离目录权限而被拒绝，旧服务再次恢复且 current 未切换。仅修正候选发布源码的目录遍历/文件读取权限后，第三次调用成功。2026-11-28 11:00:15 UTC，current 已切到 `2e02729157b1e6a9c277506533d1af1fc1a6a1a0`；原 V69 包的 runtime admission 从 `16f97f…` 到 `48b8ce8d…` 已创建，服务 PID=1450535、active/running、NRestarts=0。首次回读仍是 11:00:04 旧记录；随后完整采集取得候选 11:04:43 心跳：healthy=true、原 V69 `WAITING_NEXT_WEEK`、reason=null、执行 `IDLE`，原公告饱和阻塞已解除。该结果是输入修复的在线运行证据，不是自然调仓或成交验收。详见 [runtime-post-deployment.json](runtime-post-deployment.json)。状态根、资金与凭据权限未变。回滚记录目录为 `/root/p10-12-2e02729157b1e6a9c277506533d1af1fc1a6a1a0`，保留切换前 release 和 deployment DB；Binance、Observer 和日本节点不在本次写入范围。候选 `2e02729157b1e6a9c277506533d1af1fc1a6a1a0` 已在主节点隔离临时目录使用现役解释器加载原 V69 包：manifest、七个数值/日历模块、依赖、Python 版本及去除 runtime digest 后的绑定全部相等，详见 [v69-compatibility.json](v69-compatibility.json)。该探针没有写入 runtime admission。公告执行依据的六场景现役/候选配对结果全部一致，覆盖无行动、策略资产拆股、无关资产行动及执行日依据有无两种状态。候选独立安装已完成，pip check 通过；已安装候选解释器的第二次探针同样通过全部比较，runtime digest 与隔离源码探针一致。随后已按上述维护记录完成 current 切换和 runtime admission；正式回滚尚未执行。
