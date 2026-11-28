@@ -10,6 +10,8 @@ Binance 当前是 legacy-grid，不是多实例验收结果。08:06:30 UTC 健�
 
 ## 当前验收状态
 
+新增独立 Binance Demo 多策略验收资本授权为20 USDT，原grid7及legacy portfolio20保持不变，总策略分配额度47 USDT。此为资本分配授权，不放宽原账户最大损失、订单或敞口风险限制。新增现金基线及唯一owner接线已实现，最新host/legacy消费、新基线及有界包定向回归27项通过（25.75秒）。独立审查指出的public receipt/controller mirror中断恢复及部分授资提交问题均已修复：configure/allocate复用已有bind的外层事务组合方式，政策、全部分配/绑定和public receipt原子提交，controller mirror由host恢复；回归注入首笔allocate后中断，确认公共政策及资本全部回滚，重放后恰为20 USDT。受影响公共资本政策、共享政策、资金注册及Binance动态资本兼容回归另55项通过（60.05秒）。NEW20使用更紧的全账户20 USDT增险界限，legacy挂单仍阻塞增险，本次在现役legacy无仓位/挂单窗口验收，不声明支持legacy与fresh并行交易。官方exchangeInfo回读562个TRADING USDT标的，最低名义额分布为560个5、1个20、1个50 USDT，无≤3.5标的；现役单笔/单标的上限7 USDT、账户敞口27 USDT。两实例同标的同时开仓至少10 USDT，在线共享库存项因此BLOCKED_RISK_CONSTRAINT；保持风险限制，继续双实例双标的官方成交退出。双实例DOGEUSDT/XRPUSDT有界包已构建，60秒周期、各10 USDT分配、目标权重0.6，分别在第4/6次决策后保持零目标。注册预检被既有准入合同拒绝：MODEL_REFRESH要求真实冻结模型工件，普通决策包不能使用；另一入口要求合格且严格优于现役的Champion晋升证据，工程验收不具备该证据。未添加假工件、伪造晋升或修改准入协议，在线双标的项为BLOCKED_PACKAGE_ADMISSION，准备工具不提供激活入口。尚未部署、授资或下新增验收单；下述12:56的无剩余授权结论保留为新增授权前证据。历史迁移继续HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE，原始现金/结算UNKNOWN，不再追查。
+
 本次已完成公告输入修复、Alpaca 三实例部署及闲置资本操作的在线验证；尚未产生本次验收的新官方订单或成交。逐项结果和原始回执关联见 [evidence.json](evidence.json)。健康快照中的历史成交不标为本次多策略生命周期证据。
 
 现有多实例、动态资本、资本命令恢复和 V179/V182 定向回归为 60 项通过（275.13 秒），证据等级为 `OFFLINE_ACCEPTED`，不代表本次官方成交。新增只读采集入口为 `tools/p10_12_online_acceptance.py`，实际主机快照见 [runtime-baseline.json](runtime-baseline.json)。采集包含活跃 WAL 的账本计数与进程 PSS/RSS/Swap，不输出账户标识或凭据。
@@ -46,7 +48,9 @@ Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQ
 | Alpaca 三实例注册、初始分配及共享限额 | ONLINE_ACCEPTED | 原 owner 已启动三实例，实际分配 99900/50/50 USD，聚合上限 99900 USD，健康回读 true；不代表成交生命周期 |
 | Alpaca 自然开市调仓 | PENDING_NATURAL_EVENT | 三实例已接入；V179/V182 等待 session，原 V69 等待自然周，下一开市 2026-11-30 14:30 UTC |
 | Binance 原历史迁移接入 | HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE | 两个原 allocation 身份及交易经济记录保留，原始现金/结算 UNKNOWN；停止搜索，不作为新增实例的全局门禁 |
-| Binance 新实例独立资本基线 | UNPROVEN_AVAILABLE_BUDGET | 当前 27 USDT 授权已划为 grid 7 / legacy portfolio 20；未证明有从旧消费者承诺中释放的正额度及新现金基线 |
+| Binance 新实例独立资本基线 | PENDING_INITIALIZATION | 新增独立20 USDT授权，保留原7/20；接线已实现，尚未部署或初始化 |
+| Binance 双实例双标的官方成交退出 | BLOCKED_PACKAGE_ADMISSION | 普通有界决策包不能使用要求真实冻结模型工件的MODEL_REFRESH，亦无Champion晋升证据 |
+| Binance 同标的共享库存在线验收 | BLOCKED_RISK_CONSTRAINT | 官方最低订单5 USDT，两实例同时开仓至少10，超过保留的单标的7 USDT上限 |
 | 双市场实例成交、退出与库存隔离 | IMPLEMENTED | 现有运行时具备相关路径；本次尚无官方生命周期证据 |
 | 资本追加、撤回、转移、分阶段回收及 TWR/XIRR | IMPLEMENTED | 既有资本路径有离线回归；本次未形成在线资本事件证据 |
 | 风险增险拒绝、合法减仓及重启恢复 | IMPLEMENTED | 既有风控路径有离线回归；本次未形成在线闭环证据 |
@@ -58,7 +62,7 @@ Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQ
 
 现行 legacy consumer 仍可接收任务并使用 portfolio 20 USDT，因此这20不能因当前无排队任务就再次分给新实例；网格7完整保留。未证明存在正的未占用授权额度，也未取得公共政策下从旧消费者承诺释放额度并建立新初始现金基线的当前记录。该缺口是当前预算承诺/现金基线，不是要求补齐历史结算；不继续搜索历史、不修改现役服务或账户、不建立复杂迁移系统。历史原始现金和结算 UNKNOWN 不自动阻止未来由独立当前事实支持的新增分配。
 
-host 构造器确有 portfolio.sqlite3/完整历史来源的启动耦合；但仅移除条件会允许空账本忽略 legacy 消费者及网格资本承诺。当前没有已证明可用额度，故不作无实际资金路径支撑的运行代码修改。未来独立资本路径必须继续复用唯一 owner、公共账本、全账户对账、现有预留及风险约束，而不是把历史 UNKNOWN 变为公共池可用现金。对当前预算结论及其源码依据的独立审查未发现具体不准确之处；本次仅更新证据和报告，两个证据 JSON 解析通过。
+新增授权前的12:56判定：host 构造器存在 portfolio.sqlite3/完整历史来源的启动耦合；仅移除条件会允许空账本忽略 legacy 消费者及网格资本承诺。当时没有已证明可用额度，未修改运行代码；该预算结论及源码依据经独立审查未发现具体不准确之处，两个证据 JSON 解析通过。此后新增独立20 USDT授权的实现见当前验收状态，仍复用唯一owner、公共账本、全账户对账、现有预留及风险约束，没有把历史UNKNOWN转为可用现金。
 
 Binance 迁移入口的静态约束已核实：`register_account_history_source` 固定要求 7/20 USDT 两袖套且 manifest allocation 集合与袖套完全相同；`export_portfolio_sleeve` 只按单一原 allocation ID 导出任务。因此资金承接证明本身还不足以直接把两个 ID 填入当前入口；须在保留全部订单身份的前提下处理历史来源表示，不能静默遗漏其中一段。
 

@@ -150,7 +150,7 @@ class CapitalPolicy:
         decimal_value(fee_rate, 'fee reservation rate')
         if not account_id or not currency:
             raise ValueError('account and currency required')
-        with self.store.transaction():
+        with (nullcontext() if self.store.db.in_transaction else self.store.transaction()):
             previous = self.store.db.execute(
                 'SELECT currency,budget,fee_rate FROM capital_accounts WHERE account=?', (account_id,)).fetchone()
             selected = (self.mode(account_id) if previous is not None else CapitalPolicyMode.EXCLUSIVE

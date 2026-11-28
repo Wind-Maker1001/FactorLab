@@ -33,6 +33,26 @@
   },
   "acceptance_results": [
     {
+      "id": "binance-independent-new20-authorization",
+      "status": "BLOCKED_PACKAGE_ADMISSION",
+      "admission_blocker": "MODEL_REFRESH requires a genuine frozen model artifact; bounded decision-only packages have none and do not have qualified Champion promotion evidence",
+      "bounded_packages": {"symbols": ["DOGEUSDT", "XRPUSDT"], "interval_seconds": 60, "capital_each_usdt": "10", "entry_target_weight": "0.6", "first_zero_decision": [4, 6], "activation_requests": 0},
+      "shared_inventory_online": "BLOCKED_RISK_CONSTRAINT",
+      "preserved_risk_limits_usdt": {"max_order_notional": "7", "max_instrument_exposure": "7", "account_budget": "27"},
+      "official_minimum_notional_usdt": {"5": 560, "20": 1, "50": 1},
+      "new_capital_usdt": "20",
+      "retained_grid_capital_usdt": "7",
+      "retained_legacy_portfolio_capital_usdt": "20",
+      "total_strategy_allocation_ceiling_usdt": "47",
+      "increase_account_risk_limits": false,
+      "initial_cash_baseline": "PENDING_INITIALIZATION",
+      "preflight_evidence_file": "binance-new20-preflight.json",
+      "targeted_regression": {"passed": 27, "seconds": 25.75, "public_registration_atomic_rollback": true, "controller_mirror_recovery": true},
+      "public_capital_compatibility_regression": {"passed": 55, "seconds": 60.05},
+      "historical_capital_migration": "INCOMPLETE",
+      "official_new_orders": 0
+    },
+    {
       "id": "binance-new-instance-current-capital-baseline",
       "status": "UNPROVEN_AVAILABLE_BUDGET",
       "evidence_file": "binance-current-budget-state.json",

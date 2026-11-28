@@ -167,6 +167,11 @@ class DemoSession:
         if shared is not None:
             allocation = decode(json.loads(shared))
             limits = replace(limits, account_budget=allocation['grid_budget'] + allocation['portfolio_budget'])
+        from .demo_fresh_capital import SOURCE_KEY
+        fresh = controller_store.event_payload(SOURCE_KEY)
+        if fresh is not None:
+            from factorlab.trading.control import RiskLimits
+            limits = RiskLimits(**decode(json.loads(fresh))['declaration']['risk_limits'])
         self.gateway = DemoExecutionGateway(self.adapter, observation, instruments,
             {'USDT': balance}, leverage=leverage, max_leverage=leverage)
         self.controller = TradingController(self.gateway, controller_store, clock=self._now, limits=limits)

@@ -145,8 +145,10 @@ class DemoPortfolioConsumer:
         owners = DemoAllocations(self.session.controller)
         instance_id = 'legacy-portfolio:' + portfolio.allocation_id
         owners.adopt_portfolio_history(instance_id=instance_id, allocation_id=portfolio.allocation_id)
-        self.session.controller.limits = replace(self.session.controller.limits,
-            max_order_notional=BUDGET, max_instrument_exposure=BUDGET, account_budget=ACCOUNT_BUDGET)
+        from .demo_fresh_capital import source
+        if source(self.session) is None:
+            self.session.controller.limits = replace(self.session.controller.limits,
+                max_order_notional=BUDGET, max_instrument_exposure=BUDGET, account_budget=ACCOUNT_BUDGET)
         if self.active_mailbox_task is not None and outstanding[0]['status'] == 'QUEUED':
             self.receipt('ACCEPTED',dict(owner_budget_usdt=str(budget)))
         self.session.shared_account = True
