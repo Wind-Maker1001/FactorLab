@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-11-28T12:34:41.260543+00:00",
+  "evidence_kind": "RUNTIME_SNAPSHOT",
+  "binance": {
+    "health": {
+      "mode": "EXECUTE",
+      "status": "RUNNING",
+      "account_recovered": true,
+      "last_reconciled_at": "2026-11-28T12:34:36.105615+00:00",
+      "unknown_count": 0,
+      "requests": {
+        "DELETE": 1,
+        "GET": 122470,
+        "POST": 1
+      },
+      "global_budget": {
+        "consumed": {
+          "posts": 150,
+          "submitted_notional": "935.2145000"
+        },
+        "max_loss": "250",
+        "opening_equity": "5000.00000000",
+        "remaining_notional": "499064.7855000",
+        "remaining_posts": 99850,
+        "state": "RUNNING",
+        "total_notional": "500000",
+        "total_orders": 100000
+      },
+      "campaign": {
+        "enabled": true,
+        "expires_at": "2026-11-28T13:57:23.328526+00:00",
+        "limits": {
+          "max_loss_usdt": "250",
+          "max_notional_usdt": "7",
+          "max_open_orders": 1,
+          "max_quantity": "0.04",
+          "symbol": "NVDAUSDT"
+        },
+        "post_budget": 4,
+        "posts_consumed": 0,
+        "remaining_posts": 4
+      }
+    },
+    "journal_counts": {
+      "strategy-deployment.sqlite3": {
+        "instance_deployment": 0,
+        "instance_decisions": 0,
+        "instance_runtime_admissions": 0
+      }
+    },
+    "sqlite_file_bytes": {
+      "grid-supervisor.sqlite3": 196608,
+      "strategy-deployment.sqlite3-shm": 32768,
+      "strategy-dry-run.sqlite3": 24576,
+      "runtime.sqlite3": 413696,
+      "strategy-deployment.sqlite3": 311296,
+      "strategy-execute.sqlite3": 24576,
+      "strategy-deployment.sqlite3-wal": 0,
+      "eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 30064640,
+      "eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 839680,
+      "grid-preview/grid-supervisor.sqlite3": 16384,
+      "grid-preview/runtime.sqlite3": 28672,
+      "external/task-mailbox/tasks.sqlite3-wal": 0,
+      "external/task-mailbox/tasks.sqlite3": 24576,
+      "external/task-mailbox/tasks.sqlite3-shm": 32768,
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 24576,
+      "grid-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 69632,
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/controller.sqlite3": 53248,
+      "strategy-preview/eb66189ca89a5d1f8253a4e35c66bd12/protocol.sqlite3": 69632
+    }
+  },
+  "alpaca": {
+    "health": {
+      "revision": "e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14",
+      "mode": "EXECUTE",
+      "healthy": true,
+      "account_recovered": true,
+      "heartbeat": "2026-11-28T12:34:37.448915+00:00",
+      "schedule": {
+        "due": false,
+        "execution_session": "2026-11-23",
+        "market_open": false,
+        "next_open": "2026-11-30T14:30:00+00:00",
+        "signal_cutoff": "2026-11-20",
+        "week": "2026-11-23"
+      },
+      "strategy": {
+        "instances": {
+          "P10-12-V179": {
+            "instance_id": "P10-12-V179",
+            "state": "WAITING_SESSION"
+          },
+          "P10-12-V182": {
+            "instance_id": "P10-12-V182",
+            "state": "WAITING_SESSION"
+          },
+          "V69_CAUSAL": {
+            "frequency": "natural-week",
+            "name": "v69-original",
+            "reason": null,
+            "state": "WAITING_NEXT_WEEK"
+          }
+        },
+        "state": "RUNNING"
+      },
+      "execution": {
+        "blocked_instances": [],
+        "enabled": true,
+        "state": "RUNNING"
+      }
+    },
+    "journal_counts": {
+      "portfolio.sqlite3": {
+        "portfolio_allocations": 3,
+        "capital_accounts": 1,
+        "capital_instances": 3,
+        "capital_events": 4,
+        "capital_commands": 6,
+        "portfolio_risk_config": 0,
+        "portfolio_risk_nav": 0,
+        "portfolio_orders": 12,
+        "portfolio_confirmations": 13
+      },
+      "deployments.sqlite3": {
+        "instance_deployment": 3,
+        "instance_decisions": 0,
+        "instance_runtime_admissions": 4
+      }
+    },
+    "sqlite_file_bytes": {
+      "deployments.sqlite3-shm": 32768,
+      "market-stream.sqlite3-wal": 41232,
+      "deployments.sqlite3-wal": 0,
+      "account.sqlite3": 77824,
+      "runtime.sqlite3": 860160,
+      "deployments.sqlite3": 212992,
+      "market-stream.sqlite3": 843067392,
+      "market-stream.sqlite3-shm": 32768,
+      "deployments.sqlite3.2cbf4f687de76458beba1d14d88bde165c66a26adf50569eb2e388d3b4a42c7e.controller.lock": 0,
+      "portfolio.sqlite3": 315392,
+      "deployments.sqlite3.9612977828d9e378413742d24c5051cd704beb30bfc6ce598c63e6f14bcae639.controller.lock": 0,
+      "handover/observer-account.sqlite3": 65536
+    }
+  },
+  "services": {
+    "factorlab-demo-execute.service": {
+      "MainPID": "1335821",
+      "NRestarts": "0",
+      "MemoryCurrent": "41852928",
+      "MemoryPeak": "97980416",
+      "MemorySwapCurrent": "45359104",
+      "CPUUsageNSec": "1286100274000",
+      "ActiveState": "active",
+      "SubState": "running",
+      "process_memory": {
+        "Rss": "42388 kB",
+        "Pss": "33746 kB",
+        "Swap": "27072 kB",
+        "SwapPss": "27072 kB"
+      }
+    },
+    "factorlab-alpaca-paper.service": {
+      "MainPID": "1477314",
+      "NRestarts": "0",
+      "MemoryCurrent": "79519744",
+      "MemoryPeak": "186417152",
+      "MemorySwapCurrent": "31379456",
+      "CPUUsageNSec": "4136261000",
+      "ActiveState": "active",
+      "SubState": "running",
+      "process_memory": {
+        "Rss": "100408 kB",
+        "Pss": "90382 kB",
+        "Swap": "23888 kB",
+        "SwapPss": "23888 kB"
+      }
+    },
+    "factorlab-demo-tradfi-observer.service": {
+      "MainPID": "1335871",
+      "NRestarts": "0",
+      "MemoryCurrent": "22024192",
+      "MemoryPeak": "80588800",
+      "MemorySwapCurrent": "49561600",
+      "CPUUsageNSec": "20528105000",
+      "ActiveState": "active",
+      "SubState": "running",
+      "process_memory": {
+        "Rss": "26800 kB",
+        "Pss": "18426 kB",
+        "Swap": "39140 kB",
+        "SwapPss": "39140 kB"
+      }
+    }
+  }
+}

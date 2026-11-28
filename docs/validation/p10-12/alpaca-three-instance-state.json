@@ -1,0 +1,112 @@
+{
+  "evidence_kind": "SHARED_OWNER_INSTANCE_STATE",
+  "observed_at_utc": "2026-11-28T12:28:29.461458+00:00",
+  "health": {
+    "revision": "e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14",
+    "healthy": false,
+    "heartbeat": "2026-11-28T12:27:56.479376+00:00",
+    "strategy": {
+      "instances": {
+        "P10-12-V179": {
+          "instance_id": "P10-12-V179",
+          "state": "WAITING_SESSION"
+        },
+        "P10-12-V182": {
+          "instance_id": "P10-12-V182",
+          "state": "WAITING_SESSION"
+        },
+        "V69_CAUSAL": {
+          "frequency": "natural-week",
+          "name": "v69-original",
+          "reason": null,
+          "state": "WAITING_NEXT_WEEK"
+        }
+      },
+      "state": "RUNNING"
+    },
+    "execution": {
+      "blocked_instances": [],
+      "enabled": true,
+      "state": "RUNNING"
+    }
+  },
+  "allocations": [
+    {
+      "strategy": "P10-12-V179",
+      "allocation": "p10-12-v179",
+      "capital": "50",
+      "initial_cash": "50"
+    },
+    {
+      "strategy": "P10-12-V182",
+      "allocation": "p10-12-v182",
+      "capital": "50",
+      "initial_cash": "50"
+    },
+    {
+      "strategy": "V69_CAUSAL",
+      "allocation": "v69-original",
+      "capital": "99900",
+      "initial_cash": "99900"
+    }
+  ],
+  "instances": [
+    {
+      "strategy": "P10-12-V179",
+      "instance": "P10-12-V179",
+      "allocation": "p10-12-v179",
+      "logical_strategy": "V179_TREND_BLEND",
+      "paused": 0
+    },
+    {
+      "strategy": "P10-12-V182",
+      "instance": "P10-12-V182",
+      "allocation": "p10-12-v182",
+      "logical_strategy": "V182_RECOVERY_BLEND",
+      "paused": 0
+    },
+    {
+      "strategy": "V69_CAUSAL",
+      "instance": "V69_CAUSAL",
+      "allocation": "v69-original",
+      "logical_strategy": "V69_CAUSAL",
+      "paused": 0
+    }
+  ],
+  "aggregate_symbol_limits": [
+    {
+      "symbol": "AAPL",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "BA",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "C",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "GE",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "JPM",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "QQQ",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "SNDK",
+      "max_exposure": "99900"
+    },
+    {
+      "symbol": "TQQQ",
+      "max_exposure": "99900"
+    }
+  ],
+  "capital_events": [],
+  "capital_commands": []
+}

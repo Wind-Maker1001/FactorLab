@@ -33,6 +33,50 @@
   },
   "acceptance_results": [
     {
+      "id": "alpaca-flat-capital-operations-restart",
+      "status": "ONLINE_ACCEPTED",
+      "scope": "IDLE_WITHDRAW_ADD_BACK_AND_TWO_WAY_TRANSFER",
+      "amount_usd_each": "1",
+      "completed_events": 4,
+      "remaining_usd_each": "0",
+      "restart_pid": 1477314,
+      "post_restart_healthy": true,
+      "post_restart_heartbeat_utc": "2026-11-28T12:32:23.905586Z",
+      "performance_and_final_snapshot_pending": false,
+      "v179_final_equity_usd": "50",
+      "v179_capital_in_usd": "2",
+      "v179_capital_out_usd": "2",
+      "v179_absolute_pnl_usd": "0",
+      "v179_twr": "0",
+      "v179_xirr": 0.0,
+      "official_wallet_equity_available_usd": "100000.05",
+      "account_budget_and_allocation_usd": "100000",
+      "replayed_command_count": 6,
+      "capital_event_count_after_replay": 4,
+      "evidence_file": "alpaca-capital-replay-state.json"
+    },
+    {
+      "id": "actual-release-policy-transition-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 5,
+      "elapsed_seconds": 651.99,
+      "original_combined_run": {"passed": 80, "failed": 5, "elapsed_seconds": 674.69},
+      "coverage": ["announcement_to_reliability_generic_compatibility", "economic_policy_generic_rejection", "native_exact_policy_admission"]
+    },
+    {
+      "id": "shared-owner-three-instance-registration",
+      "status": "ONLINE_ACCEPTED",
+      "scope": "REGISTRATION_AND_INITIAL_FUNDING_ONLY",
+      "started_at_utc": "2026-11-28T12:26:01Z",
+      "instance_capital_usd": {"V69_CAUSAL": "99900", "P10-12-V179": "50", "P10-12-V182": "50"},
+      "aggregate_symbol_limit_usd": "99900",
+      "account_budget_usd": "100000",
+      "champion_promoted": false,
+      "official_trade_lifecycle_accepted": false,
+      "health_predicate_read": {"healthy": true, "error": null, "account_recovered": true, "trade_stream": "CONNECTED", "market_available": true},
+      "evidence_file": "alpaca-three-instance-state.json"
+    },
+    {
       "id": "exact-host-policy-admission-boundaries",
       "status": "OFFLINE_ACCEPTED",
       "tests_passed": 15,
@@ -169,7 +213,7 @@
     "v69_capital_usd": "99900",
     "v179_acceptance_capital_usd": "50",
     "v182_acceptance_capital_usd": "50",
-    "funding_applied": false,
+    "funding_applied": true,
     "v69_registration_prerequisites": {
       "observed_at_utc": "2026-11-28T10:49:36.081462Z",
       "evidence_kind": "READ_ONLY_EXISTING_JOURNAL",
@@ -179,8 +223,12 @@
       "owned_quantities_zero": true,
       "economic_cash_flow_usd": "0"
     },
-    "v179_package_id": "1bbe021c83ae116d930e70dd973ceb7a54444c52a3c89062e451b2a558122c14",
-    "v182_package_id": "8f232dd2bbed9579d34313d7d8d7e6ae6b1e96da9bfbd2b8faba7fc5866169c0",
+    "v179_package_id": "a61f6938cdb1225302e072424e23ce271b0d54aa7ba70a32442f4d046da86a6d",
+    "v182_package_id": "125dcb6414ad6b2e5e9d3e6eb0dfb3af17b3e1655b01b6ba0a9f464e6371d2c1",
+    "previous_local_preparation_package_ids": {
+      "v179": "1bbe021c83ae116d930e70dd973ceb7a54444c52a3c89062e451b2a558122c14",
+      "v182": "8f232dd2bbed9579d34313d7d8d7e6ae6b1e96da9bfbd2b8faba7fc5866169c0"
+    },
     "champion_promoted": false,
     "official_paper_account_read": {"cash": "100000.05", "equity": "100000.05", "status": "ACTIVE", "trading_blocked": false},
     "benchmark_read": {
@@ -195,7 +243,12 @@
     }
   },
   "official_orders_created_by_this_acceptance": [],
-  "capital_events_created_by_this_acceptance": [],
+  "capital_events_created_by_this_acceptance": [
+    "p10-12-online-flat-withdraw",
+    "p10-12-online-flat-add-back",
+    "p10-12-online-flat-transfer",
+    "p10-12-online-flat-transfer-back"
+  ],
   "deployment_changes": [
     {
       "completed_at_utc": "2026-11-28T12:19:48Z",
@@ -232,6 +285,17 @@
     }
   ],
   "resource_measurements": [
+    {
+      "evidence_file": "runtime-three-instance-resources.json",
+      "load": "THREE_ALPACA_INSTANCES_MARKET_CLOSED_WITH_CAPITAL_COMMANDS",
+      "multi_instance_worker_acceptance": false,
+      "all_three_services_active": true,
+      "all_three_automatic_restart_counts_zero": true,
+      "alpaca_pss_kib": 90382,
+      "alpaca_rss_kib": 100408,
+      "alpaca_swap_kib": 23888,
+      "alpaca_cgroup_memory_peak_bytes": 186417152
+    },
     {
       "evidence_file": "runtime-post-deployment.json",
       "load": "ORIGINAL_STRATEGIES_AFTER_ALPACA_DEPLOYMENT",
