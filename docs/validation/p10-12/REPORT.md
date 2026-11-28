@@ -20,6 +20,23 @@ Alpaca 计划从原账户预算内划出 100 USD，V179/V182 各 50 USD，余下
 
 Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQQUSDT/SPYUSDT portfolio task，后者分属 `tradfi-demo-acceptance` 与 `tradfi-qqq-spy-test` 两个历史 allocation ID；账户 journal 目录内尚无 portfolio.sqlite3。现有导入入口是 `demo_cli capital-history-import --source ...`，要求独立完整经济来源，不能把两个历史 ID 未经核实地合并成一个 20 USDT 来源，也不能重复给两者各分配 20 USDT。TODO：核实两段原始资金来源及承接关系，沿既有迁移路径保留全部订单身份后再接入 V2。清点见 [binance-history-inventory.json](binance-history-inventory.json)，未执行导入或账户写入。
 
+## 验收矩阵
+
+| 范围 | 状态 | 证据与下一触发条件 |
+| --- | --- | --- |
+| Alpaca 公告完整读取及原 V69 输入恢复 | ONLINE_ACCEPTED | 官方只读取回 1451 个 ID；已部署候选心跳为 WAITING_NEXT_WEEK，无输入错误 |
+| 冻结 V179/V182 包构建、安装与装载 | OFFLINE_ACCEPTED | proposed-only 准备测试通过；未晋升 Champion |
+| 历史零归属资本初始化修复 | OFFLINE_ACCEPTED | 45 项资本回归及复制账本三实例构造通过；未部署该修复 |
+| Alpaca 三实例共享风险兼容 | FAILED | 复制账本中 QQQ 总额度收紧为 50 USD；须分离账户总限额与实例限额，配置未激活 |
+| Alpaca 自然开市调仓 | PENDING_NATURAL_EVENT | 下一开市 2026-11-30 14:30 UTC；三实例执行仍先受上述工程阻塞约束 |
+| Binance 原历史迁移接入 | FAILED | 两个历史 portfolio allocation ID 的经济承接尚未证明，现入口仅接受一个 20 USDT portfolio 袖套 |
+| 双市场实例成交、退出与库存隔离 | IMPLEMENTED | 现有运行时具备相关路径；本次尚无官方生命周期证据 |
+| 资本追加、撤回、转移、分阶段回收及 TWR/XIRR | IMPLEMENTED | 既有资本路径有离线回归；本次未形成在线资本事件证据 |
+| 风险增险拒绝、合法减仓及重启恢复 | IMPLEMENTED | 既有风控路径有离线回归；本次未形成在线闭环证据 |
+| 2 vCPU / 1 GiB 多实例实际负载 | IMPLEMENTED | 已提供只读采集入口及原工作负载快照，尚无多实例 Worker 采样 |
+
+Binance 迁移入口的静态约束已核实：`register_account_history_source` 固定要求 7/20 USDT 两袖套且 manifest allocation 集合与袖套完全相同；`export_portfolio_sleeve` 只按单一原 allocation ID 导出任务。因此资金承接证明本身还不足以直接把两个 ID 填入当前入口；须在保留全部订单身份的前提下处理历史来源表示，不能静默遗漏其中一段。
+
 ## 可重复入口与准备结果
 
 `tools/prepare_p10_12_alpaca.py` 复用原生包构建器和现有冻结 Ridge 工件，生成 V179/V182 包及共享 owner 配置，不访问账户、不训练、不注册 Champion。参数要求显式提供原账户预算、费用预留、远端 release 与 ^SP500TR 快照路径。正式配置含账户标识，保存在仓库外，不纳入公开证据。已有包身份见 evidence.json；包安装和实际装载已通过本地测试。配置生成不会自动激活或分配资金。因共享总标的限额冲突，生成器只输出 `proposed-instances.json`，不再输出可直接传给运行时的 `instances.json`；未部署的激活入口已撤回，不生成激活请求。既有仓库外准备目录中的旧 instances/requests 文件不得应用到生产。生成配置仅适用于本次已核实的零分配、零 V69 经济现金过账状态，不是通用历史资本迁移入口。2026-11-28 10:49:36 UTC 再次只读确认：V69 plans=0、corporate postings=0、全部 allocations=0，AAPL/QQQ 归属数量及初始数量均为零；现有 cash_flow 的两个来源均为空，因此无需对不存在的 V69 经济过账执行 adoption。已有分配或非零历史过账的账户须保留原注册并使用现有资本迁移路径。随后用生产 portfolio/deployments 的只读备份、独立 account DB 和禁止写账户的 ObservationHTTP 预检三实例构造，发现 `CapitalPolicy.configure` 对零 claims/已终结历史订单读取缺失 allocation 导致 TypeError；生产资本未变。当前修复将 configure 与既有模式校验统一到有效归属集合，保留非零持仓、未终结或不确定订单和 capital_symbols 的约束；新增真实买入/清仓历史及重启回归与受影响资本模块合计 45 项通过（53.44 秒）。激活工具曾通过包准备/排队/重放定向测试，但因上述风险配置冲突撤回，不能作为可部署入口。修复后在生产账本的独立 SQLite 备份中再次构造成功：原生 V69 与 V179/V182 均装载、分配记录共 3 条，官方账户和生产账本写入均为零；同时实测 QQQ 共享总标的上限为 50 USD，确认风险兼容阻塞。仅输出 proposed 配置的包准备回归另通过 1 项（6.06 秒）。P10-13 已申请后续部署/备份测量，当前 Alpaca 生产写窗口已让出，三实例生产接入暂停至其完成。另发现必须在接入前解决的风险语义冲突：既有 SHARED_SAME_DIRECTION 将共享标的总额度单调收紧到各 owner 原始单标的上限的最小值；50 USD 验收袖套可能把 V69 同标的总敞口上限压至 50 USD。该配置不能在保留 V69 正常预算要求下直接上线（TODO：验证兼容的账户总限额与实例限额路径，不提高正式预算来制造通过）。分窗读取现保留父记录作为一致性锚点，子响应遗漏或改变已见公告时明确阻塞；36 项受影响回归通过（36.08 秒）。
