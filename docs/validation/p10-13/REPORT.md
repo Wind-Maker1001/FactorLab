@@ -8,7 +8,7 @@ P10-05 measured Alpaca periodic backup at 182.871 seconds total, 131.716 seconds
 
 The existing one-shot strategy workers and bounded host/VM concurrency remain the isolation boundary. Earlier resident-worker results are withdrawn comparison evidence, not a supported optimization baseline.
 
-## Work in progress
+## Implementation and evidence
 
 The periodic snapshot implementation now separates its stopped consistency cut from WAL copying. WAL read transactions are pinned under the existing owner lock and all-database write reservations. Rollback-journal databases are copied before those reservations are released. Immutable strategy artifacts are held open at the cut. Publication still requires copied SQLite integrity and the existing complete inventory/digest contract. Scheduled final-seal recovery is unchanged. Windows Python 3.13.9 backup/storage regressions passed (52 passed; two Unix-FD transport tests require Linux). A disposable 850,657,280-byte synthetic market database measured 28.905 seconds for the stopped snapshot versus a 0.0496-second pinned cut and 27.625 seconds total online completion, with 38,060,032-byte process peak RSS and 2,154,856-byte post-cut WAL. Economic rows, original order/checkpoint identifiers and binding were unchanged by restore. This measures the consistency-cut algorithm, not production systemd stop/start or VM performance; see `backup-windows-py313.json`.
 
@@ -23,5 +23,9 @@ Generic runtime qualification and deployment integration pass all 22 tests on Wi
 ## Production observation boundary
 
 No P10-13 production deployment or database write has occurred. P10-12 owns the current multi-strategy online acceptance work; P10-14 owns unplanned recovery and execution ownership. Production maintenance must use a coordinated exclusive window. Existing SOAK evidence must be segmented at release changes and maintenance, never relabeled as continuous P10-13 execution.
+
+At 2026-11-28T11:00:15Z, the separate multi-strategy acceptance deployment reported Alpaca switched to `2e02729157b1e6a9c277506533d1af1fc1a6a1a0`; Binance and Observer were unchanged. The `production-capacity-baseline.json` observation precedes that switch and remains evidence for `80d22fa`, not the new release.
+
+The first native Linux CI run exposed a test-fixture dependency assumption: it required `six` even when the installed `python-dateutil` no longer depended on it. The paired fixture now copies the installed numerical dependencies' actual declared closure, including applicable environment markers, without adding production dependencies. Native matrix validation of this correction is pending.
 
 Azure CPU credits are `UNKNOWN` until a permitted metric query returns them. Local availability, process memory, swapping, OOM, CPU, database/WAL sizes, worker peaks, API failures, restarts and backup interruption remain independently measurable.

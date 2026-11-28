@@ -210,6 +210,8 @@ def paired_release_interpreters(tmp_path_factory):
     import tarfile
     import venv
     from importlib.metadata import distribution
+    from packaging.requirements import Requirement
+    from packaging.utils import canonicalize_name
     from factorlab.strategies.loader import SOURCE_ROOT
 
     root = SOURCE_ROOT.parent
@@ -225,8 +227,18 @@ def paired_release_interpreters(tmp_path_factory):
         baselines.append(baseline / 'src')
     dependencies = workspace / 'dependencies'
     dependencies.mkdir()
-    for name in ('numpy', 'pandas', 'python-dateutil', 'pytz', 'tzdata', 'six'):
+    pending = ['numpy', 'pandas', 'tzdata']
+    copied = set()
+    while pending:
+        name = canonicalize_name(pending.pop())
+        if name in copied:
+            continue
+        copied.add(name)
         dist = distribution(name)
+        for requirement in dist.requires or ():
+            dependency = Requirement(requirement)
+            if dependency.marker is None or dependency.marker.evaluate({'extra': ''}):
+                pending.append(dependency.name)
         for file in dist.files:
             relative = Path(file)
             if '..' in relative.parts or relative.suffix == '.pyc':
