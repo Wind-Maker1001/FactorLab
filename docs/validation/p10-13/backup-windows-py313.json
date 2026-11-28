@@ -1,0 +1,16 @@
+{
+  "measured_at": "2026-11-28T08:20:04.962182+00:00",
+  "platform": "Windows-11-10.0.26340-SP0",
+  "architecture": "AMD64",
+  "python": "3.13.9",
+  "sqlite": "3.50.4",
+  "synthetic": true,
+  "source_market_bytes": 850657280,
+  "stopped_snapshot_seconds": 28.904858299996704,
+  "pinned_cut_seconds": 0.04962830001022667,
+  "pinned_total_seconds": 27.624504700070247,
+  "peak_process_rss_bytes": 38060032,
+  "post_cut_wal_bytes": 2154856,
+  "restored_economic_cut_equal": true,
+  "services_restarted": false
+}

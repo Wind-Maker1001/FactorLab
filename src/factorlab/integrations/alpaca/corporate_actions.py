@@ -1,10 +1,48 @@
 """Official nontrade evidence retained in the existing portfolio journal."""
 import json
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal as D
 from zoneinfo import ZoneInfo
 
 from factorlab.trading.storage import decode
+
+
+class PreparationIncomplete(RuntimeError):
+    """The market supplied no complete execution-basis preparation yet."""
+
+
+def read_announcements(http, *, since, until):
+    """Read inclusive date windows without accepting an ambiguous saturated day.
+
+    Preserve official records verbatim: some non-dividend announcements do not
+    carry an ex-date even when the request selects that date basis.
+    """
+    start, end = date.fromisoformat(since), date.fromisoformat(until)
+    if start > end:
+        raise ValueError('corporate action window is reversed')
+    windows, records, observed = [(start, end)], {}, {}
+    while windows:
+        first, last = windows.pop()
+        rows = http.request('GET', '/v2/corporate_actions/announcements', params={
+            'ca_types': 'dividend,merger,spinoff,split', 'since': first.isoformat(),
+            'until': last.isoformat(), 'date_type': 'ex_date'})
+        for row in rows:
+            identity = row['id']
+            if identity in observed and observed[identity] != row:
+                raise PreparationIncomplete('CORPORATE_ANNOUNCEMENT_CHANGED:' + identity)
+            observed[identity] = row
+        if len(rows) >= 1000:
+            if first == last:
+                raise PreparationIncomplete('SATURATED_CORPORATE_ACTION_DAY:' + first.isoformat())
+            middle = first + (last - first) // 2
+            windows.extend(((middle + timedelta(days=1), last), (first, middle)))
+            continue
+        for row in rows:
+            records[row['id']] = row
+    missing = observed.keys() - records.keys()
+    if missing:
+        raise PreparationIncomplete('CORPORATE_ANNOUNCEMENT_DISAPPEARED:' + min(missing))
+    return list(records.values())
 
 
 class CorporateReceiptJournal:

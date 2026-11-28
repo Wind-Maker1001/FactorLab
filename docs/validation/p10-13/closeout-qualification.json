@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-28",
+  "production_baseline": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+  "combined_candidate_committed": true,
+  "deployed_code_revision": "e9791e129fb9e0de8a489d17691e959023849e21",
+  "migration": {
+    "python_3_12": {"passed": 23, "seconds": 485.80},
+    "python_3_13": {"passed": 23, "seconds": 217.43},
+    "python_3_14": {"passed": 23, "seconds": 218.53},
+    "production_forward_reverse": "PASS",
+    "v69_original_binding_checkpoint_and_admission_chain": "PASS",
+    "economically_different_80d22fa_and_47e58d9_direct_admission": "REJECTED"
+  },
+  "backup_observation_and_capacity_python_3_13": {"passed": 9, "seconds": 3.66},
+  "closeout_regressions_python_3_14": {"passed": 17, "seconds": 4.17},
+  "periodic_snapshot_windows_platform_coverage": {"passed": 9, "skipped": 0, "seconds": 8.15},
+  "installer_shell_syntax": "PASS",
+  "relocation_aware_migration": {"python_3_13": {"passed": 25, "seconds": 258.93}, "python_3_14": {"passed": 25, "seconds": 269.01}, "actual_installed_production_v69_readonly": "COMPATIBLE", "independent_review": "No remaining correctness findings"},
+  "prior_head_ci": {
+    "head": "4266e77c004bf02d03332359412b79d2657d62fd",
+    "offline_windows_linux_3_13_3_14": "PASS",
+    "minimal_dual_runtime_x64_arm64": "PASS",
+    "trusted_targeted": {"status": "FAIL", "passed": 32, "skipped": 2, "failures": 0, "reason": "Windows selection includes Linux-only inherited-FD tests; trusted gate rejects skips", "job": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/46138491675/job/140959830027"},
+    "ci_control_review": {"status": "AWAITING_HUMAN", "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/46138491675"}
+  },
+  "rejected_deployment_attempt": {"candidate": "d912c8e1b7be42dbeb7cd33038f32bf84f326b5f", "status": "REJECTED_DEPENDENCY_IDENTITY", "current_retained": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0", "restored_service": "active/running", "pid": 1460922, "automatic_restarts": 0, "different_files": ["numpy:bin/f2py", "numpy:bin/numpy-config", "pip:bin/pip", "pip:bin/pip3", "pip:bin/pip3.13", "websockets:bin/websockets"], "difference": "Generated entrypoint shebang release path; bodies identical"},
+  "production_deployment": {"revision": "e9791e129fb9e0de8a489d17691e959023849e21", "status": "DEPLOYED", "started_at": "2026-11-28T11:58:23Z", "runtime_identity": "6ef90c4a5bdce7d846a9c65b49540cfd408506a69737e26e791055c882866cc1", "post_backup_pid": 1468040, "automatic_restarts": 0, "maintenance_window": "RELEASED"},
+  "production_backup_measurement": {"status": "VERIFIED_TARGET_NOT_MET", "receipt": "production-backup-e9791e.json", "stop_request_to_start_return_seconds": 35.65821429702919, "stop_request_to_first_healthy_heartbeat_seconds": 115.618647, "stopped_writers_to_start_return_seconds": 1.0055726729915477, "measurement_ledger_scan_seconds": 0.2950687199481763, "target_seconds": 5, "target_met": false, "cut_ledger_equal": true, "live_changed_tables": {}, "economic_workload": "Unchanged during closed-market observation", "deferred_fix": "TODO: reduce executor shutdown/startup lifecycle delays without weakening economic completion or recovery readiness"},
+  "production_capacity": {"receipt": "production-capacity-e9791e.jsonl", "oom_kill_delta": 0, "swap_activity": "OBSERVED", "workers": "None observed; first two samples referenced stale executor PIDs", "natural_long_duration_evidence": "CONTINUING"},
+  "operational_evidence_independent_review": "Timing and economic-cut interpretation verified; stale-PID coverage wording corrected; no secrets found",
+  "deployed_revision_ci": {"head": "e9791e129fb9e0de8a489d17691e959023849e21", "runtime_acceptance": "PASS", "disaster_recovery": "PASS", "grid_cpu_economic_parity": "PASS", "trusted_targeted": "PASS", "trusted_locks_and_package": "PASS", "trusted_fast_and_six_software_shards": "IN_PROGRESS", "ci_control_review": {"status": "AWAITING_HUMAN", "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/46142097872"}},
+  "azure_cpu_credits": "UNKNOWN"
+}

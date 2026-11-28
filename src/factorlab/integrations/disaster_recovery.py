@@ -144,8 +144,17 @@ def take_over(backup, destination, *, fence_file, revision, configuration):
 
 def finish_alpaca_backup(recovery_file, state_root, runner):
     if recovery_file.exists():
-        if not (state_root / storage._QUARANTINE).exists():
+        attempt = json.loads(recovery_file.read_bytes())
+        if attempt.get('restart', True) and not (state_root / storage._QUARANTINE).exists():
             runner.start_unit(ALPACA_UNIT)
+            attempt['restart'] = False
+            storage.atomic_json(recovery_file, attempt)
+        if 'destination' in attempt:
+            cleanup = runner.run_python_module(MODULE, [
+                'cleanup-periodic', '--state-root', str(state_root),
+                '--destination', attempt['destination'],
+            ])
+            cleanup.check_returncode()
         recovery_file.unlink()
         storage._sync_directory(recovery_file.parent)
 
@@ -160,20 +169,27 @@ def scheduled_alpaca_backup(state_root, backup_root, release, recovery_file, kee
     interrupted = runner.is_unit_active(ALPACA_UNIT)
     downtime = 0.0
     started = monotonic()
-    if interrupted:
-        storage.atomic_json(recovery_file, {'unit': ALPACA_UNIT})
+    attempt = {'unit': ALPACA_UNIT, 'restart': interrupted, 'destination': str(destination.resolve())}
+    storage.atomic_json(recovery_file, attempt)
+    def resume():
+        nonlocal downtime
+        if attempt['restart']:
+            if not (state_root / storage._QUARANTINE).exists():
+                runner.start_unit(ALPACA_UNIT)
+            attempt['restart'] = False
+            storage.atomic_json(recovery_file, attempt)
+            downtime = monotonic() - started
+
     try:
         if interrupted:
             runner.stop_unit(ALPACA_UNIT)
         snapshot = runner.run_python_module(MODULE, [
                 'snapshot', '--market', 'alpaca', '--state-root', str(state_root), '--destination',
-                str(destination), '--revision', revision,
-            ])
+                str(destination), '--revision', revision, '--periodic',
+            ], on_snapshot_ready=resume)
         snapshot.check_returncode()
     finally:
-        if interrupted:
-            finish_alpaca_backup(recovery_file, state_root, runner)
-            downtime = monotonic() - started
+        finish_alpaca_backup(recovery_file, state_root, runner)
     verification = runner.run_python_module(MODULE, ['describe', '--backup', str(destination)])
     verification.check_returncode()
     backups = [(parsed, path) for path in backup_root.iterdir()
@@ -201,6 +217,10 @@ def main(argv=None):
     snapshot.add_argument('--task-mailbox', type=Path)
     snapshot.add_argument('--target-machine')
     snapshot.add_argument('--target-state')
+    snapshot.add_argument('--periodic', action='store_true')
+    cleanup = commands.add_parser('cleanup-periodic')
+    cleanup.add_argument('--state-root', type=Path, required=True)
+    cleanup.add_argument('--destination', type=Path, required=True)
     for command in ('schedule-alpaca', 'finish-alpaca-backup'):
         sub = commands.add_parser(command)
         sub.add_argument('--state-root', type=Path, required=True)
@@ -232,13 +252,42 @@ def main(argv=None):
                 final = _target(args.target_machine, args.target_state)
                 if final['machine_id'] == storage.machine_id():
                     raise SafetyBlocked('a final snapshot must target a different machine')
-            root = storage.recovery_snapshot(
-                args.state_root, args.destination, args.market, args.revision,
-                task_mailbox=args.task_mailbox, final_target=final,
-                configuration_sha256=_configuration_digest(args.configuration),
-            )
+            if args.periodic:
+                if final or args.configuration or args.task_mailbox or args.market != 'alpaca':
+                    parser.error('periodic readiness is only for the scheduled Alpaca snapshot')
+                import socket
+
+                with socket.socket(fileno=int(os.environ['FACTORLAB_SNAPSHOT_READY_FD'])) as channel:
+                    channel.settimeout(120)
+                    with storage.periodic_recovery_snapshot(
+                        args.state_root, args.destination, args.market, args.revision,
+                    ) as complete:
+                        channel.sendall(b'R')
+                        if channel.recv(1) != b'C':
+                            raise SafetyBlocked('snapshot coordinator did not resume execution')
+                        root = complete()
+            else:
+                root = storage.recovery_snapshot(
+                    args.state_root, args.destination, args.market, args.revision,
+                    task_mailbox=args.task_mailbox, final_target=final,
+                    configuration_sha256=_configuration_digest(args.configuration),
+                )
             result = dict(path=str(root), backup_bytes=sum(path.stat().st_size
                           for path in root.rglob('*') if path.is_file()))
+        elif args.command == 'cleanup-periodic':
+            root = storage._root(args.state_root)
+            destination = Path(os.path.abspath(args.destination))
+            storage._no_symlinks(destination)
+            storage._root(destination.parent)
+            if destination == root or root in destination.parents:
+                raise SafetyBlocked('backup destination must be outside the source tree')
+            staging = destination.with_name('.' + destination.name + '.partial')
+            if staging.exists():
+                storage._no_symlinks(staging)
+                storage._private(staging, directory=True)
+                shutil.rmtree(staging)
+                storage._sync_directory(staging.parent)
+            result = {'cleaned': True}
         elif args.command in ('schedule-alpaca', 'finish-alpaca-backup'):
             from .binance_futures_trading.demo_cloud_backup import SystemdRunner
 

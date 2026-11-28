@@ -62,6 +62,23 @@ file -L "/opt/factorlab/python/cpython-3.13-linux-${ARCH}-gnu/bin/python3"
   ```
   安装器仅安装 `requirements/execution-tradfi.txt`（`--only-binary=:all:`）+ `--no-deps` 源码并执行 `pip check`。
 
+## 同包运行时升级
+
+两个执行端安装器在切换 release 前停止旧宿主，以服务身份取得原有 owner/session 锁，并自动执行同包兼容性证明。手动入口（同样必须先停止对应宿主）为：
+
+```bash
+sudo -u factorlab-alpaca /new/release/venv/bin/python -I -m factorlab.strategies.runtime_migration \
+  --market alpaca --state-root /var/lib/factorlab-alpaca-paper \
+  --previous-python /old/release/venv/bin/python
+sudo -u factorlab-demo /new/release/venv/bin/python -I -m factorlab.strategies.runtime_migration \
+  --market binance --state-root /var/lib/factorlab-demo/execute-state \
+  --previous-python /old/release/venv/bin/python
+```
+
+已冻结但未提交决策的输入必须先由旧 release 排空；拒绝时仅恢复原本运行中的旧服务，原本停用的服务保持停用，完成这些输入后重新部署。已提交收据不重新计算，未确认订单、资本、checkpoint 与旧运行时绑定保持原位；代码回滚直接恢复旧 release，不恢复或覆盖数据库。
+
+证明固定包、配置、模型、策略静态传递导入、worker/loader、经济执行入口，以及解释器、标准库和已安装依赖文件内容。宿主生命周期/备份/保留逻辑的例外仅绑定生产版本 `80d22fa23b2bedd557684dd4db9559e6180ffb9e`、基线 `47e58d9044e27dc47fc140f87b48b73531db6d3f` 与本次已审计版本的完整模块 AST 摘要（支持反向回滚），不是函数名或任意后续版本豁免；迁移模块自身也固定摘要。策略导入这些模块时仍冻结其完整内容，不使用例外。动态代码加载或不能解析的运行时导入拒绝。标准库/数值依赖变化、跨架构切换、模型/参数改变均不能通过同包 admission；使用既有新包部署流程，不删除 runtime identity 检查。`--releases` 可指定非默认策略包目录。
+
 ## 4. 运行期并发与资源边界参数
 
 为严格保持逐请求 OS 进程隔离（防止模块全局变量、类级可变状态、包内子模块及解释器全局上下文跨请求泄漏），所有策略调用均使用**轻量化 one-shot 隔离子进程**，并通过宿主进程与整机双层有界并发控制限制峰值内存与 CPU：
