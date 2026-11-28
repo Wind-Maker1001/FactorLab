@@ -1,0 +1,28 @@
+{
+  "evidence_kind": "OFFICIAL_DEMO_READ_ONLY_ORIGINAL_PORTFOLIO_TRADES",
+  "observed_at_utc": "2026-11-28T12:01:47.325140Z",
+  "source_endpoint": "/fapi/v1/userTrades",
+  "query_scope": "Each original filled order ID and symbol; fewer than 1000 rows per response; returned order IDs filtered and summed quantity matched the original snapshot",
+  "allocation_totals": {
+    "tradfi-demo-acceptance": {
+      "filled_orders": 4,
+      "commission_usdt": "0.00539527",
+      "realized_pnl_usdt": "-0.07130000",
+      "net_trading_postings_usdt": "-0.07669527",
+      "trade_ids": ["24118033", "23211318", "24119090", "23212383"]
+    },
+    "tradfi-qqq-spy-test": {
+      "filled_orders": 8,
+      "commission_usdt": "0.02173584",
+      "realized_pnl_usdt": "-0.01340001",
+      "net_trading_postings_usdt": "-0.03513585",
+      "trade_ids": ["24119360", "23212575", "24119607", "23212702", "24479159", "23561077", "24479375", "23561241"]
+    }
+  },
+  "all_commission_assets": ["USDT"],
+  "funding_included_in_totals": false,
+  "capital_transition_proven": false,
+  "new_acceptance_trades": false,
+  "account_writes": 0,
+  "journal_writes": 0
+}

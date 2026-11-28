@@ -33,6 +33,17 @@
   },
   "acceptance_results": [
     {
+      "id": "binance-original-portfolio-official-history",
+      "status": "IMPLEMENTED",
+      "evidence_kind": "OFFICIAL_DEMO_READ_ONLY_ORIGINAL_PORTFOLIO_TRADES",
+      "evidence_file": "binance-official-portfolio-history.json",
+      "filled_orders_reconciled": 12,
+      "first_allocation_missing_owner_projection_count": 6,
+      "new_acceptance_trades": false,
+      "capital_transition_proven": false,
+      "account_writes": 0
+    },
+    {
       "id": "explicit-aggregate-retained-journal-preflight",
       "status": "OFFLINE_ACCEPTED",
       "evidence_kind": "ISOLATED_EXPLICIT_AGGREGATE_HOST_PREFLIGHT",

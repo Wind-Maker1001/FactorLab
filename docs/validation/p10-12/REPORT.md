@@ -18,7 +18,7 @@ Alpaca 官方时钟确认休市，下次开市为 2026-11-30 14:30 UTC。现有 
 
 Alpaca 计划从原账户预算内划出 100 USD，V179/V182 各 50 USD，余下保留给 V69，测试结束回收。原 V69 包、历史状态和 Champion 身份保持不变；资本迁移尚未执行。
 
-Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQQUSDT/SPYUSDT portfolio task，后者分属 `tradfi-demo-acceptance` 与 `tradfi-qqq-spy-test` 两个历史 allocation ID；账户 journal 目录内尚无 portfolio.sqlite3。现有导入入口是 `demo_cli capital-history-import --source ...`，要求独立完整经济来源，不能把两个历史 ID 未经核实地合并成一个 20 USDT 来源，也不能重复给两者各分配 20 USDT。TODO：核实两段原始资金来源及承接关系，沿既有迁移路径保留全部订单身份后再接入 V2。清点见 [binance-history-inventory.json](binance-history-inventory.json)，未执行导入或账户写入。
+Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQQUSDT/SPYUSDT portfolio task，后者分属 `tradfi-demo-acceptance` 与 `tradfi-qqq-spy-test` 两个历史 allocation ID；账户 journal 目录内尚无 portfolio.sqlite3。现有导入入口是 `demo_cli capital-history-import --source ...`，要求独立完整经济来源，不能把两个历史 ID 未经核实地合并成一个 20 USDT 来源，也不能重复给两者各分配 20 USDT。TODO：核实两段原始资金来源及承接关系，沿既有迁移路径保留全部订单身份后再接入 V2。清点见 [binance-history-inventory.json](binance-history-inventory.json)，未执行导入或账户写入。进一步只读追踪原批次和账户快照确认：前一个 allocation 有 6 笔订单（4 笔 FILLED、2 笔零成交 CANCELED），后一个有 8 笔且全部 FILLED；两个 allocation 的 QQQUSDT/SPYUSDT 净归属均为零。前段 6 笔订单全部保存在原账户快照，但不在 demo_order_owners 投影中，因此仅扫描已有 owner 表会漏掉真实历史。原订单回执显示前段最后退出成交为 2026-11-24 15:51:00.143 UTC，后段首次买入成交为 15:53:13.279 UTC。原 static-shared-account 预算事件为 grid=7、portfolio=20 USDT；没有据此认定资金承接已经证明，亦未补写历史 owner。2026-11-28 12:01:47 UTC 以只读 Demo userTrades 按原订单回读，12 笔实际成交数量全部与原快照相符；前段手续费 0.00539527、已实现损益 -0.07130000 USDT，后段手续费 0.02173584、已实现损益 -0.01340001 USDT。净交易过账分别为 -0.07669527 与 -0.03513585 USDT，未混入资金费或资本划拨；原始 trade ID 摘要见 [binance-official-portfolio-history.json](binance-official-portfolio-history.json)。这些是历史成交核实，不是本次新成交验收。
 
 ## 共享风险修复
 
