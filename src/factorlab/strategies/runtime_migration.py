@@ -24,6 +24,7 @@ from importlib.util import resolve_name
 import json
 from pathlib import Path
 import platform
+import os
 import sys
 import sysconfig
 from factorlab.strategies.loader import LoadedStrategy, SOURCE_ROOT
@@ -153,6 +154,27 @@ def file_identity(path):
         return file_digest(stream, 'sha256').hexdigest()
 
 
+def dependency_identity(path):
+    # Only interpreter selection in installed scripts is relocatable. Never
+    # resolve interpreter symlinks: another venv may share the same base binary.
+    path = Path(path)
+    if path.parent.resolve() != Path(sysconfig.get_path('scripts')).resolve():
+        return file_identity(path)
+    with path.open('rb') as stream:
+        first = stream.readline()
+        if not first.startswith(b'#!'):
+            return file_identity(path)
+        target = Path(os.fsdecode(first[2:].rstrip(b'\r\n')))
+        interpreter = Path(sys.executable)
+        if target.parent.resolve() != interpreter.parent.resolve() or not target.samefile(interpreter):
+            raise ValueError('unproved Python entrypoint interpreter: ' + str(path))
+        prefix = b'#!<verified-python>\n'
+        digest = sha256(prefix)
+        while block := stream.read(1024 * 1024):
+            digest.update(block)
+        return digest.hexdigest()
+
+
 def digest_files(paths, base):
     result = {}
     for path in sorted(set(paths)):
@@ -170,7 +192,7 @@ for dist in distributions():
     files = dist.files
     if files is None:
         raise ValueError('dependency has no installed file inventory: ' + name)
-    dependencies[name] = dict(version=dist.version, files={str(p): file_identity(dist.locate_file(p))
+    dependencies[name] = dict(version=dist.version, files={str(p): dependency_identity(dist.locate_file(p))
         for p in files if not str(p).endswith('.pyc') and '__pycache__' not in str(p)
         and Path(p).name not in {'RECORD', 'direct_url.json', 'INSTALLER', 'REQUESTED'}
         and dist.locate_file(p).is_file()})
@@ -184,7 +206,7 @@ strategy.close()
 '''
 
 
-_AUDITED = {'factorlab.integrations.alpaca.cloud_runtime': ['3c0c73e7985841998ca310737385f5c85a125fa0afe4c37ec1de9ab7cdcf7a7d', '0483f9c54db7e2e2cb05eb1b0c12518548580b8d57418b917506270f5fbabd1b'], 'factorlab.integrations.binance_futures_trading.demo_cloud_storage': ['e938109811c51c2e5f215f54530feaf0a42fe38cb9a5ce880284b1d38ea19b5e', '5241e5aee4a08254bb09740ebc1a744e1455e7e34d268bdd0d5b027cb2f1cf03'], 'factorlab.integrations.binance_futures_trading.demo_cloud_backup': ['fb4039dcd58bf95d1e4481e9ce1f81c72b88a6b0380512d9750626363385943b', '20a7c27dc5744af1eadf44f56aafe64834f5500ae6087cf57f93e04c2b45d10d', '0992b8d75e099b590c93378b70ef77b5eec12cddbceced9701ce65bcb513f58d'], 'factorlab.integrations.disaster_recovery': ['cb7800a105c2ef9ea4d31d070a2d123ffee31fba6cbb7437ce0851954536fd6c', '2b2a85d3ccbe9fe6bce604cb070460bd3a8193e67cecd1c023e9787182c0f4e1'], 'factorlab.strategies.runtime_migration': [None, '9a69fe5ee9cf96210b5eaeb8823963d37918597cd9ab79f195c0daf4ca3bd008']}
+_AUDITED = {'factorlab.integrations.alpaca.cloud_runtime': ['3c0c73e7985841998ca310737385f5c85a125fa0afe4c37ec1de9ab7cdcf7a7d', '0483f9c54db7e2e2cb05eb1b0c12518548580b8d57418b917506270f5fbabd1b'], 'factorlab.integrations.binance_futures_trading.demo_cloud_storage': ['e938109811c51c2e5f215f54530feaf0a42fe38cb9a5ce880284b1d38ea19b5e', '5241e5aee4a08254bb09740ebc1a744e1455e7e34d268bdd0d5b027cb2f1cf03'], 'factorlab.integrations.binance_futures_trading.demo_cloud_backup': ['fb4039dcd58bf95d1e4481e9ce1f81c72b88a6b0380512d9750626363385943b', '20a7c27dc5744af1eadf44f56aafe64834f5500ae6087cf57f93e04c2b45d10d', '0992b8d75e099b590c93378b70ef77b5eec12cddbceced9701ce65bcb513f58d'], 'factorlab.integrations.disaster_recovery': ['cb7800a105c2ef9ea4d31d070a2d123ffee31fba6cbb7437ce0851954536fd6c', '2b2a85d3ccbe9fe6bce604cb070460bd3a8193e67cecd1c023e9787182c0f4e1'], 'factorlab.strategies.runtime_migration': [None, '9a69fe5ee9cf96210b5eaeb8823963d37918597cd9ab79f195c0daf4ca3bd008', '4cf117b1d2ea5fbfb3d79cb4681a645ecf0483ca9dc417594b3f4393da4f66d6', '10548114fee64fc676e68c016b67f87b87cbb869c0a69526ba2296c0b66800e2']}
 
 
 def probe(python, package):

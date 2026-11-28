@@ -30,6 +30,70 @@ def test_ast_identity_ignores_empty_version_fields_but_preserves_semantics():
     assert ast_identity(original) != ast_identity(ast.parse('def compute(x): return x + 2'))
 
 
+def test_generated_entrypoints_verify_interpreter_and_preserve_body(tmp_path):
+    import ast
+    from hashlib import file_digest, sha256
+    import os
+    import sys
+    import venv
+    from pathlib import Path
+    tree = ast.parse(_PROBE)
+    functions = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+                 and node.name in {'file_identity', 'dependency_identity'}]
+    identities = []
+    body = b'import sys\nfrom pip._internal.cli.main import main\nsys.exit(main())\n'
+    for label in ('old', 'replacement'):
+        environment = tmp_path / label
+        venv.EnvBuilder(with_pip=False).create(environment)
+        scripts = environment / ('Scripts' if sys.platform == 'win32' else 'bin')
+        python = scripts / ('python.exe' if sys.platform == 'win32' else 'python')
+        alias = scripts / 'verified-python3'
+        os.link(python, alias)
+        entry = scripts / 'pip'
+        def write(interpreter, payload):
+            entry.write_bytes(b'#!' + os.fsencode(interpreter) + b'\n' + payload)
+        namespace = dict(Path=Path, sha256=sha256, file_digest=file_digest, os=os,
+            sys=SimpleNamespace(executable=str(python)),
+            sysconfig=SimpleNamespace(get_path=lambda key: str(scripts)))
+        exec(compile(ast.Module(body=functions, type_ignores=[]), '<entrypoint identity>', 'exec'), namespace)
+        write(python, body)
+        identities.append(namespace['dependency_identity'](entry))
+        current = tmp_path / (label + '-current')
+        if sys.platform == 'win32':
+            import subprocess
+            subprocess.run(['cmd', '/c', 'mklink', '/J', str(current), str(environment)],
+                check=True, capture_output=True)
+        else:
+            current.symlink_to(environment, target_is_directory=True)
+        namespace['sys'].executable = str(current / scripts.name / python.name)
+        assert namespace['dependency_identity'](entry) == identities[-1]
+        write(alias, body)
+        assert namespace['dependency_identity'](entry) == identities[-1]
+        write(python, body + b'print("changed")\n')
+        assert namespace['dependency_identity'](entry) != identities[-1]
+        wrong = scripts.parent / 'other/bin/python'
+        wrong.parent.mkdir(parents=True)
+        os.link(python, wrong)
+        write(wrong, body)
+        with pytest.raises(ValueError, match='interpreter'):
+            namespace['dependency_identity'](entry)
+    assert identities[0] == identities[1]
+
+
+def test_migration_registry_retains_installed_predecessor_and_rejects_future_edits():
+    import ast
+    import subprocess
+    from factorlab.strategies.runtime_migration import _AUDITED
+    tree = ast.parse(subprocess.check_output(['git', 'show',
+        'd912c8e:src/factorlab/strategies/runtime_migration.py']))
+    tree.body = [node for node in tree.body if not (isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == '_AUDITED' for target in node.targets))]
+    allowed = _AUDITED['factorlab.strategies.runtime_migration']
+    assert ast_identity(tree) in allowed
+    tree.body.append(ast.Expr(value=ast.Constant(value='unaudited future change')))
+    assert ast_identity(tree) not in allowed
+
+
 def evidence():
     return dict(manifest={'package_id': 'package'}, binding=dict(package_id='package',
         runtime_sha256='old', configuration={'size': '1'}, model={'sha256': 'frozen'}),

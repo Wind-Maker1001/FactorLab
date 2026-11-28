@@ -21,7 +21,7 @@
     "trusted_targeted": {"status": "FAIL", "passed": 32, "skipped": 2, "failures": 0, "reason": "Windows selection includes Linux-only inherited-FD tests; trusted gate rejects skips", "job": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/46138491675/job/140959830027"},
     "ci_control_review": {"status": "AWAITING_HUMAN", "url": "https://github.com/Wind-Maker1001/FactorLab/actions/runs/46138491675"}
   },
-  "production_deployment": "NOT_STARTED",
+  "production_deployment": {"candidate": "d912c8e1b7be42dbeb7cd33038f32bf84f326b5f", "status": "REJECTED_DEPENDENCY_IDENTITY", "current_retained": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0", "restored_service": "active/running", "pid": 1460922, "automatic_restarts": 0, "different_files": ["numpy:bin/f2py", "numpy:bin/numpy-config", "pip:bin/pip", "pip:bin/pip3", "pip:bin/pip3.13", "websockets:bin/websockets"], "difference": "Generated entrypoint shebang release path; bodies identical"},
   "production_backup_measurement": "NOT_STARTED",
   "azure_cpu_credits": "UNKNOWN"
 }
