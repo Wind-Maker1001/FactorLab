@@ -161,9 +161,7 @@ class CapitalPolicy:
             elif selected != self.mode(account_id):
                 self.store.db.execute('UPDATE capital_accounts SET mode=? WHERE account=?',
                                       (selected.value, account_id))
-            existing = set(self.store.db.execute('SELECT symbol,strategy FROM portfolio_claims WHERE account=?', (account_id,)))
-            existing.update((order['record'].snapshot.intent.instrument_id, owner) for owner, order in self._orders(account_id))
-            for symbol, owner in existing:
+            for symbol, owner in self._ownership(account_id, self._orders(account_id)):
                 self._tighten_symbol_limit(account_id, symbol, self.limits(account_id, owner, original=True).max_instrument_exposure)
 
     def _orders(self, account_id):
@@ -172,16 +170,21 @@ class CapitalPolicy:
                 'WHERE p.account=?', (account_id,)):
             yield owner, decode(json.loads(payload))
 
-    def _validate_mode(self, account_id, mode, *, changing):
+    def _ownership(self, account_id, orders):
         from .contracts import TERMINAL
         claims = {(symbol, owner) for symbol, owner, quantity in self.store.db.execute(
             'SELECT symbol,strategy,quantity FROM portfolio_claims WHERE account=?', (account_id,))
                   if Decimal(quantity)}
         claims.update(self.store.db.execute('SELECT symbol,strategy FROM capital_symbols WHERE account=?',
                                            (account_id,)))
-        orders = tuple(self._orders(account_id))
         claims.update((order['record'].snapshot.intent.instrument_id, owner) for owner, order in orders
                       if order['record'].snapshot.status not in TERMINAL or order['uncertain'])
+        return claims
+
+    def _validate_mode(self, account_id, mode, *, changing):
+        from .contracts import TERMINAL
+        orders = tuple(self._orders(account_id))
+        claims = self._ownership(account_id, orders)
         owners = {}
         for symbol, owner in claims:
             owners.setdefault(symbol, set()).add(owner)

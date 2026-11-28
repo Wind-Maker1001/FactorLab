@@ -1,0 +1,15 @@
+{
+  "evidence_kind": "READ_ONLY_LEGACY_HISTORY_INVENTORY",
+  "grid_deployment_count": 80,
+  "grid_symbols": [
+    "NVDAUSDT"
+  ],
+  "portfolio_task_count": 7,
+  "portfolio_allocation_ids": [
+    "tradfi-demo-acceptance",
+    "tradfi-qqq-spy-test"
+  ],
+  "portfolio_db_exists": false,
+  "history_import_executed": false,
+  "official_account_writes": 0
+}

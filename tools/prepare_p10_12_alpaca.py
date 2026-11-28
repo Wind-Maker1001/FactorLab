@@ -4,6 +4,9 @@ Use the unchanged V69 native package already installed on the execution host.
 The benchmark path must reference a causal ^SP500TR snapshot on that host.
 Funding assumes the verified P10-12 baseline: no allocations, zero V69 inventory
 and zero V69 economic cash postings. This is not a legacy-capital migration tool.
+The proposed configuration is not deployable: shared symbol ceilings currently
+collapse to the smallest sleeve limit. TODO: separate aggregate and instance
+limits before activating the proposed three-instance configuration.
 """
 import argparse
 from decimal import Decimal
@@ -36,7 +39,7 @@ def prepare(*, account_id, revision, artifact, destination, releases, benchmark,
         capital_policy=dict(currency='USD', budget=str(account_budget), fee_rate=str(fee_rate),
                             mode='SHARED_SAME_DIRECTION'),
         benchmark_source=dict(path=str(benchmark), series_id='^SP500TR'), instances=registrations)
-    (destination / 'instances.json').write_text(json.dumps(config, indent=2) + '\n', encoding='utf-8')
+    (destination / 'proposed-instances.json').write_text(json.dumps(config, indent=2) + '\n', encoding='utf-8')
     (destination / 'packages.json').write_text(json.dumps(packages, indent=2) + '\n', encoding='utf-8')
     return packages
 

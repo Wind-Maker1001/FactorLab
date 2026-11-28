@@ -1,3 +1,4 @@
+from contextlib import closing
 from decimal import Decimal as D
 import sqlite3
 
@@ -22,6 +23,32 @@ def share(policy):
 def claim(store, owner, symbol='AAPL'):
     with store.transaction():
         store.capital_policy.claim('paper', owner, symbol)
+
+
+def test_initial_policy_preserves_flat_unallocated_history(tmp_path):
+    store = PortfolioStore(tmp_path / 'legacy.sqlite3')
+    executor = PortfolioExecutor(Broker(), store, clock=lambda: NOW)
+    opened = plan(executor, 'historical', initial_capital=D(100))
+    run(executor, opened)
+    run(executor, opened)
+    closed = executor.create(account_id='paper', strategy_id='historical', strategy_version='1',
+        trading_session='2026-11-24', rebalance_id='close', weights={'AAPL': D(0)},
+        owned_symbols=['AAPL'], now=NOW, quantity_deltas={'AAPL': D(-10)})
+    run(executor, closed)
+    run(executor, closed)
+    assert store.holdings('paper', 'historical') == {'AAPL': D(0)}
+    assert store.allocation('paper', 'historical') is None
+    store.db.execute('INSERT INTO portfolio_claims VALUES (?,?,?,?,?,?)',
+                     ('paper', 'QQQ', 'native', '0E-9', '0', '0'))
+    orders = store.db.execute('SELECT * FROM portfolio_orders').fetchall()
+    share(store.capital_policy)
+    assert store.db.execute('SELECT * FROM portfolio_orders').fetchall() == orders
+    assert store.capital_policy.ownership('paper') == ()
+    assert store.db.execute('SELECT COUNT(*) FROM capital_symbol_limits').fetchone()[0] == 0
+    store.close()
+    with closing(PortfolioStore(tmp_path / 'legacy.sqlite3')) as reopened:
+        share(reopened.capital_policy)
+        assert reopened.db.execute('SELECT * FROM portfolio_orders').fetchall() == orders
 
 
 def test_shared_claims_preserve_identity_and_monotonic_symbol_limit(tmp_path):

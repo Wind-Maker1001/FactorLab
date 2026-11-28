@@ -33,6 +33,21 @@
   },
   "acceptance_results": [
     {
+      "id": "effective-capital-ownership-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 45,
+      "elapsed_seconds": 53.44,
+      "official_trades": false
+    },
+    {
+      "id": "proposed-only-frozen-package-preparation",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 1,
+      "elapsed_seconds": 6.06,
+      "deployable_configuration_generated": false,
+      "official_trades": false
+    },
+    {
       "id": "existing-multi-instance-capital-native-regression",
       "status": "OFFLINE_ACCEPTED",
       "tests_passed": 60,
@@ -47,6 +62,17 @@
       "official_trades": false
     },
     {
+      "id": "announcement-fix-deployed-runtime",
+      "status": "ONLINE_ACCEPTED",
+      "scope": "V69_INPUT_BLOCKER_REMOVAL_ONLY",
+      "heartbeat_utc": "2026-11-28T11:04:43.191969Z",
+      "revision": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+      "healthy": true,
+      "strategy_state": "WAITING_NEXT_WEEK",
+      "execution_state": "IDLE",
+      "official_trades": false
+    },
+    {
       "id": "announcement-partition-official-read",
       "status": "IMPLEMENTED",
       "evidence_kind": "OFFICIAL_READ_ONLY",
@@ -55,6 +81,21 @@
       "announcements_without_ex_date": 24,
       "account_writes": 0,
       "deployment_changed": false
+    },
+    {
+      "id": "alpaca-three-instance-risk-compatibility",
+      "status": "FAILED",
+      "evidence_kind": "ISOLATED_PATCHED_CAPITAL_HOST_PREFLIGHT",
+      "reason": "SMALL_SLEEVE_PERSISTENTLY_TIGHTENS_ACCOUNT_SYMBOL_LIMIT_TO_50_USD",
+      "native_instances": ["V69_CAUSAL"],
+      "generic_instances": ["P10-12-V179", "P10-12-V182"],
+      "isolated_allocation_count": 3,
+      "qqq_aggregate_symbol_limit_usd": "50",
+      "official_account_writes": 0,
+      "production_journal_writes": 0,
+      "production_configuration_applied": false,
+      "activation_entry_point_withdrawn": true,
+      "policy_or_budget_weakened": false
     },
     {
       "id": "alpaca-natural-market-execution",
@@ -114,5 +155,17 @@
       "official_orders_created": false
     }
   ],
-  "resource_measurements": []
+  "resource_measurements": [
+    {
+      "evidence_file": "runtime-post-deployment.json",
+      "load": "ORIGINAL_STRATEGIES_AFTER_ALPACA_DEPLOYMENT",
+      "multi_instance_worker_acceptance": false,
+      "all_three_services_active": true,
+      "all_three_automatic_restart_counts_zero": true,
+      "alpaca_pss_kib": 101939,
+      "alpaca_rss_kib": 111192,
+      "alpaca_swap_kib": 19388,
+      "alpaca_cgroup_memory_peak_bytes": 174071808
+    }
+  ]
 }

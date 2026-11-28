@@ -18,7 +18,8 @@ def test_preparation_builds_frozen_packages_without_training_or_promoting_v69(tm
     identities = preparation.prepare(account_id='paper-acceptance', revision='a' * 40,
         artifact=artifact, destination=output, releases=Path('/existing/releases'),
         benchmark=Path('/private/sp500tr.parquet'), account_budget=Decimal(100000), fee_rate=Decimal(0))
-    config = json.loads((output / 'instances.json').read_text())
+    config = json.loads((output / 'proposed-instances.json').read_text())
+    assert not (output / 'instances.json').exists()
     assert sum(Decimal(row['funding']['capital']) for row in config['instances']) == Decimal(100000)
     assert config['instances'][0]['native_v69'] is True
     assert config['instances'][0]['binding']['allocation_id'] == 'v69-original'
