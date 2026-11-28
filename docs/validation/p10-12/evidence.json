@@ -33,6 +33,17 @@
   },
   "acceptance_results": [
     {
+      "id": "alpaca-capital-budget-and-cash-boundaries",
+      "status": "ONLINE_ACCEPTED",
+      "scope": "CAPITAL_REQUEST_REJECTION_NOT_ORDER_RISK",
+      "outcome": "INSUFFICIENT_CAPITAL",
+      "requests": ["p10-12-reject-unfunded-add", "p10-12-reject-excess-withdraw"],
+      "applied_usd_each": "0",
+      "released_budget_usd_each": "0",
+      "post_request_healthy": true,
+      "evidence_file": "alpaca-capital-boundary-state.json"
+    },
+    {
       "id": "alpaca-flat-capital-operations-restart",
       "status": "ONLINE_ACCEPTED",
       "scope": "IDLE_WITHDRAW_ADD_BACK_AND_TWO_WAY_TRANSFER",
@@ -247,7 +258,9 @@
     "p10-12-online-flat-withdraw",
     "p10-12-online-flat-add-back",
     "p10-12-online-flat-transfer",
-    "p10-12-online-flat-transfer-back"
+    "p10-12-online-flat-transfer-back",
+    "p10-12-reject-unfunded-add",
+    "p10-12-reject-excess-withdraw"
   ],
   "deployment_changes": [
     {

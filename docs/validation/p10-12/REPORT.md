@@ -32,6 +32,8 @@ Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQ
 
 资本验收已通过 `capital_cli.enqueue` 向原 owner 提交确定性身份的 1 USD 撤回、补回、双向转移和绩效/快照命令，随后执行一次受控重启；服务恢复为 PID=1477314、active/running、NRestarts=0。首个撤回事件已完成（applied=1、remaining=0、released_budget=1），重启时其余命令仍在持久队列。12:32:23 新 owner 心跳 healthy=true；后续回执确认四笔撤回/补回/双向转移全部 COMPLETE、applied=1、remaining=0，绩效及最终快照随后均 COMPLETE：V179 最终权益/分配恢复为 50 USD，累计 capital_in=2、capital_out=2，absolute_pnl=0、TWR=0、XIRR=0，说明内部资本流未被计为交易利润；V182 为 50 USD，V69 为 99900 USD，官方权益/钱包/可用均为 100000.05 USD，账户预算/总分配均为 100000 USD。重复提交相同六个 command ID 后仍只有四笔资本事件，没有重复划拨。完整回执见 [alpaca-capital-replay-state.json](alpaca-capital-replay-state.json)。类型化回执导出复用 `trading.storage.decode` 后脱敏，避免把内部编码误作业务 JSON，入口为 `tools/p10_12_capital_evidence.py`。
 
+两项资本边界验证于 12:35:09/12:35:55 UTC 完成：公共池无剩余预算时申请追加 1 USD、从权益 50 USD 的 V179 申请精确撤回 51 USD，均返回 INSUFFICIENT_CAPITAL、applied=0、released_budget=0；前者 executable=0，后者 executable=50，没有部分执行精确请求。12:36:09 心跳仍健康。失败请求保留审计事件，不是经济划拨；见 [alpaca-capital-boundary-state.json](alpaca-capital-boundary-state.json)。
+
 ## 验收矩阵
 
 | 范围 | 状态 | 证据与下一触发条件 |
@@ -46,6 +48,8 @@ Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQ
 | 资本追加、撤回、转移、分阶段回收及 TWR/XIRR | IMPLEMENTED | 既有资本路径有离线回归；本次未形成在线资本事件证据 |
 | 风险增险拒绝、合法减仓及重启恢复 | IMPLEMENTED | 既有风控路径有离线回归；本次未形成在线闭环证据 |
 | 2 vCPU / 1 GiB 多实例实际负载 | IMPLEMENTED | 已采集三实例共享 owner 休市运行及资本处理负载；Alpaca PSS 90382 KiB、RSS 100408 KiB、cgroup MemoryPeak 186417152 字节；尚无开市 Worker 峰值采样 |
+
+Binance 两段历史的表示已进一步核实：现有 capital_balances/capital_events 可保留原始资金基线并用已证明的历史预算释放、现金结算和退休过账表达顺序承接，无需新增共享预算系统。TODO：先取得原 owner 的历史现金来源、交接结算与现存预算归属证据，再扩展原 adoption receipt 原子导入生命周期；不得仅因两段都已清仓就构造前段 -20 USDT 退休或现金转移。静态目标预算不是现金贡献证据，不能改成允许零初始资本或给两个 owner 各20来绕过。
 
 Binance 迁移入口的静态约束已核实：`register_account_history_source` 固定要求 7/20 USDT 两袖套且 manifest allocation 集合与袖套完全相同；`export_portfolio_sleeve` 只按单一原 allocation ID 导出任务。因此资金承接证明本身还不足以直接把两个 ID 填入当前入口；须在保留全部订单身份的前提下处理历史来源表示，不能静默遗漏其中一段。
 
