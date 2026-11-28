@@ -33,6 +33,20 @@
   },
   "acceptance_results": [
     {
+      "id": "exact-host-policy-admission-boundaries",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 15,
+      "elapsed_seconds": 1.87,
+      "qualification_kind": "HOST_POLICY_CHANGE",
+      "generic_compatibility_unchanged": true,
+      "independent_review": "NO_CONCRETE_CORRECTNESS_FINDINGS",
+      "production_admission_created": false,
+      "test_native_store_copy_tests_passed": 2,
+      "test_native_store_copy_elapsed_seconds": 5.76,
+      "test_native_store_probe_inputs": "FIXED_TEST_RECEIPTS",
+      "production_store_copy_validation_complete": false
+    },
+    {
       "id": "binance-original-portfolio-official-history",
       "status": "IMPLEMENTED",
       "evidence_kind": "OFFICIAL_DEMO_READ_ONLY_ORIGINAL_PORTFOLIO_TRADES",

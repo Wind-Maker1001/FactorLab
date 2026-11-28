@@ -24,6 +24,8 @@ Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQ
 
 显式账户总标的限额实现中：`CapitalPolicy.configure(symbol_limits=...)` 持久化显式来源，实例仍受自己的资本和风险限额约束；没有显式配置的标的保留原最小 owner 上限规则。新增、重配与重启均不得提高已持久化的账户标的上限。Alpaca 配置接入该映射，准备入口要求提供独立核实的完整资产限额，不从账户现金推导。32 项共享资本回归通过（28.01 秒），覆盖实例/聚合超额拒绝、在途及不确定订单预留、合法减仓、重启和已持久化上限不可提高；15 项包准备、原生 V69 和 Alpaca 资本兼容回归通过（50.60 秒）。配置集成的受影响联合运行另有 67 项通过，新测试最初因前次调仓未完成被正确拒绝，修正为真实买入完成流程后已在上述 32 项中通过；各运行有重叠，不累加。独立审查未发现具体正确性问题。2026-11-28 11:44:16 UTC 的复制账本预检连续两次构造三个实例成功：QQQ 账户聚合限额在重启前后均为 99900 USD，V179/V182 实例限额各为 50 USD，分配记录保持 3 条；官方账户和生产账本写入均为零。该结果为 OFFLINE_ACCEPTED，尚未生产部署；此前 50 USD 聚合限额失败记录保留为修复前证据。
 
+一次性 host-policy 准入已在既有 V69 迁移工具实现，通用运行时兼容规则不变。它将资本及实例配置模块的固定前后语义指纹作为明确政策变更处理；任何计算闭包导入、非指定源码变化、依赖、解释器或包绑定变化均拒绝。15 项定向测试通过（1.87 秒），涵盖准确版本对、错误旧/新版本、两侧计算闭包及其余运行身份变化。以真实 NativeWeeklyExecution 初始化账本后，SQLite backup 副本上的两项迁移测试通过（5.76 秒）：实际 DeploymentStore 准入可重复且保留原绑定、未提交冻结事件拒绝准入；探针输入使用固定测试回执，尚非生产解释器探针。独立审查未发现具体正确性问题。TODO：完成实际生产账本副本与现役/候选解释器探针，再接入生产；当前未创建新的生产 admission。
+
 ## 验收矩阵
 
 | 范围 | 状态 | 证据与下一触发条件 |
@@ -50,5 +52,7 @@ Binance 迁移入口的静态约束已核实：`register_account_history_source`
 08:10 UTC 的资源快照中，Binance、Alpaca、Observer 的 PSS 分别为 41564、35929、20643 KiB，RSS 分别为 50312、45024、29568 KiB，进程 Swap 分别为 16472、50200、38216 KiB。这是原运行负载基线，尚非新增多实例 Worker 峰值验收。
 
 ## 部署与回滚
+
+P10-13 后续部署已将 Alpaca 更新到 `e9791e129fb9e0de8a489d17691e959023849e21`，启动于 2026-11-28 11:58:23 UTC，12:01:15 心跳健康，PID=1468040、NRestarts=0。原 V69 包保持 `d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5`；runtime additive admission 为 `48b8ce8d…` → `6ef90c4a5bdce7d846a9c65b49540cfd408506a69737e26e791055c882866cc1`，原绑定保留。生产独占写窗口已交还；下一候选已整合该版本，不能回退其可靠性修复。其停机到启动实测 35.658 秒、到健康 115.619 秒，不符合 ≤5 秒目标；未观察到 Worker 的资源采样不用于多实例容量结论。以下保留 11:00 公告修复的历史部署记录。
 
 Alpaca 独占维护窗口已与并行任务协调，部署命令已启动：停止 Alpaca、只读备份 deployments.sqlite3、沿现有迁移工具为原 V69 包准入候选 runtime，再切换 current 并启动。首次迁移以 root 调用，被 `state root must belong to the service identity` 检查拒绝；脚本已重新启动旧服务，未切换 current。第二次以 `factorlab-alpaca` 调用，在打开迁移脚本时因候选源码继承隔离目录权限而被拒绝，旧服务再次恢复且 current 未切换。仅修正候选发布源码的目录遍历/文件读取权限后，第三次调用成功。2026-11-28 11:00:15 UTC，current 已切到 `2e02729157b1e6a9c277506533d1af1fc1a6a1a0`；原 V69 包的 runtime admission 从 `16f97f…` 到 `48b8ce8d…` 已创建，服务 PID=1450535、active/running、NRestarts=0。首次回读仍是 11:00:04 旧记录；随后完整采集取得候选 11:04:43 心跳：healthy=true、原 V69 `WAITING_NEXT_WEEK`、reason=null、执行 `IDLE`，原公告饱和阻塞已解除。该结果是输入修复的在线运行证据，不是自然调仓或成交验收。详见 [runtime-post-deployment.json](runtime-post-deployment.json)。状态根、资金与凭据权限未变。回滚记录目录为 `/root/p10-12-2e02729157b1e6a9c277506533d1af1fc1a6a1a0`，保留切换前 release 和 deployment DB；Binance、Observer 和日本节点不在本次写入范围。候选 `2e02729157b1e6a9c277506533d1af1fc1a6a1a0` 已在主节点隔离临时目录使用现役解释器加载原 V69 包：manifest、七个数值/日历模块、依赖、Python 版本及去除 runtime digest 后的绑定全部相等，详见 [v69-compatibility.json](v69-compatibility.json)。该探针没有写入 runtime admission。公告执行依据的六场景现役/候选配对结果全部一致，覆盖无行动、策略资产拆股、无关资产行动及执行日依据有无两种状态。候选独立安装已完成，pip check 通过；已安装候选解释器的第二次探针同样通过全部比较，runtime digest 与隔离源码探针一致。随后已按上述维护记录完成 current 切换和 runtime admission；正式回滚尚未执行。
