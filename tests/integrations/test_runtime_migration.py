@@ -289,7 +289,8 @@ def paired_release_interpreters(tmp_path_factory):
     baselines = []
     for revision in ('47e58d9044e27dc47fc140f87b48b73531db6d3f',
                      '80d22fa23b2bedd557684dd4db9559e6180ffb9e',
-                     '2e02729157b1e6a9c277506533d1af1fc1a6a1a0'):
+                     '2e02729157b1e6a9c277506533d1af1fc1a6a1a0',
+                     'e9791e129fb9e0de8a489d17691e959023849e21'):
         baseline = workspace / revision
         baseline.mkdir()
         archive = subprocess.check_output(['git', '-C', str(root), 'archive', revision, 'src'])
@@ -325,7 +326,8 @@ def paired_release_interpreters(tmp_path_factory):
                 shutil.copyfile(source, target)
     interpreters = []
     for label, sources in (('previous', baselines[0]), ('production', baselines[1]),
-                           ('announcements', baselines[2]), ('replacement', SOURCE_ROOT)):
+                           ('announcements', baselines[2]), ('reliability', baselines[3]),
+                           ('replacement', SOURCE_ROOT)):
         env = workspace / label
         venv.EnvBuilder(with_pip=False).create(env)
         python = env / ('Scripts/python.exe' if sys.platform == 'win32' else 'bin/python')
@@ -343,7 +345,6 @@ def test_actual_baseline_candidate_probe_preserves_package_and_admits_host_upgra
     from dataclasses import asdict
     from pathlib import Path
     from factorlab.strategies.package import build_package, install_package
-    from factorlab.strategies.runtime_migration import probe
     from factorlab.strategies.loader import SOURCE_ROOT
     root = SOURCE_ROOT.parent
     workspace, interpreters = paired_release_interpreters
@@ -388,16 +389,24 @@ def test_actual_baseline_candidate_probe_preserves_package_and_admits_host_upgra
         manifest = build_blend_strategy_package(variant=variant, account_id='paper', capital='100',
             model_artifact=artifact, code_commit='a' * 40, destination=archive, evidence={'offline': True})
     release, _ = install_package(archive, tmp_path / 'releases')
-    previous, production, announcements, replacement = [probe(python, release) for python in interpreters]
+    from test_p10_12_policy_admission import migration
+    probes = [migration.policy_probe(python, release) for python in interpreters]
+    previous, production, announcements, reliability, replacement = [result for result, _ in probes]
     for baseline in (previous, production):
         assert baseline['binding']['runtime_sha256'] != replacement['binding']['runtime_sha256']
         with pytest.raises(ValueError, match='sources'):
             require_compatible(baseline, replacement, manifest)
-    require_compatible(announcements, replacement, manifest)
-    require_compatible(replacement, announcements, manifest)
+    require_compatible(announcements, reliability, manifest)
+    require_compatible(reliability, announcements, manifest)
+    for baseline in (announcements, reliability):
+        with pytest.raises(ValueError, match='sources'):
+            require_compatible(baseline, replacement, manifest)
     if variant == 'v69':
+        receipt = migration.require_policy_transition(
+            reliability, replacement, manifest, probes[3][1], probes[4][1])
+        assert receipt['kind'] == 'HOST_POLICY_CHANGE'
         _assert_admitted_runtime_chain(tmp_path, manifest, production['binding'],
-            announcements['binding'], replacement['binding'])
+            reliability['binding'], replacement['binding'])
 
 
 def _assert_admitted_runtime_chain(tmp_path, manifest, original, admitted, replacement):

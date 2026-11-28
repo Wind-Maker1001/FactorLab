@@ -44,7 +44,8 @@
       "test_native_store_copy_tests_passed": 2,
       "test_native_store_copy_elapsed_seconds": 5.76,
       "test_native_store_probe_inputs": "FIXED_TEST_RECEIPTS",
-      "production_store_copy_validation_complete": false
+      "production_store_copy_validation_complete": true,
+      "production_store_copy_evidence_file": "host-policy-preflight.json"
     },
     {
       "id": "binance-original-portfolio-official-history",
@@ -196,6 +197,24 @@
   "official_orders_created_by_this_acceptance": [],
   "capital_events_created_by_this_acceptance": [],
   "deployment_changes": [
+    {
+      "completed_at_utc": "2026-11-28T12:19:48Z",
+      "component": "ALPACA_PAPER",
+      "previous_revision": "e9791e129fb9e0de8a489d17691e959023849e21",
+      "revision": "e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14",
+      "qualification_kind": "HOST_POLICY_CHANGE",
+      "original_package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+      "previous_runtime_sha256": "6ef90c4a5bdce7d846a9c65b49540cfd408506a69737e26e791055c882866cc1",
+      "runtime_sha256": "2f6bbe99e06ef297ecc1fcc134d8e11a4df25f31ee29fc9e9afba903c907f335",
+      "runtime_admission_created": true,
+      "active_state": "active",
+      "sub_state": "running",
+      "pid": 1473622,
+      "n_restarts": 0,
+      "rollback_record": "/root/p10-12-e451adc3308ae401e8e5bb8cc8dc3f6a930b6d14",
+      "capital_changed": false,
+      "three_instance_configuration_applied": false
+    },
     {
       "completed_at_utc": "2026-11-28T11:00:15Z",
       "component": "ALPACA_PAPER",
