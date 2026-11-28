@@ -18,7 +18,7 @@ Alpaca 官方时钟确认休市，下次开市为 2026-11-30 14:30 UTC。现有 
 
 Alpaca 已从原账户预算内划出 100 USD，V179/V182 各 50 USD，V69 保留 99900 USD，测试结束回收。原 V69 包、历史状态和 Champion 身份保持不变；三条初始分配由原共享 owner 建立。
 
-Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQQUSDT/SPYUSDT portfolio task，后者分属 `tradfi-demo-acceptance` 与 `tradfi-qqq-spy-test` 两个历史 allocation ID；账户 journal 目录内尚无 portfolio.sqlite3。现有导入入口是 `demo_cli capital-history-import --source ...`，要求独立完整经济来源，不能把两个历史 ID 未经核实地合并成一个 20 USDT 来源，也不能重复给两者各分配 20 USDT。TODO：核实两段原始资金来源及承接关系，沿既有迁移路径保留全部订单身份后再接入 V2。清点见 [binance-history-inventory.json](binance-history-inventory.json)，未执行导入或账户写入。进一步只读追踪原批次和账户快照确认：前一个 allocation 有 6 笔订单（4 笔 FILLED、2 笔零成交 CANCELED），后一个有 8 笔且全部 FILLED；两个 allocation 的 QQQUSDT/SPYUSDT 净归属均为零。前段 6 笔订单全部保存在原账户快照，但不在 demo_order_owners 投影中，因此仅扫描已有 owner 表会漏掉真实历史。原订单回执显示前段最后退出成交为 2026-11-24 15:51:00.143 UTC，后段首次买入成交为 15:53:13.279 UTC。原 static-shared-account 预算事件为 grid=7、portfolio=20 USDT；没有据此认定资金承接已经证明，亦未补写历史 owner。2026-11-28 12:01:47 UTC 以只读 Demo userTrades 按原订单回读，12 笔实际成交数量全部与原快照相符；前段手续费 0.00539527、已实现损益 -0.07130000 USDT，后段手续费 0.02173584、已实现损益 -0.01340001 USDT。净交易过账分别为 -0.07669527 与 -0.03513585 USDT，未混入资金费或资本划拨；原始 trade ID 摘要见 [binance-official-portfolio-history.json](binance-official-portfolio-history.json)。这些是历史成交核实，不是本次新成交验收。
+Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQQUSDT/SPYUSDT portfolio task，后者分属 `tradfi-demo-acceptance` 与 `tradfi-qqq-spy-test` 两个历史 allocation ID；账户 journal 目录内尚无 portfolio.sqlite3。现有导入入口是 `demo_cli capital-history-import --source ...`，要求独立完整经济来源，不能把两个历史 ID 未经核实地合并成一个 20 USDT 来源，也不能重复给两者各分配 20 USDT。两段原始现金及承接结算标为 UNKNOWN，历史迁移为 HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE；不再搜索，也不以此作为新增 V2 实例的全局门禁。清点见 [binance-history-inventory.json](binance-history-inventory.json)，未执行导入或账户写入。进一步只读追踪原批次和账户快照确认：前一个 allocation 有 6 笔订单（4 笔 FILLED、2 笔零成交 CANCELED），后一个有 8 笔且全部 FILLED；两个 allocation 的 QQQUSDT/SPYUSDT 净归属均为零。前段 6 笔订单全部保存在原账户快照，但不在 demo_order_owners 投影中，因此仅扫描已有 owner 表会漏掉真实历史。原订单回执显示前段最后退出成交为 2026-11-24 15:51:00.143 UTC，后段首次买入成交为 15:53:13.279 UTC。原 static-shared-account 预算事件为 grid=7、portfolio=20 USDT；没有据此认定资金承接已经证明，亦未补写历史 owner。2026-11-28 12:01:47 UTC 以只读 Demo userTrades 按原订单回读，12 笔实际成交数量全部与原快照相符；前段手续费 0.00539527、已实现损益 -0.07130000 USDT，后段手续费 0.02173584、已实现损益 -0.01340001 USDT。净交易过账分别为 -0.07669527 与 -0.03513585 USDT，未混入资金费或资本划拨；原始 trade ID 摘要见 [binance-official-portfolio-history.json](binance-official-portfolio-history.json)。这些是历史成交核实，不是本次新成交验收。
 
 ## 共享风险修复
 
@@ -45,15 +45,20 @@ Binance 原历史只读清点取得 80 个 NVDAUSDT grid deployment 和 7 个 QQ
 | 历史零归属资本初始化修复 | OFFLINE_ACCEPTED | 45 项资本回归及复制账本三实例构造通过；修复源码已部署，实际三实例初始化尚未执行 |
 | Alpaca 三实例注册、初始分配及共享限额 | ONLINE_ACCEPTED | 原 owner 已启动三实例，实际分配 99900/50/50 USD，聚合上限 99900 USD，健康回读 true；不代表成交生命周期 |
 | Alpaca 自然开市调仓 | PENDING_NATURAL_EVENT | 三实例已接入；V179/V182 等待 session，原 V69 等待自然周，下一开市 2026-11-30 14:30 UTC |
-| Binance 原历史迁移接入 | FAILED | 两个历史 portfolio allocation ID 的经济承接尚未证明，现入口仅接受一个 20 USDT portfolio 袖套 |
+| Binance 原历史迁移接入 | HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE | 两个原 allocation 身份及交易经济记录保留，原始现金/结算 UNKNOWN；停止搜索，不作为新增实例的全局门禁 |
+| Binance 新实例独立资本基线 | UNPROVEN_AVAILABLE_BUDGET | 当前 27 USDT 授权已划为 grid 7 / legacy portfolio 20；未证明有从旧消费者承诺中释放的正额度及新现金基线 |
 | 双市场实例成交、退出与库存隔离 | IMPLEMENTED | 现有运行时具备相关路径；本次尚无官方生命周期证据 |
 | 资本追加、撤回、转移、分阶段回收及 TWR/XIRR | IMPLEMENTED | 既有资本路径有离线回归；本次未形成在线资本事件证据 |
 | 风险增险拒绝、合法减仓及重启恢复 | IMPLEMENTED | 既有风控路径有离线回归；本次未形成在线闭环证据 |
 | 2 vCPU / 1 GiB 多实例实际负载 | IMPLEMENTED | 已采集三实例共享 owner 休市运行及资本处理负载；Alpaca PSS 90382 KiB、RSS 100408 KiB、cgroup MemoryPeak 186417152 字节；尚无开市 Worker 峰值采样 |
 
-原 controller 账本的补充只读核实见 [binance-capital-source-index.json](binance-capital-source-index.json)：仅有 snapshot/events/demo_order_owners 三张表；事件身份中 capital/allocation/transfer/settle 均为零，唯一共享资金记录仍是 static-shared-account 预算元数据，33 条 fund 记录均为 funding fee。全部非 funding 事件 payload 未找到 initial_cash/cash_in/cash_out/budget_delta/settlement/contribution/capital_transfer/retired 字段。原状态根三层以内按 capital/migration/settle/receipt 文件名补充查找，匹配为空。此结果不能把缺失历史解释为零现金或默认结算；当前可核实来源不足以填写前后 owner 的原始现金和交接过账，迁移保持 FAILED，未导入或下新单。
+原 controller 账本的补充只读核实见 [binance-capital-source-index.json](binance-capital-source-index.json)：仅有 snapshot/events/demo_order_owners 三张表；事件身份中 capital/allocation/transfer/settle 均为零，唯一共享资金记录仍是 static-shared-account 预算元数据，33 条 fund 记录均为 funding fee。全部非 funding 事件 payload 未找到 initial_cash/cash_in/cash_out/budget_delta/settlement/contribution/capital_transfer/retired 字段。原状态根三层以内按 capital/migration/settle/receipt 文件名补充查找，匹配为空。此结果不能把缺失历史解释为零现金或默认结算；前后 owner 的原始现金和交接结算保持 UNKNOWN，迁移标为 HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE；停止进一步历史资本搜索，不再作为新增实例验收的全局门禁，未导入或下新单。
 
-Binance 两段历史的表示已进一步核实：现有 capital_balances/capital_events 可保留原始资金基线并用已证明的历史预算释放、现金结算和退休过账表达顺序承接，无需新增共享预算系统。TODO：先取得原 owner 的历史现金来源、交接结算与现存预算归属证据，再扩展原 adoption receipt 原子导入生命周期；不得仅因两段都已清仓就构造前段 -20 USDT 退休或现金转移。静态目标预算不是现金贡献证据，不能改成允许零初始资本或给两个 owner 各20来绕过。
+当前资金核实与历史迁移分别判定。2026-11-28 12:56:17 UTC 的只读回执见 [binance-current-budget-state.json](binance-current-budget-state.json)：原 owner 在 12:56:14 已对账、account_recovered=true、UNKNOWN=0，邮箱四项任务均 COMPLETED、无 outstanding task；没有公共资本账户/分配账本。原静态授权为 grid=7、portfolio=20 USDT。剩余累计提交名义额和 250 USDT 损失上限不是可分配资本。
+
+现行 legacy consumer 仍可接收任务并使用 portfolio 20 USDT，因此这20不能因当前无排队任务就再次分给新实例；网格7完整保留。未证明存在正的未占用授权额度，也未取得公共政策下从旧消费者承诺释放额度并建立新初始现金基线的当前记录。该缺口是当前预算承诺/现金基线，不是要求补齐历史结算；不继续搜索历史、不修改现役服务或账户、不建立复杂迁移系统。历史原始现金和结算 UNKNOWN 不自动阻止未来由独立当前事实支持的新增分配。
+
+host 构造器确有 portfolio.sqlite3/完整历史来源的启动耦合；但仅移除条件会允许空账本忽略 legacy 消费者及网格资本承诺。当前没有已证明可用额度，故不作无实际资金路径支撑的运行代码修改。未来独立资本路径必须继续复用唯一 owner、公共账本、全账户对账、现有预留及风险约束，而不是把历史 UNKNOWN 变为公共池可用现金。对当前预算结论及其源码依据的独立审查未发现具体不准确之处；本次仅更新证据和报告，两个证据 JSON 解析通过。
 
 Binance 迁移入口的静态约束已核实：`register_account_history_source` 固定要求 7/20 USDT 两袖套且 manifest allocation 集合与袖套完全相同；`export_portfolio_sleeve` 只按单一原 allocation ID 导出任务。因此资金承接证明本身还不足以直接把两个 ID 填入当前入口；须在保留全部订单身份的前提下处理历史来源表示，不能静默遗漏其中一段。
 

@@ -1,0 +1,60 @@
+{
+  "captured_at": "2026-11-28T12:56:17.427087+00:00",
+  "evidence_kind": "CURRENT_AUTHORIZED_BUDGET_OCCUPANCY",
+  "health": {
+    "mode": "EXECUTE",
+    "account_recovered": true,
+    "last_reconciled_at": "2026-11-28T12:56:14.288021+00:00",
+    "unknown_count": 0,
+    "global_budget": {
+      "consumed": {
+        "posts": 150,
+        "submitted_notional": "935.2145000"
+      },
+      "max_loss": "250",
+      "opening_equity": "5000.00000000",
+      "remaining_notional": "499064.7855000",
+      "remaining_posts": 99850,
+      "state": "RUNNING",
+      "total_notional": "500000",
+      "total_orders": 100000
+    },
+    "campaign": {
+      "enabled": true,
+      "expires_at": "2026-11-28T13:57:23.328526+00:00",
+      "limits": {
+        "max_loss_usdt": "250",
+        "max_notional_usdt": "7",
+        "max_open_orders": 1,
+        "max_quantity": "0.04",
+        "symbol": "NVDAUSDT"
+      },
+      "post_budget": 4,
+      "posts_consumed": 0,
+      "remaining_posts": 4
+    }
+  },
+  "databases": {
+    "external/task-mailbox/tasks.sqlite3": {
+      "task_status_counts": {
+        "COMPLETED": 4
+      },
+      "outstanding_tasks": []
+    }
+  },
+  "metadata": {
+    "demo:static-shared-account:v1": {
+      "grid": [
+        "NVDAUSDT"
+      ],
+      "portfolio": [
+        "QQQUSDT",
+        "SPYUSDT"
+      ],
+      "grid_budget": "7",
+      "portfolio_budget": "20"
+    }
+  },
+  "account_writes": 0,
+  "journal_writes": 0
+}

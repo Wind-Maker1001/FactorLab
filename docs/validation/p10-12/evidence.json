@@ -33,8 +33,30 @@
   },
   "acceptance_results": [
     {
+      "id": "binance-new-instance-current-capital-baseline",
+      "status": "UNPROVEN_AVAILABLE_BUDGET",
+      "evidence_file": "binance-current-budget-state.json",
+      "authorized_account_budget_usdt": "27",
+      "protected_grid_budget_usdt": "7",
+      "legacy_portfolio_budget_usdt": "20",
+      "outstanding_mailbox_tasks": 0,
+      "legacy_consumer_budget_commitment_released": false,
+      "new_initial_cash_baseline": "UNKNOWN",
+      "missing_current_facts": ["positive_unused_authorized_budget_after_legacy_consumer_commitment", "known_cash_baseline_for_new_allocation"],
+      "historical_migration_is_global_gate": false,
+      "runtime_changes": false,
+      "account_writes": 0,
+      "journal_writes": 0
+    },
+    {
       "id": "binance-original-capital-source-investigation",
-      "status": "FAILED",
+      "status": "HISTORICAL_CAPITAL_MIGRATION_INCOMPLETE",
+      "blocks_all_new_strategy_acceptance": false,
+      "historical_allocations": [
+        {"allocation_id": "tradfi-demo-acceptance", "initial_cash": "UNKNOWN", "settlement": "UNKNOWN"},
+        {"allocation_id": "tradfi-qqq-spy-test", "initial_cash": "UNKNOWN", "settlement": "UNKNOWN"}
+      ],
+      "further_historical_capital_search": "STOPPED",
       "evidence_file": "binance-capital-source-index.json",
       "bounded_receipt_filename_search": {"maximum_depth": 3, "matches": []},
       "missing_evidence": ["original_allocation_cash_basis", "inter_allocation_cash_settlement", "current_budget_ownership"],
