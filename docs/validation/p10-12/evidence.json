@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "observed_at_utc": "2026-11-28T08:06:38Z",
+    "repository_revision": "47e58d9044e27dc47fc140f87b48b73531db6d3f",
+    "merged_prs": [261, 262, 263, 264, 266, 268, 277],
+    "runtime_revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+    "primary": {
+      "hostname": "factorlab-demo-01",
+      "architecture": "x86_64",
+      "services": {
+        "factorlab-demo-execute.service": {"active_state": "active", "sub_state": "running", "pid": 1335821, "n_restarts": 0},
+        "factorlab-alpaca-paper.service": {"active_state": "active", "sub_state": "running", "pid": 1339923, "n_restarts": 0},
+        "factorlab-demo-tradfi-observer.service": {"active_state": "active", "sub_state": "running", "pid": 1335871, "n_restarts": 0}
+      },
+      "binance_state_root": "/var/lib/factorlab-demo/execute-state-r01-return",
+      "alpaca_state_root": "/var/lib/factorlab-alpaca-paper/r01-return"
+    },
+    "disaster_recovery": {"hostname": "factorlab-arm-01", "architecture": "aarch64", "all_three_services_masked": true, "all_three_pids_zero": true},
+    "binance_health_projection": {
+      "observed_at_utc": "2026-11-28T08:06:30.733723Z",
+      "active_protocol": "legacy-grid",
+      "wallet_usdt": "4999.40753423",
+      "available_usdt": "4999.40753423",
+      "positions": [],
+      "open_orders": [],
+      "unknown_orders": 0,
+      "global_posts_consumed": 149,
+      "global_notional_consumed_usdt": "929.3581000",
+      "global_max_loss_usdt": "250",
+      "campaign": {"symbol": "NVDAUSDT", "max_notional_usdt": "7", "max_quantity": "0.04", "max_open_orders": 1, "remaining_posts": 4, "expires_at_utc": "2026-11-28T10:57:20.654593Z"}
+    }
+  },
+  "acceptance_results": [
+    {
+      "id": "existing-multi-instance-capital-native-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 60,
+      "elapsed_seconds": 275.13,
+      "official_trades": false
+    },
+    {
+      "id": "announcement-completeness-affected-regression",
+      "status": "OFFLINE_ACCEPTED",
+      "tests_passed": 36,
+      "elapsed_seconds": 36.08,
+      "official_trades": false
+    },
+    {
+      "id": "announcement-partition-official-read",
+      "status": "IMPLEMENTED",
+      "evidence_kind": "OFFICIAL_READ_ONLY",
+      "window": ["2026-11-20", "2026-11-30"],
+      "distinct_official_announcements": 1451,
+      "announcements_without_ex_date": 24,
+      "account_writes": 0,
+      "deployment_changed": false
+    },
+    {
+      "id": "alpaca-natural-market-execution",
+      "status": "PENDING_NATURAL_EVENT",
+      "evidence_kind": "OFFICIAL_CLOCK_READ",
+      "market_open": false,
+      "next_open_utc": "2026-11-30T14:30:00Z",
+      "preparation_complete": false
+    }
+  ],
+  "alpaca_preparation": {
+    "account_budget_usd": "100000",
+    "v69_capital_usd": "99900",
+    "v179_acceptance_capital_usd": "50",
+    "v182_acceptance_capital_usd": "50",
+    "funding_applied": false,
+    "v69_registration_prerequisites": {
+      "observed_at_utc": "2026-11-28T10:49:36.081462Z",
+      "evidence_kind": "READ_ONLY_EXISTING_JOURNAL",
+      "v69_execution_plans": 0,
+      "v69_corporate_postings": 0,
+      "existing_allocations": 0,
+      "owned_quantities_zero": true,
+      "economic_cash_flow_usd": "0"
+    },
+    "v179_package_id": "1bbe021c83ae116d930e70dd973ceb7a54444c52a3c89062e451b2a558122c14",
+    "v182_package_id": "8f232dd2bbed9579d34313d7d8d7e6ae6b1e96da9bfbd2b8faba7fc5866169c0",
+    "champion_promoted": false,
+    "official_paper_account_read": {"cash": "100000.05", "equity": "100000.05", "status": "ACTIVE", "trading_blocked": false},
+    "benchmark_read": {
+      "series": "^SP500TR",
+      "source": "YAHOO:^SP500TR",
+      "records": 252,
+      "first_session": "2025-11-26",
+      "last_session": "2026-11-27",
+      "signal_cutoff_utc": "2026-11-27T18:00:00Z",
+      "acquired_at_utc": "2026-11-28T10:43:27.890677Z",
+      "evidence_kind": "READ_ONLY_BENCHMARK"
+    }
+  },
+  "official_orders_created_by_this_acceptance": [],
+  "capital_events_created_by_this_acceptance": [],
+  "deployment_changes": [],
+  "resource_measurements": []
+}

@@ -1,0 +1,31 @@
+# P10-12 双市场多策略在线验收
+
+## 基线
+
+2026-11-28 08:06 UTC 的现场只读核实：马来西亚 `factorlab-demo-01` 为 x86_64，Binance Execute、Alpaca Paper 和 TradFi Observer 均为 active/running，systemd `NRestarts=0`。三个组件实际运行版本为 `80d22fa23b2bedd557684dd4db9559e6180ffb9e`，不是当前仓库基线 `47e58d9044e27dc47fc140f87b48b73531db6d3f`。#261、#262、#263、#264、#266、#268、#277 均已合并。
+
+Binance 有效状态根为 `/var/lib/factorlab-demo/execute-state-r01-return`，Alpaca 为 `/var/lib/factorlab-alpaca-paper/r01-return`。Observer 使用 Binance 当前根内的 TaskMailbox。日本 `factorlab-arm-01` 为 aarch64；三个执行/观察单元均 masked/inactive、PID=0，Alpaca 与 Observer 发布链接指向同一 `80d22fa…` 版本。
+
+Binance 当前是 legacy-grid，不是多实例验收结果。08:06:30 UTC 健康快照记录零持仓、零挂单、UNKNOWN=0；官方账户投影钱包和可用余额均为 4999.40753423 USDT。全局累计提交 149 次、名义额 929.3581000 USDT，原最大损失预算为 250 USDT。当前 NVDAUSDT Campaign 名义额上限为 7 USDT，数量上限 0.04，最多一个挂单，余下 4 次 POST，2026-11-28 10:57:20 UTC 到期。这些事实不构成 P10-12 官方成交验收。
+
+## 当前验收状态
+
+本次尚未执行策略、资本或风控验收操作。后续逐项结果和原始回执关联见 [evidence.json](evidence.json)。健康快照中的历史成交不标为本次多策略生命周期证据。
+
+现有多实例、动态资本、资本命令恢复和 V179/V182 定向回归为 60 项通过（275.13 秒），证据等级为 `OFFLINE_ACCEPTED`，不代表本次官方成交。新增只读采集入口为 `tools/p10_12_online_acceptance.py`，实际主机快照见 [runtime-baseline.json](runtime-baseline.json)。采集包含活跃 WAL 的账本计数与进程 PSS/RSS/Swap，不输出账户标识或凭据。
+
+Alpaca 官方时钟确认休市，下次开市为 2026-11-30 14:30 UTC。现有 V69 健康心跳为 true，但执行状态为 `BLOCKED_INPUTS`，原因为 `SATURATED_CORPORATE_ACTION_WINDOW`，不能视为策略就绪。官方公告接口对 2026-11-20 至 2026-11-30 实际返回 1451 个不同 ID；两个子窗口分别返回 834 和 618 条，跨窗身份需要去重。部分非验收资产公告没有 ex_date。当前已实现共享日期分窗读取，仍保留无法拆分的饱和单日阻塞；36 项受影响模块与包准备回归通过（36.08 秒）。新函数在主节点通过只读官方接口取得 1451 个不同公告 ID，没有账户写入。修复尚未部署，因此现役 V69 输入阻塞尚未解除。
+
+Alpaca 计划从原账户预算内划出 100 USD，V179/V182 各 50 USD，余下保留给 V69，测试结束回收。原 V69 包、历史状态和 Champion 身份保持不变；资本迁移尚未执行。
+
+## 可重复入口与准备结果
+
+`tools/prepare_p10_12_alpaca.py` 复用原生包构建器和现有冻结 Ridge 工件，生成 V179/V182 包及共享 owner 配置，不访问账户、不训练、不注册 Champion。参数要求显式提供原账户预算、费用预留、远端 release 与 ^SP500TR 快照路径。正式配置含账户标识，保存在仓库外，不纳入公开证据。已有包身份见 evidence.json；包安装和实际装载已通过本地测试。配置生成不会自动激活或分配资金。生成配置仅适用于本次已核实的零分配、零 V69 经济现金过账状态，不是通用历史资本迁移入口。2026-11-28 10:49:36 UTC 再次只读确认：V69 plans=0、corporate postings=0、全部 allocations=0，AAPL/QQQ 归属数量及初始数量均为零；现有 cash_flow 的两个来源均为空，因此无需对不存在的 V69 经济过账执行 adoption。已有分配或非零历史过账的账户须保留原注册并使用现有资本迁移路径。分窗读取现保留父记录作为一致性锚点，子响应遗漏或改变已见公告时明确阻塞；36 项受影响回归通过（36.08 秒）。
+
+官方 Paper 回读现金/权益均为 100000.05 USD，账户 ACTIVE、trading_blocked=false。只读 ^SP500TR Provider 已取到 252 个完整交易日，2025-11-26 至 2026-11-27。信号截止使用官方交易日历的提前收市时间 2026-11-27 18:00 UTC，而不是人为设定的当日末尾。该结果证明基准数据接入，不是自然调仓证据。
+
+08:10 UTC 的资源快照中，Binance、Alpaca、Observer 的 PSS 分别为 41564、35929、20643 KiB，RSS 分别为 50312、45024、29568 KiB，进程 Swap 分别为 16472、50200、38216 KiB。这是原运行负载基线，尚非新增多实例 Worker 峰值验收。
+
+## 部署与回滚
+
+本次尚未更改部署、服务、账户或持久化账本。公告修复涉及现役 V69 的运行时身份，需基于本候选源码核实兼容性并保留原绑定，再沿既有迁移路径部署；不能直接沿用其他版本的源码准入摘要。后续部署和回滚操作在执行时记录。
