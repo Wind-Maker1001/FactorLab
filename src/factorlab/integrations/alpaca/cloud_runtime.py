@@ -143,6 +143,21 @@ class RuntimeStore:
         atomic_json(directory / (day + '.json'), payload)
 
 
+class StreamRetention:
+    """Prune only raw market observations, at most once per hour of active writes."""
+
+    def __init__(self, db):
+        self.db = db
+        self.next_cleanup = None
+
+    def prune(self, observed_at):
+        if self.next_cleanup is not None and observed_at < self.next_cleanup:
+            return
+        self.db.execute('DELETE FROM events WHERE received_at < ?',
+                        ((observed_at - timedelta(days=7)).isoformat(),))
+        self.next_cleanup = observed_at + timedelta(hours=1)
+
+
 class MarketWorker:
     """Separate connection and SQLite owner; no account or order API access."""
     def __init__(self, config, root, symbols, stop, *, feed='iex'):
@@ -194,10 +209,9 @@ class MarketWorker:
             CREATE TABLE IF NOT EXISTS gaps (
                 start TEXT NOT NULL, end TEXT NOT NULL, rows INTEGER NOT NULL);
         ''')
-        # Retain a bounded 7-day rolling window of raw stream observations to prevent unbounded disk growth.
-        cutoff = (now() - timedelta(days=7)).isoformat()
+        retention = StreamRetention(db)
         with db:
-            db.execute('DELETE FROM events WHERE received_at < ?', (cutoff,))
+            retention.prune(now())
         row = db.execute('SELECT end FROM gaps ORDER BY rowid DESC LIMIT 1').fetchone()
         last = datetime.fromisoformat(row[0]) if row else now() - timedelta(minutes=5)
 
@@ -210,6 +224,7 @@ class MarketWorker:
                 db.executemany('INSERT INTO events(received_at,channel,symbol,payload) VALUES (?,?,?,?)',
                                [(r['received_at'], 'rest-bars', r['symbol'], json.dumps(r)) for r in rows])
                 db.execute('INSERT INTO gaps VALUES (?,?,?)', (start.isoformat(), end.isoformat(), len(rows)))
+                retention.prune(now())
             self.update(state='CONNECTED', last_rest_at=end.isoformat(),
                         recoveries=self.snapshot()['recoveries'] + 1, error=None)
             return True
@@ -229,6 +244,7 @@ class MarketWorker:
                             db.execute('INSERT INTO events(received_at,channel,symbol,payload) VALUES (?,?,?,?)',
                                        (event.received_at.isoformat(), event.channel, event.symbol,
                                         json.dumps(event.payload)))
+                            retention.prune(now())
                         self.update(state='CONNECTED', last_event_at=event.received_at.isoformat(), error=None)
                         delay = 1
                 except (StreamDisconnected, StreamRecoveryError, MarketDataError,

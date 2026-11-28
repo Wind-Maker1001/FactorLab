@@ -1,0 +1,207 @@
+{
+  "kind": "synthetic_local_not_vm",
+  "python": "3.12.7",
+  "sqlite": "3.45.3",
+  "days": 24,
+  "rows_per_day": 512,
+  "payload_bytes": 512,
+  "retention_days": 7,
+  "cleanup_interval_hours": 1,
+  "checkpoint": "TRUNCATE after each synthetic day; no VACUUM",
+  "samples": [
+    {
+      "day": 0,
+      "rows": 512,
+      "pages": 82,
+      "free_pages": 0,
+      "db_bytes": 335872,
+      "wal_bytes": 0
+    },
+    {
+      "day": 1,
+      "rows": 1024,
+      "pages": 159,
+      "free_pages": 0,
+      "db_bytes": 651264,
+      "wal_bytes": 0
+    },
+    {
+      "day": 2,
+      "rows": 1536,
+      "pages": 237,
+      "free_pages": 0,
+      "db_bytes": 970752,
+      "wal_bytes": 0
+    },
+    {
+      "day": 3,
+      "rows": 2048,
+      "pages": 315,
+      "free_pages": 0,
+      "db_bytes": 1290240,
+      "wal_bytes": 0
+    },
+    {
+      "day": 4,
+      "rows": 2560,
+      "pages": 393,
+      "free_pages": 0,
+      "db_bytes": 1609728,
+      "wal_bytes": 0
+    },
+    {
+      "day": 5,
+      "rows": 3072,
+      "pages": 470,
+      "free_pages": 0,
+      "db_bytes": 1925120,
+      "wal_bytes": 0
+    },
+    {
+      "day": 6,
+      "rows": 3584,
+      "pages": 548,
+      "free_pages": 0,
+      "db_bytes": 2244608,
+      "wal_bytes": 0
+    },
+    {
+      "day": 7,
+      "rows": 4096,
+      "pages": 629,
+      "free_pages": 0,
+      "db_bytes": 2576384,
+      "wal_bytes": 0
+    },
+    {
+      "day": 8,
+      "rows": 4096,
+      "pages": 706,
+      "free_pages": 76,
+      "db_bytes": 2891776,
+      "wal_bytes": 0
+    },
+    {
+      "day": 9,
+      "rows": 4096,
+      "pages": 708,
+      "free_pages": 78,
+      "db_bytes": 2899968,
+      "wal_bytes": 0
+    },
+    {
+      "day": 10,
+      "rows": 4096,
+      "pages": 708,
+      "free_pages": 78,
+      "db_bytes": 2899968,
+      "wal_bytes": 0
+    },
+    {
+      "day": 11,
+      "rows": 4096,
+      "pages": 708,
+      "free_pages": 79,
+      "db_bytes": 2899968,
+      "wal_bytes": 0
+    },
+    {
+      "day": 12,
+      "rows": 4096,
+      "pages": 708,
+      "free_pages": 79,
+      "db_bytes": 2899968,
+      "wal_bytes": 0
+    },
+    {
+      "day": 13,
+      "rows": 4096,
+      "pages": 708,
+      "free_pages": 78,
+      "db_bytes": 2899968,
+      "wal_bytes": 0
+    },
+    {
+      "day": 14,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 78,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 15,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 80,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 16,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 80,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 17,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 79,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 18,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 80,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 19,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 80,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 20,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 79,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 21,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 79,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 22,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 79,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    },
+    {
+      "day": 23,
+      "rows": 4096,
+      "pages": 709,
+      "free_pages": 79,
+      "db_bytes": 2904064,
+      "wal_bytes": 0
+    }
+  ],
+  "steady_page_span": 1,
+  "elapsed_seconds": 2.255218500038609
+}

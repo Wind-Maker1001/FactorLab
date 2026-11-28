@@ -1,0 +1,84 @@
+{
+  "observed_at": "2026-11-28T08:22:13.542630+00:00",
+  "mem_available_kib": 489408,
+  "swap_used_kib": 430392,
+  "swap_in_pages": 70057379,
+  "swap_out_pages": 69411192,
+  "oom_kill": 0,
+  "cpu_ticks": [
+    4486916,
+    4247,
+    1678774,
+    82445933,
+    9143102,
+    0,
+    325653,
+    0,
+    0,
+    0
+  ],
+  "processes": [
+    {
+      "pid": 1335821,
+      "rss_kib": 50408,
+      "peak_rss_kib": 69228,
+      "pss_kib": 41165
+    },
+    {
+      "pid": 1339923,
+      "rss_kib": 46144,
+      "peak_rss_kib": 133064,
+      "pss_kib": 36204
+    },
+    {
+      "pid": 1335871,
+      "rss_kib": 29924,
+      "peak_rss_kib": 91048,
+      "pss_kib": 20527
+    }
+  ],
+  "databases": [
+    {
+      "path": "/var/lib/factorlab-alpaca-paper/r01-return/market-stream.sqlite3",
+      "db_bytes": 843018240,
+      "wal_bytes": 1553272,
+      "journal_mode": "wal",
+      "page_count": 205822,
+      "page_size": 4096,
+      "freelist_count": 0
+    },
+    {
+      "path": "/var/lib/factorlab-alpaca-paper/r01-return/account.sqlite3",
+      "db_bytes": 77824,
+      "wal_bytes": 0,
+      "journal_mode": "delete",
+      "page_count": 19,
+      "page_size": 4096,
+      "freelist_count": 0
+    },
+    {
+      "path": "/var/lib/factorlab-alpaca-paper/r01-return/portfolio.sqlite3",
+      "db_bytes": 294912,
+      "wal_bytes": 0,
+      "journal_mode": "delete",
+      "page_count": 72,
+      "page_size": 4096,
+      "freelist_count": 0
+    },
+    {
+      "path": "/var/lib/factorlab-alpaca-paper/r01-return/deployments.sqlite3",
+      "db_bytes": 196608,
+      "wal_bytes": 0,
+      "journal_mode": "wal",
+      "page_count": 48,
+      "page_size": 4096,
+      "freelist_count": 0
+    }
+  ],
+  "caches": [],
+  "azure_cpu_credits": {
+    "status": "UNKNOWN",
+    "reason": "Azure Monitor permission not provided"
+  },
+  "elapsed_seconds": 0.016732545976992697
+}

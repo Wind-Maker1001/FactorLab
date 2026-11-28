@@ -5,7 +5,17 @@ on:
   pull_request:
     paths:
       - 'src/factorlab/integrations/binance_futures_trading/**'
+      - 'src/factorlab/integrations/alpaca/**'
+      - 'src/factorlab/integrations/disaster_recovery.py'
+      - 'tests/integrations/test_periodic_snapshot.py'
+      - 'tests/integrations/test_runtime_migration.py'
+      - 'tests/integrations/test_p10_13_capacity.py'
+      - 'requirements/execution-dual-linux-py313.lock.txt'
       - 'tests/integrations/test_demo_cloud*'
+      - 'tools/evidence/backup_runtime.py'
+      - 'tools/evidence/runtime_capacity.py'
+      - 'tools/install_alpaca_paper_runtime.sh'
+      - 'tools/install_demo_strategy_runtime.py'
       - 'tests/integrations/test_demo_execute_systemd.py'
       - 'tests/integrations/test_strategy_deployment_s03.py'
       - 'tests/integrations/test_unified_cloud_strategy_s04.py'
@@ -36,6 +46,7 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: ${{ matrix.python }}
@@ -49,6 +60,9 @@ jobs:
           tests/integrations/test_demo_cloud_backup.py
           tests/integrations/test_demo_cloud_backup_systemd.py
           tests/integrations/test_demo_cloud_storage.py
+          tests/integrations/test_periodic_snapshot.py
+          tests/integrations/test_runtime_migration.py
+          tests/integrations/test_p10_13_capacity.py
           tests/integrations/test_demo_cloud_credentials.py
           tests/integrations/test_demo_execute_systemd.py
           tests/integrations/test_binance_demo_runtime.py
@@ -130,6 +144,7 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.13'
@@ -149,6 +164,47 @@ jobs:
         with:
           name: mailbox-${{ matrix.runner }}
           path: mailbox-results.json
+          if-no-files-found: error
+
+  runtime-reliability:
+    name: Minimal dual runtime reliability (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: src
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - name: Install only the dual-market execution profile and test runner
+        run: |
+          python -m pip install --only-binary=:all: -r requirements/execution-dual-linux-py313.lock.txt 'pytest>=8.3.5,<9'
+          python -m pip check
+      - name: Snapshot, retention and runtime migration contracts
+        run: >-
+          python -m pytest -q
+          tests/integrations/test_periodic_snapshot.py
+          tests/integrations/test_p10_13_capacity.py
+          tests/integrations/test_runtime_migration.py
+          tests/integrations/test_disaster_recovery.py
+          --junitxml=runtime-reliability.xml
+      - name: Representative-size paired snapshot measurement
+        run: python -m tools.evidence.backup_runtime --output backup-runtime.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: runtime-reliability-${{ matrix.runner }}
+          path: |
+            runtime-reliability.xml
+            backup-runtime.json
           if-no-files-found: error
 
   lightweight-mailbox-parity:

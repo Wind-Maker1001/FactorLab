@@ -32,7 +32,16 @@ install -m 644 "$release/source/deploy/systemd/"factorlab-alpaca-paper* /etc/sys
 # Runtime state is never part of a release or rollback.
 if [ -L "$base/current" ]; then
     readlink "$base/current" > "$base/previous-release"
+    was_active=false
+    if systemctl is-active --quiet factorlab-alpaca-paper.service; then was_active=true; fi
     systemctl stop factorlab-alpaca-paper.service
+    if ! runuser -u factorlab-alpaca -- "$release/venv/bin/python" -I \
+        -m factorlab.strategies.runtime_migration --market alpaca \
+        --state-root /var/lib/factorlab-alpaca-paper \
+        --previous-python "$base/current/venv/bin/python"; then
+        if "$was_active"; then systemctl start factorlab-alpaca-paper.service; fi
+        exit 1
+    fi
 fi
 ln -s "$release" "$base/current.next"
 mv -Tf "$base/current.next" "$base/current"

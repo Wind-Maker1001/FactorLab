@@ -931,7 +931,8 @@ class SystemdRunner:
             check=True,
         )
 
-    def run_python_module(self, module, args, *, state_root=None, timeout=300, stdin_text=None):
+    def run_python_module(self, module, args, *, state_root=None, timeout=300, stdin_text=None,
+                          on_snapshot_ready=None):
         cmd = [self.python_executable, '-m', module, *args]
         env = dict(os.environ)
         if state_root is not None:
@@ -944,6 +945,28 @@ class SystemdRunner:
                 identity = dict(user=account.pw_uid, group=account.pw_gid,
                                 extra_groups=os.getgrouplist(account.pw_name, account.pw_gid))
                 env.update(HOME=account.pw_dir, USER=account.pw_name, LOGNAME=account.pw_name)
+        if on_snapshot_ready is not None:
+            import socket
+
+            parent, child = socket.socketpair()
+            with parent, child:
+                parent.settimeout(timeout)
+                env['FACTORLAB_SNAPSHOT_READY_FD'] = str(child.fileno())
+                with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                      text=True, env=env, pass_fds=(child.fileno(),), **identity) as process:
+                    child.close()
+                    try:
+                        if parent.recv(1) != b'R':
+                            stdout, stderr = process.communicate(timeout=timeout)
+                            return subprocess.CompletedProcess(cmd, process.returncode or 1, stdout, stderr)
+                        on_snapshot_ready()
+                        parent.sendall(b'C')
+                        stdout, stderr = process.communicate(timeout=timeout)
+                        return subprocess.CompletedProcess(cmd, process.returncode, stdout, stderr)
+                    except BaseException:
+                        process.kill()
+                        process.communicate()
+                        raise
         # The timed child is the Python worker itself, so no privilege wrapper
         # can leave the SQLite backup worker holding the session lock.
         return subprocess.run(
