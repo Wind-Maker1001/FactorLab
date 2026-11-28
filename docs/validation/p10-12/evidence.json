@@ -97,6 +97,22 @@
   },
   "official_orders_created_by_this_acceptance": [],
   "capital_events_created_by_this_acceptance": [],
-  "deployment_changes": [],
+  "deployment_changes": [
+    {
+      "completed_at_utc": "2026-11-28T11:00:15Z",
+      "component": "ALPACA_PAPER",
+      "previous_revision": "80d22fa23b2bedd557684dd4db9559e6180ffb9e",
+      "revision": "2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+      "original_package_id": "d5271af9f9af861310efef862e1d5315137e2715a9cc7202565d81812f0eb3c5",
+      "runtime_admission_created": true,
+      "active_state": "active",
+      "sub_state": "running",
+      "pid": 1450535,
+      "n_restarts": 0,
+      "rollback_record": "/root/p10-12-2e02729157b1e6a9c277506533d1af1fc1a6a1a0",
+      "capital_changed": false,
+      "official_orders_created": false
+    }
+  ],
   "resource_measurements": []
 }
